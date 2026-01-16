@@ -1,0 +1,7 @@
+{
+  "name": "Nexus Chronicle",
+  "description": "A feature-rich and modern worldbuilding tool for authors and GMs to create and maintain lore, characters, locations, and relationships through complex projects.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
