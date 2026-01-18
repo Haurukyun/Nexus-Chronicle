@@ -1,6 +1,6 @@
 
-export type EntityType = 
-  | 'chapter' | 'note' | 'myth' 
+export type EntityType =
+  | 'chapter' | 'note' | 'myth'
   | 'character' | 'location' | 'event' | 'species' | 'language' | 'culture'
   | 'political' | 'religious' | 'organization' | 'magic' | 'science'
   | 'ability' | 'item' | 'occupation' | 'condition' | 'resource';
@@ -57,10 +57,12 @@ export interface Character extends BaseEntity {
   traitsAndCharacteristics?: string;
   unusualFeatures?: string;
   stats?: {
+    strength?: string;
+    dexterity?: string;
+    constitution?: string;
+    intelligence?: string;
     wisdom?: string;
-    test?: string;
-    attribute?: string;
-    messedUp?: string;
+    charisma?: string;
   };
   equipment?: string;
   wealth?: string;

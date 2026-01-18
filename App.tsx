@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { 
-    Plus, Search, Book, BookOpen, Users, Map as MapIcon, Languages, Swords, History, 
-    ChevronRight, ChevronDown, Save, Trash2, Sparkles, Globe, MapPin, 
+import {
+    Plus, Search, Book, BookOpen, Users, Map as MapIcon, Languages, Swords, History,
+    ChevronRight, ChevronDown, Save, Trash2, Sparkles, Globe, MapPin,
     Link as LinkIcon, Scroll, Library, Zap, Shield, Briefcase, X, ExternalLink,
     Settings, Info, Heart, Eye, Award, DollarSign, Ghost, Skull, Flag, Compass, Check,
     LayoutGrid, Maximize2, Columns, BookMarked, RefreshCw, Trash, Palette, FileText,
@@ -32,12 +32,12 @@ const HIERARCHY_CONFIG = [
 const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode }: any) => (
     <div className="space-y-1">
         <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</label>
-        <input 
-            type={type} 
-            className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:ring-1 ${isWikiMode ? 'focus:ring-red-500' : 'focus:ring-yellow-500'}`} 
-            value={value || ''} 
-            onChange={e => onChange(e.target.value)} 
-            placeholder={placeholder} 
+        <input
+            type={type}
+            className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:ring-1 ${isWikiMode ? 'focus:ring-red-500' : 'focus:ring-yellow-500'}`}
+            value={value || ''}
+            onChange={e => onChange(e.target.value)}
+            placeholder={placeholder}
         />
     </div>
 );
@@ -45,7 +45,7 @@ const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiM
 const FormToggle = ({ label, value, onChange, isWikiMode }: any) => (
     <div className="flex items-center justify-between p-2 rounded-lg hover:bg-black/5 transition-all">
         <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</label>
-        <button 
+        <button
             onClick={() => onChange(!value)}
             className={`w-10 h-5 rounded-full relative transition-all ${value ? (isWikiMode ? 'bg-[#b91c1c]' : 'bg-[#fef08a]') : 'bg-slate-600'}`}
         >
@@ -79,7 +79,7 @@ const SmartSelect = ({ label, ids, type, all, onChange, onCreate, isWikiMode }: 
     return (
         <div className="space-y-1 relative" ref={dropdownRef}>
             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</label>
-            <div 
+            <div
                 onClick={() => setIsOpen(!isOpen)}
                 className={`w-full ${bgInput} border rounded-lg p-2 text-xs flex flex-wrap gap-1 cursor-pointer min-h-[38px] transition-colors`}
             >
@@ -120,9 +120,12 @@ const SmartSelect = ({ label, ids, type, all, onChange, onCreate, isWikiMode }: 
 // --- View Helpers ---
 
 const TaperedDivider = () => (
-    <svg height="5" width="100%" className="my-1 overflow-visible">
-        <path d="M 0 2.5 L 500 2.5" stroke="#7a200d" strokeWidth="3" fill="none" className="w-full" />
-    </svg>
+    <div className="w-full h-1.5 my-2 relative flex items-center">
+        {/* Responsive tapered divider using SVG with viewBox */}
+        <svg viewBox="0 0 100 10" preserveAspectRatio="none" className="w-full h-full">
+            <path d="M 0 5 Q 50 1 100 5 Q 50 9 0 5" fill="#7a200d" />
+        </svg>
+    </div>
 );
 
 const FieldRow = ({ label, value, isWikiMode }: any) => {
@@ -157,7 +160,7 @@ const WikiInfoboxRow = ({ label, value }: { label: string, value?: string }) => 
 
 const LinksDisplay = ({ label, ids, all, onNav, isWikiMode, wikiStyle = 'tag' }: any) => {
     if (!ids || ids.length === 0) return null;
-    
+
     if (isWikiMode && wikiStyle === 'inline') {
         return (
             <div className="text-sm leading-tight my-1">
@@ -200,36 +203,38 @@ const LinksDisplay = ({ label, ids, all, onNav, isWikiMode, wikiStyle = 'tag' }:
 
 // --- Main Components ---
 
-const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWikiMode, onUpdate }: any) => {
-    const EditorGroup = ({ title, icon: Icon, children }: any) => (
-        <div className={`mb-8 border rounded-2xl overflow-hidden shadow-lg ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-700'}`}>
-            <div className={`px-6 py-3 border-b flex items-center gap-3 ${isWikiMode ? 'bg-[#f5e6d3] border-[#d4c8af]' : 'bg-slate-900/80 border-slate-800'}`}>
-                <Icon size={16} className={isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'} />
-                <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]'}`}>{title}</h3>
-            </div>
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {children}
+// --- Editor Sub-components (Top level for stability) ---
+
+const EditorGroup = ({ title, icon: Icon, children, isWikiMode }: any) => (
+    <div className={`mb-8 border rounded-2xl overflow-hidden shadow-lg ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-700'}`}>
+        <div className={`px-6 py-3 border-b flex items-center gap-3 ${isWikiMode ? 'bg-[#f5e6d3] border-[#d4c8af]' : 'bg-slate-900/80 border-slate-800'}`}>
+            <Icon size={16} className={isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'} />
+            <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]'}`}>{title}</h3>
+        </div>
+        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {children}
+        </div>
+    </div>
+);
+
+const GroupRoleGroup = ({ label, roleKey, isWikiMode, entity, allEntities, onUpdate, onCreateNew }: any) => {
+    const roles = ['leadingFigureOf', 'connectedTo', 'memberOf', 'allyOf', 'enemyOf'];
+    const typeMap: Record<string, EntityType> = {
+        political: 'political', organization: 'organization', religious: 'religious', magic: 'magic', science: 'science'
+    };
+    return (
+        <div className={`lg:col-span-3 p-4 rounded-xl border ${isWikiMode ? 'bg-[#fef9c3]/20 border-[#d4c8af]' : 'bg-slate-950/30 border-slate-800'}`}>
+            <h4 className="text-[9px] font-black uppercase text-slate-500 mb-4 border-b pb-1">{label}</h4>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                {roles.map(r => (
+                    <SmartSelect key={r} isWikiMode={isWikiMode} all={allEntities} label={r.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())} ids={entity.groupConnections[roleKey][r]} type={typeMap[roleKey]} onChange={(ids: string[]) => onUpdate({ ...entity, groupConnections: { ...entity.groupConnections, [roleKey]: { ...entity.groupConnections[roleKey], [r]: ids } } })} onCreate={onCreateNew} />
+                ))}
             </div>
         </div>
     );
+};
 
-    const GroupRoleGroup = ({ label, roleKey }: any) => {
-        const roles = ['leadingFigureOf', 'connectedTo', 'memberOf', 'allyOf', 'enemyOf'];
-        const typeMap: Record<string, EntityType> = {
-            political: 'political', organization: 'organization', religious: 'religious', magic: 'magic', science: 'science'
-        };
-        return (
-            <div className={`lg:col-span-3 p-4 rounded-xl border ${isWikiMode ? 'bg-[#fef9c3]/20 border-[#d4c8af]' : 'bg-slate-950/30 border-slate-800'}`}>
-                <h4 className="text-[9px] font-black uppercase text-slate-500 mb-4 border-b pb-1">{label}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                    {roles.map(r => (
-                        <SmartSelect key={r} isWikiMode={isWikiMode} all={allEntities} label={r.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())} ids={entity.groupConnections[roleKey][r]} type={typeMap[roleKey]} onChange={(ids: string[]) => onUpdate({...entity, groupConnections: {...entity.groupConnections, [roleKey]: {...entity.groupConnections[roleKey], [r]: ids}}})} onCreate={onCreateNew} />
-                    ))}
-                </div>
-            </div>
-        );
-    };
-
+const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWikiMode, onUpdate }: any) => {
     return (
         <div className="max-w-6xl mx-auto pb-40">
             <header className="flex justify-between items-center mb-10">
@@ -243,111 +248,113 @@ const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWi
                 </div>
             </header>
 
-            <EditorGroup title="Document Settings" icon={Settings}>
+            <EditorGroup title="Document Settings" icon={Settings} isWikiMode={isWikiMode}>
                 <div className="lg:col-span-2">
-                    <FormInput label="Name" value={entity.name} onChange={(v: string) => onUpdate({...entity, name: v})} isWikiMode={isWikiMode} />
+                    <FormInput label="Name" value={entity.name} onChange={(v: string) => onUpdate({ ...entity, name: v })} isWikiMode={isWikiMode} />
                 </div>
-                <FormInput label="Belongs Under" value={entity.belongsUnderId} onChange={(v: string) => onUpdate({...entity, belongsUnderId: v})} isWikiMode={isWikiMode} />
-                <FormInput label="Text Color" value={entity.textColor} type="color" onChange={(v: string) => onUpdate({...entity, textColor: v})} isWikiMode={isWikiMode} />
-                <FormInput label="Background Color" value={entity.backgroundColor} type="color" onChange={(v: string) => onUpdate({...entity, backgroundColor: v})} isWikiMode={isWikiMode} />
+                <FormInput label="Belongs Under" value={entity.belongsUnderId} onChange={(v: string) => onUpdate({ ...entity, belongsUnderId: v })} isWikiMode={isWikiMode} />
+                <FormInput label="Text Color" value={entity.textColor} type="color" onChange={(v: string) => onUpdate({ ...entity, textColor: v })} isWikiMode={isWikiMode} />
+                <FormInput label="Background Color" value={entity.backgroundColor} type="color" onChange={(v: string) => onUpdate({ ...entity, backgroundColor: v })} isWikiMode={isWikiMode} />
                 <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-2 border-t border-b py-3 my-2 border-slate-500/10">
-                    <FormToggle label="Read-only mode" value={entity.isReadOnly} onChange={(v: boolean) => onUpdate({...entity, isReadOnly: v})} isWikiMode={isWikiMode} />
-                    <FormToggle label="Minor document" value={entity.isMinorDocument} onChange={(v: boolean) => onUpdate({...entity, isMinorDocument: v})} isWikiMode={isWikiMode} />
-                    <FormToggle label="Dead/Gone/Destroyed" value={entity.isDead} onChange={(v: boolean) => onUpdate({...entity, isDead: v})} isWikiMode={isWikiMode} />
-                    <FormToggle label="Category" value={entity.isCategory} onChange={(v: boolean) => onUpdate({...entity, isCategory: v})} isWikiMode={isWikiMode} />
+                    <FormToggle label="Read-only mode" value={entity.isReadOnly} onChange={(v: boolean) => onUpdate({ ...entity, isReadOnly: v })} isWikiMode={isWikiMode} />
+                    <FormToggle label="Minor document" value={entity.isMinorDocument} onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v })} isWikiMode={isWikiMode} />
+                    <FormToggle label="Dead/Gone/Destroyed" value={entity.isDead} onChange={(v: boolean) => onUpdate({ ...entity, isDead: v })} isWikiMode={isWikiMode} />
+                    <FormToggle label="Category" value={entity.isCategory} onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v })} isWikiMode={isWikiMode} />
                 </div>
                 <div className="lg:col-span-2">
-                    <FormInput label="Tags" value={entity.tags?.join(', ')} onChange={(v: string) => onUpdate({...entity, tags: v.split(',').map(s => s.trim())})} isWikiMode={isWikiMode} />
+                    <FormInput label="Tags" value={entity.tags?.join(', ')} onChange={(v: string) => onUpdate({ ...entity, tags: v.split(',').map(s => s.trim()) })} isWikiMode={isWikiMode} />
                 </div>
-                <FormInput label="Other Names" value={entity.otherNames} onChange={(v: string) => onUpdate({...entity, otherNames: v})} isWikiMode={isWikiMode} />
+                <FormInput label="Other Names" value={entity.otherNames} onChange={(v: string) => onUpdate({ ...entity, otherNames: v })} isWikiMode={isWikiMode} />
             </EditorGroup>
 
             {entity.type === 'character' && (
                 <>
-                    <EditorGroup title="Basic Information" icon={Info}>
-                        <FormInput label="Titles" value={entity.titles} onChange={(v: string) => onUpdate({...entity, titles: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Sex" value={entity.sex} onChange={(v: string) => onUpdate({...entity, sex: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Other" value={entity.otherBasicInfo} onChange={(v: string) => onUpdate({...entity, otherBasicInfo: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Age" value={entity.age} onChange={(v: string) => onUpdate({...entity, age: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Height" value={entity.height} onChange={(v: string) => onUpdate({...entity, height: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Weight" value={entity.weight} onChange={(v: string) => onUpdate({...entity, weight: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Date of birth" value={entity.dateOfBirth} onChange={(v: string) => onUpdate({...entity, dateOfBirth: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Date of death" value={entity.dateOfDeath} onChange={(v: string) => onUpdate({...entity, dateOfDeath: v})} isWikiMode={isWikiMode} />
-                        <SmartSelect label="Species/Races" ids={entity.speciesIds} type="species" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, speciesIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Occupation/Class" ids={entity.occupationIds} type="occupation" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, occupationIds: ids})} onCreate={onCreateNew} />
-                        <FormInput label="Ethnicity" value={entity.ethnicity} onChange={(v: string) => onUpdate({...entity, ethnicity: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Combat rating" value={entity.combatRating} onChange={(v: string) => onUpdate({...entity, combatRating: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Place of residence" value={entity.placeOfResidenceId} onChange={(v: string) => onUpdate({...entity, placeOfResidenceId: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Place of origin" value={entity.placeOfOriginId} onChange={(v: string) => onUpdate({...entity, placeOfOriginId: v})} isWikiMode={isWikiMode} />
-                        <FormInput label="Place of demise" value={entity.placeOfDemiseId} onChange={(v: string) => onUpdate({...entity, placeOfDemiseId: v})} isWikiMode={isWikiMode} />
-                        <SmartSelect label="Affected by Boons" ids={entity.affectedByBoonsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, affectedByBoonsIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Affected by Afflictions" ids={entity.affectedByAfflictionsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, affectedByAfflictionsIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Affected by Other conditions" ids={entity.affectedByOtherConditionsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, affectedByOtherConditionsIds: ids})} onCreate={onCreateNew} />
+                    <EditorGroup title="Basic Information" icon={Info} isWikiMode={isWikiMode}>
+                        <FormInput label="Titles" value={entity.titles} onChange={(v: string) => onUpdate({ ...entity, titles: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Sex" value={entity.sex} onChange={(v: string) => onUpdate({ ...entity, sex: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Other" value={entity.otherBasicInfo} onChange={(v: string) => onUpdate({ ...entity, otherBasicInfo: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Age" value={entity.age} onChange={(v: string) => onUpdate({ ...entity, age: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Height" value={entity.height} onChange={(v: string) => onUpdate({ ...entity, height: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Weight" value={entity.weight} onChange={(v: string) => onUpdate({ ...entity, weight: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Date of birth" value={entity.dateOfBirth} onChange={(v: string) => onUpdate({ ...entity, dateOfBirth: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Date of death" value={entity.dateOfDeath} onChange={(v: string) => onUpdate({ ...entity, dateOfDeath: v })} isWikiMode={isWikiMode} />
+                        <SmartSelect label="Species/Races" ids={entity.speciesIds} type="species" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, speciesIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Occupation/Class" ids={entity.occupationIds} type="occupation" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, occupationIds: ids })} onCreate={onCreateNew} />
+                        <FormInput label="Ethnicity" value={entity.ethnicity} onChange={(v: string) => onUpdate({ ...entity, ethnicity: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Combat rating" value={entity.combatRating} onChange={(v: string) => onUpdate({ ...entity, combatRating: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Place of residence" value={entity.placeOfResidenceId} onChange={(v: string) => onUpdate({ ...entity, placeOfResidenceId: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Place of origin" value={entity.placeOfOriginId} onChange={(v: string) => onUpdate({ ...entity, placeOfOriginId: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Place of demise" value={entity.placeOfDemiseId} onChange={(v: string) => onUpdate({ ...entity, placeOfDemiseId: v })} isWikiMode={isWikiMode} />
+                        <SmartSelect label="Affected by Boons" ids={entity.affectedByBoonsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, affectedByBoonsIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Affected by Afflictions" ids={entity.affectedByAfflictionsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, affectedByAfflictionsIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Affected by Other conditions" ids={entity.affectedByOtherConditionsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, affectedByOtherConditionsIds: ids })} onCreate={onCreateNew} />
                     </EditorGroup>
 
-                    <EditorGroup title="Description & History" icon={BookOpen}>
+                    <EditorGroup title="Description & History" icon={BookOpen} isWikiMode={isWikiMode}>
                         <div className="lg:col-span-3 space-y-1">
                             <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Description Summary</label>
-                            <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-48 outline-none resize-none text-base`} value={entity.description} onChange={e => onUpdate({...entity, description: e.target.value})} />
+                            <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-48 outline-none resize-none text-base`} value={entity.description} onChange={e => onUpdate({ ...entity, description: e.target.value })} />
                         </div>
                         <div className="lg:col-span-3">
-                            <FormInput label="Traits & Characteristics" value={entity.traitsAndCharacteristics} onChange={(v: string) => onUpdate({...entity, traitsAndCharacteristics: v})} isWikiMode={isWikiMode} />
+                            <FormInput label="Traits & Characteristics" value={entity.traitsAndCharacteristics} onChange={(v: string) => onUpdate({ ...entity, traitsAndCharacteristics: v })} isWikiMode={isWikiMode} />
                         </div>
                         <div className="lg:col-span-3">
-                            <FormInput label="Unique/Unusual Features" value={entity.unusualFeatures} onChange={(v: string) => onUpdate({...entity, unusualFeatures: v})} isWikiMode={isWikiMode} />
+                            <FormInput label="Unique/Unusual Features" value={entity.unusualFeatures} onChange={(v: string) => onUpdate({ ...entity, unusualFeatures: v })} isWikiMode={isWikiMode} />
                         </div>
-                        <div className="lg:col-span-3 grid grid-cols-4 gap-4 p-4 rounded-xl border border-slate-500/10">
-                            <h4 className="col-span-4 text-[9px] font-black uppercase text-slate-500 border-b pb-1">Stats/Attributes</h4>
-                            <FormInput label="test" value={entity.stats?.test} onChange={(v: string) => onUpdate({...entity, stats: {...entity.stats, test: v}})} isWikiMode={isWikiMode} />
-                            <FormInput label="Wisdom" value={entity.stats?.wisdom} onChange={(v: string) => onUpdate({...entity, stats: {...entity.stats, wisdom: v}})} isWikiMode={isWikiMode} />
-                            <FormInput label="Stat/Attribute" value={entity.stats?.attribute} onChange={(v: string) => onUpdate({...entity, stats: {...entity.stats, attribute: v}})} isWikiMode={isWikiMode} />
-                            <FormInput label="Messed up" value={entity.stats?.messedUp} onChange={(v: string) => onUpdate({...entity, stats: {...entity.stats, messedUp: v}})} isWikiMode={isWikiMode} />
+                        <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-6 gap-4 p-4 rounded-xl border border-slate-500/10">
+                            <h4 className="col-span-2 lg:col-span-6 text-[9px] font-black uppercase text-slate-500 border-b pb-1">Stats/Attributes</h4>
+                            <FormInput label="STR" value={entity.stats?.strength} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, strength: v } })} isWikiMode={isWikiMode} />
+                            <FormInput label="DEX" value={entity.stats?.dexterity} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, dexterity: v } })} isWikiMode={isWikiMode} />
+                            <FormInput label="CON" value={entity.stats?.constitution} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, constitution: v } })} isWikiMode={isWikiMode} />
+                            <FormInput label="INT" value={entity.stats?.intelligence} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, intelligence: v } })} isWikiMode={isWikiMode} />
+                            <FormInput label="WIS" value={entity.stats?.wisdom} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, wisdom: v } })} isWikiMode={isWikiMode} />
+                            <FormInput label="CHA" value={entity.stats?.charisma} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, charisma: v } })} isWikiMode={isWikiMode} />
                         </div>
-                        <div className="lg:col-span-3"><FormInput label="Equipment/Owned Items" value={entity.equipment} onChange={(v: string) => onUpdate({...entity, equipment: v})} isWikiMode={isWikiMode} /></div>
-                        <div className="lg:col-span-3"><FormInput label="Wealth/Owned Currencies" value={entity.wealth} onChange={(v: string) => onUpdate({...entity, wealth: v})} isWikiMode={isWikiMode} /></div>
-                        <SmartSelect label="Known Skills/Abilities" ids={entity.skillIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, skillIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Known Spells" ids={entity.spellIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, spellIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Known Languages" ids={entity.languageIds} type="language" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, languageIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Known Magical teachings" ids={entity.magicalTeachingIds} type="magic" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, magicalTeachingIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Known Technologies/Sciences" ids={entity.technologyIds} type="science" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, technologyIds: ids})} onCreate={onCreateNew} />
+                        <div className="lg:col-span-3"><FormInput label="Equipment/Owned Items" value={entity.equipment} onChange={(v: string) => onUpdate({ ...entity, equipment: v })} isWikiMode={isWikiMode} /></div>
+                        <div className="lg:col-span-3"><FormInput label="Wealth/Owned Currencies" value={entity.wealth} onChange={(v: string) => onUpdate({ ...entity, wealth: v })} isWikiMode={isWikiMode} /></div>
+                        <SmartSelect label="Known Skills/Abilities" ids={entity.skillIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, skillIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Known Spells" ids={entity.spellIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, spellIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Known Languages" ids={entity.languageIds} type="language" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, languageIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Known Magical teachings" ids={entity.magicalTeachingIds} type="magic" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, magicalTeachingIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Known Technologies/Sciences" ids={entity.technologyIds} type="science" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, technologyIds: ids })} onCreate={onCreateNew} />
                     </EditorGroup>
 
-                    <EditorGroup title="Relationships" icon={Heart}>
-                        <SmartSelect label="Parents of the Character" ids={entity.parentIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, parentIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Children of the Character" ids={entity.childrenIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, childrenIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Other relatives of the Character" ids={entity.relativeIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, relativeIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Friends/Allies" ids={entity.friendIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, friendIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Enemies" ids={entity.enemyIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, enemyIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Complicated relationship with" ids={entity.complicatedWithIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, complicatedWithIds: ids})} onCreate={onCreateNew} />
+                    <EditorGroup title="Relationships" icon={Heart} isWikiMode={isWikiMode}>
+                        <SmartSelect label="Parents of the Character" ids={entity.parentIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, parentIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Children of the Character" ids={entity.childrenIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, childrenIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Other relatives of the Character" ids={entity.relativeIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, relativeIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Friends/Allies" ids={entity.friendIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, friendIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Enemies" ids={entity.enemyIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, enemyIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Complicated relationship with" ids={entity.complicatedWithIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, complicatedWithIds: ids })} onCreate={onCreateNew} />
                     </EditorGroup>
 
-                    <EditorGroup title="Story/Lore & World Connections" icon={Globe}>
-                        <SmartSelect label="Lore notes/Other notes" ids={entity.loreNoteIds} type="note" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, loreNoteIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Myths, legends and stories" ids={entity.mythIds} type="myth" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, mythIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Took part in Events" ids={entity.eventIds} type="event" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, eventIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Connected to Locations" ids={entity.locationIds} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, locationIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Connected to Languages" ids={entity.languageIds} type="language" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, languageIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Connected Cultures/Art" ids={entity.cultureIds} type="culture" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, cultureIds: ids})} onCreate={onCreateNew} />
+                    <EditorGroup title="Story/Lore & World Connections" icon={Globe} isWikiMode={isWikiMode}>
+                        <SmartSelect label="Lore notes/Other notes" ids={entity.loreNoteIds} type="note" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, loreNoteIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Myths, legends and stories" ids={entity.mythIds} type="myth" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, mythIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Took part in Events" ids={entity.eventIds} type="event" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, eventIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Connected to Locations" ids={entity.locationIds} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, locationIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Connected to Languages" ids={entity.languageIds} type="language" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, languageIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Connected Cultures/Art" ids={entity.cultureIds} type="culture" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, cultureIds: ids })} onCreate={onCreateNew} />
                     </EditorGroup>
 
-                    <EditorGroup title="Groups/Teachings Connections" icon={Swords}>
-                        <GroupRoleGroup label="Ideologies/Political groups" roleKey="political" />
-                        <GroupRoleGroup label="Organizations/Other groups" roleKey="organization" />
-                        <GroupRoleGroup label="Teachings/Religious groups" roleKey="religious" />
-                        <GroupRoleGroup label="Schools of Magic/Magical groups" roleKey="magic" />
-                        <GroupRoleGroup label="Sciences/Technological groups" roleKey="science" />
+                    <EditorGroup title="Groups/Teachings Connections" icon={Swords} isWikiMode={isWikiMode}>
+                        <GroupRoleGroup label="Ideologies/Political groups" roleKey="political" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
+                        <GroupRoleGroup label="Organizations/Other groups" roleKey="organization" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
+                        <GroupRoleGroup label="Teachings/Religious groups" roleKey="religious" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
+                        <GroupRoleGroup label="Schools of Magic/Magical groups" roleKey="magic" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
+                        <GroupRoleGroup label="Sciences/Technological groups" roleKey="science" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
                     </EditorGroup>
 
-                    <EditorGroup title="Details Connections" icon={Scroll}>
-                        <SmartSelect label="Skills/Spells/Other" ids={entity.detailSkillIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, detailSkillIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Connected to Items" ids={entity.detailItemIds} type="item" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, detailItemIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Afflictions/Boons/Conditions" ids={entity.detailConditionIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, detailConditionIds: ids})} onCreate={onCreateNew} />
-                        <SmartSelect label="Resources/Materials" ids={entity.detailResourceIds} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({...entity, detailResourceIds: ids})} onCreate={onCreateNew} />
+                    <EditorGroup title="Details Connections" icon={Scroll} isWikiMode={isWikiMode}>
+                        <SmartSelect label="Skills/Spells/Other" ids={entity.detailSkillIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, detailSkillIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Connected to Items" ids={entity.detailItemIds} type="item" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, detailItemIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Afflictions/Boons/Conditions" ids={entity.detailConditionIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Resources/Materials" ids={entity.detailResourceIds} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, detailResourceIds: ids })} onCreate={onCreateNew} />
                     </EditorGroup>
 
-                    <EditorGroup title="Secrets/Spoilers/DM notes" icon={Ghost}>
-                         <div className="lg:col-span-3">
-                            <textarea className={`w-full ${isWikiMode ? 'bg-[#fff5f5] border-rose-200 text-rose-900' : 'bg-slate-950 border-rose-900/30 text-rose-300'} border rounded-xl px-4 py-3 h-48 outline-none font-mono text-sm`} value={entity.privateNotes} onChange={e => onUpdate({...entity, privateNotes: e.target.value})} />
+                    <EditorGroup title="Secrets/Spoilers/DM notes" icon={Ghost} isWikiMode={isWikiMode}>
+                        <div className="lg:col-span-3">
+                            <textarea className={`w-full ${isWikiMode ? 'bg-[#fff5f5] border-rose-200 text-rose-900' : 'bg-slate-950 border-rose-900/30 text-rose-300'} border rounded-xl px-4 py-3 h-48 outline-none font-mono text-sm`} value={entity.privateNotes} onChange={e => onUpdate({ ...entity, privateNotes: e.target.value })} />
                         </div>
                     </EditorGroup>
                 </>
@@ -356,122 +363,159 @@ const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWi
     );
 };
 
-const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, isWikiMode }: any) => {
-    const isChar = entity.type === 'character';
-    const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    
-    // Header for Codex mode
-    const CodexHeader = () => (
-        <header className="border-b border-slate-800/80 pb-12 flex justify-between items-end mb-12">
-            <div>
-                <div className="flex items-center gap-3 text-[#fef08a] mb-4 uppercase tracking-[0.4em] font-black text-[10px]"><Scroll size={14} /> Record Entry</div>
-                <h1 className="text-[7rem] font-serif font-black text-white tracking-tighter uppercase leading-[0.8] mb-4">{entity.name}</h1>
-                {entity.otherNames && <p className="text-slate-500 text-3xl font-serif italic opacity-60">"{entity.otherNames}"</p>}
-            </div>
-            <div className="flex gap-4">
-                <button onClick={onEdit} className="bg-[#fef08a] text-slate-950 px-8 py-4 rounded-xl font-black text-[11px] uppercase tracking-widest hover:scale-105 transition-all">Edit Scroll</button>
-                <button onClick={onDelete} className="p-4 text-rose-500 hover:bg-rose-500/10 rounded-full transition-all"><Trash2 size={24} /></button>
-            </div>
-        </header>
-    );
+// --- Viewer Sub-components (Moved outside for stability) ---
 
-    // Header for Wiki mode
-    const WikiHeader = () => (
-        <header className="border-b-4 border-[#b91c1c] pb-2 flex justify-between items-end mb-10">
-            <div>
-                <h1 className="text-6xl font-serif font-bold text-[#b91c1c] uppercase tracking-tight leading-none">{entity.name}</h1>
-                {entity.otherNames && <p className="text-[#854d0e] text-lg font-serif italic mt-1">"{entity.otherNames}"</p>}
-            </div>
-            <div className="flex gap-3 pb-2">
-                <button onClick={onEdit} className="p-2 hover:bg-black/5 rounded text-slate-500" title="Edit"><Save size={20} /></button>
-                <button onClick={onDelete} className="p-2 hover:bg-rose-500/10 rounded text-rose-700" title="Trash"><Trash2 size={20} /></button>
-            </div>
-        </header>
-    );
+const CodexHeader = ({ entity, onEdit, onDelete }: any) => (
+    <header className="border-b border-slate-800/80 pb-12 flex justify-between items-end mb-12">
+        <div>
+            <div className="flex items-center gap-3 text-[#fef08a] mb-4 uppercase tracking-[0.4em] font-black text-[10px]"><Scroll size={14} /> Record Entry</div>
+            <h1 className="text-[7rem] font-serif font-black text-white tracking-tighter uppercase leading-[0.8] mb-4">{entity.name}</h1>
+            {entity.otherNames && <p className="text-slate-500 text-3xl font-serif italic opacity-60">"{entity.otherNames}"</p>}
+        </div>
+        <div className="flex gap-4">
+            <button onClick={onEdit} className="bg-[#fef08a] text-slate-950 px-8 py-4 rounded-xl font-black text-[11px] uppercase tracking-widest hover:scale-105 transition-all">Edit Scroll</button>
+            <button onClick={onDelete} className="p-4 text-rose-500 hover:bg-rose-500/10 rounded-full transition-all"><Trash2 size={24} /></button>
+        </div>
+    </header>
+);
 
-    // "Goblin" Style Stat Block for Characters in Wiki Mode
-    const CharacterStatBlock = () => {
-        const char = entity as Character;
-        const subtitle = [
-            char.sex,
-            char.ethnicity,
-            char.speciesIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).join(', '),
-            char.occupationIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).join(', '),
-            char.isDead ? 'deceased' : 'living'
-        ].filter(Boolean).join(' ');
+const WikiHeader = ({ entity, onEdit, onDelete }: any) => (
+    <header className="border-b-4 border-[#b91c1c] pb-2 flex justify-between items-end mb-10">
+        <div>
+            <h1 className="text-6xl font-serif font-bold text-[#b91c1c] uppercase tracking-tight leading-none">{entity.name}</h1>
+            {entity.otherNames && <p className="text-[#854d0e] text-lg font-serif italic mt-1">"{entity.otherNames}"</p>}
+        </div>
+        <div className="flex gap-3 pb-2">
+            <button onClick={onEdit} className="p-2 hover:bg-black/5 rounded text-slate-500" title="Edit"><Save size={20} /></button>
+            <button onClick={onDelete} className="p-2 hover:bg-rose-500/10 rounded text-rose-700" title="Trash"><Trash2 size={20} /></button>
+        </div>
+    </header>
+);
 
-        return (
-            <div className="bg-[#fdfcf0] p-6 border-t-8 border-b-8 border-[#7a200d] space-y-2 shadow-inner font-sans select-text">
+const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName = false }: any) => {
+    const char = entity as Character;
+    const speciesNames = char.speciesIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const occupationNames = char.occupationIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+
+    const subtitle = [
+        char.sex,
+        char.ethnicity,
+        speciesNames,
+        occupationNames,
+        char.isDead ? 'deceased' : 'living'
+    ].filter(Boolean).join(' ');
+
+    return (
+        <div className={`bg-[#fdfcf0] ${hideName ? 'p-4' : 'p-6'} border-t-8 border-b-8 border-[#7a200d] space-y-2 shadow-inner font-sans select-text`}>
+            {!hideName && (
                 <div className="border-b-2 border-[#7a200d] pb-1">
                     <h2 className="text-4xl font-serif font-bold text-[#7a200d] uppercase leading-none tracking-tight">{char.name}</h2>
                     <p className="text-sm italic text-[#2d2d2d] mt-1">{subtitle}</p>
                 </div>
-                
-                <TaperedDivider />
+            )}
+            {hideName && (
+                <div className="border-b border-[#7a200d]/40 pb-1 mb-2">
+                    <p className="text-[10px] uppercase font-bold text-[#7a200d]">{char.isDead ? 'Status: Deceased' : 'Status: Living'}</p>
+                </div>
+            )}
 
+            <TaperedDivider />
+
+            <div className="space-y-1">
                 <div className="space-y-1">
+                    <WikiStatRow label="Sex" value={char.sex} />
+                    <WikiStatRow label="Ethnicity" value={char.ethnicity} />
+                    <WikiStatRow label="Species" value={speciesNames} />
+                    <WikiStatRow label="Occupation" value={occupationNames} />
                     <WikiStatRow label="Age" value={char.age} />
                     <WikiStatRow label="Hit Points" value={char.combatRating ? `${char.combatRating} (estimated)` : null} />
                     <WikiStatRow label="Height / Weight" value={char.height && char.weight ? `${char.height} / ${char.weight}` : (char.height || char.weight)} />
                     <WikiStatRow label="Titles" value={char.titles} />
-                </div>
-
-                <TaperedDivider />
-
-                <div className="flex justify-between py-2 text-center">
-                    <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">WIS</span><span className="text-sm">{char.stats?.wisdom || '10 (+0)'}</span></div>
-                    <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">TST</span><span className="text-sm">{char.stats?.test || '10 (+0)'}</span></div>
-                    <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">ATR</span><span className="text-sm">{char.stats?.attribute || '10 (+0)'}</span></div>
-                    <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">MSP</span><span className="text-sm">{char.stats?.messedUp || '10 (+0)'}</span></div>
-                </div>
-
-                <TaperedDivider />
-
-                <div className="space-y-1">
-                    <WikiStatRow label="Traits" value={char.traitsAndCharacteristics} />
-                    <WikiStatRow label="Features" value={char.unusualFeatures} />
-                    <LinksDisplay label="Skills" ids={char.skillIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <LinksDisplay label="Spells" ids={char.spellIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <LinksDisplay label="Languages" ids={char.languageIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <WikiStatRow label="Equipment" value={char.equipment} />
-                    <WikiStatRow label="Wealth" value={char.wealth} />
-                </div>
-
-                <TaperedDivider />
-
-                <div className="pt-2">
-                    <h4 className="font-bold text-[#7a200d] text-lg border-b border-[#d4c8af] mb-2 uppercase tracking-tight">Biography</h4>
-                    <p className="text-sm text-[#2d2d2d] leading-relaxed whitespace-pre-wrap italic">{char.description || "Historical data missing."}</p>
+                    <WikiStatRow label="Birth" value={char.dateOfBirth} />
+                    <WikiStatRow label="Death" value={char.dateOfDeath} />
+                    <WikiStatRow label="Origin" value={allEntities.find(e => e.id === char.placeOfOriginId)?.name} />
+                    <WikiStatRow label="Residence" value={char.placeOfResidenceId} />
+                    <WikiStatRow label="Place of Demise" value={char.placeOfDemiseId} />
                 </div>
             </div>
-        );
-    };
 
-    // "Aris" Style Infobox for Locations/Entities in Wiki Mode
-    const WikiInfobox = () => (
+            <TaperedDivider />
+
+            <div className="grid grid-cols-3 gap-y-2 py-2 text-center">
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">STR</span><span className="text-sm">{char.stats?.strength || '10 (+0)'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">DEX</span><span className="text-sm">{char.stats?.dexterity || '10 (+0)'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">CON</span><span className="text-sm">{char.stats?.constitution || '10 (+0)'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">INT</span><span className="text-sm">{char.stats?.intelligence || '10 (+0)'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">WIS</span><span className="text-sm">{char.stats?.wisdom || '10 (+0)'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">CHA</span><span className="text-sm">{char.stats?.charisma || '10 (+0)'}</span></div>
+            </div>
+
+            <TaperedDivider />
+
+            <div className="space-y-1">
+                <WikiStatRow label="Traits" value={char.traitsAndCharacteristics} />
+                <WikiStatRow label="Features" value={char.unusualFeatures} />
+                <LinksDisplay label="Skills" ids={char.skillIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Spells" ids={char.spellIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Languages" ids={char.languageIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <WikiStatRow label="Equipment" value={char.equipment} />
+                <WikiStatRow label="Wealth" value={char.wealth} />
+            </div>
+        </div>
+    );
+};
+
+const WikiInfobox = ({ entity, allEntities, onNavigate }: any) => {
+    const isChar = entity.type === 'character';
+    const originEntity = allEntities.find((e: any) => e.id === (entity as any).placeOfOriginId);
+
+    return (
         <aside className="lg:w-80 shrink-0 space-y-6">
             <div className="bg-[#fefce8] border-2 border-[#d4c8af] rounded shadow-md overflow-hidden">
                 <div className="bg-[#fef9c3] p-2 text-center border-b-2 border-[#d4c8af]">
                     <h3 className="font-serif font-bold text-xl uppercase tracking-tighter text-[#1a1a1a]">{entity.name}</h3>
                 </div>
+
                 {/* Image Placeholder */}
-                <div className="h-48 bg-[#ccc5a8] flex items-center justify-center border-b border-[#d4c8af] overflow-hidden grayscale contrast-75">
-                    {isChar ? <Users size={100} className="text-[#a89d7d]" /> : <Globe size={100} className="text-[#a89d7d]" />}
+                <div className="h-56 bg-[#ccc5a8] flex items-center justify-center border-b border-[#d4c8af] overflow-hidden grayscale contrast-75 relative">
+                    {isChar ? <Users size={120} className="text-[#a89d7d]" /> : <Globe size={120} className="text-[#a89d7d]" />}
+                    <div className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm">
+                        <Maximize2 size={14} className="text-white/60" />
+                    </div>
                 </div>
+
+                <div className="p-3 border-b border-[#d4c8af] flex justify-center items-center gap-2">
+                    <Eye size={14} className="text-[#b91c1c]" />
+                    <button className="text-[10px] font-black text-[#b91c1c] uppercase tracking-widest hover:underline">Show to Players</button>
+                    <div className="w-1 h-1 rounded-full bg-[#d4c8af]" />
+                    <button className="text-[10px] font-black text-[#854d0e] uppercase tracking-widest hover:underline">Version History</button>
+                </div>
+
                 <div className="p-0">
-                    <h4 className="bg-[#f5e6d3] p-2 text-center text-[11px] font-black text-[#854d0e] uppercase tracking-widest border-b border-[#d4c8af]">Data Sheet</h4>
-                    <table className="w-full text-xs text-left border-collapse">
+                    <h4 className="bg-[#f5e6d3] p-2 text-center text-[11px] font-black text-[#854d0e] uppercase tracking-widest border-b border-[#d4c8af]">Geography</h4>
+                    <table className="w-full text-[11px] text-left border-collapse">
                         <tbody>
-                            <WikiInfoboxRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} />
-                            <WikiInfoboxRow label="Origin" value={(entity as any).placeOfOriginId} />
-                            <WikiInfoboxRow label="Created" value={entity.lastModified ? new Date(entity.lastModified).toLocaleDateString() : undefined} />
+                            <WikiInfoboxRow label="Type" value={TYPE_LABELS[entity.type] || entity.type} />
                             <WikiInfoboxRow label="Tags" value={entity.tags?.join(', ')} />
                         </tbody>
                     </table>
                 </div>
+
+                <div className="p-0 border-t border-[#d4c8af]">
+                    <h4 className="bg-[#f5e6d3] p-2 text-center text-[11px] font-black text-[#854d0e] uppercase tracking-widest border-b border-[#d4c8af]">Travel Information</h4>
+                    <div className="p-3 space-y-2">
+                        <div className="flex justify-between text-[10px]">
+                            <span className="text-[#854d0e] font-bold uppercase">Coordinates</span>
+                            <span className="font-mono text-slate-500">{entity.coordinates ? `${Math.round(entity.coordinates.x)}, ${Math.round(entity.coordinates.y)}` : 'Uncharted'}</span>
+                        </div>
+                        <div className="h-[1px] w-full bg-[#d4c8af]/40" />
+                        <div className="flex justify-center">
+                            <button className="text-[9px] font-black text-[#b91c1c] uppercase tracking-[0.2em] hover:opacity-70">Focus on Atlas View</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* Wiki connections list for non-char entities */}
             <div className="p-4 bg-white/50 border border-[#d4c8af] rounded space-y-4">
                 <h4 className="text-[10px] font-black text-[#854d0e] uppercase border-b border-[#d4c8af] pb-1">Relations</h4>
                 <div className="space-y-4">
@@ -481,46 +525,66 @@ const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, isWik
             </div>
         </aside>
     );
+};
+
+const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, isWikiMode }: any) => {
+    const isChar = entity.type === 'character';
 
     const MainView = () => (
-        <div className="flex flex-col lg:flex-row gap-12">
+        <div className={`flex ${isWikiMode ? 'flex-row gap-12' : 'flex-col lg:flex-row gap-12'}`}>
             <div className="flex-1 space-y-12">
-                {isWikiMode && isChar ? (
-                    <CharacterStatBlock />
-                ) : (
-                    <>
-                        <section className={`${isWikiMode ? 'border-l-4 border-[#7a200d] pl-8 py-4 bg-[#fdfcf0]' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}`}>
-                            <h2 className={`text-3xl font-serif font-bold ${isWikiMode ? 'text-[#7a200d]' : 'text-[#fef08a]'} mb-6 uppercase tracking-tight`}>Overview</h2>
-                            <p className={`text-lg leading-relaxed font-light ${isWikiMode ? 'text-[#2d2d2d]' : 'text-slate-300'} whitespace-pre-wrap`}>{entity.description || "The entry is currently silent."}</p>
-                        </section>
+                <section className={`${isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}`}>
+                    <h2 className={`text-4xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28]' : 'text-[#fef08a]'} mb-2 uppercase tracking-tight`}>Overview</h2>
+                    {isWikiMode && <div className="h-[2px] w-full bg-[#e69a28] mb-6" />}
+                    <p className={`text-lg leading-relaxed ${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.description || "The entry is currently silent."}</p>
+                </section>
 
-                        {!isWikiMode && (
-                            <div className="space-y-8">
-                                <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                                    <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Vital Records</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                                        <FieldRow label="Titles" value={entity.titles} isWikiMode={false} />
-                                        <FieldRow label="Age" value={entity.age} isWikiMode={false} />
-                                        <FieldRow label="Sex" value={entity.sex} isWikiMode={false} />
-                                        <FieldRow label="Combat Rating" value={entity.combatRating} isWikiMode={false} />
-                                        <FieldRow label="Status" value={entity.isDead ? 'Lost' : 'Active'} isWikiMode={false} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </>
+                {isWikiMode && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <LinksDisplay label="Lore Connections" ids={(entity as any).loreNoteIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Mythic Roots" ids={(entity as any).mythIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Event Ties" ids={(entity as any).eventIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                    </div>
                 )}
-                
-                {/* Secondary details shared by both layouts if they exist */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <LinksDisplay label="Lore Connections" ids={(entity as any).loreNoteIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Mythic Roots" ids={(entity as any).mythIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Event Ties" ids={(entity as any).eventIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                </div>
+
+                {!isWikiMode && (
+                    <div className="space-y-8">
+                        <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
+                            <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Vital Records</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                                <FieldRow label="Titles" value={entity.titles} isWikiMode={false} />
+                                <FieldRow label="Sex" value={entity.sex} isWikiMode={false} />
+                                <FieldRow label="Ethnicity" value={(entity as any).ethnicity} isWikiMode={false} />
+                                <FieldRow label="Species" value={(entity as any).speciesIds?.map((id: string) => allEntities.find(e => e.id === id)?.name).filter(Boolean).join(', ')} isWikiMode={false} />
+                                <FieldRow label="Occupation" value={(entity as any).occupationIds?.map((id: string) => allEntities.find(e => e.id === id)?.name).filter(Boolean).join(', ')} isWikiMode={false} />
+                                <FieldRow label="Combat Rating" value={entity.combatRating} isWikiMode={false} />
+                                {/* Age and Status removed from here as they are in the 'Record Vitals' sidebar */}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            {isWikiMode && !isChar && <WikiInfobox />}
-            
+            {isWikiMode && (
+                <div className="lg:w-80 shrink-0">
+                    {isChar ? (
+                        <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} />
+                    ) : (
+                        <WikiInfobox entity={entity} allEntities={allEntities} onNavigate={onNavigate} />
+                    )}
+
+                    {isChar && (
+                        <div className="p-4 mt-6 bg-[#fcf5e9] border border-[#d4c8af]/60 rounded-sm">
+                            <h4 className="text-[10px] font-black text-[#854d0e] uppercase border-b border-[#d4c8af] pb-1 mb-3">Relations</h4>
+                            <div className="gap-1">
+                                <LinksDisplay label="Locations" ids={(entity as any).locationIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="tag" />
+                                <LinksDisplay label="Members" ids={(entity as any).memberOf} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="tag" />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
             {!isWikiMode && (
                 <aside className="lg:w-80 shrink-0 space-y-6">
                     <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10">
@@ -538,8 +602,12 @@ const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, isWik
     );
 
     return (
-        <div className="max-w-6xl mx-auto animate-in fade-in duration-700">
-            {isWikiMode ? <WikiHeader /> : <CodexHeader />}
+        <div className="max-w-6xl mx-auto shadow-2xl p-12 min-h-screen">
+            {isWikiMode ? (
+                <WikiHeader entity={entity} onEdit={onEdit} onDelete={onDelete} />
+            ) : (
+                <CodexHeader entity={entity} onEdit={onEdit} onDelete={onDelete} />
+            )}
             <MainView />
         </div>
     );
@@ -610,11 +678,11 @@ export default function App() {
     const handleSaveDraft = (id: string) => {
         const d = drafts[id];
         if (!d) return;
-        setWorld(prev => ({ ...prev, entities: prev.entities.map(e => e.id === id ? {...d, lastModified: Date.now()} : e) }));
+        setWorld(prev => ({ ...prev, entities: prev.entities.map(e => e.id === id ? { ...d, lastModified: Date.now() } : e) }));
         const nextEdit = new Set(editingTabIds);
         nextEdit.delete(id);
         setEditingTabIds(nextEdit);
-        setDrafts(p => { const next = {...p}; delete next[id]; return next; });
+        setDrafts(p => { const next = { ...p }; delete next[id]; return next; });
     };
 
     const handleToggleEdit = (id: string) => {
@@ -623,7 +691,7 @@ export default function App() {
         } else {
             const ent = world.entities.find(e => e.id === id);
             if (ent) {
-                setDrafts(p => ({ ...p, [id]: {...ent} }));
+                setDrafts(p => ({ ...p, [id]: { ...ent } }));
                 setEditingTabIds(p => new Set(p).add(id));
             }
         }
@@ -646,7 +714,7 @@ export default function App() {
             <aside className={`w-80 border-r ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/60'} flex flex-col ${sidebarBg} backdrop-blur-md z-20`}>
                 <div className={`p-6 border-b ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/60'}`}>
                     <h1 className={`text-xl font-serif font-bold ${accentText} tracking-widest flex items-center gap-2 uppercase mb-4`}>
-                        {isWikiMode ? <BookMarked size={22} /> : <Compass size={22} className="animate-pulse" />} 
+                        {isWikiMode ? <BookMarked size={22} /> : <Compass size={22} className="animate-pulse" />}
                         {isWikiMode ? 'ARCHIVE' : 'CHRONICLE'}
                     </h1>
                     <button onClick={() => setIsWikiMode(!isWikiMode)} className={`w-full py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-[10px] font-black tracking-widest border-2 transition-all mb-4 ${isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-slate-800/40 text-[#fef08a] border-slate-700 hover:border-[#fef08a]'}`}>
@@ -710,34 +778,34 @@ export default function App() {
                     {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} isWikiMode={isWikiMode} />}
                     {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} isWikiMode={isWikiMode} />}
                     {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} isWikiMode={isWikiMode} />}
-                    
+
                     {activeEntity && (
-                        editingTabIds.has(activeTabId as string) ? 
-                        <div className="p-10">
-                            <EntityEditor 
-                                entity={activeEntity} 
-                                allEntities={world.entities} 
-                                isWikiMode={isWikiMode} 
-                                onUpdate={(d: any) => setDrafts(p => ({ ...p, [activeTabId as string]: d }))}
-                                onSave={() => handleSaveDraft(activeTabId as string)} 
-                                onCancel={() => {
-                                    const nextEdit = new Set(editingTabIds);
-                                    nextEdit.delete(activeTabId as string);
-                                    setEditingTabIds(nextEdit);
-                                }} 
-                                onCreateNew={handleCreate} 
-                            />
-                        </div> :
-                        <div className="p-16">
-                            <EntityViewer 
-                                entity={activeEntity} 
-                                allEntities={world.entities} 
-                                onEdit={() => handleToggleEdit(activeTabId as string)} 
-                                onDelete={() => handleDeleteToTrash(activeEntity)} 
-                                onNavigate={handleOpenEntity}
-                                isWikiMode={isWikiMode}
-                            />
-                        </div>
+                        editingTabIds.has(activeTabId as string) ?
+                            <div className="p-10">
+                                <EntityEditor
+                                    entity={activeEntity}
+                                    allEntities={world.entities}
+                                    isWikiMode={isWikiMode}
+                                    onUpdate={(d: any) => setDrafts(p => ({ ...p, [activeTabId as string]: d }))}
+                                    onSave={() => handleSaveDraft(activeTabId as string)}
+                                    onCancel={() => {
+                                        const nextEdit = new Set(editingTabIds);
+                                        nextEdit.delete(activeTabId as string);
+                                        setEditingTabIds(nextEdit);
+                                    }}
+                                    onCreateNew={handleCreate}
+                                />
+                            </div> :
+                            <div className="p-16">
+                                <EntityViewer
+                                    entity={activeEntity}
+                                    allEntities={world.entities}
+                                    onEdit={() => handleToggleEdit(activeTabId as string)}
+                                    onDelete={() => handleDeleteToTrash(activeEntity)}
+                                    onNavigate={handleOpenEntity}
+                                    isWikiMode={isWikiMode}
+                                />
+                            </div>
                     )}
                 </div>
             </main>
@@ -761,8 +829,8 @@ function TrashView({ trash, setWorld, isWikiMode }: any) {
                             <p className="text-[10px] uppercase opacity-50">{TYPE_LABELS[e.type]}</p>
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={() => setWorld((p:any) => ({ ...p, trash: p.trash.filter((x:any)=>x.id!==e.id), entities: [...p.entities, e] }))} className="p-2 hover:bg-green-500/10 text-green-500 transition-all"><RefreshCw size={20} /></button>
-                            <button onClick={() => setWorld((p:any) => ({ ...p, trash: p.trash.filter((x:any)=>x.id!==e.id) }))} className="p-2 hover:bg-rose-500/10 text-rose-500 transition-all"><Trash size={20} /></button>
+                            <button onClick={() => setWorld((p: any) => ({ ...p, trash: p.trash.filter((x: any) => x.id !== e.id), entities: [...p.entities, e] }))} className="p-2 hover:bg-green-500/10 text-green-500 transition-all"><RefreshCw size={20} /></button>
+                            <button onClick={() => setWorld((p: any) => ({ ...p, trash: p.trash.filter((x: any) => x.id !== e.id) }))} className="p-2 hover:bg-rose-500/10 text-rose-500 transition-all"><Trash size={20} /></button>
                         </div>
                     </div>
                 ))}
@@ -802,7 +870,7 @@ const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: any) => {
         if (name) {
             const id = crypto.randomUUID();
             const newLoc = { id, name, type: 'location', description: "", coordinates: { x, y }, lastModified: Date.now(), tags: [] };
-            setWorld((p:any) => ({ ...p, entities: [...p.entities, newLoc] }));
+            setWorld((p: any) => ({ ...p, entities: [...p.entities, newLoc] }));
         }
     };
     const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
@@ -813,7 +881,7 @@ const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: any) => {
             </div>
             <div className={`flex-1 ${isWikiMode ? 'bg-[#f5e6d3]' : 'bg-slate-900'} rounded-[5rem] border-[16px] ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/40'} shadow-2xl relative overflow-hidden group cursor-crosshair`} onClick={addMarker}>
                 <img src={world.mapImage} className={`w-full h-full object-cover opacity-50 ${isWikiMode ? 'sepia-[.8]' : 'sepia-[.4]'} transition-transform duration-[120s] group-hover:scale-110`} />
-                {world.entities.filter((ent:any) => ent.coordinates).map((loc:any) => (
+                {world.entities.filter((ent: any) => ent.coordinates).map((loc: any) => (
                     <div key={loc.id} style={{ left: `${loc.coordinates.x}%`, top: `${loc.coordinates.y}%` }}
                         className="absolute -translate-x-1/2 -translate-y-1/2 group/marker z-10"
                         onClick={(e) => { e.stopPropagation(); onNavigate(loc.id); }}>
@@ -829,3 +897,4 @@ const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: any) => {
         </div>
     );
 };
+
