@@ -29,18 +29,47 @@ const HIERARCHY_CONFIG = [
 
 // --- Form Components ---
 
-const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode }: any) => (
-    <div className="space-y-1">
-        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</label>
-        <input
-            type={type}
-            className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:ring-1 ${isWikiMode ? 'focus:ring-red-500' : 'focus:ring-yellow-500'}`}
-            value={value || ''}
-            onChange={e => onChange(e.target.value)}
-            placeholder={placeholder}
-        />
-    </div>
-);
+const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode, options }: any) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) setIsOpen(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    return (
+        <div className="space-y-1 relative" ref={dropdownRef}>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</label>
+            <input
+                type={type}
+                className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:ring-1 ${isWikiMode ? 'focus:ring-red-500' : 'focus:ring-yellow-500'}`}
+                value={value || ''}
+                onChange={e => onChange(e.target.value)}
+                onFocus={() => setIsOpen(true)}
+                placeholder={placeholder}
+            />
+            {options && isOpen && (
+                <div className={`absolute top-full left-0 w-full mt-1 ${isWikiMode ? 'bg-[#f5e6d3] border-[#d4c8af]' : 'bg-slate-900 border-slate-700'} border rounded-lg shadow-2xl z-[100] overflow-hidden`}>
+                    <div className="max-h-40 overflow-y-auto">
+                        {options.map((opt: string) => (
+                            <button
+                                key={opt}
+                                onClick={() => { onChange(opt); setIsOpen(false); }}
+                                className={`w-full text-left px-3 py-2 text-xs transition-colors ${isWikiMode ? 'text-slate-700 hover:bg-black/5' : 'text-slate-400 hover:bg-slate-800'}`}
+                            >
+                                {opt}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
 
 const FormToggle = ({ label, value, onChange, isWikiMode }: any) => (
     <div className="flex items-center justify-between p-2 rounded-lg hover:bg-black/5 transition-all">
@@ -99,7 +128,14 @@ const SmartSelect = ({ label, ids, type, all, onChange, onCreate, isWikiMode }: 
                     </div>
                     <div className="max-h-60 overflow-y-auto">
                         {filtered.length === 0 && search && (
-                            <button onClick={() => { onCreate(type, search); setIsOpen(false); setSearch(""); }}
+                            <button onClick={() => {
+                                const newId = onCreate(type, search, false);
+                                if (newId) {
+                                    toggleId(newId);
+                                    setIsOpen(false);
+                                    setSearch("");
+                                }
+                            }}
                                 className={`w-full text-left px-3 py-2 text-xs ${isWikiMode ? 'text-[#b91c1c] hover:bg-black/5' : 'text-[#fef08a] hover:bg-slate-800'} flex items-center gap-2 font-bold`}>
                                 <Plus size={12} /> Create "{search}"
                             </button>
@@ -258,7 +294,7 @@ const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWi
                 <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-2 border-t border-b py-3 my-2 border-slate-500/10">
                     <FormToggle label="Read-only mode" value={entity.isReadOnly} onChange={(v: boolean) => onUpdate({ ...entity, isReadOnly: v })} isWikiMode={isWikiMode} />
                     <FormToggle label="Minor document" value={entity.isMinorDocument} onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v })} isWikiMode={isWikiMode} />
-                    <FormToggle label="Dead/Gone/Destroyed" value={entity.isDead} onChange={(v: boolean) => onUpdate({ ...entity, isDead: v })} isWikiMode={isWikiMode} />
+                    <FormInput label="Status" value={entity.status || (entity.isDead ? 'Deceased' : 'Living')} options={['Living', 'Deceased', 'Unknown', 'Lost', 'Active', 'Inactive', 'Recovered']} onChange={(v: string) => onUpdate({ ...entity, status: v, isDead: v === 'Deceased' || v === 'Lost' })} isWikiMode={isWikiMode} />
                     <FormToggle label="Category" value={entity.isCategory} onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v })} isWikiMode={isWikiMode} />
                 </div>
                 <div className="lg:col-span-2">
@@ -271,7 +307,7 @@ const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWi
                 <>
                     <EditorGroup title="Basic Information" icon={Info} isWikiMode={isWikiMode}>
                         <FormInput label="Titles" value={entity.titles} onChange={(v: string) => onUpdate({ ...entity, titles: v })} isWikiMode={isWikiMode} />
-                        <FormInput label="Sex" value={entity.sex} onChange={(v: string) => onUpdate({ ...entity, sex: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Sex" value={entity.sex} options={['Male', 'Female', 'Non-binary', 'Other']} onChange={(v: string) => onUpdate({ ...entity, sex: v })} isWikiMode={isWikiMode} />
                         <FormInput label="Other" value={entity.otherBasicInfo} onChange={(v: string) => onUpdate({ ...entity, otherBasicInfo: v })} isWikiMode={isWikiMode} />
                         <FormInput label="Age" value={entity.age} onChange={(v: string) => onUpdate({ ...entity, age: v })} isWikiMode={isWikiMode} />
                         <FormInput label="Height" value={entity.height} onChange={(v: string) => onUpdate({ ...entity, height: v })} isWikiMode={isWikiMode} />
@@ -280,8 +316,8 @@ const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWi
                         <FormInput label="Date of death" value={entity.dateOfDeath} onChange={(v: string) => onUpdate({ ...entity, dateOfDeath: v })} isWikiMode={isWikiMode} />
                         <SmartSelect label="Species/Races" ids={entity.speciesIds} type="species" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, speciesIds: ids })} onCreate={onCreateNew} />
                         <SmartSelect label="Occupation/Class" ids={entity.occupationIds} type="occupation" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, occupationIds: ids })} onCreate={onCreateNew} />
-                        <FormInput label="Ethnicity" value={entity.ethnicity} onChange={(v: string) => onUpdate({ ...entity, ethnicity: v })} isWikiMode={isWikiMode} />
-                        <FormInput label="Combat rating" value={entity.combatRating} onChange={(v: string) => onUpdate({ ...entity, combatRating: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Ethnicity" value={entity.ethnicity} options={['Human', 'Elf', 'Dwarf', 'Orc', 'Gnome', 'Halfling', 'Dragonborn', 'Tiefling', 'African', 'Asian', 'Caucasian', 'Hispanic']} onChange={(v: string) => onUpdate({ ...entity, ethnicity: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Combat rating" value={entity.combatRating} options={['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']} onChange={(v: string) => onUpdate({ ...entity, combatRating: v })} isWikiMode={isWikiMode} />
                         <FormInput label="Place of residence" value={entity.placeOfResidenceId} onChange={(v: string) => onUpdate({ ...entity, placeOfResidenceId: v })} isWikiMode={isWikiMode} />
                         <FormInput label="Place of origin" value={entity.placeOfOriginId} onChange={(v: string) => onUpdate({ ...entity, placeOfOriginId: v })} isWikiMode={isWikiMode} />
                         <FormInput label="Place of demise" value={entity.placeOfDemiseId} onChange={(v: string) => onUpdate({ ...entity, placeOfDemiseId: v })} isWikiMode={isWikiMode} />
@@ -701,7 +737,7 @@ export default function App() {
         }
     };
 
-    const handleCreate = (type: EntityType, name?: string) => {
+    const handleCreate = (type: EntityType, name?: string, shouldOpen: boolean = true) => {
         const id = crypto.randomUUID();
         const emptyRole = () => ({ leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] });
         const newEntity: any = {
@@ -715,8 +751,12 @@ export default function App() {
         };
         setWorld(prev => ({ ...prev, entities: [newEntity, ...prev.entities] }));
         setDrafts(p => ({ ...p, [id]: newEntity }));
-        setEditingTabIds(p => new Set(p).add(id));
-        handleOpenEntity(id);
+
+        if (shouldOpen) {
+            setEditingTabIds(p => new Set(p).add(id));
+            handleOpenEntity(id);
+        }
+        return id;
     };
 
     const handleSaveDraft = (id: string) => {
