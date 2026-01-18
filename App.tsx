@@ -206,8 +206,8 @@ const LinksDisplay = ({ label, ids, all, onNav, isWikiMode, wikiStyle = 'tag' }:
 // --- Editor Sub-components (Top level for stability) ---
 
 const EditorGroup = ({ title, icon: Icon, children, isWikiMode }: any) => (
-    <div className={`mb-8 border rounded-2xl overflow-hidden shadow-lg ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-700'}`}>
-        <div className={`px-6 py-3 border-b flex items-center gap-3 ${isWikiMode ? 'bg-[#f5e6d3] border-[#d4c8af]' : 'bg-slate-900/80 border-slate-800'}`}>
+    <div className={`mb-8 border rounded-2xl shadow-lg ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-700'}`}>
+        <div className={`px-6 py-3 border-b flex items-center gap-3 rounded-t-2xl ${isWikiMode ? 'bg-[#f5e6d3] border-[#d4c8af]' : 'bg-slate-900/80 border-slate-800'}`}>
             <Icon size={16} className={isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'} />
             <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]'}`}>{title}</h3>
         </div>
@@ -436,6 +436,7 @@ const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName = false 
                     <WikiStatRow label="Origin" value={allEntities.find(e => e.id === char.placeOfOriginId)?.name} />
                     <WikiStatRow label="Residence" value={char.placeOfResidenceId} />
                     <WikiStatRow label="Place of Demise" value={char.placeOfDemiseId} />
+                    <WikiStatRow label="Other Info" value={char.otherBasicInfo} />
                 </div>
             </div>
 
@@ -458,6 +459,11 @@ const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName = false 
                 <LinksDisplay label="Skills" ids={char.skillIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
                 <LinksDisplay label="Spells" ids={char.spellIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
                 <LinksDisplay label="Languages" ids={char.languageIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Magical Teachings" ids={char.magicalTeachingIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Technologies" ids={char.technologyIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Boons" ids={char.affectedByBoonsIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Afflictions" ids={char.affectedByAfflictionsIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Other Conditions" ids={char.affectedByOtherConditionsIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
                 <WikiStatRow label="Equipment" value={char.equipment} />
                 <WikiStatRow label="Wealth" value={char.wealth} />
             </div>
@@ -534,8 +540,9 @@ const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, isWik
         <div className={`flex ${isWikiMode ? 'flex-row gap-12' : 'flex-col lg:flex-row gap-12'}`}>
             <div className="flex-1 space-y-12">
                 <section className={`${isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}`}>
-                    <h2 className={`text-4xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28]' : 'text-[#fef08a]'} mb-2 uppercase tracking-tight`}>Overview</h2>
+                    <h2 className={`text-4xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28]' : 'text-[#fef08a]'} mb-2 uppercase tracking-tight`}>{isChar ? 'Biography' : 'Overview'}</h2>
                     {isWikiMode && <div className="h-[2px] w-full bg-[#e69a28] mb-6" />}
+
                     <p className={`text-lg leading-relaxed ${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.description || "The entry is currently silent."}</p>
                 </section>
 
@@ -558,9 +565,46 @@ const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, isWik
                                 <FieldRow label="Species" value={(entity as any).speciesIds?.map((id: string) => allEntities.find(e => e.id === id)?.name).filter(Boolean).join(', ')} isWikiMode={false} />
                                 <FieldRow label="Occupation" value={(entity as any).occupationIds?.map((id: string) => allEntities.find(e => e.id === id)?.name).filter(Boolean).join(', ')} isWikiMode={false} />
                                 <FieldRow label="Combat Rating" value={entity.combatRating} isWikiMode={false} />
+                                <FieldRow label="Height" value={(entity as any).height} isWikiMode={false} />
+                                <FieldRow label="Weight" value={(entity as any).weight} isWikiMode={false} />
+                                <FieldRow label="Birth" value={(entity as any).dateOfBirth} isWikiMode={false} />
+                                <FieldRow label="Death" value={(entity as any).dateOfDeath} isWikiMode={false} />
+                                <FieldRow label="Origin" value={allEntities.find(e => e.id === (entity as any).placeOfOriginId)?.name} isWikiMode={false} />
+                                <FieldRow label="Residence" value={(entity as any).placeOfResidenceId} isWikiMode={false} />
+                                <FieldRow label="Demise" value={(entity as any).placeOfDemiseId} isWikiMode={false} />
+                                <FieldRow label="Other Info" value={(entity as any).otherBasicInfo} isWikiMode={false} />
+                                <FieldRow label="Traits" value={(entity as any).traitsAndCharacteristics} isWikiMode={false} />
+                                <FieldRow label="Features" value={(entity as any).unusualFeatures} isWikiMode={false} />
+                                <FieldRow label="Equipment" value={(entity as any).equipment} isWikiMode={false} />
+                                <FieldRow label="Wealth" value={(entity as any).wealth} isWikiMode={false} />
                                 {/* Age and Status removed from here as they are in the 'Record Vitals' sidebar */}
                             </div>
                         </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <LinksDisplay label="Lore Connections" ids={(entity as any).loreNoteIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Mythic Roots" ids={(entity as any).mythIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Event Ties" ids={(entity as any).eventIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Locations" ids={(entity as any).locationIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Cultures" ids={(entity as any).cultureIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Parent Entities" ids={(entity as any).parentIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Child Entities" ids={(entity as any).childrenIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Known Skills" ids={(entity as any).skillIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Known Spells" ids={(entity as any).spellIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Languages" ids={(entity as any).languageIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Magical Teachings" ids={(entity as any).magicalTeachingIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Technologies" ids={(entity as any).technologyIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Boons" ids={(entity as any).affectedByBoonsIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Afflictions" ids={(entity as any).affectedByAfflictionsIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Other Conditions" ids={(entity as any).affectedByOtherConditionsIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        </div>
+
+                        {entity.privateNotes && (
+                            <div className="bg-rose-500/5 border border-rose-900/20 p-8 rounded-2xl">
+                                <h3 className="text-xs font-black uppercase mb-4 tracking-widest text-rose-500">DM Confidential Notes</h3>
+                                <p className="text-rose-200/70 font-mono text-sm whitespace-pre-wrap">{entity.privateNotes}</p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -777,7 +821,7 @@ export default function App() {
                 <div className="flex-1 overflow-y-auto">
                     {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} isWikiMode={isWikiMode} />}
                     {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} isWikiMode={isWikiMode} />}
-                    {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} isWikiMode={isWikiMode} />}
+                    {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} isWikiMode={isWikiMode} setIsWikiMode={setIsWikiMode} />}
 
                     {activeEntity && (
                         editingTabIds.has(activeTabId as string) ?
@@ -839,24 +883,141 @@ function TrashView({ trash, setWorld, isWikiMode }: any) {
     );
 }
 
-function OptionsView({ world, setWorld, isWikiMode }: any) {
+function OptionsView({ world, setWorld, isWikiMode, setIsWikiMode }: any) {
     const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800';
+
+    // Stats calculation
+    const stats = useMemo(() => {
+        const total = world.entities.length;
+        const byType = world.entities.reduce((acc: any, e: any) => {
+            acc[e.type] = (acc[e.type] || 0) + 1;
+            return acc;
+        }, {});
+        const totalConnections = world.entities.reduce((acc: number, e: any) => {
+            const char = e as any;
+            let count = (char.locationIds?.length || 0) + (char.loreNoteIds?.length || 0) + (char.mythIds?.length || 0);
+            if (char.groupConnections) {
+                Object.values(char.groupConnections).forEach((g: any) => {
+                    Object.values(g).forEach((v: any) => { if (Array.isArray(v)) count += v.length; });
+                });
+            }
+            return acc + count;
+        }, 0);
+        return { total, byType, totalConnections };
+    }, [world.entities]);
+
+    const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target?.result as string);
+                if (data.entities && data.name) {
+                    if (confirm("Importing will replace your current world data. Continue?")) {
+                        setWorld(data);
+                    }
+                } else {
+                    alert("Invalid JSON format for Nexus Chronicle.");
+                }
+            } catch (err) {
+                alert("Failed to parse JSON file.");
+            }
+        };
+        reader.readAsText(file);
+    };
+
     return (
-        <div className="p-16 max-w-4xl mx-auto space-y-10 animate-in fade-in duration-500">
-            <h2 className={`text-6xl font-serif font-black uppercase tracking-tighter ${accent}`}>System Config</h2>
-            <div className={`p-10 rounded-3xl border ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/10 border-slate-800/60'}`}>
-                <div className="space-y-6">
-                    <FormInput label="Realm Name" value={world.name} onChange={(v: string) => setWorld({ ...world, name: v })} isWikiMode={isWikiMode} />
-                    <FormInput label="Global Atlas Image (URL)" value={world.mapImage} onChange={(v: string) => setWorld({ ...world, mapImage: v })} isWikiMode={isWikiMode} />
-                    <div className="pt-6 border-t border-slate-800/20">
-                        <button onClick={() => {
-                            const blob = new Blob([JSON.stringify(world, null, 2)], { type: 'application/json' });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a'); a.href = url; a.download = `${world.name}_chronicle.json`; a.click();
-                        }} className={`px-8 py-3 rounded-lg font-black text-[10px] uppercase tracking-widest ${isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-slate-800 text-[#fef08a] border border-[#fef08a]/20'}`}>Export Archive JSON</button>
+        <div className="p-16 max-w-5xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-40">
+            <header>
+                <h2 className={`text-6xl font-serif font-black uppercase tracking-tighter ${accent}`}>System Settings</h2>
+                <p className="opacity-50 text-sm mt-2 italic font-serif">Configure the parameters of your eternal archive.</p>
+            </header>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Statistics Card */}
+                <div className={`lg:col-span-1 p-8 rounded-3xl border ${bgCard} shadow-2xl space-y-6`}>
+                    <h3 className={`text-xs font-black uppercase tracking-widest ${accent} border-b border-slate-800/20 pb-2`}>Archive Statistics</h3>
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-end">
+                            <span className="text-[10px] uppercase font-bold opacity-40">Total Entities</span>
+                            <span className="text-3xl font-serif font-bold text-white">{stats.total}</span>
+                        </div>
+                        <div className="flex justify-between items-end">
+                            <span className="text-[10px] uppercase font-bold opacity-40">Connections</span>
+                            <span className="text-xl font-serif font-bold text-white">{stats.totalConnections}</span>
+                        </div>
+                        <div className="h-[1px] w-full bg-slate-800/40 my-2" />
+                        <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-2">
+                            {Object.entries(stats.byType).map(([type, count]) => (
+                                <div key={type} className="flex flex-col p-2 bg-black/20 rounded border border-white/5">
+                                    <span className="text-[8px] uppercase font-black opacity-30">{TYPE_LABELS[type as EntityType] || type}</span>
+                                    <span className="text-sm font-bold">{count as number}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
+
+                {/* Main Configuration form */}
+                <div className={`lg:col-span-2 p-10 rounded-3xl border ${bgCard} shadow-2xl space-y-10`}>
+                    <section className="space-y-6">
+                        <h3 className="text-xs font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
+                            <Palette size={14} /> Realm Identity & Theme
+                        </h3>
+                        <FormInput label="Realm Name" value={world.name} onChange={(v: string) => setWorld({ ...world, name: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Global Atlas Image (URL)" value={world.mapImage} onChange={(v: string) => setWorld({ ...world, mapImage: v })} isWikiMode={isWikiMode} />
+                        <div className="grid grid-cols-2 gap-4 pt-2">
+                            <div className="p-4 rounded-xl bg-black/20 border border-white/5 space-y-2">
+                                <span className="text-[9px] font-black uppercase opacity-40">Editor Style</span>
+                                <div className="flex gap-2">
+                                    <button onClick={() => setIsWikiMode(false)} className={`flex-1 py-2 rounded text-[9px] font-black border transition-all ${!isWikiMode ? 'bg-[#fef08a] text-black border-[#fef08a]' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>CODEX</button>
+                                    <button onClick={() => setIsWikiMode(true)} className={`flex-1 py-2 rounded text-[9px] font-black border transition-all ${isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>WIKI</button>
+                                </div>
+                            </div>
+                            <div className="p-4 rounded-xl bg-black/20 border border-white/5 space-y-2">
+                                <span className="text-[9px] font-black uppercase opacity-40">System Backup</span>
+                                <div className="flex gap-2">
+                                    <button onClick={() => {
+                                        const blob = new Blob([JSON.stringify(world, null, 2)], { type: 'application/json' });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a'); a.href = url; a.download = `${world.name}_chronicle.json`; a.click();
+                                    }} className={`flex-1 py-2 rounded text-[9px] font-black border border-slate-700 hover:border-[#fef08a] transition-all`}>EXPORT</button>
+                                    <label className="flex-1 py-2 rounded text-[9px] font-black border border-slate-700 hover:border-[#fef08a] transition-all text-center cursor-pointer">
+                                        IMPORT
+                                        <input type="file" className="hidden" accept=".json" onChange={handleImport} />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="pt-10 border-t border-slate-800/40 space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-rose-500 flex items-center gap-2">
+                                <Skull size={14} /> Oblivion Protocol (Danger Zone)
+                            </h3>
+                        </div>
+                        <div className="p-6 rounded-2xl bg-rose-500/5 border border-rose-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div>
+                                <p className="text-xs font-bold text-rose-200">Purge Entity Cache</p>
+                                <p className="text-[10px] text-rose-200/50">Permanently delete all entities and the Atlas map.</p>
+                            </div>
+                            <button onClick={() => {
+                                if (confirm("DANGER: This will delete everything. Are you absolutely certain?")) {
+                                    setWorld({ name: "New Realm", entities: [], trash: [], mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" });
+                                }
+                            }} className="px-6 py-2 bg-rose-900/40 hover:bg-rose-600 text-rose-200 text-[10px] font-black rounded-lg transition-all border border-rose-500/30">WIPE ALL DATA</button>
+                        </div>
+                    </section>
+                </div>
             </div>
+
+            <footer className="text-center opacity-20 hover:opacity-100 transition-opacity duration-1000">
+                <p className="text-[11px] font-black tracking-[0.5em] uppercase">Built for the Chroniclers of the Multiverse</p>
+                <p className="text-[9px] mt-1 font-mono">v1.2.0-alpha // Nexus Chronicle Engine</p>
+            </footer>
         </div>
     );
 }
