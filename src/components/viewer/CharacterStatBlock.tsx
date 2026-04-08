@@ -10,8 +10,8 @@ interface CharacterStatBlockProps {
 }
 
 export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName = false }: CharacterStatBlockProps) => {
+    if (entity.type !== 'character') return null;
     const char = entity as Character;
-    if (char.type !== 'character') return null;
 
     const speciesNames = char.speciesIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
     const occupationNames = char.occupationIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
@@ -25,7 +25,7 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
     ].filter(Boolean).join(' ');
 
     return (
-        <div className={`bg-[#fdfcf0] \${hideName ? 'p-4' : 'p-6'} border-t-8 border-b-8 border-[#7a200d] space-y-2 shadow-inner font-sans select-text`}>
+        <div className={`bg-[#fdfcf0] ${hideName ? 'p-4' : 'p-6'} border-t-8 border-b-8 border-[#7a200d] space-y-2 shadow-inner font-sans select-text text-[#1a1a1a]`}>
             {!hideName && (
                 <div className="border-b-2 border-[#7a200d] pb-1">
                     <h2 className="text-4xl font-serif font-bold text-[#7a200d] uppercase leading-none tracking-tight">{char.name}</h2>
@@ -47,8 +47,8 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                     <WikiStatRow label="Species" value={speciesNames} />
                     <WikiStatRow label="Occupation" value={occupationNames} />
                     <WikiStatRow label="Age" value={char.age} />
-                    <WikiStatRow label="Hit Points" value={char.combatRating ? `\${char.combatRating} (estimated)` : undefined} />
-                    <WikiStatRow label="Height / Weight" value={char.height && char.weight ? `\${char.height} / \${char.weight}` : (char.height || char.weight)} />
+                    <WikiStatRow label="Hit Points" value={char.combatRating ? `${char.combatRating} (estimated)` : undefined} />
+                    <WikiStatRow label="Height / Weight" value={char.height && char.weight ? `${char.height} / ${char.weight}` : (char.height || char.weight)} />
                     <WikiStatRow label="Titles" value={char.titles} />
                     <WikiStatRow label="Birth" value={char.dateOfBirth} />
                     <WikiStatRow label="Death" value={char.dateOfDeath} />

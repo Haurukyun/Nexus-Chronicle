@@ -21,6 +21,7 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                     <h3 className="font-serif font-bold text-xl uppercase tracking-tighter text-[#1a1a1a]">{entity.name}</h3>
                 </div>
 
+                {/* Image Placeholder */}
                 <div className="h-56 bg-[#ccc5a8] flex items-center justify-center border-b border-[#d4c8af] overflow-hidden grayscale contrast-75 relative">
                     {isChar ? <Users size={120} className="text-[#a89d7d]" /> : <Globe size={120} className="text-[#a89d7d]" />}
                     <div className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm">
@@ -32,7 +33,7 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                     <Eye size={14} className="text-[#b91c1c]" />
                     <button onClick={() => alert("Transmitted to party members!")} className="text-[10px] font-black text-[#b91c1c] uppercase tracking-widest hover:underline">Show to Players</button>
                     <div className="w-1 h-1 rounded-full bg-[#d4c8af]" />
-                    <button onClick={() => alert(`Record age: ${Math.floor((Date.now() - entity.lastModified) / 1000 / 60)} minutes since last committing.`)} className="text-[10px] font-black text-[#854d0e] uppercase tracking-widest hover:underline">Version History</button>
+                    <button onClick={() => alert(`Record age: ${Math.floor((Date.now() - entity.lastModified) / 1000 / 60)} minutes.`)} className="text-[10px] font-black text-[#854d0e] uppercase tracking-widest hover:underline">Version History</button>
                 </div>
 
                 <div className="p-0">
