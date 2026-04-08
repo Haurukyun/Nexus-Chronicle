@@ -1,13 +1,16 @@
 import React, { useMemo } from 'react';
-import { 
-    Search, Plus, Globe, Trash2, Settings, 
-    BookMarked, Compass, Eye, Edit3
+import {
+    Search, Plus, Globe, Trash2, Settings,
+    BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from './constants';
 import { WorldMap } from './views/WorldMap';
 import { TrashView } from './views/TrashView';
 import { OptionsView } from './views/OptionsView';
+import { DashboardView } from './views/DashboardView';
+import { TimelineView } from './views/TimelineView';
+import { NexusTreeView } from './views/NexusTreeView';
 import { EntityViewer } from './components/viewer/EntityViewer';
 import { EntityEditor } from './components/editor/EntityEditor';
 
@@ -73,8 +76,8 @@ const App = () => {
                                             <div className="flex items-center justify-between px-2 py-1">
                                                 <span className="text-[9px] font-bold text-slate-500/60 uppercase">{TYPE_LABELS[type]}</span>
                                                 {!world.entities.find(e => e.isCategory && e.type === type) && (
-                                                    <button 
-                                                        onClick={(e) => { e.stopPropagation(); handleCreate(type, undefined, true); }} 
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleCreate(type, undefined, true); }}
                                                         className="opacity-30 hover:opacity-100 p-1.5 hover:bg-white/10 rounded-md text-slate-500 transition-all cursor-pointer"
                                                         title={`Add ${TYPE_LABELS[type]}`}
                                                     >
@@ -105,7 +108,10 @@ const App = () => {
                 </nav>
 
                 <div className={`p-4 border-t ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/60'} space-y-2`}>
-                    <button onClick={() => setActiveTabId('map')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'map' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-500 text-black') : 'hover:bg-white/5'}`}><Globe size={16} /> Atlas View</button>
+                    <button onClick={() => setActiveTabId('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'dashboard' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20') : 'hover:bg-white/5'}`}><BarChart3 size={16} /> World Ledger</button>
+                    <button onClick={() => setActiveTabId('timeline')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'timeline' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-purple-500 text-white shadow-lg shadow-purple-500/20') : 'hover:bg-white/5'}`}><History size={16} /> Chronos View</button>
+                    <button onClick={() => setActiveTabId('nexus')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'nexus' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-rose-500 text-white shadow-lg shadow-rose-500/20') : 'hover:bg-white/5'}`}><GitMerge size={16} /> Nexus Lines</button>
+                    <button onClick={() => setActiveTabId('map')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'map' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20') : 'hover:bg-white/5'}`}><Globe size={16} /> Atlas View</button>
                     <button onClick={() => setActiveTabId('trash')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-bold ${activeTabId === 'trash' ? (isWikiMode ? 'text-red-500' : 'text-slate-400') : 'text-slate-500 hover:text-red-400'}`}><Trash2 size={14} /> Forgotten Depth</button>
                     <button onClick={() => setActiveTabId('options')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-bold ${activeTabId === 'options' ? (isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]') : 'text-slate-500 hover:text-slate-300'}`}><Settings size={14} /> System Archive</button>
                 </div>
@@ -142,12 +148,15 @@ const App = () => {
                     {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} isWikiMode={isWikiMode} />}
                     {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} isWikiMode={isWikiMode} />}
                     {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} isWikiMode={isWikiMode} setIsWikiMode={setIsWikiMode} />}
-                    
+                    {activeTabId === 'dashboard' && <DashboardView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'timeline' && <TimelineView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'nexus' && <NexusTreeView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
+
                     {activeEntity && (
                         <div className="max-w-7xl mx-auto px-12 py-16 min-h-full">
                             {editingTabIds.includes(activeTabId as string) ? (
-                                <EntityEditor 
-                                    entity={activeEntity} 
+                                <EntityEditor
+                                    entity={activeEntity}
                                     allEntities={world.entities}
                                     onUpdate={(updated) => setDrafts({ ...drafts, [activeTabId as string]: updated })}
                                     onSave={() => handleSaveDraft(activeTabId as string)}
@@ -156,9 +165,9 @@ const App = () => {
                                     isWikiMode={isWikiMode}
                                 />
                             ) : (
-                                <EntityViewer 
-                                    entity={activeEntity} 
-                                    allEntities={world.entities} 
+                                <EntityViewer
+                                    entity={activeEntity}
+                                    allEntities={world.entities}
                                     onEdit={() => handleToggleEdit(activeTabId as string)}
                                     onDelete={() => handleDeleteToTrash(activeEntity)}
                                     onNavigate={handleOpenEntity}

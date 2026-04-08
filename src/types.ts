@@ -122,7 +122,21 @@ export interface Location extends BaseEntity {
   type: 'location';
 }
 
-export type WorldEntity = Character | Location | BaseEntity;
+export interface Event extends BaseEntity {
+  type: 'event';
+  date?: string;
+  duration?: string;
+  locationId?: string;
+  involvedEntityIds: string[];
+}
+
+export interface WorldEra extends BaseEntity {
+  type: 'note'; // Reusing note type or could add a specific era type
+  startDate?: string;
+  endDate?: string;
+}
+
+export type WorldEntity = Character | Location | Event | BaseEntity;
 
 export interface WorldData {
   name: string;

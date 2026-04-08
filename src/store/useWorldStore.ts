@@ -6,12 +6,12 @@ import { WorldData, WorldEntity, EntityType } from '../types';
 interface WorldStore {
     world: WorldData;
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
-    
+
     openTabIds: string[];
     setOpenTabIds: (update: string[] | ((prev: string[]) => string[])) => void;
 
-    activeTabId: string | 'map' | 'trash' | 'options';
-    setActiveTabId: (id: string | 'map' | 'trash' | 'options') => void;
+    activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus';
+    setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus') => void;
 
     isWikiMode: boolean;
     setIsWikiMode: (mode: boolean) => void;
@@ -41,13 +41,13 @@ export const useWorldStore = create<WorldStore>()(
     persist(
         (set, get) => ({
             world: { name: "New Realm", entities: [], trash: [], mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" },
-            setWorld: (update) => set((state) => ({ 
-                world: typeof update === 'function' ? update(state.world) : update 
+            setWorld: (update) => set((state) => ({
+                world: typeof update === 'function' ? update(state.world) : update
             })),
 
             openTabIds: [],
-            setOpenTabIds: (update) => set((state) => ({ 
-                openTabIds: typeof update === 'function' ? update(state.openTabIds) : update 
+            setOpenTabIds: (update) => set((state) => ({
+                openTabIds: typeof update === 'function' ? update(state.openTabIds) : update
             })),
 
             activeTabId: 'map',
@@ -57,21 +57,21 @@ export const useWorldStore = create<WorldStore>()(
             setIsWikiMode: (mode) => set({ isWikiMode: mode }),
 
             drafts: {},
-            setDrafts: (update) => set((state) => ({ 
-                drafts: typeof update === 'function' ? update(state.drafts) : update 
+            setDrafts: (update) => set((state) => ({
+                drafts: typeof update === 'function' ? update(state.drafts) : update
             })),
 
             editingTabIds: [],
-            setEditingTabIds: (update) => set((state) => ({ 
-                editingTabIds: typeof update === 'function' ? update(state.editingTabIds) : update 
+            setEditingTabIds: (update) => set((state) => ({
+                editingTabIds: typeof update === 'function' ? update(state.editingTabIds) : update
             })),
 
             searchQuery: '',
             setSearchQuery: (query) => set({ searchQuery: query }),
 
             expandedCategories: ['world'],
-            setExpandedCategories: (update) => set((state) => ({ 
-                expandedCategories: typeof update === 'function' ? update(state.expandedCategories) : update 
+            setExpandedCategories: (update) => set((state) => ({
+                expandedCategories: typeof update === 'function' ? update(state.expandedCategories) : update
             })),
 
             // Actions implementation
@@ -102,7 +102,7 @@ export const useWorldStore = create<WorldStore>()(
                 set((state) => ({
                     world: { ...state.world, entities: [...state.world.entities, newEntity] }
                 }));
-                
+
                 if (shouldOpen) {
                     get().handleOpenEntity(id);
                     get().handleToggleEdit(id);
@@ -121,7 +121,7 @@ export const useWorldStore = create<WorldStore>()(
             handleCloseTab: (id, e) => {
                 if (e) e.stopPropagation();
                 const { openTabIds, drafts, editingTabIds, activeTabId } = get();
-                
+
                 if (drafts[id] && !confirm("You have unsaved changes. Close anyway?")) {
                     return;
                 }
@@ -144,12 +144,12 @@ export const useWorldStore = create<WorldStore>()(
             handleSaveDraft: (id) => {
                 const { drafts, world, editingTabIds } = get();
                 if (!drafts[id]) return;
-                
+
                 const updatedEntities = world.entities.map(e => e.id === id ? { ...drafts[id], lastModified: Date.now() } : e);
-                
+
                 const newDrafts = { ...drafts };
                 delete newDrafts[id];
-                
+
                 const newEditing = editingTabIds.filter(tid => tid !== id);
 
                 set({
@@ -162,7 +162,7 @@ export const useWorldStore = create<WorldStore>()(
             handleToggleEdit: (id) => {
                 const { editingTabIds, activeTabId, drafts, world } = get();
                 const targetId = id || (activeTabId as string);
-                
+
                 if (editingTabIds.includes(targetId)) {
                     const newEditing = editingTabIds.filter(tid => tid !== targetId);
                     const newDrafts = { ...drafts };
@@ -172,7 +172,7 @@ export const useWorldStore = create<WorldStore>()(
                     const newEditing = [...editingTabIds, targetId];
                     const baseEntity = world.entities.find(e => e.id === targetId);
                     if (baseEntity) {
-                        set({ 
+                        set({
                             editingTabIds: newEditing,
                             drafts: { ...drafts, [targetId]: { ...baseEntity } }
                         });
@@ -196,9 +196,9 @@ export const useWorldStore = create<WorldStore>()(
         }),
         {
             name: 'nexus-chronicle-storage',
-            partialize: (state) => ({ 
+            partialize: (state) => ({
                 world: state.world,
-                isWikiMode: state.isWikiMode 
+                isWikiMode: state.isWikiMode
             }),
         }
     )
