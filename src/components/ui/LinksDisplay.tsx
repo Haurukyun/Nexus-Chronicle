@@ -28,13 +28,13 @@ export const LinksDisplay = ({ label, ids, all, onNav, isWikiMode, wikiStyle = '
 
     return (
         <div className="py-3 border-b border-slate-500/10 last:border-0 flex flex-col gap-2">
-            <span className={`text-[9px] font-black uppercase tracking-widest \${isWikiMode ? 'text-[#854d0e]' : 'text-slate-500'}`}>{label}</span>
+            <span className={`text-[9px] font-black uppercase tracking-widest ${isWikiMode ? 'text-[#854d0e]' : 'text-slate-500'}`}>{label}</span>
             <div className="flex flex-wrap gap-2">
                 {ids.map((id: string) => {
                     const ent = all.find((e: any) => e.id === id);
                     if (!ent) return null;
                     return (
-                        <button key={id} onClick={() => onNav(id)} className={`px-2 py-0.5 text-xs rounded border transition-all \${isWikiMode ? 'border-[#d4c8af] bg-white text-[#b91c1c] hover:bg-[#b91c1c] hover:text-white' : 'border-slate-700 bg-slate-800/60 text-[#fef08a] hover:bg-[#fef08a] hover:text-slate-950'}`}>
+                        <button key={id} onClick={() => onNav(id)} className={`px-2 py-0.5 text-xs rounded border transition-all ${isWikiMode ? 'border-[#d4c8af] bg-white text-[#b91c1c] hover:bg-[#b91c1c] hover:text-white' : 'border-slate-700 bg-slate-800/60 text-[#fef08a] hover:bg-[#fef08a] hover:text-slate-950'}`}>
                             {ent.name}
                         </button>
                     );

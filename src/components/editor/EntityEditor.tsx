@@ -99,7 +99,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                             <SmartSelect label="Children of the Character" ids={entity.childrenIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, childrenIds: ids })} onCreate={onCreateNew} />
                             <SmartSelect label="Other relatives of the Character" ids={entity.relativeIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, relativeIds: ids })} onCreate={onCreateNew} />
                             <SmartSelect label="Friends/Allies" ids={entity.friendIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, friendIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Enemies" ids={entity.enemyIds} type="character" all={allEntities} is WikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, enemyIds: ids })} onCreate={onCreateNew} />
+                            <SmartSelect label="Enemies" ids={entity.enemyIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, enemyIds: ids })} onCreate={onCreateNew} />
                             <SmartSelect label="Complicated relationship with" ids={entity.complicatedWithIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids: string[]) => onUpdate({ ...entity, complicatedWithIds: ids })} onCreate={onCreateNew} />
                         </EditorGroup>
 

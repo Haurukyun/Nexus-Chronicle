@@ -58,13 +58,13 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
     return (
         <div className="p-16 max-w-5xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-40">
             <header>
-                <h2 className={`text-6xl font-serif font-black uppercase tracking-tighter \${accent}`}>System Settings</h2>
+                <h2 className={`text-6xl font-serif font-black uppercase tracking-tighter ${accent}`}>System Settings</h2>
                 <p className="opacity-50 text-sm mt-2 italic font-serif">Configure the parameters of your eternal archive.</p>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className={`lg:col-span-1 p-8 rounded-3xl border \${bgCard} shadow-2xl space-y-6`}>
-                    <h3 className={`text-xs font-black uppercase tracking-widest \${accent} border-b border-slate-800/20 pb-2`}>Archive Statistics</h3>
+                <div className={`lg:col-span-1 p-8 rounded-3xl border ${bgCard} shadow-2xl space-y-6`}>
+                    <h3 className={`text-xs font-black uppercase tracking-widest ${accent} border-b border-slate-800/20 pb-2`}>Archive Statistics</h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-end">
                             <span className="text-[10px] uppercase font-bold opacity-40">Total Entities</span>
@@ -86,7 +86,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                     </div>
                 </div>
 
-                <div className={`lg:col-span-2 p-10 rounded-3xl border \${bgCard} shadow-2xl space-y-10`}>
+                <div className={`lg:col-span-2 p-10 rounded-3xl border ${bgCard} shadow-2xl space-y-10`}>
                     <section className="space-y-6">
                         <h3 className="text-xs font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
                             <Palette size={14} /> Realm Identity & Theme
@@ -97,8 +97,8 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                             <div className="p-4 rounded-xl bg-black/20 border border-white/5 space-y-2">
                                 <span className="text-[9px] font-black uppercase opacity-40">Editor Style</span>
                                 <div className="flex gap-2">
-                                    <button onClick={() => setIsWikiMode(false)} className={`flex-1 py-2 rounded text-[9px] font-black border transition-all \${!isWikiMode ? 'bg-[#fef08a] text-black border-[#fef08a]' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>CODEX</button>
-                                    <button onClick={() => setIsWikiMode(true)} className={`flex-1 py-2 rounded text-[9px] font-black border transition-all \${isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>WIKI</button>
+                                    <button onClick={() => setIsWikiMode(false)} className={`flex-1 py-2 rounded text-[9px] font-black border transition-all ${!isWikiMode ? 'bg-[#fef08a] text-black border-[#fef08a]' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>CODEX</button>
+                                    <button onClick={() => setIsWikiMode(true)} className={`flex-1 py-2 rounded text-[9px] font-black border transition-all ${isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>WIKI</button>
                                 </div>
                             </div>
                             <div className="p-4 rounded-xl bg-black/20 border border-white/5 space-y-2">
@@ -107,7 +107,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                     <button onClick={() => {
                                         const blob = new Blob([JSON.stringify(world, null, 2)], { type: 'application/json' });
                                         const url = URL.createObjectURL(blob);
-                                        const a = document.createElement('a'); a.href = url; a.download = `\${world.name}_chronicle.json`; a.click();
+                                        const a = document.createElement('a'); a.href = url; a.download = `${world.name}_chronicle.json`; a.click();
                                     }} className={`flex-1 py-2 rounded text-[9px] font-black border border-slate-700 hover:border-[#fef08a] transition-all`}>EXPORT</button>
                                     <label className="flex-1 py-2 rounded text-[9px] font-black border border-slate-700 hover:border-[#fef08a] transition-all text-center cursor-pointer">
                                         IMPORT

@@ -10,13 +10,13 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const char = entity as Character;
 
     const MainView = () => (
-        <div className={`flex \${isWikiMode ? 'flex-row gap-12' : 'flex-col lg:flex-row gap-12'}`}>
+        <div className={`flex ${isWikiMode ? 'flex-row gap-12' : 'flex-col lg:flex-row gap-12'}`}>
             <div className="flex-1 space-y-12">
-                <section className={`\${isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}`}>
-                    <h2 className={`text-4xl font-serif font-bold \${isWikiMode ? 'text-[#e69a28]' : 'text-[#fef08a]'} mb-2 uppercase tracking-tight`}>{isChar ? 'Biography' : 'Overview'}</h2>
+                <section className={`${isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}`}>
+                    <h2 className={`text-4xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28]' : 'text-[#fef08a]'} mb-2 uppercase tracking-tight`}>{isChar ? 'Biography' : 'Overview'}</h2>
                     {isWikiMode && <div className="h-[2px] w-full bg-[#e69a28] mb-6" />}
 
-                    <p className={`text-lg leading-relaxed \${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.description || "The entry is currently silent."}</p>
+                    <p className={`text-lg leading-relaxed ${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.description || "The entry is currently silent."}</p>
                 </section>
 
                 {isWikiMode && (

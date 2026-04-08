@@ -32,7 +32,7 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                     <Eye size={14} className="text-[#b91c1c]" />
                     <button onClick={() => alert("Transmitted to party members!")} className="text-[10px] font-black text-[#b91c1c] uppercase tracking-widest hover:underline">Show to Players</button>
                     <div className="w-1 h-1 rounded-full bg-[#d4c8af]" />
-                    <button onClick={() => alert(`Record age: \${Math.floor((Date.now() - entity.lastModified) / 1000 / 60)} minutes since last committing.`)} className="text-[10px] font-black text-[#854d0e] uppercase tracking-widest hover:underline">Version History</button>
+                    <button onClick={() => alert(`Record age: ${Math.floor((Date.now() - entity.lastModified) / 1000 / 60)} minutes since last committing.`)} className="text-[10px] font-black text-[#854d0e] uppercase tracking-widest hover:underline">Version History</button>
                 </div>
 
                 <div className="p-0">
@@ -50,7 +50,7 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                     <div className="p-3 space-y-2">
                         <div className="flex justify-between text-[10px]">
                             <span className="text-[#854d0e] font-bold uppercase">Coordinates</span>
-                            <span className="font-mono text-slate-500">{entity.coordinates ? `\${Math.round(entity.coordinates.x)}, \${Math.round(entity.coordinates.y)}` : 'Uncharted'}</span>
+                            <span className="font-mono text-slate-500">{entity.coordinates ? `${Math.round(entity.coordinates.x)}, ${Math.round(entity.coordinates.y)}` : 'Uncharted'}</span>
                         </div>
                         <div className="h-[1px] w-full bg-[#d4c8af]/40" />
                         <div className="flex justify-center">
