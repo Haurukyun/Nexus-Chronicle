@@ -10,8 +10,8 @@ interface WorldStore {
     openTabIds: string[];
     setOpenTabIds: (update: string[] | ((prev: string[]) => string[])) => void;
 
-    activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus';
-    setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus') => void;
+    activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey';
+    setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey') => void;
 
     isWikiMode: boolean;
     setIsWikiMode: (mode: boolean) => void;
@@ -35,12 +35,20 @@ interface WorldStore {
     handleSaveDraft: (id: string) => void;
     handleToggleEdit: (id: string) => void;
     handleDeleteToTrash: (entity: WorldEntity) => void;
+    setWorldPhase: (phase: string) => void;
+    addMapConnection: (sourceId: string, targetId: string, type: any) => void;
+    removeMapConnection: (id: string) => void;
 }
 
 export const useWorldStore = create<WorldStore>()(
     persist(
         (set, get) => ({
-            world: { name: "New Realm", entities: [], trash: [], mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" },
+            world: { 
+                name: "New Realm", entities: [], trash: [], 
+                mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000",
+                mapConnections: [],
+                worldPhase: 'golden'
+            },
             setWorld: (update) => set((state) => ({
                 world: typeof update === 'function' ? update(state.world) : update
             })),
@@ -192,6 +200,26 @@ export const useWorldStore = create<WorldStore>()(
                     });
                     handleCloseTab(entity.id);
                 }
+            },
+            setWorldPhase: (phase) => {
+                set((state) => ({ world: { ...state.world, worldPhase: phase as any } }));
+            },
+            addMapConnection: (sourceId, targetId, type) => {
+                const id = crypto.randomUUID();
+                set((state) => ({ 
+                    world: { 
+                        ...state.world, 
+                        mapConnections: [...(state.world.mapConnections || []), { id, sourceId, targetId, type }] 
+                    } 
+                }));
+            },
+            removeMapConnection: (id) => {
+                set((state) => ({ 
+                    world: { 
+                        ...state.world, 
+                        mapConnections: (state.world.mapConnections || []).filter(c => c.id !== id) 
+                    } 
+                }));
             }
         }),
         {

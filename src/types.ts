@@ -28,6 +28,16 @@ export type EntityType =
   | 'political' | 'religious' | 'organization' | 'magic' | 'science'
   | 'ability' | 'item' | 'occupation' | 'condition' | 'resource';
 
+export type WorldPhase = 'creation' | 'golden' | 'shadow' | 'eclipse' | 'ruin';
+
+export interface MapConnection {
+  id: string;
+  sourceId: string;
+  targetId: string;
+  type: 'trade' | 'magic' | 'diplomatic' | 'war';
+  label?: string;
+}
+
 export interface GroupRoleLinks {
   leadingFigureOf: string[];
   connectedTo: string[];
@@ -143,6 +153,8 @@ export interface WorldData {
   entities: WorldEntity[];
   trash: WorldEntity[];
   mapImage?: string;
+  mapConnections: MapConnection[];
+  worldPhase: WorldPhase;
 }
 
 // Props Interfaces

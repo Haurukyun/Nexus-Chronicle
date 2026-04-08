@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { BarChart3, Users, Map, Clock, PieChart, Activity, Fingerprint } from 'lucide-react';
 import { WorldData, WorldEntity } from '../types';
 import { TYPE_LABELS } from '../constants';
+import { useWorldStore } from '../store/useWorldStore';
 
 interface DashboardViewProps {
     world: WorldData;
@@ -10,6 +11,7 @@ interface DashboardViewProps {
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode, onNavigate }) => {
+    const setWorldPhase = useWorldStore(state => (state as any).setWorldPhase);
     const stats = useMemo(() => {
         const counts: Record<string, number> = {};
         world.entities.forEach(e => {
@@ -52,6 +54,34 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
     const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
     const bgCard = isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
 
+    const renderPieChart = () => {
+        let offset = 0;
+        const elements: JSX.Element[] = [];
+        const entries = Object.entries(stats.counts);
+        
+        entries.forEach(([type, count], i) => {
+            const percentage = (count / (world.entities.length || 1)) * 100;
+            const strokeDasharray = `${percentage} ${100 - percentage}`;
+            const strokeDashoffset = 0 - offset;
+            
+            elements.push(
+                <circle
+                    key={type}
+                    cx="18" cy="18" r="16"
+                    fill="none"
+                    stroke={colors[i % colors.length]}
+                    strokeWidth="3.8"
+                    strokeDasharray={strokeDasharray}
+                    strokeDashoffset={strokeDashoffset}
+                    className="transition-all duration-1000"
+                />
+            );
+            offset += percentage;
+        });
+        
+        return elements;
+    };
+
     return (
         <div className="p-12 max-w-7xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <header className="space-y-2">
@@ -67,7 +97,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Composition Chart */}
                 <div className={`p-8 rounded-[3rem] border ${bgCard} shadow-2xl space-y-8`}>
                     <div className="flex items-center justify-between">
                         <h3 className="text-xl font-serif font-bold flex items-center gap-3 uppercase tracking-widest"><PieChart size={20} className={accent} /> World Composition</h3>
@@ -76,25 +105,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                     <div className="flex items-center gap-12">
                         <div className="relative w-48 h-48">
                             <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90 drop-shadow-2xl">
-                                {Object.entries(stats.counts).reduce((acc: any, [type, count], i) => {
-                                    const percentage = (count / (world.entities.length || 1)) * 100;
-                                    const strokeDasharray = `${percentage} ${100 - percentage}`;
-                                    const strokeDashoffset = -(acc.offset as number);
-                                    acc.offset += percentage;
-                                    acc.elements.push(
-                                        <circle
-                                            key={type}
-                                            cx="18" cy="18" r="16"
-                                            fill="none"
-                                            stroke={colors[i % colors.length]}
-                                            strokeWidth="3.8"
-                                            strokeDasharray={strokeDasharray}
-                                            strokeDashoffset={strokeDashoffset}
-                                            className="transition-all duration-1000"
-                                        />
-                                    );
-                                    return acc;
-                                }, { offset: 0, elements: [] }).elements}
+                                {renderPieChart()}
                             </svg>
                         </div>
                         <div className="flex-1 space-y-3">
@@ -111,7 +122,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                     </div>
                 </div>
 
-                {/* Top Interconnected */}
                 <div className={`p-8 rounded-[3rem] border ${bgCard} shadow-2xl space-y-8`}>
                     <h3 className="text-xl font-serif font-bold flex items-center gap-3 uppercase tracking-widest"><Activity size={20} className={accent} /> Nexus Focus</h3>
                     <div className="space-y-4">
@@ -132,7 +142,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                 </div>
             </div>
 
-            {/* Creative Sparks (Pure Logic, no AI) */}
             <div className={`p-12 rounded-[4rem] border ${bgCard} shadow-2xl relative overflow-hidden`}>
                 <div className="absolute top-0 right-0 p-8 opacity-5">
                     <BarChart3 size={200} />
@@ -142,6 +151,34 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm italic opacity-60 leading-relaxed max-w-3xl">
                         {insights.map((insight, i) => <p key={i}>"{insight}"</p>)}
                     </div>
+                </div>
+            </div>
+
+            <div className={`p-10 rounded-[3rem] border ${bgCard} shadow-2xl space-y-8`}>
+                <div className="flex items-end justify-between">
+                    <div>
+                        <h3 className="text-xl font-serif font-bold flex items-center gap-3 uppercase tracking-widest leading-none">Aura of the Soul</h3>
+                        <p className="opacity-40 text-[9px] uppercase tracking-widest mt-2 ml-1">Current World Phase: {world.worldPhase || 'Sovereign'}</p>
+                    </div>
+                </div>
+                
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                    {['creation', 'golden', 'shadow', 'eclipse', 'ruin'].map((phase: any) => (
+                        <button 
+                            key={phase}
+                            onClick={() => setWorldPhase(phase)}
+                            className={`p-5 rounded-3xl border transition-all text-left space-y-2 group ${world.worldPhase === phase ? (isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-[#fef08a] text-black border-[#fef08a]') : 'hover:bg-white/5 opacity-60'}`}
+                        >
+                            <span className="block text-[10px] font-black uppercase tracking-tighter">{phase}</span>
+                            <span className="block text-[8px] opacity-60 group-hover:opacity-100 italic">
+                                {phase === 'creation' && 'The First Spark'}
+                                {phase === 'golden' && 'Radiant Peace'}
+                                {phase === 'shadow' && 'Whispers in Dark'}
+                                {phase === 'eclipse' && 'Cosmic Paradox'}
+                                {phase === 'ruin' && 'Final Echoes'}
+                            </span>
+                        </button>
+                    ))}
                 </div>
             </div>
         </div>

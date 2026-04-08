@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import {
     Search, Plus, Globe, Trash2, Settings,
-    BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge
+    BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from './constants';
@@ -11,6 +11,7 @@ import { OptionsView } from './views/OptionsView';
 import { DashboardView } from './views/DashboardView';
 import { TimelineView } from './views/TimelineView';
 import { NexusTreeView } from './views/NexusTreeView';
+import { JourneyView } from './views/JourneyView';
 import { EntityViewer } from './components/viewer/EntityViewer';
 import { EntityEditor } from './components/editor/EntityEditor';
 
@@ -36,8 +37,25 @@ const App = () => {
     const accentText = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
     const sidebarBg = isWikiMode ? 'bg-[#f5e6d3]' : 'bg-slate-900/20';
 
+    const auraStyles = useMemo(() => {
+        const phase = world.worldPhase || 'golden';
+        const config: any = {
+            creation: { filter: 'contrast(1.1) brightness(1.1)', accent: '#fef08a', bg: 'radial-gradient(circle, #fff2 0%, transparent 70%)' },
+            golden: { filter: 'sepia(0.2)', accent: '#fbbf24', bg: 'none' },
+            shadow: { filter: 'grayscale(0.4) brightness(0.7) contrast(1.2)', accent: '#818cf8', bg: 'url("https://www.transparenttextures.com/patterns/dark-matter.png")' },
+            eclipse: { filter: 'hue-rotate(180deg) invert(0.1) brightness(0.8)', accent: '#fb7185', bg: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)' },
+            ruin: { filter: 'grayscale(1) contrast(1.5) brightness(0.5)', accent: '#f87171', bg: 'url("https://www.transparenttextures.com/patterns/60-lines.png")' }
+        };
+        return config[phase] || config.golden;
+    }, [world.worldPhase]);
+
     return (
-        <div className={`flex h-screen ${bgClass} ${isWikiMode ? 'text-[#1a1a1a]' : 'text-slate-300'} transition-all duration-500 overflow-hidden font-sans`}>
+        <div 
+            style={{ filter: auraStyles.filter }}
+            className={`flex h-screen ${bgClass} ${isWikiMode ? 'text-[#1a1a1a]' : 'text-slate-300'} transition-all duration-1000 overflow-hidden font-sans relative`}>
+            {auraStyles.bg !== 'none' && (
+                <div className="absolute inset-0 pointer-events-none opacity-10 z-0" style={{ background: auraStyles.bg }} />
+            )}
             {/* Sidebar */}
             <aside className={`w-80 border-r ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/60'} flex flex-col ${sidebarBg} backdrop-blur-md z-20`}>
                 <div className={`p-6 border-b ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/60'}`}>
@@ -111,6 +129,7 @@ const App = () => {
                     <button onClick={() => setActiveTabId('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'dashboard' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20') : 'hover:bg-white/5'}`}><BarChart3 size={16} /> World Ledger</button>
                     <button onClick={() => setActiveTabId('timeline')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'timeline' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-purple-500 text-white shadow-lg shadow-purple-500/20') : 'hover:bg-white/5'}`}><History size={16} /> Chronos View</button>
                     <button onClick={() => setActiveTabId('nexus')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'nexus' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-rose-500 text-white shadow-lg shadow-rose-500/20') : 'hover:bg-white/5'}`}><GitMerge size={16} /> Nexus Lines</button>
+                    <button onClick={() => setActiveTabId('journey')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'journey' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-orange-500 text-white shadow-lg shadow-orange-500/20') : 'hover:bg-white/5'}`}><Footprints size={16} /> Grand Journey</button>
                     <button onClick={() => setActiveTabId('map')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold ${activeTabId === 'map' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20') : 'hover:bg-white/5'}`}><Globe size={16} /> Atlas View</button>
                     <button onClick={() => setActiveTabId('trash')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-bold ${activeTabId === 'trash' ? (isWikiMode ? 'text-red-500' : 'text-slate-400') : 'text-slate-500 hover:text-red-400'}`}><Trash2 size={14} /> Forgotten Depth</button>
                     <button onClick={() => setActiveTabId('options')} className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-bold ${activeTabId === 'options' ? (isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]') : 'text-slate-500 hover:text-slate-300'}`}><Settings size={14} /> System Archive</button>
@@ -151,6 +170,7 @@ const App = () => {
                     {activeTabId === 'dashboard' && <DashboardView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'timeline' && <TimelineView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'nexus' && <NexusTreeView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'journey' && <JourneyView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
 
                     {activeEntity && (
                         <div className="max-w-7xl mx-auto px-12 py-16 min-h-full">

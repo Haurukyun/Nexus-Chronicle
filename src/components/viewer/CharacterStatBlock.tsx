@@ -1,5 +1,5 @@
 import React from 'react';
-import { TaperedDivider, WikiStatRow, LinksDisplay } from '../ui';
+import { TaperedDivider, WikiStatRow, LinksDisplay, RadarChart } from '../ui';
 import { Character, WorldEntity } from '../../types';
 
 interface CharacterStatBlockProps {
@@ -12,6 +12,7 @@ interface CharacterStatBlockProps {
 export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName = false }: CharacterStatBlockProps) => {
     if (entity.type !== 'character') return null;
     const char = entity as Character;
+    const isWikiMode = true; 
 
     const speciesNames = char.speciesIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
     const occupationNames = char.occupationIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
@@ -58,6 +59,10 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                     <WikiStatRow label="Other Info" value={char.otherBasicInfo} />
                 </div>
             </div>
+
+            <TaperedDivider />
+            
+            <RadarChart stats={char.stats || {}} isWikiMode={isWikiMode} />
 
             <TaperedDivider />
 
