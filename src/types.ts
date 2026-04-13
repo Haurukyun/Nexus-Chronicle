@@ -1,25 +1,3 @@
-export interface BaseEntity {
-  id: string;
-  name: string;
-  belongsUnderId?: string;
-  textColor?: string;
-  backgroundColor?: string;
-  isReadOnly?: boolean;
-  isMinorDocument?: boolean;
-  isDead?: boolean;
-  status?: string; // Added
-  isCategory?: boolean;
-  tags: string[];
-  otherNames?: string;
-  description: string;
-  type: EntityType;
-  lastModified: number;
-  privateNotes?: string;
-  coordinates?: { x: number; y: number }; // Moved up for simplicity
-}
-
-// ... Character interface remains the same but ensure it inherits from BaseEntity properly ...
-// (I'll just replace the whole file to be safe and clean)
 import React from 'react';
 
 export type EntityType =
@@ -57,14 +35,18 @@ export interface BaseEntity {
   isDead?: boolean;
   status?: string;
   isCategory?: boolean;
+  isFinished?: boolean;
+  orderNumber?: string;
+  documentTemplate?: string;
+  extraHtmlClasses?: string;
+  otherNamesAndEpithets?: string;
   tags: string[];
-  otherNames?: string;
+  otherNames?: string; // Kept for backward compatibility if needed, but UI will use nameAndEpithets
   description: string;
   type: EntityType;
   lastModified: number;
   privateNotes?: string;
   coordinates?: { x: number; y: number };
-  // Relation arrays moved here for consistency across all entity types
   parentIds: string[];
   childrenIds: string[];
   relativeIds: string[];
@@ -103,9 +85,9 @@ export interface Character extends BaseEntity {
   occupationIds: string[];
   ethnicity?: string;
   combatRating?: string;
-  placeOfResidenceId?: string;
-  placeOfOriginId?: string;
-  placeOfDemiseId?: string;
+  placeOfResidenceId?: string[];
+  placeOfOriginId?: string[];
+  placeOfDemiseId?: string[];
   affectedByBoonsIds: string[];
   affectedByAfflictionsIds: string[];
   affectedByOtherConditionsIds: string[];
@@ -119,8 +101,8 @@ export interface Character extends BaseEntity {
     wisdom?: string;
     charisma?: string;
   };
-  equipment?: string;
-  wealth?: string;
+  equipmentIds: string[];
+  wealthIds: string[];
   skillIds: string[];
   spellIds: string[];
   languageIds: string[];
@@ -141,7 +123,7 @@ export interface Event extends BaseEntity {
 }
 
 export interface WorldEra extends BaseEntity {
-  type: 'note'; // Reusing note type or could add a specific era type
+  type: 'note';
   startDate?: string;
   endDate?: string;
 }
@@ -157,9 +139,8 @@ export interface WorldData {
   worldPhase: WorldPhase;
 }
 
-// Props Interfaces
 export interface EntityEditorProps {
-    entity: any; // Using any for the draft object which might be a partial/superset
+    entity: any;
     allEntities: WorldEntity[];
     onSave: () => void;
     onCancel: () => void;
@@ -174,7 +155,7 @@ export interface EntityViewerProps {
     onEdit: () => void;
     onDelete: () => void;
     onNavigate: (id: string) => void;
-    onFocusMap: () => void; // Added
+    onFocusMap: () => void;
     isWikiMode: boolean;
 }
 

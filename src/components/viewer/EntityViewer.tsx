@@ -1,35 +1,38 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { CodexHeader, WikiHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
 import { FieldRow, LinksDisplay } from '../ui';
 import { EntityViewerProps, Character, EntityType } from '../../types';
 import { TYPE_LABELS } from '../../constants';
+import { getCategorizedBacklinks } from '../../utils/backlinkUtils';
 
 export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap, isWikiMode }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
     const char = entity as Character;
 
+    // Calculate categorized backlinks
+    const backlinks = useMemo(() => getCategorizedBacklinks(entity.id, allEntities), [entity.id, allEntities]);
+
     const MainView = () => (
         <div className={`flex ${isWikiMode ? 'flex-row gap-12' : 'flex-col lg:flex-row gap-12'}`}>
             <div className="flex-1 space-y-12">
                 <section className={`${isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}`}>
-                    <h2 className={`text-4xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28]' : 'text-[#fef08a]'} mb-2 uppercase tracking-tight`}>{isChar ? 'Biography' : 'Overview'}</h2>
+                    <div className="flex justify-between items-start mb-2">
+                        <h2 className={`text-4xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28]' : 'text-[#fef08a]'} uppercase tracking-tight`}>{isChar ? 'Biography' : 'Overview'}</h2>
+                        {entity.isFinished && (
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black shadow-lg shadow-yellow-500/20 animate-pulse'}`}>
+                                Finished
+                            </span>
+                        )}
+                    </div>
                     {isWikiMode && <div className="h-[2px] w-full bg-[#e69a28] mb-6" />}
 
                     <p className={`text-lg leading-relaxed ${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.description || "The entry is currently silent."}</p>
                 </section>
 
-                {isWikiMode && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <LinksDisplay label="Lore Connections" ids={char.loreNoteIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Mythic Roots" ids={char.mythIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Event Ties" ids={char.eventIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    </div>
-                )}
-
-                {!isWikiMode && (
-                    <div className="space-y-8">
+                <div className="space-y-8">
+                    {!isWikiMode && isChar && (
                         <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
                             <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Vital Records</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
@@ -43,77 +46,86 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                 <FieldRow label="Weight" value={char.weight} isWikiMode={false} />
                                 <FieldRow label="Birth" value={char.dateOfBirth} isWikiMode={false} />
                                 <FieldRow label="Death" value={char.dateOfDeath} isWikiMode={false} />
-                                <FieldRow label="Origin" value={allEntities.find(e => e.id === char.placeOfOriginId)?.name} isWikiMode={false} />
-                                <FieldRow label="Residence" value={char.placeOfResidenceId} isWikiMode={false} />
-                                <FieldRow label="Demise" value={char.placeOfDemiseId} isWikiMode={false} />
-                                <FieldRow label="Other Info" value={char.otherBasicInfo} isWikiMode={false} />
-                                <FieldRow label="Traits" value={char.traitsAndCharacteristics} isWikiMode={false} />
-                                <FieldRow label="Features" value={char.unusualFeatures} isWikiMode={false} />
-                                <FieldRow label="Equipment" value={char.equipment} isWikiMode={false} />
-                                <FieldRow label="Wealth" value={char.wealth} isWikiMode={false} />
+                                <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/5 pt-4 mt-4">
+                                    <LinksDisplay label="Origin" ids={char.placeOfOriginId || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
+                                    <LinksDisplay label="Residence" ids={char.placeOfResidenceId || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
+                                    <LinksDisplay label="Place of Demise" ids={char.placeOfDemiseId || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
+                                </div>
                             </div>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <LinksDisplay label="Lore Connections" ids={char.loreNoteIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Mythic Roots" ids={char.mythIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Event Ties" ids={char.eventIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Locations" ids={char.locationIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Cultures" ids={char.cultureIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Parent Entities" ids={char.parentIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Child Entities" ids={char.childrenIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Known Skills" ids={char.skillIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Known Spells" ids={char.spellIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Languages" ids={char.languageIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Magical Teachings" ids={char.magicalTeachingIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Technologies" ids={char.technologyIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Boons" ids={char.affectedByBoonsIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Afflictions" ids={char.affectedByAfflictionsIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Other Conditions" ids={char.affectedByOtherConditionsIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        </div>
-
-                        {entity.privateNotes && (
-                            <div className="bg-rose-500/5 border border-rose-900/20 p-8 rounded-2xl">
-                                <h3 className="text-xs font-black uppercase mb-4 tracking-widest text-rose-500">DM Confidential Notes</h3>
-                                <p className="text-rose-200/70 font-mono text-sm whitespace-pre-wrap">{entity.privateNotes}</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {isWikiMode ? (
-                <div className="lg:w-80 shrink-0">
-                    {isChar ? (
-                        <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} />
-                    ) : (
-                        <WikiInfobox entity={entity} allEntities={allEntities} onNavigate={onNavigate} onFocusMap={onFocusMap} />
                     )}
 
-                    {isChar && (
-                        <div className="p-4 mt-6 bg-[#fcf5e9] border border-[#d4c8af]/60 rounded-sm">
-                            <h4 className="text-[10px] font-black text-[#854d0e] uppercase border-b border-[#d4c8af] pb-1 mb-3">Relations</h4>
-                            <div className="gap-1">
-                                <LinksDisplay label="Locations" ids={char.locationIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="tag" />
-                                <LinksDisplay label="Members" ids={(entity as any).memberOf} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="tag" />
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Always show reciprocal Story connections */}
+                        <LinksDisplay label="Lore Connections" ids={[...new Set([...(char.loreNoteIds || []), ...backlinks.lore, ...backlinks.referencedIn])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Mythic Roots" ids={[...new Set([...(char.mythIds || []), ...backlinks.myths])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Event Ties" ids={[...new Set([...(char.eventIds || []), ...backlinks.events])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        
+                        {/* Specialized Complementary Displays */}
+                        {entity.type === 'location' && (
+                            <>
+                                <LinksDisplay label="Notable Residents" ids={backlinks.residents} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Native Figures" ids={backlinks.natives} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Points of Interest" ids={backlinks.containedIn} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            </>
+                        )}
+
+                        {entity.type === 'item' && (
+                            <LinksDisplay label="Current Owners/Users" ids={backlinks.referencedIn} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        )}
+
+                        {(entity.type === 'species' || entity.type === 'organization' || entity.type === 'political' || entity.type === 'religious' || entity.type === 'magic' || entity.type === 'science') && (
+                            <LinksDisplay label="Prominent Members" ids={backlinks.members} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        )}
+
+                        {(entity.type === 'ability' || entity.type === 'technology') && (
+                            <LinksDisplay label="Known Practitioners" ids={backlinks.practitioners} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        )}
+
+                        {/* Traditional character links, now bidirectionally merged */}
+                        {isChar && (
+                            <>
+                                <LinksDisplay label="Parents/Ancestors" ids={[...new Set([...(char.parentIds || []), ...backlinks.parents])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Children/Descendants" ids={[...new Set([...(char.childrenIds || []), ...backlinks.children])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Inner Circle & Allies" ids={[...new Set([...(char.friendIds || []), ...backlinks.friends])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
+                            </>
+                        )}
+                    </div>
+
+                    {entity.privateNotes && (
+                        <div className="bg-rose-500/5 border border-rose-900/20 p-8 rounded-2xl">
+                            <h3 className="text-xs font-black uppercase mb-4 tracking-widest text-rose-500">DM Confidential Notes</h3>
+                            <p className="text-rose-200/70 font-mono text-sm whitespace-pre-wrap">{entity.privateNotes}</p>
                         </div>
                     )}
                 </div>
-            ) : (
-                <aside className="lg:w-80 shrink-0 space-y-6">
-                    {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} />}
-                    <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10">
-                        <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
-                        <div className="space-y-6">
-                            <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} isWikiMode={false} />
-                            {isChar && <FieldRow label="Age" value={char.age} isWikiMode={false} />}
-                            <FieldRow label="Status" value={entity.status || (entity.isDead ? 'Lost' : 'Active')} isWikiMode={false} />
-                            <FieldRow label="Belongs Under" value={entity.belongsUnderId} isWikiMode={false} />
+            </div>
+
+            <aside className="lg:w-80 shrink-0 space-y-6">
+                {isWikiMode ? (
+                    <>
+                        {isChar ? (
+                            <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />
+                        ) : (
+                            <WikiInfobox entity={entity} allEntities={allEntities} onNavigate={onNavigate} onFocusMap={onFocusMap} />
+                        )}
+                    </>
+                ) : (
+                    <>
+                        {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} backlinks={backlinks} />}
+                        <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10">
+                            <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
+                            <div className="space-y-6">
+                                <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} isWikiMode={false} />
+                                <FieldRow label="Template" value={entity.documentTemplate || "Generic"} isWikiMode={false} />
+                                <FieldRow label="Order" value={entity.orderNumber} isWikiMode={false} />
+                                <FieldRow label="Status" value={entity.status || (entity.isDead ? 'Lost' : 'Active')} isWikiMode={false} />
+                                <FieldRow label="Hierarchy" value={allEntities.find(e => e.id === entity.belongsUnderId)?.name} isWikiMode={false} />
+                            </div>
                         </div>
-                    </div>
-                </aside>
-            )}
+                    </>
+                )}
+            </aside>
         </div>
     );
 

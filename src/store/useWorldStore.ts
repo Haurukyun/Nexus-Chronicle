@@ -92,7 +92,12 @@ export const useWorldStore = create<WorldStore>()(
                 const newEntity: any = {
                     id, name, type, description: "",
                     lastModified: Date.now(),
-                    tags: [], parentIds: [], childrenIds: [],
+                    isFinished: false,
+                    orderNumber: "",
+                    documentTemplate: "None",
+                    extraHtmlClasses: "",
+                    otherNamesAndEpithets: "",
+                    tags: [], parentIds: [], childrenIds: [], relativeIds: [], friendIds: [], enemyIds: [], complicatedWithIds: [],
                     loreNoteIds: [],
                     mythIds: [],
                     eventIds: [],
@@ -104,7 +109,20 @@ export const useWorldStore = create<WorldStore>()(
                         religious: { leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] },
                         magic: { leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] },
                         science: { leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] },
-                    }
+                    },
+                    detailSkillIds: [],
+                    detailItemIds: [],
+                    detailConditionIds: [],
+                    detailResourceIds: [],
+                    // Character specific defaults
+                    ...(type === 'character' ? {
+                        placeOfResidenceId: [], placeOfOriginId: [], placeOfDemiseId: [],
+                        speciesIds: [], occupationIds: [],
+                        affectedByBoonsIds: [], affectedByAfflictionsIds: [], affectedByOtherConditionsIds: [],
+                        skillIds: [], spellIds: [], languageIds: [], magicalTeachingIds: [], technologyIds: [],
+                        equipmentIds: [], wealthIds: [],
+                        stats: { strength: "10", dexterity: "10", constitution: "10", intelligence: "10", wisdom: "10", charisma: "10" }
+                    } : {})
                 };
 
                 set((state) => ({
