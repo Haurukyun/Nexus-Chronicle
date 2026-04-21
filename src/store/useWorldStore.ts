@@ -122,6 +122,22 @@ export const useWorldStore = create<WorldStore>()(
                         skillIds: [], spellIds: [], languageIds: [], magicalTeachingIds: [], technologyIds: [],
                         equipmentIds: [], wealthIds: [],
                         stats: { strength: "10", dexterity: "10", constitution: "10", intelligence: "10", wisdom: "10", charisma: "10" }
+                    } : {}),
+                    // Location specific defaults
+                    ...(type === 'location' ? {
+                        precedingLocationIds: [], succeedingLocationIds: [],
+                        localLanguageIds: [], localCurrencyIds: [], localCultureIds: [],
+                        commonOccupationIds: [], localResourceIds: [], localSpeciesIds: [],
+                        originatedCharacterIds: [], livingCharacterIds: [], deceasedCharacterIds: [], connectedCharacterIds: [],
+                        neighbouringLocationIds: [], otherConnectedLocationIds: [],
+                        traditionsAndCustoms: "",
+                        governingGroupConnections: {
+                            political: { leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] },
+                            organization: { leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] },
+                            religious: { leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] },
+                            magic: { leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] },
+                            science: { leadingFigureOf: [], connectedTo: [], memberOf: [], allyOf: [], enemyOf: [] },
+                        }
                     } : {})
                 };
 

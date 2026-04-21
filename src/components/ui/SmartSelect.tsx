@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Check } from 'lucide-react';
+import { X, Plus, Check, LucideIcon } from 'lucide-react';
 import { SmartSelectProps } from '../../types';
 
-export const SmartSelect: React.FC<SmartSelectProps> = ({ label, ids = [], type, all, onChange, onCreate, isWikiMode, disabled }) => {
+export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({ label, ids = [], type, all, onChange, onCreate, isWikiMode, disabled, icon: Icon }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -26,10 +26,13 @@ export const SmartSelect: React.FC<SmartSelectProps> = ({ label, ids = [], type,
 
     return (
         <div className="space-y-1 relative" ref={dropdownRef}>
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</label>
+            <div className="flex items-center gap-2 pl-1 mb-1">
+                {Icon && <Icon size={12} className={isWikiMode ? 'text-[#b91c1c]/60' : 'text-[#fef08a]/60'} />}
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</label>
+            </div>
             <div
                 onClick={() => !disabled && setIsOpen(!isOpen)}
-                className={`w-full ${bgInput} border rounded-lg p-2 text-xs flex flex-wrap gap-1 cursor-pointer min-h-[38px] transition-colors ${disabled ? 'opacity-50 cursor-default' : ''}`}
+                className={`w-full ${bgInput} border rounded-lg p-2 text-xs flex flex-wrap gap-1 cursor-pointer min-h-[38px] transition-colors shadow-sm ${disabled ? 'opacity-50 cursor-default' : ''}`}
             >
                 {ids.length === 0 && <span className="text-slate-400">Add connection...</span>}
                 {ids.map((id: string) => (

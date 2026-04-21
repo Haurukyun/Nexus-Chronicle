@@ -112,6 +112,34 @@ export interface Character extends BaseEntity {
 
 export interface Location extends BaseEntity {
   type: 'location';
+  precedingLocationIds: string[];
+  succeedingLocationIds: string[];
+  dateOfCreation?: string;
+  dateOfEnd?: string;
+  unusualFeatures?: string;
+  locationType?: string;
+  population?: string;
+  size?: string;
+  localLanguageIds: string[];
+  localCurrencyIds: string[];
+  localCultureIds: string[];
+  commonOccupationIds: string[];
+  localResourceIds: string[];
+  localSpeciesIds: string[];
+  originatedCharacterIds: string[];
+  livingCharacterIds: string[];
+  deceasedCharacterIds: string[];
+  connectedCharacterIds: string[];
+  neighbouringLocationIds: string[];
+  otherConnectedLocationIds: string[];
+  traditionsAndCustoms: string;
+  governingGroupConnections: {
+    political: GroupRoleLinks;
+    organization: GroupRoleLinks;
+    religious: GroupRoleLinks;
+    magic: GroupRoleLinks;
+    science: GroupRoleLinks;
+  };
 }
 
 export interface Event extends BaseEntity {

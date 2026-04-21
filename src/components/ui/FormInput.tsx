@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { LucideIcon } from 'lucide-react';
 import { FormInputProps } from '../../types';
 
-export const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode, disabled, options }: FormInputProps & { options?: string[], disabled?: boolean }) => {
+export const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode, disabled, options, icon: Icon }: FormInputProps & { options?: string[], disabled?: boolean, icon?: LucideIcon }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -15,11 +16,14 @@ export const FormInput = ({ label, value, onChange, placeholder, type = "text", 
 
     return (
         <div className="space-y-1 relative" ref={dropdownRef}>
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</label>
+            <div className="flex items-center gap-2 pl-1 mb-1">
+                {Icon && <Icon size={12} className={isWikiMode ? 'text-[#b91c1c]/60' : 'text-[#fef08a]/60'} />}
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</label>
+            </div>
             <input
                 type={type}
                 disabled={disabled}
-                className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:ring-1 ${isWikiMode ? 'focus:ring-red-500' : 'focus:ring-yellow-500'} disabled:opacity-50`}
+                className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-lg px-3 py-2 text-sm outline-none transition-all focus:ring-1 ${isWikiMode ? 'focus:ring-red-500' : 'focus:ring-yellow-500'} disabled:opacity-50 shadow-sm`}
                 value={value || ''}
                 onChange={e => onChange(e.target.value)}
                 onFocus={() => setIsOpen(true)}

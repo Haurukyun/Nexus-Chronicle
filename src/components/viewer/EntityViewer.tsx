@@ -3,13 +3,15 @@ import { CodexHeader, WikiHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
 import { FieldRow, LinksDisplay } from '../ui';
-import { EntityViewerProps, Character, EntityType } from '../../types';
+import { EntityViewerProps, Character, EntityType, Location } from '../../types';
 import { TYPE_LABELS } from '../../constants';
 import { getCategorizedBacklinks } from '../../utils/backlinkUtils';
 
 export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap, isWikiMode }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
+    const isLoc = entity.type === 'location';
     const char = entity as Character;
+    const loc = entity as Location;
 
     // Calculate categorized backlinks
     const backlinks = useMemo(() => getCategorizedBacklinks(entity.id, allEntities), [entity.id, allEntities]);
@@ -42,31 +44,52 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                 <FieldRow label="Species" value={char.speciesIds?.map((id: string) => allEntities.find(e => e.id === id)?.name).filter(Boolean).join(', ')} isWikiMode={false} />
                                 <FieldRow label="Occupation" value={char.occupationIds?.map((id: string) => allEntities.find(e => e.id === id)?.name).filter(Boolean).join(', ')} isWikiMode={false} />
                                 <FieldRow label="Combat Rating" value={char.combatRating} isWikiMode={false} />
-                                <FieldRow label="Height" value={char.height} isWikiMode={false} />
-                                <FieldRow label="Weight" value={char.weight} isWikiMode={false} />
                                 <FieldRow label="Birth" value={char.dateOfBirth} isWikiMode={false} />
                                 <FieldRow label="Death" value={char.dateOfDeath} isWikiMode={false} />
-                                <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/5 pt-4 mt-4">
-                                    <LinksDisplay label="Origin" ids={char.placeOfOriginId || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
-                                    <LinksDisplay label="Residence" ids={char.placeOfResidenceId || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
-                                    <LinksDisplay label="Place of Demise" ids={char.placeOfDemiseId || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
+                            </div>
+                        </div>
+                    )}
+
+                    {!isWikiMode && isLoc && (
+                         <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
+                            <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Geographic Intelligence</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                                <FieldRow label="Type" value={loc.locationType} isWikiMode={false} />
+                                <FieldRow label="Population" value={loc.population} isWikiMode={false} />
+                                <FieldRow label="Size" value={loc.size} isWikiMode={false} />
+                                <FieldRow label="Founded" value={loc.dateOfCreation} isWikiMode={false} />
+                                <FieldRow label="Ended" value={loc.dateOfEnd} isWikiMode={false} />
+                                <div className="col-span-2 mt-4 space-y-4">
+                                    <FieldRow label="Unusual Layout/Features" value={loc.unusualFeatures} isWikiMode={false} />
+                                    <LinksDisplay label="Preceding Geography" ids={loc.precedingLocationIds || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
+                                    <LinksDisplay label="Succeeding Geography" ids={loc.succeedingLocationIds || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
                                 </div>
                             </div>
                         </div>
                     )}
 
+                    {isLoc && loc.traditionsAndCustoms && (
+                        <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
+                            <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Traditions & Customs</h3>
+                            <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{loc.traditionsAndCustoms}</p>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Always show reciprocal Story connections */}
-                        <LinksDisplay label="Lore Connections" ids={[...new Set([...(char.loreNoteIds || []), ...backlinks.lore, ...backlinks.referencedIn])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Mythic Roots" ids={[...new Set([...(char.mythIds || []), ...backlinks.myths])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Event Ties" ids={[...new Set([...(char.eventIds || []), ...backlinks.events])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Lore Connections" ids={[...new Set([...(entity.loreNoteIds || []), ...backlinks.lore, ...backlinks.referencedIn])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Mythic Roots" ids={[...new Set([...(entity.mythIds || []), ...backlinks.myths])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Event Ties" ids={[...new Set([...(entity.eventIds || []), ...backlinks.events])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
                         
                         {/* Specialized Complementary Displays */}
-                        {entity.type === 'location' && (
+                        {isLoc && (
                             <>
-                                <LinksDisplay label="Notable Residents" ids={backlinks.residents} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Native Figures" ids={backlinks.natives} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Points of Interest" ids={backlinks.containedIn} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Characters Born Here" ids={loc.originatedCharacterIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Current Residents" ids={[...new Set([...(loc.livingCharacterIds || []), ...backlinks.residents])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Historical Figures (Lost Here)" ids={[...new Set([...(loc.deceasedCharacterIds || []), ...backlinks.passedHere])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Neighbouring Lands" ids={loc.neighbouringLocationIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Internal Points of Interest" ids={backlinks.containedIn} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Governing Authorities" ids={Object.values(loc.governingGroupConnections || {}).flatMap(g => g.connectedTo || [])} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
                             </>
                         )}
 
@@ -108,6 +131,17 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                             <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />
                         ) : (
                             <WikiInfobox entity={entity} allEntities={allEntities} onNavigate={onNavigate} onFocusMap={onFocusMap} />
+                        )}
+                        {isLoc && (
+                            <div className="p-4 bg-[#fcf5e9] border border-[#d4c8af]/60 rounded-sm">
+                                <h4 className="text-[10px] font-black text-[#854d0e] uppercase border-b border-[#d4c8af] pb-1 mb-3">Geographic Vitals</h4>
+                                <div className="space-y-3">
+                                    <FieldRow label="Type" value={loc.locationType} isWikiMode={true} />
+                                    <FieldRow label="Demographics" value={loc.population} isWikiMode={true} />
+                                    <FieldRow label="Manifested" value={loc.dateOfCreation} isWikiMode={true} />
+                                    <LinksDisplay label="Local Languages" ids={loc.localLanguageIds || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                                </div>
+                            </div>
                         )}
                     </>
                 ) : (
