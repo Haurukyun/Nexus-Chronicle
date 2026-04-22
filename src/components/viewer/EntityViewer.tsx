@@ -35,31 +35,11 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 </section>
 
                 <div className="space-y-8">
-                    {entity.type !== 'location' && (
-                        <EntitySpecificsViewerRegistry entity={entity} allEntities={allEntities} onNavigate={onNavigate} isWikiMode={isWikiMode} />
-                    )}
-                    {!isWikiMode && isLoc && (
-                         <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                            <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Geographic Intelligence</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                                <FieldRow label="Type" value={loc.locationType} isWikiMode={false} />
-                                <FieldRow label="Population" value={loc.population} isWikiMode={false} />
-                                <FieldRow label="Size" value={loc.size} isWikiMode={false} />
-                                <FieldRow label="Founded" value={loc.dateOfCreation} isWikiMode={false} />
-                                <FieldRow label="Ended" value={loc.dateOfEnd} isWikiMode={false} />
-                                <div className="col-span-2 mt-4 space-y-4">
-                                    <FieldRow label="Unusual Layout/Features" value={loc.unusualFeatures} isWikiMode={false} />
-                                    <LinksDisplay label="Preceding Geography" ids={loc.precedingLocationIds || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
-                                    <LinksDisplay label="Succeeding Geography" ids={loc.succeedingLocationIds || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {isLoc && loc.traditionsAndCustoms && (
+                    <EntitySpecificsViewerRegistry entity={entity} allEntities={allEntities} onNavigate={onNavigate} isWikiMode={isWikiMode} backlinks={backlinks} />
+                    {entity.spoilerNotes && (
                         <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
-                            <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Traditions & Customs</h3>
-                            <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{loc.traditionsAndCustoms}</p>
+                            <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Secrets/Spoilers/DM notes</h3>
+                            <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.spoilerNotes}</p>
                         </div>
                     )}
 
@@ -70,17 +50,13 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                         <LinksDisplay label="Event Ties" ids={[...new Set([...(entity.eventIds || []), ...backlinks.events])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
                         
                         {/* Specialized Complementary Displays */}
-                        {isLoc && (
+                        {isChar && (
                             <>
-                                <LinksDisplay label="Characters Born Here" ids={loc.originatedCharacterIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Current Residents" ids={[...new Set([...(loc.livingCharacterIds || []), ...backlinks.residents])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Historical Figures (Lost Here)" ids={[...new Set([...(loc.deceasedCharacterIds || []), ...backlinks.passedHere])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Neighbouring Lands" ids={loc.neighbouringLocationIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Internal Points of Interest" ids={backlinks.containedIn} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Governing Authorities" ids={Object.values(loc.governingGroupConnections || {}).flatMap(g => g.connectedTo || [])} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
+                                <LinksDisplay label="Allies" ids={backlinks.allies} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Enemies/Rivals" ids={backlinks.enemies} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                                <LinksDisplay label="Known Affiliations" ids={Object.values(char.groupConnections || {}).flatMap(g => g.connectedTo || [])} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
                             </>
                         )}
-
                         {entity.type === 'item' && (
                             <LinksDisplay label="Current Owners/Users" ids={backlinks.referencedIn} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
                         )}

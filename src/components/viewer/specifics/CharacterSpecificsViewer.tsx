@@ -7,9 +7,10 @@ interface Props {
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
     isWikiMode: boolean;
+    backlinks?: any;
 }
 
-export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode }) => {
+export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {
     return (
         <div className="space-y-8">
             <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">

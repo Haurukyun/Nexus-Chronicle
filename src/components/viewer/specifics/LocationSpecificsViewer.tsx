@@ -7,78 +7,51 @@ interface Props {
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
     isWikiMode: boolean;
+    backlinks?: any;
 }
 
-export const LocationSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode }) => {
+export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntities, onNavigate, isWikiMode, backlinks }) => {
     return (
-        <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-2 col-span-full tracking-widest text-[#fef08a] border-b border-slate-800/60 pb-3">Location Intelligence</h3>
-            <FieldRow label="Characters originated from the location (legacy)" value={entity.pairedOriginCharacters || ""} isWikiMode={isWikiMode} />
-            <FieldRow label="Characters currently living in the location (legacy)" value={entity.pairedCurrentCharacters || ""} isWikiMode={isWikiMode} />
-            <FieldRow label="Characters deceased at the location (legacy)" value={entity.pairedDemiseCharacters || ""} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Succeeding Locations/Geography" ids={entity.succedingLocations || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Preceding Locations/Geography" ids={entity.preceedingLocations || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <FieldRow label="Date of creation" value={entity.creationTime || ""} isWikiMode={isWikiMode} />
-            <FieldRow label="Date of end" value={entity.endTIme || ""} isWikiMode={isWikiMode} />
-            <FieldRow label="Location type" value={entity.locationType || ""} isWikiMode={isWikiMode} />
-            <FieldRow label="Population" value={entity.population || ""} isWikiMode={isWikiMode} />
-            <FieldRow label="Size" value={entity.size || ""} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Local Languages" ids={entity.pairedLanguages || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Local Currencies" ids={entity.pairedCurrencies || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Local Cultures/Art" ids={entity.relatedCultures || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Common Occupations/Classes" ids={entity.connectedProfessions || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Local Resources/Materials" ids={entity.connectedResources || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Neighbouring Locations" ids={entity.neighbourLocations || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Other connected Locations" ids={entity.connectedLocations || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Characters originated from the location" ids={entity.pairedOriginCharactersNew || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Characters currently living in the location" ids={entity.pairedCurrentCharactersNew || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Characters deceased at the location" ids={entity.pairedDemiseCharactersNew || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Other connected Characters" ids={entity.pairedConnectedCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Local Species/Races/Flora/Fauna" ids={entity.pairedConnectedRaces || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected to Lore notes/Other notes" ids={entity.pairedConnectedNotes || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected to Myths, legends and stories" ids={entity.pairedConnectedMyths || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected to Events" ids={entity.pairedEvent || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected to Skills/Spells/Other" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected to Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Governing Ideologies/Political groups" ids={entity.governPolitical || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected Ideologies/Political groups" ids={entity.connectedPolitical || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Governing Organizations/Other groups" ids={entity.governOther || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected Organizations/Other groups" ids={entity.connectedOther || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Governing Teachings/Religious groups" ids={entity.governReligious || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected Teachings/Religious groups" ids={entity.connectedReligious || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Governing Schools of Magic/Magical groups" ids={entity.governMagical || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected Schools of Magic/Magical groups" ids={entity.connectedMagical || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Governing Sciences/Technological groups" ids={entity.governTech || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            <LinksDisplay label="Connected Sciences/Technological groups" ids={entity.connectedTech || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-            </div>
-            {entity.traits && (
-                <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
-                    <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Unusual features/Traits</h3>
-                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.traits}</p>
+        <div className="space-y-8">
+            {!isWikiMode && (
+                <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
+                    <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Geographic Intelligence</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                        <FieldRow label="Type" value={loc.locationType} isWikiMode={false} />
+                        <FieldRow label="Population" value={loc.population} isWikiMode={false} />
+                        <FieldRow label="Size" value={loc.size} isWikiMode={false} />
+                        <FieldRow label="Founded" value={loc.dateOfCreation} isWikiMode={false} />
+                        <FieldRow label="Ended" value={loc.dateOfEnd} isWikiMode={false} />
+                        <div className="col-span-2 mt-4 space-y-4">
+                            <FieldRow label="Unusual Layout/Features" value={loc.unusualFeatures} isWikiMode={false} />
+                            <LinksDisplay label="Preceding Geography" ids={loc.precedingLocationIds || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
+                            <LinksDisplay label="Succeeding Geography" ids={loc.succeedingLocationIds || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
+                        </div>
+                    </div>
                 </div>
             )}
-            {entity.description && (
-                <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
-                    <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Description & History</h3>
-                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.description}</p>
-                </div>
-            )}
-            {entity.traditions && (
+
+            {loc.traditionsAndCustoms && (
                 <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
                     <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Traditions & Customs</h3>
-                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.traditions}</p>
+                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{loc.traditionsAndCustoms}</p>
                 </div>
             )}
-            {entity.spoilerNotes && (
-                <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
-                    <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Secrets/Spoilers/DM notes</h3>
-                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.spoilerNotes}</p>
-                </div>
-            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <LinksDisplay label="Characters Born Here" ids={loc.originatedCharacterIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Current Residents" ids={[...new Set([...(loc.livingCharacterIds || []), ...(backlinks?.residents || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Historical Figures (Lost Here)" ids={[...new Set([...(loc.deceasedCharacterIds || []), ...(backlinks?.passedHere || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Neighbouring Lands" ids={loc.neighbouringLocationIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Internal Points of Interest" ids={backlinks?.containedIn || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Governing Authorities" ids={Object.values(loc.governingGroupConnections || {}).flatMap((g: any) => g.connectedTo || [])} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
+                <LinksDisplay label="Local Languages" ids={loc.localLanguageIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Local Currencies" ids={loc.localCurrencyIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Local Cultures/Art" ids={loc.localCultureIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Common Occupations/Classes" ids={loc.commonOccupationIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Local Resources/Materials" ids={loc.localResourceIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Local Species/Races/Flora/Fauna" ids={loc.localSpeciesIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+            </div>
         </div>
     );
 };
