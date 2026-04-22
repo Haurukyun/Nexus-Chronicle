@@ -6,6 +6,7 @@ import { FieldRow, LinksDisplay } from '../ui';
 import { EntityViewerProps, Character, EntityType, Location } from '../../types';
 import { TYPE_LABELS } from '../../constants';
 import { getCategorizedBacklinks } from '../../utils/backlinkUtils';
+import { EntitySpecificsViewerRegistry } from './specifics/EntitySpecificsViewerRegistry';
 
 export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap, isWikiMode }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
@@ -34,22 +35,9 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 </section>
 
                 <div className="space-y-8">
-                    {!isWikiMode && isChar && (
-                        <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                            <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Vital Records</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                                <FieldRow label="Titles" value={char.titles} isWikiMode={false} />
-                                <FieldRow label="Sex" value={char.sex} isWikiMode={false} />
-                                <FieldRow label="Ethnicity" value={char.ethnicity} isWikiMode={false} />
-                                <FieldRow label="Species" value={char.speciesIds?.map((id: string) => allEntities.find(e => e.id === id)?.name).filter(Boolean).join(', ')} isWikiMode={false} />
-                                <FieldRow label="Occupation" value={char.occupationIds?.map((id: string) => allEntities.find(e => e.id === id)?.name).filter(Boolean).join(', ')} isWikiMode={false} />
-                                <FieldRow label="Combat Rating" value={char.combatRating} isWikiMode={false} />
-                                <FieldRow label="Birth" value={char.dateOfBirth} isWikiMode={false} />
-                                <FieldRow label="Death" value={char.dateOfDeath} isWikiMode={false} />
-                            </div>
-                        </div>
+                    {entity.type !== 'location' && (
+                        <EntitySpecificsViewerRegistry entity={entity} allEntities={allEntities} onNavigate={onNavigate} isWikiMode={isWikiMode} />
                     )}
-
                     {!isWikiMode && isLoc && (
                          <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
                             <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Geographic Intelligence</h3>
@@ -103,15 +91,6 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
                         {(entity.type === 'ability' || entity.type === 'technology') && (
                             <LinksDisplay label="Known Practitioners" ids={backlinks.practitioners} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        )}
-
-                        {/* Traditional character links, now bidirectionally merged */}
-                        {isChar && (
-                            <>
-                                <LinksDisplay label="Parents/Ancestors" ids={[...new Set([...(char.parentIds || []), ...backlinks.parents])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Children/Descendants" ids={[...new Set([...(char.childrenIds || []), ...backlinks.children])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                                <LinksDisplay label="Inner Circle & Allies" ids={[...new Set([...(char.friendIds || []), ...backlinks.friends])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                            </>
                         )}
                     </div>
 

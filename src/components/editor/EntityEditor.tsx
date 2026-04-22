@@ -10,6 +10,7 @@ import { EditorGroup } from './EditorGroup';
 import { GroupRoleGroup } from './GroupRoleGroup';
 import { FormInput, FormToggle, SmartSelect } from '../ui';
 import { EntityEditorProps, Location } from '../../types';
+import { EntitySpecificsRegistry } from './specifics/EntitySpecificsRegistry';
 
 export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWikiMode, onUpdate }: EntityEditorProps) => {
     const isLocation = entity.type === 'location';
@@ -169,81 +170,8 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                     </>
                 )}
 
-                {/* character specific content */}
-                {entity.type === 'character' && (
-                    <>
-                        <EditorGroup title="Basic information" icon={Info} isWikiMode={isWikiMode}>
-                            <div className="lg:col-span-3">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Titles</label>
-                                <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-20 outline-none resize-none text-sm shadow-sm`} value={entity.titles} onChange={e => onUpdate({ ...entity, titles: e.target.value })} />
-                            </div>
-                            
-                            <FormInput label="Sex" value={entity.sex} options={['Male', 'Female', 'Non-binary', 'Fluid', 'Other']} onChange={(v: string) => onUpdate({ ...entity, sex: v })} isWikiMode={isWikiMode} />
-                            <FormInput label="Age" value={entity.age} onChange={(v: string) => onUpdate({ ...entity, age: v })} isWikiMode={isWikiMode} />
-                            <FormInput label="Height" value={entity.height} onChange={(v: string) => onUpdate({ ...entity, height: v })} isWikiMode={isWikiMode} />
-                            <FormInput label="Weight" value={entity.weight} onChange={(v: string) => onUpdate({ ...entity, weight: v })} isWikiMode={isWikiMode} />
-                            <FormInput label="Date of birth" value={entity.dateOfBirth} onChange={(v: string) => onUpdate({ ...entity, dateOfBirth: v })} isWikiMode={isWikiMode} />
-                            <FormInput label="Date of death" value={entity.dateOfDeath} onChange={(v: string) => onUpdate({ ...entity, dateOfDeath: v })} isWikiMode={isWikiMode} />
-                            
-                            <SmartSelect label="Species/Races" ids={entity.speciesIds} type="species" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, speciesIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Occupation/Class" ids={entity.occupationIds} type="occupation" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, occupationIds: ids })} onCreate={onCreateNew} />
-                            <FormInput label="Ethnicity" value={entity.ethnicity} onChange={(v: string) => onUpdate({ ...entity, ethnicity: v })} isWikiMode={isWikiMode} />
-                            <FormInput label="Combat rating" value={entity.combatRating} options={['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS', 'SSS']} onChange={(v: string) => onUpdate({ ...entity, combatRating: v })} isWikiMode={isWikiMode} />
-                            
-                            <SmartSelect label="Place of residence" ids={entity.placeOfResidenceId || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, placeOfResidenceId: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Place of origin" ids={entity.placeOfOriginId || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, placeOfOriginId: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Place of demise" ids={entity.placeOfDemiseId || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, placeOfDemiseId: ids })} onCreate={onCreateNew} />
-                            
-                            <SmartSelect label="Affected by Boons" ids={entity.affectedByBoonsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, affectedByBoonsIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Affected by Afflictions" ids={entity.affectedByAfflictionsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, affectedByAfflictionsIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Affected by Other conditions" ids={entity.affectedByOtherConditionsIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, affectedByOtherConditionsIds: ids })} onCreate={onCreateNew} />
-                        </EditorGroup>
-
-                        <EditorGroup title="Skills, Stats, Knowledge & Characteristics" icon={Zap} isWikiMode={isWikiMode}>
-                            <div className="lg:col-span-1.5">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Traits & Characteristics</label>
-                                <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.traitsAndCharacteristics} onChange={e => onUpdate({ ...entity, traitsAndCharacteristics: e.target.value })} />
-                            </div>
-                            <div className="lg:col-span-1.5">
-                                <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Unique/Unusual Features</label>
-                                <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.unusualFeatures} onChange={e => onUpdate({ ...entity, unusualFeatures: e.target.value })} />
-                            </div>
-
-                            <div className="lg:col-span-3 grid grid-cols-2 lg:grid-cols-6 gap-6 p-6 rounded-3xl border border-slate-500/10 bg-black/5">
-                                <h4 className="col-span-full text-[10px] font-black uppercase text-slate-500 border-b pb-2 mb-2 flex items-center gap-2">Stats/Attributes</h4>
-                                <FormInput label="STR" value={entity.stats?.strength} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, strength: v } })} isWikiMode={isWikiMode} />
-                                <FormInput label="DEX" value={entity.stats?.dexterity} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, dexterity: v } })} isWikiMode={isWikiMode} />
-                                <FormInput label="CON" value={entity.stats?.constitution} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, constitution: v } })} isWikiMode={isWikiMode} />
-                                <FormInput label="INT" value={entity.stats?.intelligence} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, intelligence: v } })} isWikiMode={isWikiMode} />
-                                <FormInput label="WIS" value={entity.stats?.wisdom} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, wisdom: v } })} isWikiMode={isWikiMode} />
-                                <FormInput label="CHA" value={entity.stats?.charisma} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats, charisma: v } })} isWikiMode={isWikiMode} />
-                            </div>
-
-                            <SmartSelect label="Equipment/Items" ids={entity.equipmentIds || []} type="item" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, equipmentIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Wealth/Currencies" ids={entity.wealthIds || []} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, wealthIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Known Skills" ids={entity.skillIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, skillIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Known Spells" ids={entity.spellIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, spellIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Languages" ids={entity.languageIds} type="language" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, languageIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Magical teachings" ids={entity.magicalTeachingIds} type="magic" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, magicalTeachingIds: ids })} onCreate={onCreateNew} />
-                        </EditorGroup>
-
-                        <EditorGroup title="Relationships" icon={Heart} isWikiMode={isWikiMode}>
-                            <SmartSelect label="Parents" ids={entity.parentIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, parentIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Children" ids={entity.childrenIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, childrenIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Relatives" ids={entity.relativeIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, relativeIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Friends" ids={entity.friendIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, friendIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Enemies" ids={entity.enemyIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, enemyIds: ids })} onCreate={onCreateNew} />
-                            <SmartSelect label="Complicated" ids={entity.complicatedWithIds} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, complicatedWithIds: ids })} onCreate={onCreateNew} />
-                        </EditorGroup>
-
-                        <EditorGroup title="Groups/Teachings" icon={Swords} isWikiMode={isWikiMode}>
-                            <GroupRoleGroup label="Political groups" roleKey="political" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
-                            <GroupRoleGroup label="Organizations" roleKey="organization" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
-                            <GroupRoleGroup label="Religious groups" roleKey="religious" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
-                            <GroupRoleGroup label="Magical groups" roleKey="magic" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
-                            <GroupRoleGroup label="Technological groups" roleKey="science" isWikiMode={isWikiMode} entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
-                        </EditorGroup>
-                    </>
+                {entity.type !== 'location' && (
+                    <EntitySpecificsRegistry entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} isWikiMode={isWikiMode} />
                 )}
 
                 {/* 4. UNIVERSAL CONNECTIONS */}
