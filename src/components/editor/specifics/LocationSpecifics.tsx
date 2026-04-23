@@ -17,34 +17,31 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
     return (
         <>
             <EditorGroup title="Basic information" icon={Info} isWikiMode={isWikiMode}>
-                <SmartSelect label="Succeeding Locations/Geography" icon={MapPin} ids={loc.succeedingLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, succeedingLocationIds: ids })} onCreate={onCreateNew} />
-                <SmartSelect label="Preceding Locations/Geography" icon={MapPin} ids={loc.precedingLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, precedingLocationIds: ids })} onCreate={onCreateNew} />
-                <FormInput label="Date of creation" icon={Calendar} value={loc.dateOfCreation || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfCreation: v })} isWikiMode={isWikiMode} />
-                <FormInput label="Date of end" icon={Hourglass} value={loc.dateOfEnd || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfEnd: v })} isWikiMode={isWikiMode} />
+                <SmartSelect label="Succeeding Locations" icon={MapPin} ids={loc.succeedingLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, succeedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Preceding Locations" icon={MapPin} ids={loc.precedingLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, precedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 
-                <div className="lg:col-span-2">
+                <FormInput label="Date of creation" icon={Calendar} value={loc.dateOfCreation || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfCreation: v })} isWikiMode={isWikiMode} gridSpan={6} />
+                <FormInput label="Date of end" icon={Hourglass} value={loc.dateOfEnd || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfEnd: v })} isWikiMode={isWikiMode} gridSpan={6} />
+                
+                <div className="col-span-12">
                     <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 flex items-center gap-2">
                         <Sparkles size={12} className="opacity-60" /> Unusual features/Traits
                     </label>
                     <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={loc.unusualFeatures || ""} onChange={e => onUpdate({ ...loc, unusualFeatures: e.target.value })} />
                 </div>
 
-                <FormInput label="Location type" icon={Anchor} value={loc.locationType || ""} options={['Settlement', 'Dungeon', 'Empire', 'Wilderness', 'Holy Ground', 'Ruins', 'Planar Overlay']} onChange={(v: string) => onUpdate({ ...loc, locationType: v })} isWikiMode={isWikiMode} />
-                <FormInput label="Population" icon={Users} value={loc.population || ""} onChange={(v: string) => onUpdate({ ...loc, population: v })} isWikiMode={isWikiMode} />
-                <FormInput label="Size" icon={Maximize} value={loc.size || ""} onChange={(v: string) => onUpdate({ ...loc, size: v })} isWikiMode={isWikiMode} />
+                <FormInput label="Location type" icon={Anchor} value={loc.locationType || ""} options={['Settlement', 'Dungeon', 'Empire', 'Wilderness', 'Holy Ground', 'Ruins', 'Planar Overlay']} onChange={(v: string) => onUpdate({ ...loc, locationType: v })} isWikiMode={isWikiMode} gridSpan={4} />
+                <FormInput label="Population" icon={Users} value={loc.population || ""} onChange={(v: string) => onUpdate({ ...loc, population: v })} isWikiMode={isWikiMode} gridSpan={4} />
+                <FormInput label="Size" icon={Maximize} value={loc.size || ""} onChange={(v: string) => onUpdate({ ...loc, size: v })} isWikiMode={isWikiMode} gridSpan={4} />
                 
-                <SmartSelect label="Local Languages" icon={MessageSquare} ids={loc.localLanguageIds || []} type="language" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localLanguageIds: ids })} onCreate={onCreateNew} />
-                <SmartSelect label="Local Currencies" icon={Coins} ids={loc.localCurrencyIds || []} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localCurrencyIds: ids })} onCreate={onCreateNew} />
-                <SmartSelect label="Local Cultures/Art" icon={Home} ids={loc.localCultureIds || []} type="culture" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localCultureIds: ids })} onCreate={onCreateNew} />
-                <SmartSelect label="Common Occupations/Classes" icon={Pickaxe} ids={loc.commonOccupationIds || []} type="occupation" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, commonOccupationIds: ids })} onCreate={onCreateNew} />
-                <SmartSelect label="Local Resources/Materials" icon={Gem} ids={loc.localResourceIds || []} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localResourceIds: ids })} onCreate={onCreateNew} />
+                <SmartSelect label="Local Languages" icon={MessageSquare} ids={loc.localLanguageIds || []} type="language" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localLanguageIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Local Currencies" icon={Coins} ids={loc.localCurrencyIds || []} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localCurrencyIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Local Cultures" icon={Home} ids={loc.localCultureIds || []} type="culture" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localCultureIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Common Occupations" icon={Pickaxe} ids={loc.commonOccupationIds || []} type="occupation" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, commonOccupationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Local Resources" icon={Gem} ids={loc.localResourceIds || []} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localResourceIds: ids })} onCreate={onCreateNew} gridSpan={12} />
                 
-                <div className="lg:col-span-1.5 md:col-span-1">
-                    <SmartSelect label="Neighbouring Locations" icon={MapPin} ids={loc.neighbouringLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, neighbouringLocationIds: ids })} onCreate={onCreateNew} />
-                </div>
-                <div className="lg:col-span-1.5 md:col-span-1">
-                    <SmartSelect label="Other connected Locations" icon={MapPin} ids={loc.otherConnectedLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, otherConnectedLocationIds: ids })} onCreate={onCreateNew} />
-                </div>
+                <SmartSelect label="Neighbouring Locations" icon={MapPin} ids={loc.neighbouringLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, neighbouringLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Other connected Locations" icon={MapPin} ids={loc.otherConnectedLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, otherConnectedLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
             </EditorGroup>
 
             <EditorGroup title="Traditions & Customs" icon={Tent} isWikiMode={isWikiMode}>
@@ -59,21 +56,11 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
             </EditorGroup>
 
             <EditorGroup title="Resident information" icon={UserCircle} isWikiMode={isWikiMode}>
-                <div className="lg:col-span-1">
-                    <SmartSelect label="Characters originated from the location" icon={User} ids={loc.originatedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, originatedCharacterIds: ids })} onCreate={onCreateNew} />
-                </div>
-                <div className="lg:col-span-1">
-                    <SmartSelect label="Characters currently living in the location" icon={User} ids={loc.livingCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, livingCharacterIds: ids })} onCreate={onCreateNew} />
-                </div>
-                <div className="lg:col-span-1">
-                    <SmartSelect label="Characters deceased at the location" icon={User} ids={loc.deceasedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, deceasedCharacterIds: ids })} onCreate={onCreateNew} />
-                </div>
-                <div className="lg:col-span-1.5 md:col-span-1">
-                    <SmartSelect label="Other connected Characters" icon={User} ids={loc.connectedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, connectedCharacterIds: ids })} onCreate={onCreateNew} />
-                </div>
-                <div className="lg:col-span-1.5 md:col-span-1">
-                    <SmartSelect label="Local Species/Races/Flora/Fauna" icon={Leaf} ids={loc.localSpeciesIds || []} type="species" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localSpeciesIds: ids })} onCreate={onCreateNew} />
-                </div>
+                <SmartSelect label="Originated from" icon={User} ids={loc.originatedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, originatedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                <SmartSelect label="Currently living" icon={User} ids={loc.livingCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, livingCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                <SmartSelect label="Deceased here" icon={User} ids={loc.deceasedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, deceasedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                <SmartSelect label="Other connections" icon={User} ids={loc.connectedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, connectedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Local Species/Flora/Fauna" icon={Leaf} ids={loc.localSpeciesIds || []} type="species" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localSpeciesIds: ids })} onCreate={onCreateNew} gridSpan={6} />
             </EditorGroup>
 
             <EditorGroup title="Governance Connections" icon={Anchor} isWikiMode={isWikiMode}>

@@ -38,6 +38,7 @@ interface WorldStore {
     setWorldPhase: (phase: string) => void;
     addMapConnection: (sourceId: string, targetId: string, type: any) => void;
     removeMapConnection: (id: string) => void;
+    updateEntityParent: (entityId: string, parentId: string | null) => void;
 }
 
 export const useWorldStore = create<WorldStore>()(
@@ -96,7 +97,7 @@ export const useWorldStore = create<WorldStore>()(
                     documentTemplate: "None",
                     extraHtmlClasses: "",
                     otherNamesAndEpithets: "",
-                    tags: [], parentIds: [], childrenIds: [], relativeIds: [], friendIds: [], enemyIds: [], complicatedWithIds: [],
+                    tags: [], parentId: null, parentIds: [], childrenIds: [], relativeIds: [], friendIds: [], enemyIds: [], complicatedWithIds: [],
                     loreNoteIds: [],
                     mythIds: [],
                     eventIds: [],
@@ -974,14 +975,18 @@ export const useWorldStore = create<WorldStore>()(
                     } 
                 }));
             },
-            removeMapConnection: (id) => {
-                set((state) => ({ 
-                    world: { 
-                        ...state.world, 
-                        mapConnections: (state.world.mapConnections || []).filter(c => c.id !== id) 
-                    } 
-                }));
-            }
+            removeMapConnection: (id) => set((state) => ({
+                world: { ...state.world, mapConnections: state.world.mapConnections.filter(c => c.id !== id) }
+            })),
+
+            updateEntityParent: (entityId, parentId) => set((state) => ({
+                world: {
+                    ...state.world,
+                    entities: state.world.entities.map(e => 
+                        e.id === entityId ? { ...e, parentId } : e
+                    )
+                }
+            }))
         }),
         {
             name: 'nexus-chronicle-storage',

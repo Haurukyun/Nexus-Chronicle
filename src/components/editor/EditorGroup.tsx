@@ -14,7 +14,7 @@ export const EditorGroup = ({ title, icon: Icon, children, isWikiMode }: EditorG
             <Icon size={16} className={isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'} />
             <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] \${isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]'}`}>{title}</h3>
         </div>
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="p-6 grid grid-cols-12 gap-5 items-start">
             {children}
         </div>
     </div>

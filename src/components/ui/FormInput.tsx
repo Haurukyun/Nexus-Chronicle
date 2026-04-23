@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LucideIcon } from 'lucide-react';
 import { FormInputProps } from '../../types';
 
-export const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode, disabled, options, icon: Icon }: FormInputProps & { options?: string[], disabled?: boolean, icon?: LucideIcon }) => {
+export const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode, disabled, options, icon: Icon, gridSpan = 12 }: FormInputProps & { options?: string[], disabled?: boolean, icon?: LucideIcon }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -15,7 +15,7 @@ export const FormInput = ({ label, value, onChange, placeholder, type = "text", 
     }, []);
 
     return (
-        <div className="space-y-1 relative" ref={dropdownRef}>
+        <div className="space-y-1 relative" style={{ gridColumn: `span ${gridSpan}` }} ref={dropdownRef}>
             <div className="flex items-center gap-2 pl-1 mb-1">
                 {Icon && <Icon size={12} className={isWikiMode ? 'text-[#b91c1c]/60' : 'text-[#fef08a]/60'} />}
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</label>

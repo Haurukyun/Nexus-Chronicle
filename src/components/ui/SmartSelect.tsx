@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Plus, Check, LucideIcon } from 'lucide-react';
 import { SmartSelectProps } from '../../types';
 
-export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({ label, ids = [], type, all, onChange, onCreate, isWikiMode, disabled, icon: Icon }) => {
+export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({ label, ids = [], type, all, onChange, onCreate, isWikiMode, disabled, icon: Icon, gridSpan = 12 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -25,7 +25,7 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
     const tagClass = isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c] border-[#b91c1c]/30' : 'bg-[#fef08a]/10 text-[#fef08a] border-[#fef08a]/30';
 
     return (
-        <div className="space-y-1 relative" ref={dropdownRef}>
+        <div className="space-y-1 relative" style={{ gridColumn: `span ${gridSpan}` }} ref={dropdownRef}>
             <div className="flex items-center gap-2 pl-1 mb-1">
                 {Icon && <Icon size={12} className={isWikiMode ? 'text-[#b91c1c]/60' : 'text-[#fef08a]/60'} />}
                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</label>

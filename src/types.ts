@@ -33,7 +33,8 @@ export interface BaseEntity {
   lastModified: number;
   
   // Universal document settings from blueprints
-  parentDoc?: string[]; // Belongs under (often singleToNoneRelationship, but modeled as array for simplicity)
+  parentId?: string | null; // ID of the parent entity (for hierarchical tree)
+  parentDoc?: string[]; // Belongs under (legacy array format)
   documentColor?: string; // Text color
   documentBackgroundColor?: string; // Background color
   finishedSwitch?: boolean; // Is finished
@@ -885,6 +886,7 @@ export interface FormInputProps {
     placeholder?: string;
     type?: string;
     isWikiMode: boolean;
+    gridSpan?: number;
 }
 
 export interface FormToggleProps {
@@ -892,6 +894,7 @@ export interface FormToggleProps {
     checked: boolean;
     onChange: (val: boolean) => void;
     isWikiMode: boolean;
+    gridSpan?: number;
 }
 
 export interface SmartSelectProps {
@@ -903,6 +906,7 @@ export interface SmartSelectProps {
     onCreate: (type: EntityType, search: string, open: boolean) => string | void;
     isWikiMode: boolean;
     disabled?: boolean;
+    gridSpan?: number;
 }
 
 export interface FieldRowProps {
