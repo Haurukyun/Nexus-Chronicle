@@ -55,17 +55,9 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                     <ViewerSectionCard title={isChar ? 'Biography' : 'Overview'} badgeText={entity.isFinished ? 'Finished' : undefined}>
                         <div className="flex flex-col sm:flex-row items-start gap-4">
                             <p className={`flex-1 text-base leading-relaxed whitespace-pre-wrap ${isRoyal ? 'font-serif text-[#2b1810]' : isWiki ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'}`}>
-                                {entity.description || 'Elara life as a scholar and mage and based moveself in the tesute with her rleroely lased up orhlaced mage but colours of ther accuity and mage to rumation intor thent God.'}
+                                {entity.description || 'No description provided yet.'}
                             </p>
-                            {isRoyal && (
-                                <div className="shrink-0 rounded-lg border-2 border-[#c8a96e] overflow-hidden shadow-md bg-[#e2d5bd]">
-                                    <img 
-                                        src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=300" 
-                                        alt="Map Thumbnail" 
-                                        className="w-36 h-24 object-cover sepia-[.6] contrast-125 hover:scale-105 transition-all"
-                                    />
-                                </div>
-                            )}
+                            
                         </div>
                     </ViewerSectionCard>
                 )}

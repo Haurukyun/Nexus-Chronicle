@@ -1,0 +1,13 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+.font-serif {
+  font-family: 'Cinzel', serif;
+}
+
+::selection {
+  background: rgba(254, 240, 138, 0.3);
+}
