@@ -7,6 +7,8 @@ export type EntityType =
   | 'ability' | 'item' | 'occupation' | 'condition' | 'resource';
 
 export type WorldPhase = 'creation' | 'golden' | 'shadow' | 'eclipse' | 'ruin';
+export type ThemeMode = 'sovereign' | 'wiki' | 'royal-codex';
+
 
 export interface MapConnection {
   id: string;

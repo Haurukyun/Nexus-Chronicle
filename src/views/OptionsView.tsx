@@ -3,6 +3,8 @@ import { Palette, Skull } from 'lucide-react';
 import { WorldData, WorldEntity, EntityType } from '../types';
 import { TYPE_LABELS } from '../constants';
 import { FormInput } from '../components/ui';
+import { useWorldStore } from '../store/useWorldStore';
+
 
 interface OptionsViewProps {
     world: WorldData;
@@ -93,14 +95,49 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                         </h3>
                         <FormInput label="Realm Name" value={world.name} onChange={(v: string) => setWorld({ ...world, name: v })} isWikiMode={isWikiMode} />
                         <FormInput label="Global Atlas Image (URL)" value={world.mapImage} onChange={(v: string) => setWorld({ ...world, mapImage: v })} isWikiMode={isWikiMode} />
-                        <div className="grid grid-cols-2 gap-4 pt-2">
-                            <div className="p-4 rounded-xl bg-black/20 border border-white/5 space-y-2">
-                                <span className="text-[9px] font-black uppercase opacity-40">Editor Style</span>
-                                <div className="flex gap-2">
-                                    <button onClick={() => setIsWikiMode(false)} className={`flex-1 py-2 rounded text-[9px] font-black border transition-all ${!isWikiMode ? 'bg-[#fef08a] text-black border-[#fef08a]' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>CODEX</button>
-                                    <button onClick={() => setIsWikiMode(true)} className={`flex-1 py-2 rounded text-[9px] font-black border transition-all ${isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>WIKI</button>
-                                </div>
+                        
+                        <div className="space-y-3 pt-2">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Visual Codex Theme</span>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <button
+                                    onClick={() => setIsWikiMode(false)}
+                                    className={`p-4 rounded-xl border text-left transition-all ${
+                                        !isWikiMode
+                                            ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/60 shadow-lg'
+                                            : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
+                                    }`}
+                                >
+                                    <div className="text-xs font-bold flex items-center gap-2">🌙 Sovereign</div>
+                                    <div className="text-[9px] opacity-60 mt-1">Dark Obsidian & Warm Gold</div>
+                                </button>
+                                <button
+                                    onClick={() => setIsWikiMode(true)}
+                                    className={`p-4 rounded-xl border text-left transition-all ${
+                                        isWikiMode
+                                            ? 'bg-rose-500/20 text-rose-300 border-rose-500/60 shadow-lg'
+                                            : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
+                                    }`}
+                                >
+                                    <div className="text-xs font-bold flex items-center gap-2">📜 Wiki Mode</div>
+                                    <div className="text-[9px] opacity-60 mt-1">Classic Parchment & Red</div>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        useWorldStore.getState().setTheme('royal-codex');
+                                    }}
+                                    className={`p-4 rounded-xl border text-left transition-all ${
+                                        useWorldStore.getState().theme === 'royal-codex'
+                                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-lg'
+                                            : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
+                                    }`}
+                                >
+                                    <div className="text-xs font-bold flex items-center gap-2">👑 Royal Codex</div>
+                                    <div className="text-[9px] opacity-60 mt-1">Illuminated Parchment & Gold</div>
+                                </button>
                             </div>
+                        </div>
+
+                        <div className="pt-2">
                             <div className="p-4 rounded-xl bg-black/20 border border-white/5 space-y-2">
                                 <span className="text-[9px] font-black uppercase opacity-40">System Backup</span>
                                 <div className="flex gap-2">

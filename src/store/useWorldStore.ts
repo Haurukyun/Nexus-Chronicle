@@ -1,7 +1,7 @@
 import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { WorldData, WorldEntity, EntityType } from '../types';
+import { WorldData, WorldEntity, EntityType, ThemeMode } from '../types';
 
 interface WorldStore {
     world: WorldData;
@@ -13,8 +13,11 @@ interface WorldStore {
     activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey';
     setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey') => void;
 
+    theme: ThemeMode;
+    setTheme: (theme: ThemeMode) => void;
     isWikiMode: boolean;
     setIsWikiMode: (mode: boolean) => void;
+
 
     drafts: Record<string, WorldEntity>;
     setDrafts: (update: Record<string, WorldEntity> | ((prev: Record<string, WorldEntity>) => Record<string, WorldEntity>)) => void;
@@ -62,8 +65,11 @@ export const useWorldStore = create<WorldStore>()(
             activeTabId: 'map',
             setActiveTabId: (id) => set({ activeTabId: id }),
 
+            theme: 'sovereign',
+            setTheme: (theme) => set({ theme, isWikiMode: theme === 'wiki' }),
             isWikiMode: false,
-            setIsWikiMode: (mode) => set({ isWikiMode: mode }),
+            setIsWikiMode: (mode) => set({ isWikiMode: mode, theme: mode ? 'wiki' : 'sovereign' }),
+
 
             drafts: {},
             setDrafts: (update) => set((state) => ({

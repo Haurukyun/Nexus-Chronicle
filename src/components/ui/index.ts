@@ -6,3 +6,9 @@ export * from './LinksDisplay';
 export * from './TaperedDivider';
 export * from './WikiRows';
 export * from './RadarChart';
+export * from './ThemeSwitcher';
+export * from './EmeraldGem';
+export * from './ErrorBoundary';
+
+
+

@@ -61,29 +61,35 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
         // Character specific
         if (entity.type === 'character') {
             const char = entity as Character;
-            if (char.placeOfResidenceId?.includes(targetId)) results.residents.push(entity.id);
-            if (char.placeOfOriginId?.includes(targetId)) results.natives.push(entity.id);
-            if (char.placeOfDemiseId?.includes(targetId)) results.passedHere.push(entity.id);
+            if (Array.isArray(char.placeOfResidenceId) && char.placeOfResidenceId.includes(targetId)) results.residents.push(entity.id);
+            if (Array.isArray(char.placeOfOriginId) && char.placeOfOriginId.includes(targetId)) results.natives.push(entity.id);
+            if (Array.isArray(char.placeOfDemiseId) && char.placeOfDemiseId.includes(targetId)) results.passedHere.push(entity.id);
             
-            if (char.occupationIds?.includes(targetId)) results.practitioners.push(entity.id);
-            if (char.speciesIds?.includes(targetId)) results.members.push(entity.id);
+            if (Array.isArray(char.occupationIds) && char.occupationIds.includes(targetId)) results.practitioners.push(entity.id);
+            if (Array.isArray(char.speciesIds) && char.speciesIds.includes(targetId)) results.members.push(entity.id);
             
-            if (char.skillIds?.includes(targetId) || char.spellIds?.includes(targetId)) results.practitioners.push(entity.id);
-            if (char.equipmentIds?.includes(targetId) || char.wealthIds?.includes(targetId)) results.referencedIn.push(entity.id);
+            if ((Array.isArray(char.skillIds) && char.skillIds.includes(targetId)) || (Array.isArray(char.spellIds) && char.spellIds.includes(targetId))) results.practitioners.push(entity.id);
+            if ((Array.isArray(char.equipmentIds) && char.equipmentIds.includes(targetId)) || (Array.isArray(char.wealthIds) && char.wealthIds.includes(targetId))) results.referencedIn.push(entity.id);
         }
 
         // Group Connections (Deep scan)
-        if (entity.groupConnections) {
-            Object.entries(entity.groupConnections).forEach(([groupType, roles]) => {
-                Object.entries(roles as any).forEach(([role, ids]) => {
-                    if (Array.isArray(ids) && ids.includes(targetId)) {
-                        // Map group membership to "members" or "referencedIn"
-                        if (role === 'memberOf' || role === 'leadingFigureOf') results.members.push(entity.id);
-                        else results.referencedIn.push(entity.id);
+        if (entity.groupConnections && typeof entity.groupConnections === 'object') {
+            try {
+                Object.entries(entity.groupConnections).forEach(([groupType, roles]) => {
+                    if (roles && typeof roles === 'object') {
+                        Object.entries(roles as any).forEach(([role, ids]) => {
+                            if (Array.isArray(ids) && ids.includes(targetId)) {
+                                if (role === 'memberOf' || role === 'leadingFigureOf') results.members.push(entity.id);
+                                else results.referencedIn.push(entity.id);
+                            }
+                        });
                     }
                 });
-            });
+            } catch (e) {
+                // Ignore corrupt groupConnections
+            }
         }
+
         
         // Event specific
         if ((entity as any).involvedEntityIds?.includes(targetId)) results.events.push(entity.id);

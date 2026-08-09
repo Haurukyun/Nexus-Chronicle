@@ -1,7 +1,8 @@
 import React from 'react';
-import { TaperedDivider, WikiStatRow, LinksDisplay, RadarChart } from '../ui';
+import { TaperedDivider, WikiStatRow, LinksDisplay, RadarChart, EmeraldGem } from '../ui';
 import { Character, WorldEntity } from '../../types';
 import { CategorizedBacklinks } from '../../utils/backlinkUtils';
+import { useWorldStore } from '../../store/useWorldStore';
 
 interface CharacterStatBlockProps {
     entity: WorldEntity;
@@ -14,7 +15,9 @@ interface CharacterStatBlockProps {
 export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName = false, backlinks }: CharacterStatBlockProps) => {
     if (entity.type !== 'character') return null;
     const char = entity as Character;
-    const isWikiMode = true; 
+    const theme = useWorldStore(state => state.theme);
+    const isRoyal = theme === 'royal-codex';
+    const isWikiMode = theme === 'wiki'; 
 
     const speciesNames = char.speciesIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
     const occupationNames = char.occupationIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
@@ -27,10 +30,73 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
         char.isDead ? 'deceased' : 'living'
     ].filter(Boolean).join(' ');
 
-    // Merge logic for bidirectional displays
     const merge = (forward: string[] | undefined, back: string[] | undefined) => {
         return [...new Set([...(forward || []), ...(back || [])])];
     };
+
+    if (isRoyal) {
+        const stats = char.stats || {};
+        const str = stats.strength || '10';
+        const dex = stats.dexterity || '10';
+        const con = stats.constitution || '10';
+        const int = stats.intelligence || '18';
+        const wis = stats.wisdom || '16';
+        const cha = stats.charisma || '15';
+
+        return (
+            <div 
+                className="bg-gradient-to-b from-[#4a0d1b] via-[#300611] to-[#1b0207] border-4 border-[#c8a96e] rounded-t-2xl shadow-2xl p-5 pb-10 text-[#fef08a] font-sans relative overflow-hidden"
+                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 24px), 50% 100%, 0 calc(100% - 24px))' }}
+            >
+                {/* Inner Decorative Gold Filigree Border */}
+                <div className="absolute inset-1 border border-[#c8a96e]/30 pointer-events-none rounded-t-xl" />
+
+                {/* Banner Header */}
+                <div className="text-center border-b border-[#c8a96e]/40 pb-3 mb-3">
+                    <span className="text-[11px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] block drop-shadow">RPG Stat Chart</span>
+                </div>
+
+                {/* Radar Chart */}
+                <div className="py-1 flex items-center justify-center">
+                    <RadarChart stats={stats} isWikiMode={false} />
+                </div>
+
+                {/* Attribute Score Header */}
+                <div className="border-t border-[#c8a96e]/40 pt-3 mt-2">
+                    <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] text-center mb-3">Attribute Score</div>
+
+                    {/* 6 Shield / Octagonal Badges in 2 Rows of 3 */}
+                    <div className="grid grid-cols-3 gap-2.5 text-center px-2">
+                        {[
+                            { label: 'INT', val: int },
+                            { label: 'WIS', val: wis },
+                            { label: 'CHA', val: cha },
+                            { label: 'INT', val: int },
+                            { label: 'WIS', val: wis },
+                            { label: 'CHA', val: '17' }
+                        ].map((st, idx) => (
+                            <div 
+                                key={idx} 
+                                className="bg-gradient-to-b from-[#4a1c1c] to-[#260e0e] border border-[#d4c8af] py-2 px-1 text-center shadow-[inset_0_2px_5px_rgba(0,0,0,0.9)] transition-all cursor-default relative h-16 flex flex-col justify-center"
+                                style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}
+                            >
+                                <div className="absolute inset-[2px] border border-[#d4c8af]/40 pointer-events-none" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }} />
+                                <span className="block font-serif font-bold text-[#e6c687] text-[10px] tracking-wider uppercase leading-none mb-1 z-10">{st.label}</span>
+                                <span className="text-xl font-serif font-medium text-white leading-none drop-shadow z-10">{st.val}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Living Status Header & Glowing Emerald Gem */}
+                <div className="border-t border-[#c8a96e]/40 pt-3 mt-4 text-center">
+                    <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687]">LIVING</div>
+                    <EmeraldGem active={!char.isDead} />
+                </div>
+            </div>
+        );
+    }
+
 
     return (
         <div className={`bg-[#fdfcf0] ${hideName ? 'p-4' : 'p-6'} border-t-8 border-b-8 border-[#7a200d] space-y-2 shadow-inner font-sans select-text text-[#1a1a1a]`}>
@@ -103,3 +169,4 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
         </div>
     );
 };
+

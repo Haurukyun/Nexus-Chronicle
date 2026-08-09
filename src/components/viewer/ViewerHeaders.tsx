@@ -38,3 +38,27 @@ export const WikiHeader = ({ entity, onEdit, onDelete }: HeaderProps) => (
         </div>
     </header>
 );
+
+export const RoyalHeader = ({ entity, onEdit, onDelete }: HeaderProps) => (
+    <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex justify-between items-center mb-6">
+        <div>
+            <div className="flex items-center gap-2 text-[#70121e] mb-1 uppercase tracking-[0.2em] font-serif font-bold text-xs">
+                <Scroll size={14} /> Codex Record
+            </div>
+            <h1 className="text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-none">{entity.name}</h1>
+            {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1">"{entity.otherNames}"</p>}
+        </div>
+        <div className="flex items-center gap-3">
+            {!entity.isReadOnly && (
+                <button onClick={onEdit} className="bg-[#70121e] text-[#fef08a] border border-[#c8a96e] px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#881337] transition-all shadow-md">
+                    Edit Scroll
+                </button>
+            )}
+            <button onClick={onDelete} className="p-2 text-[#70121e] hover:bg-[#70121e]/10 rounded-full transition-all" title="Trash">
+                <Trash2 size={18} />
+            </button>
+        </div>
+    </header>
+);
+
+
