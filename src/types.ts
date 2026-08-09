@@ -47,10 +47,11 @@ export interface BaseEntity {
   otherNames?: string[]; // Other Names & Epithets
   categoryDescription?: string; // Category description
 
-  // These were from the previous manual BaseEntity
+  // Nexus Chronicle specific extensions
   isReadOnly?: boolean;
   privateNotes?: string;
   coordinates?: { x: number; y: number };
+  spoilerNotes?: string; // Standardized spoiler field from blueprints
 }
 
 // --- GENERATED SPECIFIC INTERFACES ---
@@ -87,7 +88,6 @@ export interface Character extends BaseEntity {
   pairedConditionsPositive?: string[]; // Affected by Boons
   pairedConditionsNegative?: string[]; // Affected by Afflictions
   pairedConditionsOther?: string[]; // Affected by Other conditions
-  description?: string; // Description & History
   personalityTraits?: string; // Traits & Characteristics
   traits?: string; // Unique/Unusual Features
   statsList?: string; // Stats/Attributes (legacy string)
@@ -140,7 +140,6 @@ export interface Character extends BaseEntity {
   pairedConnectedItems?: string[]; // Connected to Items
   pairedConditionsConnected?: string[]; // Connected to Afflictions/Boons/Conditions
   pairedResources?: string[]; // Connected to Resources/Materials
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Condition extends BaseEntity {
@@ -154,7 +153,6 @@ export interface Condition extends BaseEntity {
   pairedConnectedConditionsNegative?: string[]; // Related Afflictions
   pairedConnectedConditionsOther?: string[]; // Related Other conditions
   statsListRequired?: string; // Stats/Attributes modifiers
-  description?: string; // Description & History
   traditions?: string; // Traditions & customs connected to the item
   pairedConnectedNotes?: string[]; // Connected to Lore notes/Other notes
   pairedMyths?: string[]; // Connected to Myths/Legends/Stories
@@ -186,7 +184,6 @@ export interface Condition extends BaseEntity {
   pairedResourcesPositive?: string[]; // Caused by positive Resources/Materials
   pairedResourcesNegative?: string[]; // Caused by negative Resources/Materials
   pairedResourcesOther?: string[]; // Caused by neutral/other Resources/Materials
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Culture extends BaseEntity {
@@ -245,7 +242,6 @@ export interface Event extends BaseEntity {
   pairedItems?: string[]; // Connected to Items
   pairedRaces?: string[]; // Affected or involved Species/Races/Flora/Fauna
   relatedCultures?: string[]; // Connected to Cultures/Art
-  description?: string; // Description & History
   pairedConnectedNotes?: string[]; // Connected to Lore notes/Other notes
   pairedMyths?: string[]; // Connected to Myths, legends and stories
   connectedPolitical?: string[]; // Involved Ideologies/Political groups
@@ -258,7 +254,6 @@ export interface Event extends BaseEntity {
   pairedConditionsPositive?: string[]; // Connected to Boons
   pairedConditionsNegative?: string[]; // Connected to Afflictions
   pairedConditionsOther?: string[]; // Connected to Other conditions
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Organization extends BaseEntity {
@@ -278,7 +273,6 @@ export interface Organization extends BaseEntity {
   connectedRaces?: string[]; // Common Species/Races/Flora/Fauna
   localCurrencies?: string[]; // Used Currencies
   pairedConnectedResources?: string[]; // Important Resources/Materials
-  description?: string; // Description & History
   traditions?: string; // Traditions & Customs
   pairedConnectedNotes?: string[]; // Connected to Lore notes/Other notes
   pairedConnectedMyths?: string[]; // Connected to Myths, legends and stories
@@ -309,7 +303,6 @@ export interface Organization extends BaseEntity {
   pairedConnectedItems?: string[]; // Connected to Items
   pairedConnectedProfessions?: string[]; // Connected to Occupations/Classes
   pairedConditions?: string[]; // Connected to Afflictions/Boons/Conditions
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Item extends BaseEntity {
@@ -390,7 +383,6 @@ export interface Location extends BaseEntity {
   connectedResources?: string[]; // Local Resources/Materials
   neighbourLocations?: string[]; // Neighbouring Locations
   connectedLocations?: string[]; // Other connected Locations
-  description?: string; // Description & History
   traditions?: string; // Traditions & Customs
   pairedOriginCharactersNew?: string[]; // Characters originated from the location
   pairedCurrentCharactersNew?: string[]; // Characters currently living in the location
@@ -415,7 +407,6 @@ export interface Location extends BaseEntity {
   connectedMagical?: string[]; // Connected Schools of Magic/Magical groups
   governTech?: string[]; // Governing Sciences/Technological groups
   connectedTech?: string[]; // Connected Sciences/Technological groups
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Note extends BaseEntity {
@@ -589,7 +580,6 @@ export interface Occupation extends BaseEntity {
   usedResources?: string[]; // Used Resources/Materials
   producedResources?: string[]; // Produced Resources/Materials
   statsList?: string; // Stats/Attributes
-  description?: string; // Description & History
   traditions?: string; // Traditions & customs connected to the item
   pairedConnectedNotes?: string[]; // Connected to Lore notes/Other notes
   pairedMyths?: string[]; // Connected to Myths/Legends/Stories
@@ -602,7 +592,6 @@ export interface Occupation extends BaseEntity {
   pairedConnectedTechGroups?: string[]; // Connected to Sciences/Technological groups
   pairedConnectedSkills?: string[]; // Connected to Skills/Spells/Other
   pairedConnectedItems?: string[]; // Connected to Items
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Species extends BaseEntity {
@@ -636,7 +625,6 @@ export interface Species extends BaseEntity {
   pairedConditionsOther?: string[]; // Affected by Other conditions
   commonNames?: string; // Common names among the Species/Races/Flora/Fauna
   commonFamilyNames?: string; // Common Family/Clan names among the Species/Races/Flora/Fauna
-  description?: string; // Description & History
   traditions?: string; // Traditions & Customs
   pairedConnectedNotes?: string[]; // Connected to Lore notes/Other notes
   pairedConnectedMyths?: string[]; // Connected to Myths, legends and stories
@@ -648,7 +636,6 @@ export interface Species extends BaseEntity {
   commonInReligiousGroups?: string[]; // Common in Teachings/Religious groups
   commonInMagicGroups?: string[]; // Common in Magical groups
   commonInTechGroups?: string[]; // Common in Sciencific/Technological groups
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Religion extends BaseEntity {
@@ -726,7 +713,6 @@ export interface Resource extends BaseEntity {
   pairedItemProduced?: string[]; // Resource/Material produced by Items
   pairedProducedFromRaces?: string[]; // Produced from Species/Races/Flora/Fauna
   pairedUsedResourcesRaces?: string[]; // Used by Species/Races/Flora/Fauna
-  description?: string; // Description & History
   traditions?: string; // Traditions & customs connected to the item
   pairedConnectedNotes?: string[]; // Connected to Lore notes/Other notes
   pairedMyths?: string[]; // Connected to Myths/Legends/Stories
@@ -740,7 +726,6 @@ export interface Resource extends BaseEntity {
   pairedConnectedOtherGroups?: string[]; // Connected to Organizations/Other groups
   pairedConnectedMagicGroups?: string[]; // Connected to Schools of Magic/Magical groups
   pairedConnectedTechGroups?: string[]; // Connected to Sciences/Technological groups
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Tech extends BaseEntity {
@@ -759,12 +744,12 @@ export interface Tech extends BaseEntity {
   typeTech?: string; // Type
   formTech?: string; // Scientific branches
   pairedTech?: string[]; // Related Technologies/Sciences
+  description?: string; // Description & History
   pairedSkills?: string[]; // Connected to Skills/Spells/Other
   pairedConditions?: string[]; // Connected to Afflictions/Boons/Conditions
   pairedConnectedResources?: string[]; // Important Resources/Materials
   connectedRaces?: string[]; // Common Species/Races/Flora/Fauna
   localLanguages?: string[]; // Common languages
-  description?: string; // Description & History
   traditions?: string; // Traditions & Customs
   pairedConnectedNotes?: string[]; // Connected to Lore notes/Other notes
   pairedConnectedMyths?: string[]; // Connected to Myths, legends and stories
@@ -793,7 +778,6 @@ export interface Tech extends BaseEntity {
   pairedEnemyTechGroups?: string[]; // Enemy Sciences/Technological groups
   pairedConnectedItems?: string[]; // Connected to Items
   pairedConnectedProfessions?: string[]; // Connected to Occupations/Classes
-  spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
 export interface Ability extends BaseEntity {
@@ -839,7 +823,7 @@ export interface Ability extends BaseEntity {
 
 // --- END SPECIFIC INTERFACES ---
 
-export type WorldEntity = Chapter | Note | Myth | Character | Location | Event | Species | Language | Culture | PoliticalGroup | Religion | Organization | Magic | ScienceTechnology | Ability | Item | Occupation | Condition | Resource | BaseEntity;
+export type WorldEntity = Chapter | Note | Myth | Character | Location | Event | Species | Language | Culture | PoliticalGroup | Religion | Organization | Magic | Tech | Ability | Item | Occupation | Condition | Resource | BaseEntity;
 
 export interface WorldData {
   name: string;

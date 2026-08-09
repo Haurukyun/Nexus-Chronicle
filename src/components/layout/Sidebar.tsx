@@ -35,15 +35,24 @@ const EntityItem: React.FC<{
     const children = allEntities.filter(e => e.parentId === entity.id);
     const hasChildren = children.length > 0;
 
+    const isActive = activeTabId === entity.id;
+    
+    // Support for custom document colors from blueprints
+    const customStyle: React.CSSProperties = {
+        paddingLeft: `${depth * 12 + 8}px`,
+        color: entity.documentColor || undefined,
+        backgroundColor: isActive ? undefined : (entity.documentBackgroundColor || undefined)
+    };
+
     return (
         <div className="space-y-px">
             <div 
                 className={`flex items-center group/item transition-all rounded-lg overflow-hidden ${
-                    activeTabId === entity.id 
+                    isActive 
                     ? (isWikiMode ? 'bg-[#b91c1c] text-white shadow-md' : 'bg-slate-800 text-[#fef08a] border-l-4 border-yellow-500 shadow-xl shadow-yellow-500/5') 
                     : 'hover:bg-white/5 opacity-70 hover:opacity-100'
-                }`}
-                style={{ paddingLeft: `${depth * 12 + 8}px` }}
+                } ${entity.minorSwitch ? 'italic opacity-50' : ''}`}
+                style={customStyle}
             >
                 {hasChildren ? (
                     <button 
@@ -58,9 +67,12 @@ const EntityItem: React.FC<{
                 
                 <button
                     onClick={() => handleOpenEntity(entity.id)}
-                    className="flex-1 text-left py-2 text-xs truncate"
+                    className="flex-1 text-left py-2 text-xs truncate flex items-center gap-2"
                 >
                     {entity.name}
+                    {entity.finishedSwitch && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" title="Finished" />}
+                    {entity.deadSwitch && <span className="text-[8px] opacity-40">💀</span>}
+                    {entity.categorySwitch && <span className="text-[8px] opacity-40 font-bold px-1 rounded bg-slate-500/20">CAT</span>}
                 </button>
 
                 <button 
@@ -103,10 +115,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     handleCreate,
     handleDeleteToTrash,
     isWikiMode,
-    setIsWikiMode
+    setIsWikiMode,
 }) => {
-    const accentText = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const sidebarBg = isWikiMode ? 'bg-[#f5e6d3]' : 'bg-slate-900/20';
+    const sidebarBg = isWikiMode ? 'bg-[#fdf6e3]' : 'bg-[#0f172a]/80';
+    const accentText = isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]';
 
     const filteredEntities = useMemo(() => {
         if (!searchQuery) return world.entities;
@@ -115,31 +127,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
         return world.entities.filter(entity => {
             return tokens.every(token => {
                 if (token.startsWith('type:')) {
-                    return entity.type === token.split(':')[1];
+                    const searchType = token.split(':')[1];
+                    return entity.type.includes(searchType);
                 }
                 if (token.startsWith('tag:')) {
                     const searchTag = token.split(':')[1];
                     return entity.tags?.some(t => t.toLowerCase().includes(searchTag));
                 }
+                if (token.startsWith('temp:')) {
+                    const searchTemp = token.split(':')[1];
+                    const templates = Array.isArray(entity.docTemplate) ? entity.docTemplate : [entity.docTemplate];
+                    return templates.some(t => t?.toLowerCase().includes(searchTemp));
+                }
                 if (token === 'is:finished') return entity.finishedSwitch;
                 if (token === 'is:minor') return entity.minorSwitch;
                 if (token === 'is:dead') return entity.deadSwitch;
+                if (token === 'is:cat' || token === 'is:category') return entity.categorySwitch;
                 
                 return (
                     entity.name.toLowerCase().includes(token) ||
+                    entity.otherNames?.some(n => n.toLowerCase().includes(token)) ||
                     entity.description?.toLowerCase().includes(token)
                 );
             });
         });
     }, [world.entities, searchQuery]);
 
-    // To handle hierarchy correctly in the sidebar groups, 
-    // we only show top-level entities (no parentId) of each type,
-    // and the EntityItem component will recursively render children.
-    // If a search is active, we might want to show all results flattened or keep hierarchy.
-    // Fantasia Archive keeps hierarchy but expands matched parents.
-    // For simplicity, if search is active, we show flattened results.
-    // If no search, we show hierarchy.
 
     const isSearching = searchQuery.length > 0;
 
