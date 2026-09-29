@@ -43,6 +43,8 @@ budget_tokens: 2000
 - **[2026-09-29]** Do NOT add CDN `<script type="importmap">` or `<script src="esm.sh/...">` tags to `index.html` — this caused a double-React instance bug. All deps go via `npm install` and Vite bundle.
 - **[2026-09-29]** Do NOT create entities by constructing raw objects — always use `handleCreate()` from the store. Missing fields break specifics editors.
 - **[2026-09-29]** Do NOT read `anatomy.md` whole as a doc — grep it for the specific path you need. It is a 6878-byte index.
+- **[2026-09-30]** Do NOT allow circular parent references when reparenting entities — always check `isDescendant(targetId, draggedId, entities)` before applying `parentId` change, otherwise both entities disappear from the root-driven sidebar tree.
+- **[2026-09-30]** When configuring `SmartSelect` for hierarchical parents ("Belongs under"), always pass `excludeIds={[entity.id]}` to block an entity from selecting itself.
 
 ## Decision Log
 
@@ -50,3 +52,5 @@ budget_tokens: 2000
 - **[2026-09-29] Editor/Viewer split per EntityType** — Each entity type has a dedicated `*Specifics.tsx` (editor) and `*SpecificsViewer.tsx`. This is verbose but keeps forms isolated and independently editable. Registry pattern (`EntitySpecificsRegistry`, `EntitySpecificsViewerRegistry`) maps type strings to components.
 - **[2026-09-29] TailwindCSS for all styling** — No CSS modules or styled-components. All conditional styles are string interpolation of Tailwind classes. This is the established pattern — don't introduce a second styling system.
 - **[2026-09-29] WorldPhase as CSS filter overlay** — Instead of re-theming components per phase, a `filter` style on the root `div` and an overlay `div` achieve the phase aesthetic globally without per-component logic.
+- **[2026-09-30] Native HTML5 Drag and Drop over external libs** — Implemented zero-dependency native HTML5 drag and drop for sidebar tree reparenting and sibling reordering to keep the bundle lean and performant.
+- **[2026-09-30] Universal Keyboard Shortcuts & Grimoire** — Global window keydown listener combined with in-form `onKeyDown` allows seamless `Ctrl+Enter` commit from text inputs/markdown editors, with a discreet header trigger and `?` key to inspect all available keybinds.

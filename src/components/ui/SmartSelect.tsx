@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Plus, Check, LucideIcon } from 'lucide-react';
 import { SmartSelectProps } from '../../types';
 
-export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({ label, ids = [], type, all, onChange, onCreate, isWikiMode, disabled, icon: Icon, gridSpan = 12 }) => {
+export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({ label, ids = [], type, all, onChange, onCreate, isWikiMode, disabled, icon: Icon, gridSpan = 12, excludeIds = [] }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const filtered = all.filter((e: any) => e.type === type && e.name.toLowerCase().includes(search.toLowerCase()));
+    const filtered = all.filter((e: any) => e.type === type && e.name.toLowerCase().includes(search.toLowerCase()) && !excludeIds.includes(e.id));
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

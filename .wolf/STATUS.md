@@ -24,8 +24,11 @@ budget_tokens: 1000
   - Fixed **BUG-004**: Replaced `window.prompt()` in `WorldMap.tsx` with full inline React modals for anchor placement and ley-line type selection. Marker creation routes through `handleCreate` for schema defaults.
   - Fixed **BUG-002**: Stabilized `DashboardView` insights with `seed` state + deterministic prime math. Added "Consult the Oracle" reroll button.
   - Fixed **BUG-003 UX**: Added collapse/expand chevron buttons on `NexusTreeView` nodes for navigating deep family trees.
-- **Phase P2 Features** —
+- **Phase P2 Features & Enhancements** —
   - Implemented **Markdown + Wikilinks** — New `MarkdownEditor` and `MarkdownRenderer` components. `[[Entity Name]]` wikilinks are auto-linked in both editor and viewer. Editor has a split Write/Preview/Split mode toolbar with bold/italic/heading/list/wikilink buttons and keyboard-driven autocomplete dropdown. Viewer renders markdown with full prose styling for both Sovereign and Wiki themes.
+  - Implemented **Keybinds System & Grimoire Modal** — Global keyboard shortcuts: `Ctrl+Enter` / `Cmd+Enter` to commit draft to chronicle, `Ctrl+S` to quick-save, `Ctrl+E` to toggle edit mode, `Escape` to abandon scrawl or dismiss modals, `Ctrl+K` to focus sidebar search, `Alt+1` to `Alt+7` to switch system realms, and `?` to summon the shortcuts grimoire. Added discreet "Keybinds" button in top header next to ThemeSwitcher. Created responsive `KeybindsModal` component supporting Sovereign, Wiki, and Royal Codex themes.
+  - Implemented **Sidebar Drag & Drop Tree Reparenting & Reordering** — Native HTML5 drag-and-drop on `Sidebar.tsx` `EntityItem`. Supports dragging an entry onto another entry to reparent as a nested child (`parentId = target.id`), dragging top or bottom edge to reorder as sibling before/after, and dragging onto category/type header to unparent to root level. Added circular dependency detection (`isDescendant` check) to prevent cycles. Added `reorderAndReparentEntity` action in `useWorldStore.ts`.
+  - Fixed **Belongs Under Self-Reference Bug** — Added `excludeIds` prop to `SmartSelect` and passed `excludeIds={[entity.id]}` in `EntityEditor` to prevent entities from selecting themselves as parent.
 - **Initial Architecture** — Full entity type system (20 types), Zustand persist store, editor/viewer split per entity type
 - **Roleplay Theme V1** — `royal-codex` theme with parchment textures, quill pen overlay, woodgrain bg
 - **Multi-Theme system** — `sovereign` (dark), `wiki` (light), `royal-codex` (fantasy parchment)

@@ -949,6 +949,8 @@ export interface SmartSelectProps {
     isWikiMode: boolean;
     disabled?: boolean;
     gridSpan?: number;
+    /** IDs to exclude from the selectable options (e.g., prevent self-reference) */
+    excludeIds?: string[];
 }
 
 export interface FieldRowProps {

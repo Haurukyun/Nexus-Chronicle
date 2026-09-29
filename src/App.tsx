@@ -1,7 +1,7 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import {
     Search, Plus, Globe, Trash2, Settings,
-    BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints
+    BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints, Keyboard
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from './constants';
@@ -17,6 +17,7 @@ import { EntityEditor } from './components/editor/EntityEditor';
 import { Sidebar } from './components/layout/Sidebar';
 import { ThemeSwitcher } from './components/ui/ThemeSwitcher';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
+import { KeybindsModal } from './components/ui/KeybindsModal';
 
 
 const App = () => {
@@ -52,6 +53,96 @@ const App = () => {
         return world.entities.find(e => e.id === activeTabId);
     }, [world.entities, activeTabId, editingTabIds, drafts]);
 
+    const [showKeybindsModal, setShowKeybindsModal] = useState(false);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const isEditing = editingTabIds.includes(activeTabId as string);
+            const target = e.target as HTMLElement | null;
+            const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+
+            // Commit draft (Ctrl+Enter or Cmd+Enter)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                if (isEditing) {
+                    e.preventDefault();
+                    handleSaveDraft(activeTabId as string);
+                    return;
+                }
+            }
+
+            // Quick save draft (Ctrl+S or Cmd+S)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                if (isEditing) {
+                    handleSaveDraft(activeTabId as string);
+                    return;
+                }
+            }
+
+            // Focus sidebar search (Ctrl+K or Cmd+K)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+                e.preventDefault();
+                const searchInput = document.getElementById('sidebar-search-input') as HTMLInputElement | null;
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+                return;
+            }
+
+            // Toggle Edit mode (Ctrl+E or Cmd+E)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')) {
+                const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey'];
+                if (!systemTabs.includes(activeTabId)) {
+                    e.preventDefault();
+                    handleToggleEdit(activeTabId as string);
+                    return;
+                }
+            }
+
+            // Escape: close keybinds modal or abandon edit
+            if (e.key === 'Escape') {
+                if (showKeybindsModal) {
+                    e.preventDefault();
+                    setShowKeybindsModal(false);
+                    return;
+                }
+                if (isEditing) {
+                    e.preventDefault();
+                    handleToggleEdit(activeTabId as string);
+                    return;
+                }
+            }
+
+            // '?' outside inputs: toggle keybinds modal
+            if (e.key === '?' && !isInput) {
+                e.preventDefault();
+                setShowKeybindsModal(prev => !prev);
+                return;
+            }
+
+            // Alt+1 to Alt+7: quick navigate realms
+            if (e.altKey && !e.ctrlKey && !e.shiftKey) {
+                const navKeys: Record<string, any> = {
+                    '1': 'dashboard',
+                    '2': 'timeline',
+                    '3': 'nexus',
+                    '4': 'journey',
+                    '5': 'map',
+                    '6': 'trash',
+                    '7': 'options'
+                };
+                if (navKeys[e.key]) {
+                    e.preventDefault();
+                    setActiveTabId(navKeys[e.key]);
+                    return;
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeTabId, editingTabIds, handleSaveDraft, handleToggleEdit, setActiveTabId, showKeybindsModal]);
 
     const bgClass = theme === 'royal-codex' ? 'bg-[#3b2b20] bg-[url("https://www.transparenttextures.com/patterns/wood-pattern.png")] bg-blend-multiply shadow-[inset_0_0_150px_rgba(0,0,0,0.8)]' : isWikiMode ? 'bg-[#fdfcf0]' : 'bg-[#070b14]';
     const textColor = theme === 'royal-codex' ? 'text-[#2b1810]' : isWikiMode ? 'text-[#1a1a1a]' : 'text-slate-300';
@@ -139,8 +230,22 @@ const App = () => {
                             })}
                         </div>
 
-                        {/* Quick Theme Switcher Button */}
+                        {/* Header Action Tools */}
                         <div className="flex items-center gap-2 shrink-0">
+                            <button
+                                onClick={() => setShowKeybindsModal(true)}
+                                title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
+                                    theme === 'royal-codex'
+                                        ? 'bg-[#2a170d] text-[#c8a96e] border-[#c8a96e]/30 hover:bg-[#382113] hover:text-[#fff8e7]'
+                                        : isWikiMode
+                                        ? 'bg-white border-[#d4c8af] text-slate-700 hover:bg-slate-100 hover:text-black shadow-sm'
+                                        : 'bg-slate-900/60 border-slate-700/60 text-slate-400 hover:text-yellow-400 hover:bg-slate-800'
+                                }`}
+                            >
+                                <Keyboard size={13} />
+                                <span className="hidden sm:inline">Keybinds</span>
+                            </button>
                             <ThemeSwitcher theme={theme} setTheme={setTheme} />
                         </div>
                     </div>
@@ -245,6 +350,13 @@ const App = () => {
                 </div>
             </main>
             </div>
+
+            <KeybindsModal 
+                isOpen={showKeybindsModal} 
+                onClose={() => setShowKeybindsModal(false)} 
+                theme={theme} 
+                isWikiMode={isWikiMode} 
+            />
         </div>
     );
 };

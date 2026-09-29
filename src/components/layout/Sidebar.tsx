@@ -2,10 +2,11 @@ import React, { useMemo, useState } from 'react';
 import { 
     Search, Plus, Trash2, BarChart3, History, GitMerge, 
     Footprints, Globe, Settings, BookMarked, Compass, 
-    ChevronRight, ChevronDown 
+    ChevronRight, ChevronDown, GripVertical
 } from 'lucide-react';
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
+import { useWorldStore } from '../../store/useWorldStore';
 
 interface SidebarProps {
     world: WorldData;
@@ -34,15 +35,35 @@ const EntityItem: React.FC<{
     handleDeleteToTrash: (entity: WorldEntity) => void;
     isWikiMode: boolean;
     theme?: ThemeMode;
-}> = ({ entity, depth, allEntities, activeTabId, handleOpenEntity, handleDeleteToTrash, isWikiMode, theme }) => {
+    draggedEntityId: string | null;
+    setDraggedEntityId: (id: string | null) => void;
+    onReorderAndReparent: (draggedId: string, targetId: string | null, position: 'before' | 'after' | 'inside', targetType?: EntityType) => void;
+}> = ({ 
+    entity, depth, allEntities, activeTabId, handleOpenEntity, handleDeleteToTrash, 
+    isWikiMode, theme, draggedEntityId, setDraggedEntityId, onReorderAndReparent 
+}) => {
     const [isExpanded, setIsExpanded] = useState(true);
+    const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null);
+
     const children = allEntities.filter(e => e.parentId === entity.id);
     const hasChildren = children.length > 0;
     const isActive = activeTabId === entity.id;
     const isRoyal = theme === 'royal-codex';
+    const isBeingDragged = draggedEntityId === entity.id;
+
+    // Target is invalid if it's the dragged entity itself or a descendant
+    const isInvalidTarget = useMemo(() => {
+        if (!draggedEntityId || draggedEntityId === entity.id) return true;
+        let cur = allEntities.find(e => e.id === entity.id);
+        while (cur && cur.parentId) {
+            if (cur.parentId === draggedEntityId) return true;
+            cur = allEntities.find(e => e.id === cur.parentId);
+        }
+        return false;
+    }, [draggedEntityId, entity.id, allEntities]);
     
     const customStyle: React.CSSProperties = {
-        paddingLeft: `${depth * 12 + 8}px`,
+        paddingLeft: `${depth * 12 + 6}px`,
         color: entity.documentColor || undefined,
         backgroundColor: isActive ? undefined : (entity.documentBackgroundColor || undefined)
     };
@@ -57,14 +78,81 @@ const EntityItem: React.FC<{
         ? 'hover:bg-[#2a150a]/60 text-[#c8a96e]/90 hover:text-[#fff8e7] font-serif text-xs font-semibold'
         : 'hover:bg-white/5 opacity-70 hover:opacity-100';
 
+    let dropIndicatorClass = '';
+    if (dropPosition === 'before') {
+        dropIndicatorClass = isRoyal 
+            ? 'border-t-2 border-[#d4af37] shadow-[0_-2px_8px_rgba(212,175,55,0.7)]'
+            : isWikiMode
+            ? 'border-t-2 border-[#b91c1c] shadow-[0_-2px_8px_rgba(185,28,28,0.5)]'
+            : 'border-t-2 border-yellow-400 shadow-[0_-2px_8px_rgba(250,204,21,0.6)]';
+    } else if (dropPosition === 'after') {
+        dropIndicatorClass = isRoyal 
+            ? 'border-b-2 border-[#d4af37] shadow-[0_2px_8px_rgba(212,175,55,0.7)]'
+            : isWikiMode
+            ? 'border-b-2 border-[#b91c1c] shadow-[0_2px_8px_rgba(185,28,28,0.5)]'
+            : 'border-b-2 border-yellow-400 shadow-[0_2px_8px_rgba(250,204,21,0.6)]';
+    } else if (dropPosition === 'inside') {
+        dropIndicatorClass = isRoyal 
+            ? 'ring-2 ring-[#d4af37] bg-[#3d2315] shadow-inner'
+            : isWikiMode
+            ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c]/15'
+            : 'ring-2 ring-yellow-400 bg-yellow-500/20';
+    }
+
     return (
         <div className="space-y-px">
             <div 
-                className={`flex items-center group/item transition-all rounded-lg overflow-hidden relative ${
+                draggable={true}
+                onDragStart={(e) => {
+                    e.stopPropagation();
+                    e.dataTransfer.setData('text/plain', entity.id);
+                    e.dataTransfer.effectAllowed = 'move';
+                    setDraggedEntityId(entity.id);
+                }}
+                onDragEnd={() => {
+                    setDraggedEntityId(null);
+                    setDropPosition(null);
+                }}
+                onDragOver={(e) => {
+                    if (isInvalidTarget) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.dataTransfer.dropEffect = 'move';
+
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const offsetY = e.clientY - rect.top;
+                    const height = rect.height;
+
+                    if (offsetY < height * 0.25) {
+                        setDropPosition('before');
+                    } else if (offsetY > height * 0.75) {
+                        setDropPosition('after');
+                    } else {
+                        setDropPosition('inside');
+                    }
+                }}
+                onDragLeave={() => {
+                    setDropPosition(null);
+                }}
+                onDrop={(e) => {
+                    if (isInvalidTarget || !draggedEntityId || !dropPosition) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onReorderAndReparent(draggedEntityId, entity.id, dropPosition);
+                    setIsExpanded(true);
+                    setDropPosition(null);
+                    setDraggedEntityId(null);
+                }}
+                className={`flex items-center group/item transition-all rounded-lg overflow-hidden relative cursor-grab active:cursor-grabbing ${
+                    isBeingDragged ? 'opacity-30 scale-[0.98]' : ''
+                } ${dropIndicatorClass} ${
                     isActive ? activeStyle : hoverStyle
                 } ${entity.minorSwitch ? 'italic opacity-50' : ''}`}
                 style={customStyle}
+                title={`Drag to reparent or reorder: "${entity.name}"`}
             >
+                <GripVertical size={11} className="opacity-0 group-hover/item:opacity-40 hover:opacity-80 transition-opacity shrink-0 -ml-1 mr-0.5 cursor-grab" />
+
                 {hasChildren ? (
                     <button 
                         onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
@@ -73,7 +161,7 @@ const EntityItem: React.FC<{
                         {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                     </button>
                 ) : (
-                    <div className="w-5" />
+                    <div className="w-4" />
                 )}
                 
                 <button
@@ -86,6 +174,11 @@ const EntityItem: React.FC<{
                         {entity.deadSwitch && <span className="text-[8px] opacity-40">💀</span>}
                         {entity.categorySwitch && <span className="text-[8px] opacity-40 font-bold px-1 rounded bg-slate-500/20">CAT</span>}
                     </span>
+                    {dropPosition === 'inside' && (
+                        <span className={`text-[8px] font-bold px-1 rounded uppercase tracking-wider ${
+                            isRoyal ? 'bg-[#d4af37] text-black' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
+                        }`}>↳ Nest</span>
+                    )}
                     {isRoyal && isActive && (
                         <span className="text-[#c8a96e] text-[9px] font-mono shrink-0 drop-shadow">▶</span>
                     )}
@@ -113,6 +206,9 @@ const EntityItem: React.FC<{
                             handleDeleteToTrash={handleDeleteToTrash}
                             isWikiMode={isWikiMode}
                             theme={theme}
+                            draggedEntityId={draggedEntityId}
+                            setDraggedEntityId={setDraggedEntityId}
+                            onReorderAndReparent={onReorderAndReparent}
                         />
                     ))}
                 </div>
@@ -138,6 +234,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setTheme,
 }) => {
     const isRoyal = theme === 'royal-codex';
+    const [draggedEntityId, setDraggedEntityId] = useState<string | null>(null);
+    const [headerDropType, setHeaderDropType] = useState<EntityType | null>(null);
+    const reorderAndReparentEntity = useWorldStore(state => state.reorderAndReparentEntity);
 
     const sidebarBg = isRoyal
         ? 'bg-[#181410] border-r-2 border-[#110e0b] shadow-[5px_0_15px_rgba(0,0,0,0.8)] relative'
@@ -209,7 +308,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <div className="relative group">
                     <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isRoyal ? 'text-[#c8a96e]/50' : 'text-slate-500 group-focus-within:text-yellow-500'}`} size={13} />
                     <input
-                        placeholder="type:location tag:urban..."
+                        id="sidebar-search-input"
+                        placeholder="type:location tag:urban... (Ctrl+K)"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={`w-full border rounded-xl py-2 pl-9 pr-3 text-xs focus:ring-1 outline-none transition-all ${
@@ -241,8 +341,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-300">
                                 {group.types.map(type => (
                                     <div key={type} className="space-y-0.5 group/type">
-                                        <div className="flex items-center justify-between px-2 py-0.5">
-                                            <span className={`text-[9px] font-bold uppercase ${isRoyal ? 'text-[#c8a96e]/40' : 'text-slate-500/60'}`}>{TYPE_LABELS[type]}</span>
+                                        <div 
+                                            onDragOver={(e) => {
+                                                if (!draggedEntityId) return;
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setHeaderDropType(type);
+                                            }}
+                                            onDragLeave={() => {
+                                                if (headerDropType === type) setHeaderDropType(null);
+                                            }}
+                                            onDrop={(e) => {
+                                                if (!draggedEntityId) return;
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                reorderAndReparentEntity(draggedEntityId, null, 'inside', type);
+                                                setHeaderDropType(null);
+                                                setDraggedEntityId(null);
+                                            }}
+                                            className={`flex items-center justify-between px-2 py-0.5 rounded transition-all ${
+                                                headerDropType === type
+                                                    ? (isRoyal 
+                                                        ? 'bg-[#3b2315] ring-1 ring-[#d4af37] text-[#fef08a]' 
+                                                        : isWikiMode 
+                                                        ? 'bg-[#b91c1c]/10 ring-1 ring-[#b91c1c] text-[#b91c1c]' 
+                                                        : 'bg-yellow-500/20 ring-1 ring-yellow-400 text-yellow-300')
+                                                    : ''
+                                            }`}
+                                        >
+                                            <span className={`text-[9px] font-bold uppercase ${isRoyal ? 'text-[#c8a96e]/40' : 'text-slate-500/60'}`}>
+                                                {TYPE_LABELS[type]}
+                                                {headerDropType === type && (
+                                                    <span className="ml-1.5 text-[8px] font-normal lowercase tracking-normal text-yellow-400 font-mono">↳ root</span>
+                                                )}
+                                            </span>
                                             {!world.entities.find(e => e.categorySwitch && e.type === type) && (
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); handleCreate(type, undefined, true); }}
@@ -267,6 +399,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                         handleDeleteToTrash={handleDeleteToTrash}
                                                         isWikiMode={isWikiMode}
                                                         theme={theme}
+                                                        draggedEntityId={draggedEntityId}
+                                                        setDraggedEntityId={setDraggedEntityId}
+                                                        onReorderAndReparent={reorderAndReparentEntity}
                                                     />
                                                 ))}
                                         </div>

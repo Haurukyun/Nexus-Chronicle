@@ -42,6 +42,7 @@ interface WorldStore {
     addMapConnection: (sourceId: string, targetId: string, type: any) => void;
     removeMapConnection: (id: string) => void;
     updateEntityParent: (entityId: string, parentId: string | null) => void;
+    reorderAndReparentEntity: (draggedId: string, targetId: string | null, position: 'before' | 'after' | 'inside', targetType?: EntityType) => void;
 }
 
 export const useWorldStore = create<WorldStore>()(
@@ -992,7 +993,64 @@ export const useWorldStore = create<WorldStore>()(
                         e.id === entityId ? { ...e, parentId } : e
                     )
                 }
-            }))
+            })),
+
+            reorderAndReparentEntity: (draggedId, targetId, position, targetType) => set((state) => {
+                const { world } = state;
+                const dragged = world.entities.find(e => e.id === draggedId);
+                if (!dragged) return state;
+
+                // Prevent dragging onto self
+                if (targetId && draggedId === targetId) return state;
+
+                // Circular dependency guard: target cannot be a descendant of dragged
+                if (targetId) {
+                    let cur = world.entities.find(e => e.id === targetId);
+                    while (cur && cur.parentId) {
+                        if (cur.parentId === draggedId) return state; // Cycle prevented
+                        cur = world.entities.find(e => e.id === cur.parentId);
+                    }
+                }
+
+                const newEntities = [...world.entities];
+                const draggedIdx = newEntities.findIndex(e => e.id === draggedId);
+                if (draggedIdx === -1) return state;
+                const [removed] = newEntities.splice(draggedIdx, 1);
+
+                const updatedEntity: WorldEntity = { ...removed };
+
+                if (!targetId) {
+                    // Dropped onto category / type header (unparent to root)
+                    updatedEntity.parentId = null;
+                    if (targetType) {
+                        updatedEntity.type = targetType;
+                    }
+                    newEntities.push(updatedEntity);
+                } else {
+                    const target = newEntities.find(e => e.id === targetId);
+                    if (!target) return state;
+
+                    const targetIdx = newEntities.findIndex(e => e.id === targetId);
+
+                    if (position === 'inside') {
+                        updatedEntity.parentId = target.id;
+                        newEntities.splice(targetIdx + 1, 0, updatedEntity);
+                    } else if (position === 'before') {
+                        updatedEntity.parentId = target.parentId || null;
+                        newEntities.splice(targetIdx, 0, updatedEntity);
+                    } else { // 'after'
+                        updatedEntity.parentId = target.parentId || null;
+                        newEntities.splice(targetIdx + 1, 0, updatedEntity);
+                    }
+                }
+
+                return {
+                    world: {
+                        ...world,
+                        entities: newEntities
+                    }
+                };
+            })
         }),
         {
             name: 'nexus-chronicle-storage',

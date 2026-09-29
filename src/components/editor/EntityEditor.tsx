@@ -16,8 +16,21 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
     const isLocation = entity.type === 'location';
     const loc = entity as Location;
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!entity.isReadOnly) {
+                onSave();
+            }
+        }
+    };
+
     return (
-        <div className="max-w-7xl mx-auto pb-40 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div 
+            onKeyDown={handleKeyDown}
+            className="max-w-7xl mx-auto pb-40 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700"
+        >
             <header className="flex justify-between items-end border-b border-slate-500/20 pb-8">
                 <div>
                     <h2 className={`text-5xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'}`}>The Sovereign Scribe</h2>
@@ -25,10 +38,22 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                 </div>
                 <div className="flex gap-4 items-center">
                     <FormToggle label={entity.isReadOnly ? "LOCKED" : "Lock Entry"} checked={entity.isReadOnly} onChange={(v: boolean) => onUpdate({ ...entity, isReadOnly: v })} isWikiMode={isWikiMode} />
-                    <button onClick={onSave} className={`px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-widest ${isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black'} hover:scale-105 transition-all shadow-2xl active:scale-95`}>
-                        Commit to Chronicle
+                    <button 
+                        onClick={onSave} 
+                        title="Commit to Chronicle (Ctrl+Enter or Ctrl+S)"
+                        className={`px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest ${isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black'} hover:scale-105 transition-all shadow-2xl active:scale-95 flex items-center gap-2`}
+                    >
+                        <span>Commit to Chronicle</span>
+                        <kbd className="opacity-60 text-[9px] font-mono tracking-normal px-1.5 py-0.5 rounded bg-black/20">Ctrl+↵</kbd>
                     </button>
-                    <button onClick={onCancel} className="p-4 text-slate-500 hover:text-red-500 transition-colors uppercase font-black text-[10px] tracking-widest">Abandon Scrawl</button>
+                    <button 
+                        onClick={onCancel} 
+                        title="Abandon Scrawl (Esc)"
+                        className="p-4 text-slate-500 hover:text-red-500 transition-colors uppercase font-black text-[10px] tracking-widest flex items-center gap-1.5"
+                    >
+                        <span>Abandon Scrawl</span>
+                        <kbd className="opacity-40 text-[9px] font-mono tracking-normal">(Esc)</kbd>
+                    </button>
                 </div>
             </header>
 
@@ -46,6 +71,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                         onChange={(ids) => onUpdate({ ...entity, parentId: ids[0] || null })} 
                         onCreate={onCreateNew} 
                         gridSpan={6}
+                        excludeIds={[entity.id]}
                     />
                     
                     <FormInput label="Text color" icon={Type} value={entity.textColor} type="color" onChange={(v: string) => onUpdate({ ...entity, textColor: v })} isWikiMode={isWikiMode} gridSpan={3} />
