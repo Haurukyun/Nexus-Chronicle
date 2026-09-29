@@ -3,8 +3,8 @@ import React from 'react';
 export type EntityType =
   | 'chapter' | 'note' | 'myth'
   | 'character' | 'location' | 'event' | 'species' | 'language' | 'culture'
-  | 'political' | 'religious' | 'organization' | 'magic' | 'science'
-  | 'ability' | 'item' | 'occupation' | 'condition' | 'resource';
+  | 'political' | 'religious' | 'organization' | 'magic' | 'science' | 'tech'
+  | 'ability' | 'item' | 'occupation' | 'condition' | 'resource' | 'currency';
 
 export type WorldPhase = 'creation' | 'golden' | 'shadow' | 'eclipse' | 'ruin';
 export type ThemeMode = 'sovereign' | 'wiki' | 'royal-codex';
@@ -31,7 +31,7 @@ export interface BaseEntity {
   name: string;
   type: EntityType;
   tags: string[];
-  description: string;
+  description?: string;
   lastModified: number;
   
   // Universal document settings from blueprints
@@ -48,6 +48,25 @@ export interface BaseEntity {
   extraClasses?: string; // Extra HTML classes
   otherNames?: string[]; // Other Names & Epithets
   categoryDescription?: string; // Category description
+
+  // Cross-entity shared connection arrays
+  parentIds?: string[];
+  childrenIds?: string[];
+  friendIds?: string[];
+  enemyIds?: string[];
+  relativeIds?: string[];
+  complicatedWithIds?: string[];
+  loreNoteIds?: string[];
+  mythIds?: string[];
+  eventIds?: string[];
+  locationIds?: string[];
+  cultureIds?: string[];
+  belongsUnderId?: string | null;
+  groupConnections?: Record<string, GroupRoleLinks>;
+  detailSkillIds?: string[];
+  detailItemIds?: string[];
+  detailConditionIds?: string[];
+  detailResourceIds?: string[];
 
   // Nexus Chronicle specific extensions
   isReadOnly?: boolean;
@@ -142,6 +161,20 @@ export interface Character extends BaseEntity {
   pairedConnectedItems?: string[]; // Connected to Items
   pairedConditionsConnected?: string[]; // Connected to Afflictions/Boons/Conditions
   pairedResources?: string[]; // Connected to Resources/Materials
+
+  // Legacy & compatibility aliases
+  placeOfResidenceId?: string[];
+  placeOfOriginId?: string[];
+  placeOfDemiseId?: string[];
+  speciesIds?: string[];
+  occupationIds?: string[];
+  skillIds?: string[];
+  spellIds?: string[];
+  equipmentIds?: string[];
+  wealthIds?: string[];
+  dateOfBirth?: string;
+  dateOfDeath?: string;
+  isDead?: boolean;
 }
 
 export interface Condition extends BaseEntity {
@@ -237,6 +270,7 @@ export interface Event extends BaseEntity {
   eventType?: string; // Event type
   startDate?: string; // Start date
   endDate?: string; // End date
+  date?: string; // Legacy date alias
   participants?: string; // Amount of participants
   pairedCharacter?: string[]; // Prominent Actors
   pairedLocations?: string[]; // Connected to Locations
@@ -409,6 +443,28 @@ export interface Location extends BaseEntity {
   connectedMagical?: string[]; // Connected Schools of Magic/Magical groups
   governTech?: string[]; // Governing Sciences/Technological groups
   connectedTech?: string[]; // Connected Sciences/Technological groups
+
+  // Compatibility & editor aliases
+  originatedCharacterIds?: string[];
+  livingCharacterIds?: string[];
+  deceasedCharacterIds?: string[];
+  connectedCharacterIds?: string[];
+  localSpeciesIds?: string[];
+  governingGroupConnections?: any;
+  connectedGroupConnections?: any;
+  dateOfCreation?: string;
+  dateOfEnd?: string;
+  unusualFeatures?: string;
+  precedingLocationIds?: string[];
+  succeedingLocationIds?: string[];
+  traditionsAndCustoms?: string;
+  neighbouringLocationIds?: string[];
+  localLanguageIds?: string[];
+  localCurrencyIds?: string[];
+  localCultureIds?: string[];
+  commonOccupationIds?: string[];
+  localResourceIds?: string[];
+  otherConnectedLocationIds?: string[];
 }
 
 export interface Note extends BaseEntity {
@@ -731,7 +787,7 @@ export interface Resource extends BaseEntity {
 }
 
 export interface Tech extends BaseEntity {
-  type: 'tech';
+  type: 'tech' | 'science';
   leaders?: string; // Leading figures (legacy)
   pairedCharacter?: string[]; // Technology/Science Users
   succedingTechGroup?: string[]; // Succeeding Sciences/Technological groups

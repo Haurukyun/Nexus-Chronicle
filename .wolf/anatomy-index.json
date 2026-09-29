@@ -1,0 +1,2836 @@
+{
+  "version": 1,
+  "meta": {
+    "lastScanned": "2026-09-29T21:51:32.455Z",
+    "fileCount": 100,
+    "hits": 0,
+    "misses": 0,
+    "renderedHash": "f761cf84765fdd36fa886d6d5c74e46ee3e254c6f17ae82a1dfad2e9ada8f2e9",
+    "storeUpdatedAt": "2026-09-29T21:51:32.457Z",
+    "rootHash": "c4c40a78a1b64586"
+  },
+  "files": {
+    ".eslintrc.js": {
+      "description": "ESLint configuration",
+      "tokens": 20,
+      "hash": "4a6869d72e894df2",
+      "size": 68,
+      "mtimeMs": 1774726396918.7642,
+      "updatedAt": "2026-09-29T21:51:31.006Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    ".gitattributes": {
+      "description": "Git attributes",
+      "tokens": 21,
+      "hash": "5adbd679651fa5aa",
+      "size": 77,
+      "mtimeMs": 1786271030285.35,
+      "updatedAt": "2026-09-29T21:51:31.007Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    ".gitignore": {
+      "description": "Git ignore rules",
+      "tokens": 74,
+      "hash": "d50ab07e11fa4bf3",
+      "size": 277,
+      "mtimeMs": 1774726396918.7642,
+      "updatedAt": "2026-09-29T21:51:31.007Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    ".prettierrc.js": {
+      "description": "",
+      "tokens": 43,
+      "hash": "b0090e54c5a4263f",
+      "size": 148,
+      "mtimeMs": 1774726396918.7642,
+      "updatedAt": "2026-09-29T21:51:31.020Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "AGENTS.md": {
+      "description": "OpenWolf",
+      "tokens": 75,
+      "hash": "e401f79554a8d796",
+      "size": 297,
+      "mtimeMs": 1790718690949.9912,
+      "updatedAt": "2026-09-29T21:51:31.020Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "assemble.py": {
+      "description": "Exports EntityType",
+      "tokens": 1289,
+      "hash": "efbd6adab2b0e109",
+      "size": 4509,
+      "mtimeMs": 1776805648320.67,
+      "updatedAt": "2026-09-29T21:51:31.023Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "CLAUDE.md": {
+      "description": "OpenWolf",
+      "tokens": 99,
+      "hash": "074d6b42b583729a",
+      "size": 395,
+      "mtimeMs": 1790718690814.7395,
+      "updatedAt": "2026-09-29T21:51:31.023Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "GEMINI.md": {
+      "description": "OpenWolf",
+      "tokens": 75,
+      "hash": "e401f79554a8d796",
+      "size": 297,
+      "mtimeMs": 1790718690953.0408,
+      "updatedAt": "2026-09-29T21:51:31.024Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "generate_components.py": {
+      "description": "generate_editor_components, get_category",
+      "tokens": 2618,
+      "hash": "f3159792d15d1da2",
+      "size": 9162,
+      "mtimeMs": 1776823567177.2273,
+      "updatedAt": "2026-09-29T21:51:31.024Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "generate_editor_components",
+          "kind": "fn",
+          "startLine": 4,
+          "endLine": 171,
+          "tokens": 2594
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "def generate_editor_components():",
+      "importance": 0.0203
+    },
+    "generate_viewers.py": {
+      "description": "generate_viewer_components, get_category",
+      "tokens": 2272,
+      "hash": "ab8dbe583cb2907f",
+      "size": 7951,
+      "mtimeMs": 1776823595771.7334,
+      "updatedAt": "2026-09-29T21:51:31.025Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "generate_viewer_components",
+          "kind": "fn",
+          "startLine": 4,
+          "endLine": 145,
+          "tokens": 2248
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "def generate_viewer_components():",
+      "importance": 0.0203
+    },
+    "index.html": {
+      "description": "Chronicle Codex - Worldbuilding Suite",
+      "tokens": 319,
+      "hash": "71f1f92fb055d2da",
+      "size": 1196,
+      "mtimeMs": 1786283129584.4236,
+      "updatedAt": "2026-09-29T21:51:31.026Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "metadata.json": {
+      "description": "",
+      "tokens": 77,
+      "hash": "e317010cb130f232",
+      "size": 267,
+      "mtimeMs": 1774726396920.7617,
+      "updatedAt": "2026-09-29T21:51:31.027Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "package.json": {
+      "description": "Node.js package manifest",
+      "tokens": 175,
+      "hash": "a5246332bb0bd048",
+      "size": 612,
+      "mtimeMs": 1786283212374.3213,
+      "updatedAt": "2026-09-29T21:51:31.027Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "README.md": {
+      "description": "Project documentation",
+      "tokens": 1,
+      "hash": "7eb70257593da06f",
+      "size": 2,
+      "mtimeMs": 1775654192283.5017,
+      "updatedAt": "2026-09-29T21:51:31.027Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "src/App.tsx": {
+      "description": "App — renders chart — uses useEffect, useMemo",
+      "tokens": 4717,
+      "hash": "e8babe1c5943857b",
+      "size": 16510,
+      "mtimeMs": 1786274661586.284,
+      "updatedAt": "2026-09-29T21:51:31.028Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "App",
+          "kind": "fn",
+          "startLine": 22,
+          "endLine": 250,
+          "tokens": 4428
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "const App = () => {",
+      "imports": [
+        "src/store/useWorldStore.ts",
+        "src/constants.ts",
+        "src/views/WorldMap.tsx",
+        "src/views/TrashView.tsx",
+        "src/views/OptionsView.tsx",
+        "src/views/DashboardView.tsx",
+        "src/views/TimelineView.tsx",
+        "src/views/NexusTreeView.tsx",
+        "src/views/JourneyView.tsx",
+        "src/components/viewer/EntityViewer.tsx",
+        "src/components/editor/EntityEditor.tsx",
+        "src/components/layout/Sidebar.tsx",
+        "src/components/ui/ThemeSwitcher.tsx",
+        "src/components/ui/ErrorBoundary.tsx"
+      ],
+      "importance": 0.0375
+    },
+    "src/components/editor/EditorGroup.tsx": {
+      "description": "EditorGroup",
+      "tokens": 606,
+      "hash": "aa4c7f05b8085ce0",
+      "size": 2121,
+      "mtimeMs": 1786271442859.1248,
+      "updatedAt": "2026-09-29T21:51:31.029Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "EditorGroupProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 10,
+          "tokens": 37
+        },
+        {
+          "name": "EditorGroup",
+          "kind": "fn",
+          "startLine": 12,
+          "endLine": 53,
+          "tokens": 532
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.1223
+    },
+    "src/components/editor/EntityEditor.tsx": {
+      "description": "EntityEditor — renders form",
+      "tokens": 2955,
+      "hash": "0a3c9d442b813992",
+      "size": 10342,
+      "mtimeMs": 1776924478486.9253,
+      "updatedAt": "2026-09-29T21:51:31.029Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "EntityEditor",
+          "kind": "fn",
+          "startLine": 15,
+          "endLine": 110,
+          "tokens": 2755
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWikiMode, onUpdate }: EntityEditorProps) => {",
+      "imports": [
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx",
+        "src/components/ui/index.ts",
+        "src/types.ts",
+        "src/components/editor/specifics/EntitySpecificsRegistry.tsx"
+      ],
+      "importance": 0.0283
+    },
+    "src/components/editor/GroupRoleGroup.tsx": {
+      "description": "GroupRoleGroup",
+      "tokens": 530,
+      "hash": "ef54b694aaa87bf9",
+      "size": 1855,
+      "mtimeMs": 1786294037808.636,
+      "updatedAt": "2026-09-29T21:51:31.029Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "GroupRoleGroupProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 13,
+          "tokens": 77
+        },
+        {
+          "name": "GroupRoleGroup",
+          "kind": "fn",
+          "startLine": 15,
+          "endLine": 38,
+          "tokens": 419
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/components/ui/index.ts",
+        "src/types.ts"
+      ],
+      "importance": 0.1163
+    },
+    "src/components/editor/index.ts": {
+      "description": "",
+      "tokens": 28,
+      "hash": "4e506f2efb6f3962",
+      "size": 97,
+      "mtimeMs": 1775656587032.1274,
+      "updatedAt": "2026-09-29T21:51:31.030Z",
+      "source": "scan",
+      "imports": [
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx",
+        "src/components/editor/EntityEditor.tsx"
+      ],
+      "importance": 0.0203
+    },
+    "src/components/editor/specifics/AbilitySpecifics.tsx": {
+      "description": "AbilitySpecifics — renders form",
+      "tokens": 3260,
+      "hash": "05734ab8ff7806d4",
+      "size": 11409,
+      "mtimeMs": 1786270656104.6094,
+      "updatedAt": "2026-09-29T21:51:31.030Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 68
+        },
+        {
+          "name": "AbilitySpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 83,
+          "tokens": 3092
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const AbilitySpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/ChapterSpecifics.tsx": {
+      "description": "ChapterSpecifics — renders form",
+      "tokens": 533,
+      "hash": "bf14f3bd5e2f372d",
+      "size": 1864,
+      "mtimeMs": 1786270656105.61,
+      "updatedAt": "2026-09-29T21:51:31.030Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 68
+        },
+        {
+          "name": "ChapterSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 31,
+          "tokens": 390
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/CharacterSpecifics.tsx": {
+      "description": "CharacterSpecifics — renders form",
+      "tokens": 4854,
+      "hash": "f9484819db50b2fc",
+      "size": 16987,
+      "mtimeMs": 1786270656108.72,
+      "updatedAt": "2026-09-29T21:51:31.031Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 69
+        },
+        {
+          "name": "CharacterSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 131,
+          "tokens": 4690
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/ConditionSpecifics.tsx": {
+      "description": "ConditionSpecifics — renders form",
+      "tokens": 3896,
+      "hash": "eab4c4147ea9a826",
+      "size": 13635,
+      "mtimeMs": 1786270656113.926,
+      "updatedAt": "2026-09-29T21:51:31.031Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 69
+        },
+        {
+          "name": "ConditionSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 91,
+          "tokens": 3726
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const ConditionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/CultureSpecifics.tsx": {
+      "description": "CultureSpecifics — renders form",
+      "tokens": 2550,
+      "hash": "55dc379e837951f5",
+      "size": 8923,
+      "mtimeMs": 1786270656116.5103,
+      "updatedAt": "2026-09-29T21:51:31.031Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 68
+        },
+        {
+          "name": "CultureSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 74,
+          "tokens": 2381
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const CultureSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/CurrencySpecifics.tsx": {
+      "description": "CurrencySpecifics — renders form",
+      "tokens": 1377,
+      "hash": "7b1413d904b59065",
+      "size": 4817,
+      "mtimeMs": 1786270656120.1367,
+      "updatedAt": "2026-09-29T21:51:31.031Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 69
+        },
+        {
+          "name": "CurrencySpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 51,
+          "tokens": 1212
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/EntitySpecificsRegistry.tsx": {
+      "description": "EntitySpecificsRegistry",
+      "tokens": 1321,
+      "hash": "c9d86c9d330f249e",
+      "size": 4622,
+      "mtimeMs": 1786270656126.6682,
+      "updatedAt": "2026-09-29T21:51:31.032Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "RegistryProps",
+          "kind": "section",
+          "startLine": 11,
+          "endLine": 17,
+          "tokens": 68
+        },
+        {
+          "name": "EntitySpecificsRegistry",
+          "kind": "fn",
+          "startLine": 19,
+          "endLine": 45,
+          "tokens": 1107
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0251
+    },
+    "src/components/editor/specifics/EventSpecifics.tsx": {
+      "description": "EventSpecifics — renders form",
+      "tokens": 2246,
+      "hash": "f522a5d6afb87dec",
+      "size": 7861,
+      "mtimeMs": 1786270656129.298,
+      "updatedAt": "2026-09-29T21:51:31.032Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 67
+        },
+        {
+          "name": "EventSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 65,
+          "tokens": 2082
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const EventSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/index.ts": {
+      "description": "",
+      "tokens": 214,
+      "hash": "099f389b8086a2d4",
+      "size": 746,
+      "mtimeMs": 1786270656189.822,
+      "updatedAt": "2026-09-29T21:51:31.032Z",
+      "source": "scan",
+      "imports": [
+        "src/components/editor/specifics/ChapterSpecifics.tsx",
+        "src/components/editor/specifics/CharacterSpecifics.tsx",
+        "src/components/editor/specifics/ConditionSpecifics.tsx",
+        "src/components/editor/specifics/CultureSpecifics.tsx",
+        "src/components/editor/specifics/CurrencySpecifics.tsx",
+        "src/components/editor/specifics/EventSpecifics.tsx",
+        "src/components/editor/specifics/OrganizationSpecifics.tsx",
+        "src/components/editor/specifics/ItemSpecifics.tsx",
+        "src/components/editor/specifics/LanguageSpecifics.tsx",
+        "src/components/editor/specifics/LocationSpecifics.tsx",
+        "src/components/editor/specifics/NoteSpecifics.tsx",
+        "src/components/editor/specifics/MagicSpecifics.tsx",
+        "src/components/editor/specifics/MythSpecifics.tsx",
+        "src/components/editor/specifics/PoliticalGroupSpecifics.tsx",
+        "src/components/editor/specifics/OccupationSpecifics.tsx",
+        "src/components/editor/specifics/SpeciesSpecifics.tsx",
+        "src/components/editor/specifics/ReligionSpecifics.tsx",
+        "src/components/editor/specifics/ResourceSpecifics.tsx",
+        "src/components/editor/specifics/TechSpecifics.tsx",
+        "src/components/editor/specifics/AbilitySpecifics.tsx"
+      ],
+      "importance": 0.0203
+    },
+    "src/components/editor/specifics/ItemSpecifics.tsx": {
+      "description": "ItemSpecifics — renders form",
+      "tokens": 3219,
+      "hash": "06ce24bd302896a7",
+      "size": 11265,
+      "mtimeMs": 1786270656134.8445,
+      "updatedAt": "2026-09-29T21:51:31.032Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 66
+        },
+        {
+          "name": "ItemSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 82,
+          "tokens": 3053
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const ItemSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/LanguageSpecifics.tsx": {
+      "description": "LanguageSpecifics — renders form",
+      "tokens": 1820,
+      "hash": "ae5428a8720a56ea",
+      "size": 6367,
+      "mtimeMs": 1786270656135.8499,
+      "updatedAt": "2026-09-29T21:51:31.033Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 69
+        },
+        {
+          "name": "LanguageSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 55,
+          "tokens": 1658
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/LocationSpecifics.tsx": {
+      "description": "LocationSpecifics — renders form",
+      "tokens": 3457,
+      "hash": "fec7ed52ab1d049f",
+      "size": 12101,
+      "mtimeMs": 1786270656138.9019,
+      "updatedAt": "2026-09-29T21:51:31.033Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 66
+        },
+        {
+          "name": "LocationSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 91,
+          "tokens": 3267
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/MagicSpecifics.tsx": {
+      "description": "MagicSpecifics — renders form",
+      "tokens": 4206,
+      "hash": "435877ded72bbe52",
+      "size": 14720,
+      "mtimeMs": 1786270656145.922,
+      "updatedAt": "2026-09-29T21:51:31.033Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 67
+        },
+        {
+          "name": "MagicSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 94,
+          "tokens": 4042
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const MagicSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/MythSpecifics.tsx": {
+      "description": "MythSpecifics",
+      "tokens": 2182,
+      "hash": "57fb57a4c42fe7bc",
+      "size": 7636,
+      "mtimeMs": 1786270656148.9224,
+      "updatedAt": "2026-09-29T21:51:31.034Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 66
+        },
+        {
+          "name": "MythSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 64,
+          "tokens": 2019
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const MythSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/NoteSpecifics.tsx": {
+      "description": "NoteSpecifics — renders form",
+      "tokens": 2317,
+      "hash": "0ebb82f57384f975",
+      "size": 8107,
+      "mtimeMs": 1786270656150.9224,
+      "updatedAt": "2026-09-29T21:51:31.034Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 66
+        },
+        {
+          "name": "NoteSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 64,
+          "tokens": 2154
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const NoteSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/OccupationSpecifics.tsx": {
+      "description": "OccupationSpecifics — renders form",
+      "tokens": 2629,
+      "hash": "0a064b75b19e2e5f",
+      "size": 9200,
+      "mtimeMs": 1786270656159.0603,
+      "updatedAt": "2026-09-29T21:51:31.034Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 70
+        },
+        {
+          "name": "OccupationSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 75,
+          "tokens": 2458
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const OccupationSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/OrganizationSpecifics.tsx": {
+      "description": "OrganizationSpecifics — renders form",
+      "tokens": 3706,
+      "hash": "117dfe9353abb3e1",
+      "size": 12971,
+      "mtimeMs": 1786270656161.175,
+      "updatedAt": "2026-09-29T21:51:31.034Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 71
+        },
+        {
+          "name": "OrganizationSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 97,
+          "tokens": 3536
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/PoliticalGroupSpecifics.tsx": {
+      "description": "PoliticalGroupSpecifics — renders form",
+      "tokens": 4118,
+      "hash": "12349cf7faa52f8e",
+      "size": 14413,
+      "mtimeMs": 1786270656167.1885,
+      "updatedAt": "2026-09-29T21:51:31.035Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 72
+        },
+        {
+          "name": "PoliticalGroupSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 92,
+          "tokens": 3947
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/ReligionSpecifics.tsx": {
+      "description": "ReligionSpecifics — renders form",
+      "tokens": 4089,
+      "hash": "e0dcc270dabefb72",
+      "size": 14311,
+      "mtimeMs": 1786270656171.0542,
+      "updatedAt": "2026-09-29T21:51:31.035Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 69
+        },
+        {
+          "name": "ReligionSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 92,
+          "tokens": 3923
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/ResourceSpecifics.tsx": {
+      "description": "ResourceSpecifics — renders form",
+      "tokens": 3335,
+      "hash": "024065eda09a3cec",
+      "size": 11670,
+      "mtimeMs": 1786270656178.8484,
+      "updatedAt": "2026-09-29T21:51:31.035Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 69
+        },
+        {
+          "name": "ResourceSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 85,
+          "tokens": 3165
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const ResourceSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/SpeciesSpecifics.tsx": {
+      "description": "SpeciesSpecifics — renders form",
+      "tokens": 3627,
+      "hash": "372e14790d07764c",
+      "size": 12694,
+      "mtimeMs": 1786270656181.4207,
+      "updatedAt": "2026-09-29T21:51:31.035Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 68
+        },
+        {
+          "name": "SpeciesSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 91,
+          "tokens": 3459
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const SpeciesSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/editor/specifics/TechSpecifics.tsx": {
+      "description": "TechSpecifics — renders form",
+      "tokens": 4151,
+      "hash": "81e7df7234f9a93c",
+      "size": 14528,
+      "mtimeMs": 1786270656183.6226,
+      "updatedAt": "2026-09-29T21:51:31.036Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 14,
+          "tokens": 66
+        },
+        {
+          "name": "TechSpecifics",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 93,
+          "tokens": 3988
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const TechSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/editor/EditorGroup.tsx",
+        "src/components/editor/GroupRoleGroup.tsx"
+      ],
+      "importance": 0.0212
+    },
+    "src/components/layout/Sidebar.tsx": {
+      "description": "EntityItem — renders chart — uses useState, useMemo",
+      "tokens": 4779,
+      "hash": "8bf02c72ffa35120",
+      "size": 16733,
+      "mtimeMs": 1786274661592.449,
+      "updatedAt": "2026-09-29T21:51:31.037Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "SidebarProps",
+          "kind": "section",
+          "startLine": 10,
+          "endLine": 25,
+          "tokens": 181
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface SidebarProps {",
+      "imports": [
+        "src/types.ts",
+        "src/constants.ts"
+      ],
+      "importance": 0.0226
+    },
+    "src/components/ui/EmeraldGem.tsx": {
+      "description": "EmeraldGem",
+      "tokens": 943,
+      "hash": "4bb76841b2b4f7de",
+      "size": 3299,
+      "mtimeMs": 1786272253844.1057,
+      "updatedAt": "2026-09-29T21:51:31.037Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "EmeraldGem",
+          "kind": "fn",
+          "startLine": 3,
+          "endLine": 59,
+          "tokens": 935
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.0485
+    },
+    "src/components/ui/ErrorBoundary.tsx": {
+      "description": "Exports ErrorBoundary",
+      "tokens": 534,
+      "hash": "89e6e83681bf88d9",
+      "size": 1866,
+      "mtimeMs": 1786294037821.575,
+      "updatedAt": "2026-09-29T21:51:31.037Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 3,
+          "endLine": 6,
+          "tokens": 21
+        },
+        {
+          "name": "State",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 11,
+          "tokens": 20
+        },
+        {
+          "name": "ErrorBoundary",
+          "kind": "class",
+          "startLine": 13,
+          "endLine": 50,
+          "tokens": 474
+        },
+        {
+          "name": "ErrorBoundary.getDerivedStateFromError",
+          "kind": "method",
+          "startLine": 19,
+          "endLine": 21,
+          "tokens": 33
+        },
+        {
+          "name": "ErrorBoundary.componentDidCatch",
+          "kind": "method",
+          "startLine": 23,
+          "endLine": 25,
+          "tokens": 42
+        },
+        {
+          "name": "ErrorBoundary.render",
+          "kind": "method",
+          "startLine": 27,
+          "endLine": 49,
+          "tokens": 357
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.0507
+    },
+    "src/components/ui/FieldRow.tsx": {
+      "description": "FieldRow",
+      "tokens": 358,
+      "hash": "4a3d0c7c474b7a76",
+      "size": 1252,
+      "mtimeMs": 1786272138097.2024,
+      "updatedAt": "2026-09-29T21:51:31.037Z",
+      "source": "scan",
+      "imports": [
+        "src/types.ts",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0485
+    },
+    "src/components/ui/FormInput.tsx": {
+      "description": "FormInput — uses useState, useEffect",
+      "tokens": 1026,
+      "hash": "a6d6e9242c1e2218",
+      "size": 3591,
+      "mtimeMs": 1786271466514.3186,
+      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "FormInput",
+          "kind": "fn",
+          "startLine": 6,
+          "endLine": 70,
+          "tokens": 966
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0485
+    },
+    "src/components/ui/FormToggle.tsx": {
+      "description": "FormToggle",
+      "tokens": 354,
+      "hash": "63d3dc9f705ac127",
+      "size": 1238,
+      "mtimeMs": 1776917106088.721,
+      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "source": "scan",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0485
+    },
+    "src/components/ui/index.ts": {
+      "description": "",
+      "tokens": 98,
+      "hash": "643e55a976a05ca8",
+      "size": 341,
+      "mtimeMs": 1786272800262.4812,
+      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "source": "scan",
+      "imports": [
+        "src/components/ui/FormInput.tsx",
+        "src/components/ui/FormToggle.tsx",
+        "src/components/ui/SmartSelect.tsx",
+        "src/components/ui/FieldRow.tsx",
+        "src/components/ui/LinksDisplay.tsx",
+        "src/components/ui/TaperedDivider.tsx",
+        "src/components/ui/WikiRows.tsx",
+        "src/components/ui/RadarChart.tsx",
+        "src/components/ui/ThemeSwitcher.tsx",
+        "src/components/ui/EmeraldGem.tsx",
+        "src/components/ui/ErrorBoundary.tsx"
+      ],
+      "importance": 0.3644
+    },
+    "src/components/ui/LinksDisplay.tsx": {
+      "description": "LinksDisplay",
+      "tokens": 800,
+      "hash": "10db2f87521a5903",
+      "size": 2798,
+      "mtimeMs": 1786272144395.7659,
+      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "LinksDisplay",
+          "kind": "fn",
+          "startLine": 5,
+          "endLine": 61,
+          "tokens": 761
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0485
+    },
+    "src/components/ui/RadarChart.tsx": {
+      "description": "RadarChart — renders chart",
+      "tokens": 1179,
+      "hash": "933c33bb07d1ad07",
+      "size": 4126,
+      "mtimeMs": 1775664110814.9558,
+      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "RadarChartProps",
+          "kind": "section",
+          "startLine": 3,
+          "endLine": 14,
+          "tokens": 77
+        },
+        {
+          "name": "RadarChart",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 109,
+          "tokens": 1094
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.0485
+    },
+    "src/components/ui/SmartSelect.tsx": {
+      "description": "SmartSelect — uses useState, useEffect",
+      "tokens": 1387,
+      "hash": "4d9c8d282451cf65",
+      "size": 4854,
+      "mtimeMs": 1776917119134.1726,
+      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "SmartSelect",
+          "kind": "fn",
+          "startLine": 5,
+          "endLine": 76,
+          "tokens": 1339
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0485
+    },
+    "src/components/ui/TaperedDivider.tsx": {
+      "description": "TaperedDivider",
+      "tokens": 92,
+      "hash": "92b1d6ba986097a5",
+      "size": 320,
+      "mtimeMs": 1775659496645.694,
+      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "source": "scan",
+      "importance": 0.0485
+    },
+    "src/components/ui/ThemeSwitcher.tsx": {
+      "description": "THEME_OPTIONS — uses useState, useEffect",
+      "tokens": 1517,
+      "hash": "6c56a4c765e8ee37",
+      "size": 5311,
+      "mtimeMs": 1786271344121.2158,
+      "updatedAt": "2026-09-29T21:51:31.039Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "ThemeSwitcherProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 9,
+          "tokens": 34
+        },
+        {
+          "name": "ThemeSwitcher",
+          "kind": "fn",
+          "startLine": 35,
+          "endLine": 115,
+          "tokens": 1209
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0507
+    },
+    "src/components/ui/WikiInfoboxRow.tsx": {
+      "description": "WikiInfoboxRow",
+      "tokens": 144,
+      "hash": "c51a76788a0b4660",
+      "size": 504,
+      "mtimeMs": 1775656517569.2563,
+      "updatedAt": "2026-09-29T21:51:31.039Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "src/components/ui/WikiRows.tsx": {
+      "description": "WikiStatRow",
+      "tokens": 274,
+      "hash": "5344fec2f668df22",
+      "size": 957,
+      "mtimeMs": 1775659503615.767,
+      "updatedAt": "2026-09-29T21:51:31.039Z",
+      "source": "scan",
+      "importance": 0.0485
+    },
+    "src/components/ui/WikiStatRow.tsx": {
+      "description": "WikiStatRow",
+      "tokens": 138,
+      "hash": "00f1a63dacb972ae",
+      "size": 481,
+      "mtimeMs": 1775656511134.5625,
+      "updatedAt": "2026-09-29T21:51:31.039Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "src/components/viewer/CharacterStatBlock.tsx": {
+      "description": "CharacterStatBlock — renders chart",
+      "tokens": 3086,
+      "hash": "4dc01998ea2c66ed",
+      "size": 10800,
+      "mtimeMs": 1786294037833.0554,
+      "updatedAt": "2026-09-29T21:51:31.040Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "CharacterStatBlockProps",
+          "kind": "section",
+          "startLine": 7,
+          "endLine": 13,
+          "tokens": 56
+        },
+        {
+          "name": "CharacterStatBlock",
+          "kind": "fn",
+          "startLine": 15,
+          "endLine": 171,
+          "tokens": 2944
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface CharacterStatBlockProps {\nexport const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName = false, backlinks }: CharacterStatBlockProps) => {",
+      "imports": [
+        "src/components/ui/index.ts",
+        "src/types.ts",
+        "src/utils/backlinkUtils.ts",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0269
+    },
+    "src/components/viewer/EntityViewer.tsx": {
+      "description": "EntityViewer — uses useMemo",
+      "tokens": 3745,
+      "hash": "2202f6d3e3c4bd99",
+      "size": 13105,
+      "mtimeMs": 1786294037844.494,
+      "updatedAt": "2026-09-29T21:51:31.040Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "EntityViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 198,
+          "tokens": 3553
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap, isWikiMode }: EntityViewerProps) => {",
+      "imports": [
+        "src/components/viewer/ViewerHeaders.tsx",
+        "src/components/viewer/CharacterStatBlock.tsx",
+        "src/components/viewer/WikiInfobox.tsx",
+        "src/components/ui/index.ts",
+        "src/types.ts",
+        "src/constants.ts",
+        "src/utils/backlinkUtils.ts",
+        "src/components/viewer/specifics/EntitySpecificsViewerRegistry.tsx",
+        "src/components/viewer/ViewerSectionCard.tsx",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0269
+    },
+    "src/components/viewer/index.ts": {
+      "description": "",
+      "tokens": 39,
+      "hash": "dae9600d42adeda9",
+      "size": 134,
+      "mtimeMs": 1775656636707.2573,
+      "updatedAt": "2026-09-29T21:51:31.040Z",
+      "source": "scan",
+      "imports": [
+        "src/components/viewer/ViewerHeaders.tsx",
+        "src/components/viewer/CharacterStatBlock.tsx",
+        "src/components/viewer/WikiInfobox.tsx",
+        "src/components/viewer/EntityViewer.tsx"
+      ],
+      "importance": 0.0203
+    },
+    "src/components/viewer/specifics/AbilitySpecificsViewer.tsx": {
+      "description": "AbilitySpecificsViewer",
+      "tokens": 2764,
+      "hash": "4988184ec5a578bf",
+      "size": 9672,
+      "mtimeMs": 1776823603460.9036,
+      "updatedAt": "2026-09-29T21:51:31.040Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 47
+        },
+        {
+          "name": "AbilitySpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 103,
+          "tokens": 2677
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const AbilitySpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/ChapterSpecificsViewer.tsx": {
+      "description": "ChapterSpecificsViewer",
+      "tokens": 357,
+      "hash": "b4490e5245118b4b",
+      "size": 1249,
+      "mtimeMs": 1776823603433.149,
+      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "source": "scan",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/CharacterSpecificsViewer.tsx": {
+      "description": "CharacterSpecificsViewer",
+      "tokens": 3769,
+      "hash": "a265746656b29665",
+      "size": 13201,
+      "mtimeMs": 1786274661598.8945,
+      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 7,
+          "endLine": 13,
+          "tokens": 46
+        },
+        {
+          "name": "CharacterSpecificsViewer",
+          "kind": "fn",
+          "startLine": 15,
+          "endLine": 155,
+          "tokens": 3650
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts",
+        "src/components/viewer/ViewerSectionCard.tsx",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/ConditionSpecificsViewer.tsx": {
+      "description": "ConditionSpecificsViewer",
+      "tokens": 3085,
+      "hash": "e31bbbd98614a7b4",
+      "size": 10797,
+      "mtimeMs": 1776823603434.3037,
+      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 48
+        },
+        {
+          "name": "ConditionSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 104,
+          "tokens": 2997
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const ConditionSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/CultureSpecificsViewer.tsx": {
+      "description": "CultureSpecificsViewer",
+      "tokens": 2295,
+      "hash": "4c3cb04a77b2bb3a",
+      "size": 8031,
+      "mtimeMs": 1776823603436.3025,
+      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 47
+        },
+        {
+          "name": "CultureSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 96,
+          "tokens": 2208
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const CultureSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/CurrencySpecificsViewer.tsx": {
+      "description": "CurrencySpecificsViewer",
+      "tokens": 1097,
+      "hash": "5f3a91c8e35cdaea",
+      "size": 3838,
+      "mtimeMs": 1776823603437.3047,
+      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 47
+        },
+        {
+          "name": "CurrencySpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 54,
+          "tokens": 1009
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/EntitySpecificsViewerRegistry.tsx": {
+      "description": "EntitySpecificsViewerRegistry",
+      "tokens": 1232,
+      "hash": "c91b3e133ffd0a6e",
+      "size": 4310,
+      "mtimeMs": 1776823626436.0276,
+      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "RegistryProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 50
+        },
+        {
+          "name": "EntitySpecificsViewerRegistry",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 37,
+          "tokens": 1148
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/components/viewer/specifics/index.ts"
+      ],
+      "importance": 0.0226
+    },
+    "src/components/viewer/specifics/EventSpecificsViewer.tsx": {
+      "description": "EventSpecificsViewer",
+      "tokens": 2113,
+      "hash": "d3c13109ab273199",
+      "size": 7394,
+      "mtimeMs": 1776823603438.906,
+      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 46
+        },
+        {
+          "name": "EventSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 90,
+          "tokens": 2027
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const EventSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/index.ts": {
+      "description": "",
+      "tokens": 248,
+      "hash": "28399d690bc52235",
+      "size": 866,
+      "mtimeMs": 1776807782232.3267,
+      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "source": "scan",
+      "imports": [
+        "src/components/viewer/specifics/ChapterSpecificsViewer.tsx",
+        "src/components/viewer/specifics/CharacterSpecificsViewer.tsx",
+        "src/components/viewer/specifics/ConditionSpecificsViewer.tsx",
+        "src/components/viewer/specifics/CultureSpecificsViewer.tsx",
+        "src/components/viewer/specifics/CurrencySpecificsViewer.tsx",
+        "src/components/viewer/specifics/EventSpecificsViewer.tsx",
+        "src/components/viewer/specifics/OrganizationSpecificsViewer.tsx",
+        "src/components/viewer/specifics/ItemSpecificsViewer.tsx",
+        "src/components/viewer/specifics/LanguageSpecificsViewer.tsx",
+        "src/components/viewer/specifics/LocationSpecificsViewer.tsx",
+        "src/components/viewer/specifics/NoteSpecificsViewer.tsx",
+        "src/components/viewer/specifics/MagicSpecificsViewer.tsx",
+        "src/components/viewer/specifics/MythSpecificsViewer.tsx",
+        "src/components/viewer/specifics/PoliticalGroupSpecificsViewer.tsx",
+        "src/components/viewer/specifics/OccupationSpecificsViewer.tsx",
+        "src/components/viewer/specifics/SpeciesSpecificsViewer.tsx",
+        "src/components/viewer/specifics/ReligionSpecificsViewer.tsx",
+        "src/components/viewer/specifics/ResourceSpecificsViewer.tsx",
+        "src/components/viewer/specifics/TechSpecificsViewer.tsx",
+        "src/components/viewer/specifics/AbilitySpecificsViewer.tsx"
+      ],
+      "importance": 0.0299
+    },
+    "src/components/viewer/specifics/ItemSpecificsViewer.tsx": {
+      "description": "ItemSpecificsViewer",
+      "tokens": 2871,
+      "hash": "8f38c9e21e06c45d",
+      "size": 10047,
+      "mtimeMs": 1776823603440.9988,
+      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 46
+        },
+        {
+          "name": "ItemSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 109,
+          "tokens": 2786
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const ItemSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/LanguageSpecificsViewer.tsx": {
+      "description": "LanguageSpecificsViewer",
+      "tokens": 1306,
+      "hash": "90dea1540729ae71",
+      "size": 4568,
+      "mtimeMs": 1776823603443.004,
+      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 47
+        },
+        {
+          "name": "LanguageSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 55,
+          "tokens": 1218
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/LocationSpecificsViewer.tsx": {
+      "description": "LocationSpecificsViewer",
+      "tokens": 1342,
+      "hash": "27c349cdb196992b",
+      "size": 4694,
+      "mtimeMs": 1776821394410.2937,
+      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 47
+        },
+        {
+          "name": "LocationSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 57,
+          "tokens": 1254
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/MagicSpecificsViewer.tsx": {
+      "description": "MagicSpecificsViewer",
+      "tokens": 3491,
+      "hash": "cd0117a322602e4e",
+      "size": 12217,
+      "mtimeMs": 1776823603445.0024,
+      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 46
+        },
+        {
+          "name": "MagicSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 121,
+          "tokens": 3405
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const MagicSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/MythSpecificsViewer.tsx": {
+      "description": "MythSpecificsViewer",
+      "tokens": 1880,
+      "hash": "81c0cc3530714d86",
+      "size": 6579,
+      "mtimeMs": 1776823603446.0024,
+      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 46
+        },
+        {
+          "name": "MythSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 79,
+          "tokens": 1795
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/NoteSpecificsViewer.tsx": {
+      "description": "NoteSpecificsViewer",
+      "tokens": 2031,
+      "hash": "d2951f362ad14a2e",
+      "size": 7106,
+      "mtimeMs": 1776823603444.0027,
+      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 46
+        },
+        {
+          "name": "NoteSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 82,
+          "tokens": 1945
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const NoteSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/OccupationSpecificsViewer.tsx": {
+      "description": "OccupationSpecificsViewer",
+      "tokens": 2322,
+      "hash": "7c20b70c6420b5a4",
+      "size": 8127,
+      "mtimeMs": 1776823603449.5051,
+      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 48
+        },
+        {
+          "name": "OccupationSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 95,
+          "tokens": 2234
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const OccupationSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/OrganizationSpecificsViewer.tsx": {
+      "description": "OrganizationSpecificsViewer",
+      "tokens": 3381,
+      "hash": "957ba4e49f1bf44a",
+      "size": 11833,
+      "mtimeMs": 1776823603440.4116,
+      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 48
+        },
+        {
+          "name": "OrganizationSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 118,
+          "tokens": 3291
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const OrganizationSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/PoliticalGroupSpecificsViewer.tsx": {
+      "description": "PoliticalGroupSpecificsViewer",
+      "tokens": 3432,
+      "hash": "d6d22c11d45aa7ed",
+      "size": 12012,
+      "mtimeMs": 1776823603448.0027,
+      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 49
+        },
+        {
+          "name": "PoliticalGroupSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 119,
+          "tokens": 3341
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const PoliticalGroupSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/ReligionSpecificsViewer.tsx": {
+      "description": "ReligionSpecificsViewer",
+      "tokens": 3409,
+      "hash": "68b31ce621a102e4",
+      "size": 11931,
+      "mtimeMs": 1776823603452.0784,
+      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 47
+        },
+        {
+          "name": "ReligionSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 119,
+          "tokens": 3322
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const ReligionSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/ResourceSpecificsViewer.tsx": {
+      "description": "ResourceSpecificsViewer",
+      "tokens": 2893,
+      "hash": "12c637b8baa51da8",
+      "size": 10124,
+      "mtimeMs": 1776823603453.0813,
+      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 47
+        },
+        {
+          "name": "ResourceSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 110,
+          "tokens": 2805
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const ResourceSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/SpeciesSpecificsViewer.tsx": {
+      "description": "SpeciesSpecificsViewer",
+      "tokens": 3082,
+      "hash": "2b895327ffee71dd",
+      "size": 10787,
+      "mtimeMs": 1776823603451.0107,
+      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 47
+        },
+        {
+          "name": "SpeciesSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 116,
+          "tokens": 2995
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const SpeciesSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/specifics/TechSpecificsViewer.tsx": {
+      "description": "TechSpecificsViewer",
+      "tokens": 3458,
+      "hash": "9e16ebc46c2b0ff9",
+      "size": 12100,
+      "mtimeMs": 1776823603459.8555,
+      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 11,
+          "tokens": 46
+        },
+        {
+          "name": "TechSpecificsViewer",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 120,
+          "tokens": 3372
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const TechSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/components/ui/index.ts"
+      ],
+      "importance": 0.0216
+    },
+    "src/components/viewer/ViewerHeaders.tsx": {
+      "description": "CodexHeader",
+      "tokens": 989,
+      "hash": "a975daeb01d3a1ba",
+      "size": 3461,
+      "mtimeMs": 1786294037853.9622,
+      "updatedAt": "2026-09-29T21:51:31.045Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "HeaderProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 9,
+          "tokens": 29
+        },
+        {
+          "name": "CodexHeader",
+          "kind": "fn",
+          "startLine": 11,
+          "endLine": 25,
+          "tokens": 316
+        },
+        {
+          "name": "WikiHeader",
+          "kind": "fn",
+          "startLine": 27,
+          "endLine": 40,
+          "tokens": 245
+        },
+        {
+          "name": "RoyalHeader",
+          "kind": "fn",
+          "startLine": 42,
+          "endLine": 62,
+          "tokens": 363
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0269
+    },
+    "src/components/viewer/ViewerSectionCard.tsx": {
+      "description": "ViewerSectionCard",
+      "tokens": 1205,
+      "hash": "1a9080c826155ba0",
+      "size": 4215,
+      "mtimeMs": 1786274661607.3296,
+      "updatedAt": "2026-09-29T21:51:31.045Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "ViewerSectionCardProps",
+          "kind": "section",
+          "startLine": 4,
+          "endLine": 8,
+          "tokens": 32
+        },
+        {
+          "name": "ViewerSectionCard",
+          "kind": "fn",
+          "startLine": 10,
+          "endLine": 84,
+          "tokens": 1148
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0272
+    },
+    "src/components/viewer/WikiInfobox.tsx": {
+      "description": "WikiInfobox — renders table, chart",
+      "tokens": 2271,
+      "hash": "3ea2c9f452537854",
+      "size": 7947,
+      "mtimeMs": 1786271460031.3474,
+      "updatedAt": "2026-09-29T21:51:31.045Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "WikiInfoboxProps",
+          "kind": "section",
+          "startLine": 8,
+          "endLine": 13,
+          "tokens": 44
+        },
+        {
+          "name": "WikiInfobox",
+          "kind": "fn",
+          "startLine": 15,
+          "endLine": 123,
+          "tokens": 2143
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface WikiInfoboxProps {\nexport const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: WikiInfoboxProps) => {",
+      "imports": [
+        "src/components/ui/index.ts",
+        "src/types.ts",
+        "src/constants.ts",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0269
+    },
+    "src/constants.ts": {
+      "description": "Exports TYPE_LABELS, HIERARCHY_CONFIG",
+      "tokens": 368,
+      "hash": "89e82f003ac0485d",
+      "size": 1285,
+      "mtimeMs": 1786294037853.9622,
+      "updatedAt": "2026-09-29T21:51:31.045Z",
+      "source": "scan",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0646
+    },
+    "src/index.css": {
+      "description": "Styles: 1 rules",
+      "tokens": 57,
+      "hash": "f7853c055d216c74",
+      "size": 197,
+      "mtimeMs": 1786283170108.7275,
+      "updatedAt": "2026-09-29T21:51:31.046Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "src/index.tsx": {
+      "description": "rootElement",
+      "tokens": 105,
+      "hash": "c8368b4685b86541",
+      "size": 367,
+      "mtimeMs": 1775656212028.7554,
+      "updatedAt": "2026-09-29T21:51:31.046Z",
+      "source": "scan",
+      "imports": [
+        "src/App.tsx"
+      ],
+      "importance": 0.0203
+    },
+    "src/store/useWorldStore.ts": {
+      "description": "Exports useWorldStore",
+      "tokens": 13542,
+      "hash": "ce562ed22ef19eff",
+      "size": 47394,
+      "mtimeMs": 1786271336883.9148,
+      "updatedAt": "2026-09-29T21:51:31.047Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "WorldStore",
+          "kind": "section",
+          "startLine": 6,
+          "endLine": 45,
+          "tokens": 506
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface WorldStore {",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.2421
+    },
+    "src/types.ts": {
+      "description": "Exports EntityType, WorldPhase, ThemeMode, MapConnection + 8 more",
+      "tokens": 14175,
+      "hash": "640b731a66116d50",
+      "size": 49610,
+      "mtimeMs": 1786294037866.7441,
+      "updatedAt": "2026-09-29T21:51:31.047Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "EntityType",
+          "kind": "section",
+          "startLine": 3,
+          "endLine": 7,
+          "tokens": 77
+        },
+        {
+          "name": "WorldPhase",
+          "kind": "section",
+          "startLine": 9,
+          "endLine": 9,
+          "tokens": 23
+        },
+        {
+          "name": "ThemeMode",
+          "kind": "section",
+          "startLine": 10,
+          "endLine": 10,
+          "tokens": 18
+        },
+        {
+          "name": "MapConnection",
+          "kind": "section",
+          "startLine": 13,
+          "endLine": 19,
+          "tokens": 45
+        },
+        {
+          "name": "GroupRoleLinks",
+          "kind": "section",
+          "startLine": 21,
+          "endLine": 27,
+          "tokens": 44
+        },
+        {
+          "name": "BaseEntity",
+          "kind": "section",
+          "startLine": 29,
+          "endLine": 57,
+          "tokens": 304
+        },
+        {
+          "name": "Chapter",
+          "kind": "section",
+          "startLine": 61,
+          "endLine": 66,
+          "tokens": 67
+        },
+        {
+          "name": "Character",
+          "kind": "section",
+          "startLine": 68,
+          "endLine": 145,
+          "tokens": 1382
+        },
+        {
+          "name": "Condition",
+          "kind": "section",
+          "startLine": 147,
+          "endLine": 189,
+          "tokens": 827
+        },
+        {
+          "name": "Culture",
+          "kind": "section",
+          "startLine": 191,
+          "endLine": 218,
+          "tokens": 459
+        },
+        {
+          "name": "Currency",
+          "kind": "section",
+          "startLine": 220,
+          "endLine": 233,
+          "tokens": 203
+        },
+        {
+          "name": "Event",
+          "kind": "section",
+          "startLine": 235,
+          "endLine": 259,
+          "tokens": 398
+        },
+        {
+          "name": "Organization",
+          "kind": "section",
+          "startLine": 261,
+          "endLine": 308,
+          "tokens": 850
+        },
+        {
+          "name": "Item",
+          "kind": "section",
+          "startLine": 310,
+          "endLine": 345,
+          "tokens": 657
+        },
+        {
+          "name": "Language",
+          "kind": "section",
+          "startLine": 347,
+          "endLine": 366,
+          "tokens": 331
+        },
+        {
+          "name": "Location",
+          "kind": "section",
+          "startLine": 368,
+          "endLine": 412,
+          "tokens": 788
+        },
+        {
+          "name": "Note",
+          "kind": "section",
+          "startLine": 414,
+          "endLine": 439,
+          "tokens": 468
+        },
+        {
+          "name": "Magic",
+          "kind": "section",
+          "startLine": 441,
+          "endLine": 493,
+          "tokens": 907
+        },
+        {
+          "name": "Myth",
+          "kind": "section",
+          "startLine": 495,
+          "endLine": 517,
+          "tokens": 415
+        },
+        {
+          "name": "PoliticalGroup",
+          "kind": "section",
+          "startLine": 519,
+          "endLine": 569,
+          "tokens": 896
+        },
+        {
+          "name": "Occupation",
+          "kind": "section",
+          "startLine": 571,
+          "endLine": 597,
+          "tokens": 461
+        },
+        {
+          "name": "Species",
+          "kind": "section",
+          "startLine": 599,
+          "endLine": 641,
+          "tokens": 720
+        },
+        {
+          "name": "Religion",
+          "kind": "section",
+          "startLine": 643,
+          "endLine": 693,
+          "tokens": 890
+        },
+        {
+          "name": "Resource",
+          "kind": "section",
+          "startLine": 695,
+          "endLine": 731,
+          "tokens": 643
+        },
+        {
+          "name": "Tech",
+          "kind": "section",
+          "startLine": 733,
+          "endLine": 783,
+          "tokens": 891
+        },
+        {
+          "name": "Ability",
+          "kind": "section",
+          "startLine": 785,
+          "endLine": 821,
+          "tokens": 662
+        },
+        {
+          "name": "WorldEntity",
+          "kind": "section",
+          "startLine": 828,
+          "endLine": 828,
+          "tokens": 67
+        },
+        {
+          "name": "WorldData",
+          "kind": "section",
+          "startLine": 830,
+          "endLine": 837,
+          "tokens": 52
+        },
+        {
+          "name": "EntityEditorProps",
+          "kind": "section",
+          "startLine": 839,
+          "endLine": 847,
+          "tokens": 81
+        },
+        {
+          "name": "EntityViewerProps",
+          "kind": "section",
+          "startLine": 849,
+          "endLine": 857,
+          "tokens": 68
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "export type EntityType =\nexport type WorldPhase = 'creation' | 'golden' | 'shadow' | 'eclipse' | 'ruin';\nexport type ThemeMode = 'sovereign' | 'wiki' | 'royal-codex';\nexport interface MapConnection {\nexport interface GroupRoleLinks {\nexport interface BaseEntity {\nexport interface Chapter extends BaseEntity {\nexport interface Character extends BaseEntity {\nexport interface Condition extends BaseEntity {\nexport interface Culture extends BaseEntity {\nexport interface Currency extends BaseEntity {\nexport interface Event extends BaseEntity {\nexport interface Organization extends BaseEntity {\nexport interface Item extends BaseEntity {\nexport interface Language extends BaseEntity {\nexport interface Location extends BaseEntity {\nexport interface Note extends BaseEntity {\nexport interface Magic extends BaseEntity {\nexport interface Myth extends BaseEntity {\nexport interface PoliticalGroup extends BaseEntity {\nexport interface Occupation extends BaseEntity {\nexport interface Species extends BaseEntity {\nexport interface Religion extends BaseEntity {\nexport interface Resource extends BaseEntity {\nexport interface Tech extends BaseEntity {\nexport interface Ability extends BaseEntity {",
+      "importance": 1
+    },
+    "src/utils/backlinkUtils.ts": {
+      "description": "Exports CategorizedBacklinks, getCategorizedBacklinks",
+      "tokens": 1567,
+      "hash": "b9c343e88f68073b",
+      "size": 5483,
+      "mtimeMs": 1786294037875.2473,
+      "updatedAt": "2026-09-29T21:51:31.048Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "CategorizedBacklinks",
+          "kind": "section",
+          "startLine": 3,
+          "endLine": 29,
+          "tokens": 368
+        },
+        {
+          "name": "getCategorizedBacklinks",
+          "kind": "fn",
+          "startLine": 31,
+          "endLine": 105,
+          "tokens": 1184
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0283
+    },
+    "src/views/DashboardView.tsx": {
+      "description": "DashboardView — renders chart — uses useMemo",
+      "tokens": 3364,
+      "hash": "0d35b9d7d2dbec92",
+      "size": 11774,
+      "mtimeMs": 1786294037879.1956,
+      "updatedAt": "2026-09-29T21:51:31.048Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "DashboardViewProps",
+          "kind": "section",
+          "startLine": 7,
+          "endLine": 11,
+          "tokens": 34
+        },
+        {
+          "name": "DashboardView",
+          "kind": "fn",
+          "startLine": 13,
+          "endLine": 186,
+          "tokens": 3078
+        },
+        {
+          "name": "StatCard",
+          "kind": "fn",
+          "startLine": 188,
+          "endLine": 198,
+          "tokens": 170
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface DashboardViewProps {\nexport const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode, onNavigate }) => {\nconst StatCard = ({ icon: Icon, label, value, accent, bg }: any) => (",
+      "imports": [
+        "src/types.ts",
+        "src/constants.ts",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0226
+    },
+    "src/views/index.ts": {
+      "description": "",
+      "tokens": 26,
+      "hash": "822d170ee03faf8b",
+      "size": 88,
+      "mtimeMs": 1775656681416.262,
+      "updatedAt": "2026-09-29T21:51:31.048Z",
+      "source": "scan",
+      "imports": [
+        "src/views/TrashView.tsx",
+        "src/views/OptionsView.tsx",
+        "src/views/WorldMap.tsx"
+      ],
+      "importance": 0.0203
+    },
+    "src/views/JourneyView.tsx": {
+      "description": "JourneyView — renders map — uses useMemo",
+      "tokens": 2271,
+      "hash": "6512bd6ba5c51ef0",
+      "size": 7949,
+      "mtimeMs": 1775664231207.1624,
+      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "JourneyViewProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 9,
+          "tokens": 33
+        },
+        {
+          "name": "JourneyView",
+          "kind": "fn",
+          "startLine": 11,
+          "endLine": 130,
+          "tokens": 2185
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface JourneyViewProps {\nexport const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onNavigate }) => {",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0226
+    },
+    "src/views/NexusTreeView.tsx": {
+      "description": "NexusTreeView — uses useMemo",
+      "tokens": 1574,
+      "hash": "e8e26ea6ac9fdd59",
+      "size": 5507,
+      "mtimeMs": 1786294037888.8813,
+      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "NexusTreeViewProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 9,
+          "tokens": 34
+        },
+        {
+          "name": "NexusTreeView",
+          "kind": "fn",
+          "startLine": 11,
+          "endLine": 55,
+          "tokens": 632
+        },
+        {
+          "name": "TreeNode",
+          "kind": "fn",
+          "startLine": 57,
+          "endLine": 115,
+          "tokens": 858
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0226
+    },
+    "src/views/OptionsView.tsx": {
+      "description": "OptionsView — renders form — uses useMemo",
+      "tokens": 3365,
+      "hash": "6a23f750b18aa9c6",
+      "size": 11782,
+      "mtimeMs": 1786294037897.924,
+      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "OptionsViewProps",
+          "kind": "section",
+          "startLine": 9,
+          "endLine": 14,
+          "tokens": 57
+        },
+        {
+          "name": "OptionsView",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 185,
+          "tokens": 3222
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface OptionsViewProps {\nexport const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: OptionsViewProps) => {",
+      "imports": [
+        "src/types.ts",
+        "src/constants.ts",
+        "src/components/ui/index.ts",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0283
+    },
+    "src/views/TimelineView.tsx": {
+      "description": "TimelineView — uses useMemo",
+      "tokens": 2221,
+      "hash": "25691ff5e85b50cf",
+      "size": 7772,
+      "mtimeMs": 1786294037906.927,
+      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "TimelineViewProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 9,
+          "tokens": 34
+        },
+        {
+          "name": "TimelineView",
+          "kind": "fn",
+          "startLine": 11,
+          "endLine": 141,
+          "tokens": 2135
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface TimelineViewProps {\nexport const TimelineView: React.FC<TimelineViewProps> = ({ world, isWikiMode, onNavigate }) => {",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0226
+    },
+    "src/views/TrashView.tsx": {
+      "description": "TrashView",
+      "tokens": 570,
+      "hash": "a6f1b2587c556fba",
+      "size": 1992,
+      "mtimeMs": 1775658623067.7625,
+      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "TrashViewProps",
+          "kind": "section",
+          "startLine": 6,
+          "endLine": 10,
+          "tokens": 45
+        },
+        {
+          "name": "TrashView",
+          "kind": "fn",
+          "startLine": 12,
+          "endLine": 34,
+          "tokens": 475
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts",
+        "src/constants.ts"
+      ],
+      "importance": 0.0283
+    },
+    "src/views/WorldMap.tsx": {
+      "description": "WorldMap — renders map",
+      "tokens": 2777,
+      "hash": "9835e7deeaec98ff",
+      "size": 9718,
+      "mtimeMs": 1775664172871.1797,
+      "updatedAt": "2026-09-29T21:51:31.050Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "WorldMapProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 10,
+          "tokens": 55
+        },
+        {
+          "name": "WorldMap",
+          "kind": "fn",
+          "startLine": 12,
+          "endLine": 158,
+          "tokens": 2671
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface WorldMapProps {\nexport const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapProps) => {",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0283
+    },
+    "tsconfig.json": {
+      "description": "TypeScript configuration",
+      "tokens": 163,
+      "hash": "87d3eb8a957369a3",
+      "size": 570,
+      "mtimeMs": 1775653649314.5894,
+      "updatedAt": "2026-09-29T21:51:31.050Z",
+      "source": "scan",
+      "importance": 0.0203
+    },
+    "vite.config.ts": {
+      "description": "Vite build configuration",
+      "tokens": 98,
+      "hash": "3a908f111ffaa29f",
+      "size": 340,
+      "mtimeMs": 1786283069512.7053,
+      "updatedAt": "2026-09-29T21:51:31.050Z",
+      "source": "scan",
+      "importance": 0.0203
+    }
+  },
+  "preamble": [
+    "> Project structure index. Auto-maintained by OpenWolf hooks and daemon.",
+    "> Run `openwolf scan` to generate, or wait for the first Claude Code session.",
+    "> Status: Pending initial scan"
+  ]
+}

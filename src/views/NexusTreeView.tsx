@@ -12,8 +12,23 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
     const lineageData = useMemo(() => {
         const characters = world.entities.filter(e => e.type === 'character') as Character[];
         
-        // Find "Roots" (those without parents documented)
-        const roots = characters.filter(c => !c.parentIds || c.parentIds.length === 0);
+        // A character has parents if:
+        // 1. parentsOfCharacter has valid IDs
+        // 2. parentIds has valid IDs
+        // 3. parentId is set
+        // 4. or another character in the list specifies this character in childOfCharacter / childrenIds
+        const hasParent = (c: Character) => {
+            if (c.parentId) return true;
+            if (c.parentsOfCharacter && c.parentsOfCharacter.length > 0) return true;
+            if (c.parentIds && c.parentIds.length > 0) return true;
+            return characters.some(other => 
+                other.id !== c.id && 
+                ((other.childOfCharacter && other.childOfCharacter.includes(c.id)) ||
+                 (other.childrenIds && other.childrenIds.includes(c.id)))
+            );
+        };
+
+        const roots = characters.filter(c => !hasParent(c));
         
         return { roots, all: characters };
     }, [world.entities]);
@@ -55,15 +70,29 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
 };
 
 const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0 }: any) => {
-    const childrenCount = entity.childrenIds?.length || 0;
-    const hasChildren = childrenCount > 0;
-    
-    // Find child objects
+    // Find child objects bidirectionally
     const children = useMemo(() => {
-        return (entity.childrenIds || [])
+        const directChildIds = new Set<string>([
+            ...(entity.childOfCharacter || []),
+            ...(entity.childrenIds || [])
+        ]);
+
+        all.forEach((other: any) => {
+            if (other.id === entity.id) return;
+            if (other.parentId === entity.id ||
+                other.parentsOfCharacter?.includes(entity.id) ||
+                other.parentIds?.includes(entity.id)) {
+                directChildIds.add(other.id);
+            }
+        });
+
+        return Array.from(directChildIds)
             .map((id: string) => all.find((e: any) => e.id === id))
             .filter(Boolean);
-    }, [entity.childrenIds, all]);
+    }, [entity, all]);
+
+    const hasChildren = children.length > 0;
+    const isAncestral = Boolean(entity.deathDate?.trim() || entity.deadSwitch || entity.isDead);
 
     return (
         <div className="flex flex-col items-center relative">
@@ -79,11 +108,18 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0 }
                     <h4 className="text-sm font-black uppercase tracking-tight truncate w-full">{entity.name}</h4>
                     {entity.type === 'character' && (
                         <div className={`px-3 py-0.5 rounded-full text-[8px] font-bold ${isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/10 text-[#fef08a]'}`}>
-                            {entity.isDead ? 'Ancestral' : 'Living'}
+                            {isAncestral ? 'Ancestral' : 'Living'}
                         </div>
                     )}
                 </div>
             </div>
+
+            {/* Truncation Indicator if Depth Limit Reached */}
+            {hasChildren && depth >= 5 && (
+                <div className={`mt-4 px-3 py-1 rounded-full text-[9px] font-bold border border-dashed opacity-60 ${accent}`}>
+                    +{children.length} descendant{children.length > 1 ? 's' : ''} (depth limit)
+                </div>
+            )}
 
             {/* Connecting Lines */}
             {hasChildren && depth < 5 && (

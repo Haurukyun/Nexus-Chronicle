@@ -19,11 +19,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
         });
 
         const topInterconnected = [...world.entities].sort((a, b) => {
-            const getConnCount = (e: WorldEntity) => 
+            const getConnCount = (e: any) => 
                 (e.parentIds?.length || 0) + 
+                (e.parentsOfCharacter?.length || 0) + 
                 (e.childrenIds?.length || 0) + 
+                (e.childOfCharacter?.length || 0) + 
                 (e.friendIds?.length || 0) + 
-                (e.enemyIds?.length || 0);
+                (e.allyResCharacter?.length || 0) + 
+                (e.enemyIds?.length || 0) + 
+                (e.enemydResCharacter?.length || 0) + 
+                (e.relativeIds?.length || 0) + 
+                (e.relativesOfCharacter?.length || 0) + 
+                (e.pairedCurrentLocationNew?.length || 0) + 
+                (e.pairedSkills?.length || 0) + 
+                (e.pairedEvent?.length || 0) + 
+                (e.pairedConnectedItems?.length || 0);
             return getConnCount(b) - getConnCount(a);
         }).slice(0, 5);
 
@@ -56,13 +66,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
 
     const renderPieChart = () => {
         let offset = 0;
-        const elements: JSX.Element[] = [];
+        const elements: React.ReactNode[] = [];
         const entries = Object.entries(stats.counts);
         
         entries.forEach(([type, count], i) => {
-            const percentage = (count / (world.entities.length || 1)) * 100;
+            const numCount = typeof count === 'number' ? count : Number(count) || 0;
+            const percentage = (numCount / (world.entities.length || 1)) * 100;
             const strokeDasharray = `${percentage} ${100 - percentage}`;
-            const strokeDashoffset = 0 - offset;
+            const strokeDashoffset = -offset;
             
             elements.push(
                 <circle

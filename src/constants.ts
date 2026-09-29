@@ -20,7 +20,9 @@ export const TYPE_LABELS: Record<EntityType, string> = {
     item: 'Items',
     occupation: 'Occupations',
     condition: 'Conditions',
-    resource: 'Materials'
+    resource: 'Materials',
+    tech: 'Technological Groups',
+    currency: 'Currencies'
 };
 
 export const HIERARCHY_CONFIG = [

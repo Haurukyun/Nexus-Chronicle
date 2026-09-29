@@ -35,7 +35,7 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
     };
 
     if (isRoyal) {
-        const stats = char.stats || {};
+        const stats = (char.stats || {}) as any;
         const str = stats.strength || '10';
         const dex = stats.dexterity || '10';
         const con = stats.constitution || '10';
@@ -104,12 +104,16 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                 <div className="border-b-2 border-[#7a200d] pb-1">
                     <h2 className="text-4xl font-serif font-bold text-[#7a200d] uppercase leading-none tracking-tight">{char.name}</h2>
                     <p className="text-sm italic text-[#2d2d2d] mt-1">{subtitle}</p>
-                    {char.otherNamesAndEpithets && <p className="text-[10px] uppercase font-black text-[#7a200d]/60 mt-1 tracking-widest">{char.otherNamesAndEpithets}</p>}
+                    {((char as any).otherNamesAndEpithets || (char.otherNames && char.otherNames.join(', '))) && (
+                        <p className="text-[10px] uppercase font-black text-[#7a200d]/60 mt-1 tracking-widest">
+                            {(char as any).otherNamesAndEpithets || char.otherNames?.join(', ')}
+                        </p>
+                    )}
                 </div>
             )}
             {hideName && (
                 <div className="border-b border-[#7a200d]/40 pb-1 mb-2">
-                    <p className="text-[10px] uppercase font-bold text-[#7a200d]">{char.isDead ? 'Status: Deceased' : 'Status: Living'}</p>
+                    <p className="text-[10px] uppercase font-bold text-[#7a200d]">{char.isDead || Boolean(char.deathDate?.trim() || char.deadSwitch) ? 'Status: Deceased' : 'Status: Living'}</p>
                 </div>
             )}
 
@@ -122,49 +126,49 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                     <WikiStatRow label="Species" value={speciesNames} />
                     <WikiStatRow label="Occupation" value={occupationNames} />
                     <WikiStatRow label="Age" value={char.age} />
-                    <WikiStatRow label="Combat Rating" value={char.combatRating} />
+                    <WikiStatRow label="Combat Rating" value={char.powerLevel || (char as any).combatRating} />
                     <WikiStatRow label="Height / Weight" value={char.height && char.weight ? `${char.height} / ${char.weight}` : (char.height || char.weight)} />
                     <WikiStatRow label="Titles" value={char.titles} />
-                    <WikiStatRow label="Birth" value={char.dateOfBirth} />
-                    <WikiStatRow label="Death" value={char.dateOfDeath} />
-                    <LinksDisplay label="Origin" ids={char.placeOfOriginId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <LinksDisplay label="Residence" ids={char.placeOfResidenceId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <LinksDisplay label="Place of Demise" ids={char.placeOfDemiseId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <WikiStatRow label="Other Info" value={char.otherBasicInfo} />
+                    <WikiStatRow label="Birth" value={char.birthDate || char.dateOfBirth} />
+                    <WikiStatRow label="Death" value={char.deathDate || char.dateOfDeath} />
+                    <LinksDisplay label="Origin" ids={char.pairedOriginLocationNew || char.placeOfOriginId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                    <LinksDisplay label="Residence" ids={char.pairedCurrentLocationNew || char.placeOfResidenceId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                    <LinksDisplay label="Place of Demise" ids={char.pairedDemiseLocationNew || char.placeOfDemiseId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                    <WikiStatRow label="Other Info" value={(char as any).otherBasicInfo} />
                 </div>
             </div>
 
             <TaperedDivider />
             
-            <RadarChart stats={char.stats || {}} isWikiMode={isWikiMode} />
+            <RadarChart stats={(char.stats || {}) as any} isWikiMode={isWikiMode} />
 
             <TaperedDivider />
 
             <div className="grid grid-cols-3 gap-y-2 py-2 text-center">
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">STR</span><span className="text-sm">{char.stats?.strength || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">DEX</span><span className="text-sm">{char.stats?.dexterity || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">CON</span><span className="text-sm">{char.stats?.constitution || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">INT</span><span className="text-sm">{char.stats?.intelligence || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">WIS</span><span className="text-sm">{char.stats?.wisdom || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">CHA</span><span className="text-sm">{char.stats?.charisma || '10'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">STR</span><span className="text-sm">{(char.stats as any)?.strength || '10'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">DEX</span><span className="text-sm">{(char.stats as any)?.dexterity || '10'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">CON</span><span className="text-sm">{(char.stats as any)?.constitution || '10'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">INT</span><span className="text-sm">{(char.stats as any)?.intelligence || '10'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">WIS</span><span className="text-sm">{(char.stats as any)?.wisdom || '10'}</span></div>
+                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">CHA</span><span className="text-sm">{(char.stats as any)?.charisma || '10'}</span></div>
             </div>
 
             <TaperedDivider />
 
             <div className="space-y-1">
-                <WikiStatRow label="Traits" value={char.traitsAndCharacteristics} />
-                <WikiStatRow label="Features" value={char.unusualFeatures} />
-                <LinksDisplay label="Parents" ids={merge(char.parentIds, backlinks?.parents)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Children" ids={merge(char.childrenIds, backlinks?.children)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Relatives" ids={merge(char.relativeIds, backlinks?.relatives)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Friends" ids={merge(char.friendIds, backlinks?.friends)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Enemies" ids={merge(char.enemyIds, backlinks?.enemies)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <WikiStatRow label="Traits" value={char.personalityTraits || (char as any).traitsAndCharacteristics} />
+                <WikiStatRow label="Features" value={char.traits || (char as any).unusualFeatures} />
+                <LinksDisplay label="Parents" ids={merge(char.parentsOfCharacter || char.parentIds, backlinks?.parents)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Children" ids={merge(char.childOfCharacter || char.childrenIds, backlinks?.children)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Relatives" ids={merge(char.relativesOfCharacter || char.relativeIds, backlinks?.relatives)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Friends" ids={merge(char.allyResCharacter || char.friendIds, backlinks?.friends)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Enemies" ids={merge(char.enemydResCharacter || char.enemyIds, backlinks?.enemies)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
                 
-                <LinksDisplay label="Skills/Abilities" ids={char.skillIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Languages" ids={char.languageIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Boons/Conditions" ids={merge(char.affectedByBoonsIds, backlinks?.referencedIn)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Skills/Abilities" ids={char.pairedSkills || char.skillIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Languages" ids={char.pairedLanguage || (char as any).languageIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Boons/Conditions" ids={merge(char.pairedConditionsPositive || (char as any).affectedByBoonsIds, backlinks?.referencedIn)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
                 
-                <LinksDisplay label="Equipment" ids={char.equipmentIds || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
+                <LinksDisplay label="Equipment" ids={char.pairedConnectedItems || char.equipmentIds || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
             </div>
         </div>
     );

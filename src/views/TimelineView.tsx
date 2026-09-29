@@ -23,8 +23,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ world, isWikiMode, o
         world.entities.forEach(e => {
             if (e.type === 'character') {
                 const char = e as Character;
-                const birth = extractYear(char.dateOfBirth);
-                const death = extractYear(char.dateOfDeath);
+                const birth = extractYear(char.birthDate || char.dateOfBirth);
+                const death = extractYear(char.deathDate || char.dateOfDeath);
                 if (birth !== null) {
                     events.push({ 
                         id: e.id, 
@@ -32,18 +32,19 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ world, isWikiMode, o
                         type: 'life', 
                         start: birth, 
                         end: death || birth + 50, // Default 50 years if no death
-                        isDead: !!death
+                        isDead: !!death || !!char.deadSwitch
                     });
                     minYear = Math.min(minYear, birth);
                     maxYear = Math.max(maxYear, death || birth + 50);
                 }
             } else if (e.type === 'event') {
                 const evt = e as Event;
-                const year = extractYear(evt.date);
-                if (year !== null) {
-                    events.push({ id: e.id, name: e.name, type: 'event', start: year, end: year });
-                    minYear = Math.min(minYear, year);
-                    maxYear = Math.max(maxYear, year);
+                const startYear = extractYear(evt.startDate || evt.date);
+                const endYear = extractYear(evt.endDate) || startYear;
+                if (startYear !== null) {
+                    events.push({ id: e.id, name: e.name, type: 'event', start: startYear, end: endYear });
+                    minYear = Math.min(minYear, startYear);
+                    maxYear = Math.max(maxYear, endYear);
                 }
             }
         });

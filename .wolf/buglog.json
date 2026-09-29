@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "timestamp": "2026-09-29T23:00:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-09-30T00:27:00Z",
+      "error_message": "Backlinks for character-to-location, character-to-species, character-to-occupation, character-to-skill relationships silently return empty arrays",
+      "file": "src/utils/backlinkUtils.ts",
+      "root_cause": "backlinkUtils.ts references field names that don't exist on the actual entity types: `placeOfResidenceId` (actual: `pairedCurrentLocationNew`), `placeOfOriginId` (actual: `pairedOriginLocationNew`), `placeOfDemiseId` (actual: `pairedDemiseLocationNew`), `speciesIds` (actual: `pairedRace`), `occupationIds` (actual: `pairedProfession`), `skillIds` (actual: `pairedSkills`), etc. Also `parentsOfCharacter` / `childOfCharacter` were ignored.",
+      "fix": "Updated backlinkUtils.ts to scan both modern `paired*` and relationship arrays as well as legacy fields. Also synced `allies` alias and group affiliations.",
+      "tags": ["backlinks", "character", "refactoring", "data-integrity"],
+      "occurrences": 1,
+      "last_seen": "2026-09-29"
+    },
+    {
+      "id": "BUG-002",
+      "timestamp": "2026-09-29T23:00:00Z",
+      "status": "open",
+      "error_message": "DashboardView creative insights re-randomize on every re-render, causing unstable/flickering text",
+      "file": "src/views/DashboardView.tsx",
+      "root_cause": "`insights` is computed inside a `useMemo` that depends on `world.entities` and `world.trash`, but calls `Math.random()` internally. Any state change that updates these (e.g., adding a tag) re-rolls all insight text. The memo does not capture a stable random seed.",
+      "fix": "Either (a) seed the random selection with a stable value (e.g., a hash of entity IDs), or (b) move the random picks outside the memo and stabilize them with a separate `useState` that only updates when `world.entities.length` changes.",
+      "tags": ["dashboard", "ux", "rendering"],
+      "occurrences": 1,
+      "last_seen": "2026-09-29"
+    },
+    {
+      "id": "BUG-003",
+      "timestamp": "2026-09-29T23:00:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-09-30T00:24:00Z",
+      "error_message": "NexusTreeView silently truncates family trees deeper than 5 levels with no user feedback",
+      "file": "src/views/NexusTreeView.tsx",
+      "root_cause": "TreeNode component has a guard `depth < 5` that stops rendering children beyond depth 5. No UI indicator was shown when truncation occurred.",
+      "fix": "Added visual truncation indicator badge `+N descendants (depth limit)` when depth >= 5. Also updated root & child discovery to check bidirectional parent/child relations and fixed isDead check.",
+      "tags": ["nexus-tree", "ux", "rendering"],
+      "occurrences": 1,
+      "last_seen": "2026-09-29"
+    },
+    {
+      "id": "BUG-004",
+      "timestamp": "2026-09-29T23:00:00Z",
+      "status": "open",
+      "error_message": "WorldMap location marker and connection creation uses window.prompt() — inaccessible and blocked in some browsers",
+      "file": "src/views/WorldMap.tsx",
+      "root_cause": "Adding a location marker calls `prompt('Location Anchor Name:')` and adding a connection calls `prompt('Connection Type (trade, magic, diplomatic, war):', 'trade')`. window.prompt() is synchronous, blocks the UI, is inaccessible to screen readers, and is suppressed in iframes/embedded environments.",
+      "fix": "Replace prompt() calls with an inline modal or popover UI. A simple React state-driven modal with a text input would be both accessible and unblockable.",
+      "tags": ["worldmap", "accessibility", "ux"],
+      "occurrences": 1,
+      "last_seen": "2026-09-29"
+    },
+    {
+      "id": "BUG-005",
+      "timestamp": "2026-09-29T23:00:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-09-30T00:24:00Z",
+      "error_message": "Timeline characters missing from view when dateOfBirth / dateOfDeath fields are empty strings",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "TimelineView reads `char.dateOfBirth` and `char.dateOfDeath`, but the actual Character type uses `birthDate` and `deathDate`. Also Event type uses `startDate` / `endDate` instead of `date`.",
+      "fix": "Updated TimelineView.tsx to read `char.birthDate || char.dateOfBirth`, `char.deathDate || char.dateOfDeath`, and `evt.startDate || evt.date`.",
+      "tags": ["timeline", "character", "event", "field-mismatch"],
+      "occurrences": 1,
+      "last_seen": "2026-09-29"
+    },
+    {
+      "id": "BUG-006",
+      "timestamp": "2026-09-29T23:00:00Z",
+      "status": "open",
+      "error_message": "git push pending — local main is 1 commit ahead of origin/main",
+      "file": ".git",
+      "root_cause": "Phase 0 cleanup commit (a42247f) was created locally but not pushed to GitHub. The remote repo is behind.",
+      "fix": "Run `git push` from the project root to publish the Phase 0 cleanup commit.",
+      "tags": ["git", "github", "deployment"],
+      "occurrences": 1,
+      "last_seen": "2026-09-29"
+    }
+  ]
+}

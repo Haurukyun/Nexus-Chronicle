@@ -168,7 +168,14 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                             </div>
                             <button onClick={() => {
                                 if (confirm("DANGER: This will delete everything. Are you absolutely certain?")) {
-                                    setWorld({ name: "New Realm", entities: [], trash: [], mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" });
+                                    setWorld({ 
+                                        name: "New Realm", 
+                                        entities: [], 
+                                        trash: [], 
+                                        mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000",
+                                        mapConnections: [],
+                                        worldPhase: 'golden'
+                                    });
                                 }
                             }} className="px-6 py-2 bg-rose-900/40 hover:bg-rose-600 text-rose-200 text-[10px] font-black rounded-lg transition-all border border-rose-500/30">WIPE ALL DATA</button>
                         </div>

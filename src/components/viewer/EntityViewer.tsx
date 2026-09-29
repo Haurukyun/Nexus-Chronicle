@@ -52,7 +52,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
                 {/* Biography / Overview Section */}
                 {(!isRoyal || activeTab === 'overview' || activeTab === 'biography') && (
-                    <ViewerSectionCard title={isChar ? 'Biography' : 'Overview'} badgeText={entity.isFinished ? 'Finished' : undefined}>
+                    <ViewerSectionCard title={isChar ? 'Biography' : 'Overview'} badgeText={(entity as any).isFinished || entity.finishedSwitch ? 'Finished' : undefined}>
                         <div className="flex flex-col sm:flex-row items-start gap-4">
                             <p className={`flex-1 text-base leading-relaxed whitespace-pre-wrap ${isRoyal ? 'font-serif text-[#2b1810]' : isWiki ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'}`}>
                                 {entity.description || 'No description provided yet.'}
@@ -105,7 +105,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                         {(entity.type === 'species' || entity.type === 'organization' || entity.type === 'political' || entity.type === 'religious' || entity.type === 'magic' || entity.type === 'science') && (
                             <LinksDisplay label="Prominent Members" ids={backlinks.members} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
                         )}
-                        {(entity.type === 'ability' || entity.type === 'technology') && (
+                        {(entity.type === 'ability' || entity.type === 'science' || entity.type === 'tech') && (
                             <LinksDisplay label="Known Practitioners" ids={backlinks.practitioners} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
                         )}
                     </div>
@@ -158,8 +158,8 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                 <div className="space-y-3">
                                     <FieldRow label="Type" value={loc.locationType} isWikiMode={true} />
                                     <FieldRow label="Demographics" value={loc.population} isWikiMode={true} />
-                                    <FieldRow label="Manifested" value={loc.dateOfCreation} isWikiMode={true} />
-                                    <LinksDisplay label="Local Languages" ids={loc.localLanguageIds || []} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} wikiStyle="inline" />
+                                    <FieldRow label="Manifested" value={loc.creationTime || (loc as any).dateOfCreation} isWikiMode={true} />
+                                    <LinksDisplay label="Local Languages" ids={loc.pairedLanguages || (loc as any).localLanguageIds || []} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} wikiStyle="inline" />
                                 </div>
                             </div>
                         )}
@@ -171,10 +171,10 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                             <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
                             <div className="space-y-6">
                                 <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} isWikiMode={false} />
-                                <FieldRow label="Template" value={entity.documentTemplate || "Generic"} isWikiMode={false} />
-                                <FieldRow label="Order" value={entity.orderNumber} isWikiMode={false} />
-                                <FieldRow label="Status" value={entity.status || (entity.isDead ? 'Lost' : 'Active')} isWikiMode={false} />
-                                <FieldRow label="Hierarchy" value={allEntities.find(e => e.id === entity.belongsUnderId)?.name} isWikiMode={false} />
+                                <FieldRow label="Template" value={entity.docTemplate?.join(', ') || (entity as any).documentTemplate || "Generic"} isWikiMode={false} />
+                                <FieldRow label="Order" value={entity.order || (entity as any).orderNumber} isWikiMode={false} />
+                                <FieldRow label="Status" value={(entity as any).status || (entity.deadSwitch ? 'Lost' : 'Active')} isWikiMode={false} />
+                                <FieldRow label="Hierarchy" value={allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId))?.name} isWikiMode={false} />
                             </div>
                         </div>
                     </>

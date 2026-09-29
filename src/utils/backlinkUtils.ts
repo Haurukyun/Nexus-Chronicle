@@ -5,6 +5,7 @@ export interface CategorizedBacklinks {
     parents: string[];      // Entities that listed target as a child
     children: string[];     // Entities that listed target as a parent
     friends: string[];      // Entities that listed target as a friend
+    allies: string[];       // Alias for friends
     enemies: string[];      // Entities that listed target as an enemy
     relatives: string[];    // Entities that listed target as a relative
     complicated: string[];  // Entities that listed target as complicated
@@ -30,7 +31,7 @@ export interface CategorizedBacklinks {
 
 export function getCategorizedBacklinks(targetId: string, allEntities: WorldEntity[]): CategorizedBacklinks {
     const results: CategorizedBacklinks = {
-        parents: [], children: [], friends: [], enemies: [], relatives: [], complicated: [],
+        parents: [], children: [], friends: [], allies: [], enemies: [], relatives: [], complicated: [],
         lore: [], myths: [], events: [], locations: [], cultures: [],
         residents: [], natives: [], passedHere: [], 
         practitioners: [], members: [],
@@ -43,43 +44,102 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
         if (entity.id === targetId) return;
 
         // Symmetric and basic complementary logic
-        if (entity.parentIds?.includes(targetId)) results.children.push(entity.id);
-        if (entity.childrenIds?.includes(targetId)) results.parents.push(entity.id);
-        if (entity.friendIds?.includes(targetId)) results.friends.push(entity.id);
-        if (entity.enemyIds?.includes(targetId)) results.enemies.push(entity.id);
-        if (entity.relativeIds?.includes(targetId)) results.relatives.push(entity.id);
-        if (entity.complicatedWithIds?.includes(targetId)) results.complicated.push(entity.id);
+        const asAny = entity as any;
+        if (entity.parentIds?.includes(targetId) || asAny.parentsOfCharacter?.includes(targetId)) results.children.push(entity.id);
+        if (entity.childrenIds?.includes(targetId) || asAny.childOfCharacter?.includes(targetId)) results.parents.push(entity.id);
+        if (entity.friendIds?.includes(targetId) || asAny.allyResCharacter?.includes(targetId)) results.friends.push(entity.id);
+        if (entity.enemyIds?.includes(targetId) || asAny.enemydResCharacter?.includes(targetId)) results.enemies.push(entity.id);
+        if (entity.relativeIds?.includes(targetId) || asAny.relativesOfCharacter?.includes(targetId)) results.relatives.push(entity.id);
+        if (entity.complicatedWithIds?.includes(targetId) || asAny.complicatedResCharacter?.includes(targetId)) results.complicated.push(entity.id);
         
-        if (entity.loreNoteIds?.includes(targetId)) results.lore.push(entity.id);
-        if (entity.mythIds?.includes(targetId)) results.myths.push(entity.id);
-        if (entity.eventIds?.includes(targetId)) results.events.push(entity.id);
-        if (entity.locationIds?.includes(targetId)) results.locations.push(entity.id);
-        if (entity.cultureIds?.includes(targetId)) results.cultures.push(entity.id);
+        if (entity.loreNoteIds?.includes(targetId) || asAny.pairedConnectedNotes?.includes(targetId)) results.lore.push(entity.id);
+        if (entity.mythIds?.includes(targetId) || asAny.pairedConnectedMyths?.includes(targetId) || asAny.pairedMyths?.includes(targetId)) results.myths.push(entity.id);
+        if (entity.eventIds?.includes(targetId) || asAny.pairedEvent?.includes(targetId) || asAny.pairedEvents?.includes(targetId)) results.events.push(entity.id);
+        if (entity.locationIds?.includes(targetId) || asAny.pairedConnectedPlaces?.includes(targetId) || asAny.pairedLocations?.includes(targetId)) results.locations.push(entity.id);
+        if (entity.cultureIds?.includes(targetId) || asAny.relatedCultures?.includes(targetId)) results.cultures.push(entity.id);
 
-        if (entity.belongsUnderId === targetId) results.containedIn.push(entity.id);
+        if (entity.parentId === targetId || entity.belongsUnderId === targetId || entity.parentDoc?.includes(targetId)) results.containedIn.push(entity.id);
 
         // Character specific
         if (entity.type === 'character') {
             const char = entity as Character;
-            if (Array.isArray(char.placeOfResidenceId) && char.placeOfResidenceId.includes(targetId)) results.residents.push(entity.id);
-            if (Array.isArray(char.placeOfOriginId) && char.placeOfOriginId.includes(targetId)) results.natives.push(entity.id);
-            if (Array.isArray(char.placeOfDemiseId) && char.placeOfDemiseId.includes(targetId)) results.passedHere.push(entity.id);
+            const res = char.pairedCurrentLocationNew || char.placeOfResidenceId || [];
+            if (res.includes(targetId) || char.pairedCurrentLocation === targetId) results.residents.push(entity.id);
+
+            const orig = char.pairedOriginLocationNew || char.placeOfOriginId || [];
+            if (orig.includes(targetId) || char.pairedOriginLocation === targetId) results.natives.push(entity.id);
+
+            const dem = char.pairedDemiseLocationNew || char.placeOfDemiseId || [];
+            if (dem.includes(targetId) || char.pairedDemiseLocation === targetId) results.passedHere.push(entity.id);
             
-            if (Array.isArray(char.occupationIds) && char.occupationIds.includes(targetId)) results.practitioners.push(entity.id);
-            if (Array.isArray(char.speciesIds) && char.speciesIds.includes(targetId)) results.members.push(entity.id);
+            const prof = char.pairedProfession || char.occupationIds || [];
+            if (prof.includes(targetId)) results.practitioners.push(entity.id);
+
+            const race = char.pairedRace || char.speciesIds || [];
+            if (race.includes(targetId)) results.members.push(entity.id);
             
-            if ((Array.isArray(char.skillIds) && char.skillIds.includes(targetId)) || (Array.isArray(char.spellIds) && char.spellIds.includes(targetId))) results.practitioners.push(entity.id);
-            if ((Array.isArray(char.equipmentIds) && char.equipmentIds.includes(targetId)) || (Array.isArray(char.wealthIds) && char.wealthIds.includes(targetId))) results.referencedIn.push(entity.id);
+            const skills = char.pairedSkills || char.skillIds || char.spellIds || [];
+            if (skills.includes(targetId)) results.practitioners.push(entity.id);
+
+            const items = char.pairedConnectedItems || char.equipmentIds || char.wealthIds || [];
+            if (items.includes(targetId)) results.referencedIn.push(entity.id);
+
+            if (char.pairedResources?.includes(targetId)) results.referencedIn.push(entity.id);
+            if (char.pairedLanguage?.includes(targetId)) results.referencedIn.push(entity.id);
+
+            // Character group connections
+            const charMembers = [
+                ...(char.leadingPoliticalLeaders || []),
+                ...(char.leadingOtherLeaders || []),
+                ...(char.leadingReligiousLeaders || []),
+                ...(char.leadingMagicalLeaders || []),
+                ...(char.leadingTechLeaders || []),
+                ...(char.pairedBelongingPolGroup || []),
+                ...(char.pairedBelongingOtherGroups || []),
+                ...(char.pairedBelongingRelGroup || []),
+                ...(char.pairedBelongingMagicGroup || []),
+                ...(char.pairedBelongingTechGroup || []),
+            ];
+            if (charMembers.includes(targetId)) results.members.push(entity.id);
+
+            const charAllies = [
+                ...(char.pairedAllyPolGroup || []),
+                ...(char.pairedAllyOtherGroups || []),
+                ...(char.pairedAllyRelGroup || []),
+                ...(char.pairedAllyMagicGroup || []),
+                ...(char.pairedAllyTechGroup || []),
+            ];
+            if (charAllies.includes(targetId)) results.friends.push(entity.id);
+
+            const charEnemies = [
+                ...(char.pairedEnemyPolGroup || []),
+                ...(char.pairedEnemyOtherGroups || []),
+                ...(char.pairedEnemyRelGroup || []),
+                ...(char.pairedEnemyMagicGroup || []),
+                ...(char.pairedEnemyTechGroup || []),
+            ];
+            if (charEnemies.includes(targetId)) results.enemies.push(entity.id);
+
+            const charConnected = [
+                ...(char.pairedConnectionPolGroup || []),
+                ...(char.pairedConnectionOtherGroups || []),
+                ...(char.pairedConnectionRelGroup || []),
+                ...(char.pairedConnectionMagicGroup || []),
+                ...(char.pairedConnectionTechGroup || []),
+            ];
+            if (charConnected.includes(targetId)) results.referencedIn.push(entity.id);
         }
 
-        // Group Connections (Deep scan)
+        // Group Connections (Deep scan across standard structure)
         if (entity.groupConnections && typeof entity.groupConnections === 'object') {
             try {
-                Object.entries(entity.groupConnections).forEach(([groupType, roles]) => {
+                Object.entries(entity.groupConnections).forEach(([_, roles]) => {
                     if (roles && typeof roles === 'object') {
                         Object.entries(roles as any).forEach(([role, ids]) => {
                             if (Array.isArray(ids) && ids.includes(targetId)) {
                                 if (role === 'memberOf' || role === 'leadingFigureOf') results.members.push(entity.id);
+                                else if (role === 'allyOf') results.friends.push(entity.id);
+                                else if (role === 'enemyOf') results.enemies.push(entity.id);
                                 else results.referencedIn.push(entity.id);
                             }
                         });
@@ -90,11 +150,12 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
             }
         }
 
-        
         // Event specific
-        if ((entity as any).involvedEntityIds?.includes(targetId)) results.events.push(entity.id);
-        if ((entity as any).locationId === targetId) results.locations.push(entity.id);
+        if ((entity as any).involvedEntityIds?.includes(targetId) || (entity as any).pairedCharacter?.includes(targetId)) results.events.push(entity.id);
+        if ((entity as any).locationId === targetId || (entity as any).pairedLocations?.includes(targetId)) results.locations.push(entity.id);
     });
+
+    results.allies = [...results.friends];
 
     // Deduplicate
     Object.keys(results).forEach(key => {

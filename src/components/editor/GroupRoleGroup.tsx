@@ -10,6 +10,7 @@ interface GroupRoleGroupProps {
     allEntities: WorldEntity[];
     onUpdate: (data: any) => void;
     onCreateNew: (type: EntityType, search: string, open: boolean) => string | void;
+    isCustomGoverning?: boolean;
 }
 
 export const GroupRoleGroup = ({ label, roleKey, isWikiMode, entity, allEntities, onUpdate, onCreateNew }: GroupRoleGroupProps) => {
