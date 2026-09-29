@@ -20,6 +20,12 @@ budget_tokens: 1000
   - Fixed **Options World Reset**: Added missing `mapConnections` and `worldPhase` to reset payload in `OptionsView.tsx`.
   - Fixed **Vite Port Conflict**: Changed default server port to 5173 with `host: true` in `vite.config.ts`.
   - Fixed **TypeScript 0-Error Build**: Installed `@types/react` & `@types/react-dom`, resolved all interface inheritance errors (`TS2430`), added missing aliases (`tech`, `currency`, Location aliases). `npm run typecheck` and `npm run build` now pass with 0 errors.
+- **Phase P1 UX Fixes** —
+  - Fixed **BUG-004**: Replaced `window.prompt()` in `WorldMap.tsx` with full inline React modals for anchor placement and ley-line type selection. Marker creation routes through `handleCreate` for schema defaults.
+  - Fixed **BUG-002**: Stabilized `DashboardView` insights with `seed` state + deterministic prime math. Added "Consult the Oracle" reroll button.
+  - Fixed **BUG-003 UX**: Added collapse/expand chevron buttons on `NexusTreeView` nodes for navigating deep family trees.
+- **Phase P2 Features** —
+  - Implemented **Markdown + Wikilinks** — New `MarkdownEditor` and `MarkdownRenderer` components. `[[Entity Name]]` wikilinks are auto-linked in both editor and viewer. Editor has a split Write/Preview/Split mode toolbar with bold/italic/heading/list/wikilink buttons and keyboard-driven autocomplete dropdown. Viewer renders markdown with full prose styling for both Sovereign and Wiki themes.
 - **Initial Architecture** — Full entity type system (20 types), Zustand persist store, editor/viewer split per entity type
 - **Roleplay Theme V1** — `royal-codex` theme with parchment textures, quill pen overlay, woodgrain bg
 - **Multi-Theme system** — `sovereign` (dark), `wiki` (light), `royal-codex` (fantasy parchment)
@@ -35,15 +41,14 @@ budget_tokens: 1000
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P1 / P2: Replace WorldMap prompts with inline modal, stabilize Dashboard insights, and enhance Nexus Lineages._
+**Goal:** _Phase P2 Continued: Interactive Nexus Graph, Journey coordinate pickers, and Multi-World management_
 
 ### Key known gaps / potential next features
-1. WorldMap connections & markers use `window.prompt()` — replace with inline modal/popover (BUG-004)
-2. `DashboardView` insights use `Math.random()` on every render — add deterministic seed or manual reroll button (BUG-002)
-3. `NexusTreeView` general graph view: expand lineage tree beyond characters to include organizations, religions, and factions
-4. Markdown preview with inline wikilinks (`[[Entity Name]]`) for rich lore writing
-5. `git push` pending — branch is 1 commit ahead of origin (Phase 0 cleanup commit not yet pushed) (BUG-006)
-6. `.wolf/`, `.claude/`, `.cursor/`, `.opencode/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` are untracked — decide whether to commit or gitignore them
+1. `NexusTreeView` general graph view: expand lineage tree beyond characters to include organizations, religions, and factions (P2 #8)
+2. Journey coordinate pickers in `LocationSpecifics.tsx` — let users set/see map coordinates directly inside the Location editor (P2 #10)
+3. Multi-World management — World switcher for multiple campaigns (P2 #11)
+4. `git push` pending — branch is multiple commits ahead of origin (BUG-006)
+5. `.wolf/`, `.claude/`, `.cursor/`, `.opencode/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` are untracked — decide whether to commit or gitignore them
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
@@ -51,10 +56,12 @@ budget_tokens: 1000
 - Build tool: **Vite 6 + @vitejs/plugin-react**
 - React version: **19.2.3**
 - No database — all data lives in browser localStorage via Zustand persist
+- Markdown rendering: **marked** + **DOMPurify** (installed, no prose external lib needed)
 
 ### Open decisions
 - Should `.wolf/` be committed to git? (currently untracked, `.wolf/.gitignore` excludes machine-state but not core files)
 - What is the next feature to build?
+
 
 ---
 

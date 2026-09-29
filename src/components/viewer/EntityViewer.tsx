@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { CodexHeader, WikiHeader, RoyalHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
-import { FieldRow, LinksDisplay } from '../ui';
+import { FieldRow, LinksDisplay, MarkdownRenderer } from '../ui';
 import { EntityViewerProps, Character, EntityType, Location } from '../../types';
 import { TYPE_LABELS } from '../../constants';
 import { getCategorizedBacklinks } from '../../utils/backlinkUtils';
@@ -54,10 +54,19 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 {(!isRoyal || activeTab === 'overview' || activeTab === 'biography') && (
                     <ViewerSectionCard title={isChar ? 'Biography' : 'Overview'} badgeText={(entity as any).isFinished || entity.finishedSwitch ? 'Finished' : undefined}>
                         <div className="flex flex-col sm:flex-row items-start gap-4">
-                            <p className={`flex-1 text-base leading-relaxed whitespace-pre-wrap ${isRoyal ? 'font-serif text-[#2b1810]' : isWiki ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'}`}>
-                                {entity.description || 'No description provided yet.'}
-                            </p>
-                            
+                            {entity.description?.trim() ? (
+                                <MarkdownRenderer
+                                    content={entity.description}
+                                    allEntities={allEntities}
+                                    onNavigate={onNavigate}
+                                    isWikiMode={isWiki}
+                                    className="flex-1 min-w-0"
+                                />
+                            ) : (
+                                <p className={`flex-1 text-base leading-relaxed opacity-40 italic ${isRoyal ? 'font-serif text-[#2b1810]' : isWiki ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'}`}>
+                                    No description provided yet.
+                                </p>
+                            )}
                         </div>
                     </ViewerSectionCard>
                 )}
@@ -72,7 +81,12 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
                 {entity.spoilerNotes && (!isRoyal || activeTab === 'overview') && (
                     <ViewerSectionCard title="Secrets / DM Notes">
-                        <p className={`whitespace-pre-wrap ${isRoyal ? 'font-serif text-[#2b1810]' : isWiki ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'}`}>{entity.spoilerNotes}</p>
+                        <MarkdownRenderer
+                            content={entity.spoilerNotes}
+                            allEntities={allEntities}
+                            onNavigate={onNavigate}
+                            isWikiMode={isWiki}
+                        />
                     </ViewerSectionCard>
                 )}
 

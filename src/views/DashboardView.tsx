@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { BarChart3, Users, Map, Clock, PieChart, Activity, Fingerprint } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { BarChart3, Users, Map, Clock, PieChart, Activity, Fingerprint, Sparkles } from 'lucide-react';
 import { WorldData, WorldEntity } from '../types';
 import { TYPE_LABELS } from '../constants';
 import { useWorldStore } from '../store/useWorldStore';
@@ -40,14 +40,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
         return { counts, topInterconnected };
     }, [world.entities]);
 
+    const [seed, setSeed] = useState(1);
+    const rerollInsights = () => setSeed(s => s + 1);
+
     const insights = useMemo(() => {
         const entCount = world.entities.length;
         if (entCount < 2) return ["Your chronicle is just beginning. Plant more seeds of lore to see the patterns emerge."];
         
-        const randomEnt1 = world.entities[Math.floor(Math.random() * entCount)];
-        const randomEnt2 = world.entities[Math.floor(Math.random() * entCount)];
+        // Deterministic selection based on seed
+        const idx1 = Math.abs(seed * 7 + 13) % entCount;
+        const idx2 = Math.abs(seed * 19 + 29) % entCount;
+        const randomEnt1 = world.entities[idx1] || world.entities[0];
+        const randomEnt2 = world.entities[idx2 !== idx1 ? idx2 : (idx2 + 1) % entCount] || world.entities[1] || world.entities[0];
         const locations = world.entities.filter(e => e.type === 'location');
-        const randomLoc = locations.length > 0 ? locations[Math.floor(Math.random() * locations.length)] : null;
+        const locIdx = locations.length > 0 ? Math.abs(seed * 31 + 7) % locations.length : 0;
+        const randomLoc = locations.length > 0 ? locations[locIdx] : null;
 
         return [
             `Balance Report: Your world is ${Math.round((stats.counts.character || 0) / (entCount || 1) * 100)}% populated by characters. ${stats.counts.location ? 'The geography is expanding steadily.' : 'Perhaps it needs more physical anchors (Locations)?'}`,
@@ -55,7 +62,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
             `Continuity Check: ${stats.topInterconnected[0]?.name || 'Your primary figure'} currently holds the most threads. If they were to disappear, who would inherit their influence?`,
             `The Void: ${world.trash.length} memories have been cast into the Forgotten Depth. Is there a secret link between one of them and ${randomEnt1.name}?`
         ];
-    }, [world.entities, world.trash, stats]);
+    }, [world.entities, world.trash.length, stats.counts, stats.topInterconnected, seed]);
 
     const colors = isWikiMode 
         ? ['#b91c1c', '#7a200d', '#1e40af', '#166534', '#854d0e'] 
@@ -158,7 +165,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                     <BarChart3 size={200} />
                 </div>
                 <div className="relative z-10 space-y-6">
-                    <h3 className="text-2xl font-serif font-bold uppercase tracking-[0.2em]">The Ledger's Insight</h3>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <h3 className="text-2xl font-serif font-bold uppercase tracking-[0.2em]">The Ledger's Insight</h3>
+                        <button 
+                            onClick={rerollInsights}
+                            className={`px-5 py-2.5 rounded-2xl border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${
+                                isWikiMode 
+                                    ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] border-[#b91c1c]' 
+                                    : 'bg-[#fef08a] text-black hover:bg-yellow-400 border-[#fef08a] shadow-lg shadow-yellow-500/20'
+                            }`}
+                        >
+                            <Sparkles size={14} /> Consult the Oracle
+                        </button>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm italic opacity-60 leading-relaxed max-w-3xl">
                         {insights.map((insight, i) => <p key={i}>"{insight}"</p>)}
                     </div>

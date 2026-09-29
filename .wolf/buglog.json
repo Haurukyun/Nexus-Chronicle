@@ -17,11 +17,12 @@
     {
       "id": "BUG-002",
       "timestamp": "2026-09-29T23:00:00Z",
-      "status": "open",
+      "status": "resolved",
+      "resolved_at": "2026-09-30T00:39:00Z",
       "error_message": "DashboardView creative insights re-randomize on every re-render, causing unstable/flickering text",
       "file": "src/views/DashboardView.tsx",
       "root_cause": "`insights` is computed inside a `useMemo` that depends on `world.entities` and `world.trash`, but calls `Math.random()` internally. Any state change that updates these (e.g., adding a tag) re-rolls all insight text. The memo does not capture a stable random seed.",
-      "fix": "Either (a) seed the random selection with a stable value (e.g., a hash of entity IDs), or (b) move the random picks outside the memo and stabilize them with a separate `useState` that only updates when `world.entities.length` changes.",
+      "fix": "Added a `seed` state (integer), deterministic index math (`seed * prime + offset % len`), and a 'Consult the Oracle' reroll button that increments the seed manually.",
       "tags": ["dashboard", "ux", "rendering"],
       "occurrences": 1,
       "last_seen": "2026-09-29"
@@ -42,11 +43,12 @@
     {
       "id": "BUG-004",
       "timestamp": "2026-09-29T23:00:00Z",
-      "status": "open",
+      "status": "resolved",
+      "resolved_at": "2026-09-30T00:39:00Z",
       "error_message": "WorldMap location marker and connection creation uses window.prompt() — inaccessible and blocked in some browsers",
       "file": "src/views/WorldMap.tsx",
       "root_cause": "Adding a location marker calls `prompt('Location Anchor Name:')` and adding a connection calls `prompt('Connection Type (trade, magic, diplomatic, war):', 'trade')`. window.prompt() is synchronous, blocks the UI, is inaccessible to screen readers, and is suppressed in iframes/embedded environments.",
-      "fix": "Replace prompt() calls with an inline modal or popover UI. A simple React state-driven modal with a text input would be both accessible and unblockable.",
+      "fix": "Replaced with state-driven React modals: `pendingMarkerPos` triggers anchor modal with text input; `pendingConnection` triggers ley-line type picker modal. Both route through `handleCreate` for schema defaults.",
       "tags": ["worldmap", "accessibility", "ux"],
       "occurrences": 1,
       "last_seen": "2026-09-29"

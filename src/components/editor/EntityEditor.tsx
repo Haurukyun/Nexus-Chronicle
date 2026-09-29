@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { EditorGroup } from './EditorGroup';
 import { GroupRoleGroup } from './GroupRoleGroup';
-import { FormInput, FormToggle, SmartSelect } from '../ui';
+import { FormInput, FormToggle, SmartSelect, MarkdownEditor } from '../ui';
 import { EntityEditorProps, Location } from '../../types';
 import { EntitySpecificsRegistry } from './specifics/EntitySpecificsRegistry';
 
@@ -68,13 +68,15 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
 
                 {/* 2. DESCRIPTION & HISTORY (UNIVERSAL) */}
                 <EditorGroup title="Description & History" icon={BookOpen} isWikiMode={isWikiMode}>
-                    <div className="lg:col-span-3 space-y-2">
-                        <div className={`w-full p-4 rounded-xl border border-dashed text-[10px] font-bold uppercase opacity-40 text-center ${isWikiMode ? 'border-black/20' : 'border-white/20'}`}>
-                            📜 The Great Narrative Scribe - Rich Text Interface Placeholder
-                        </div>
-                        <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-6 py-5 h-80 outline-none text-lg leading-relaxed shadow-sm`} 
-                            placeholder="The echoes of history begin here..."
-                            value={entity.description} onChange={e => onUpdate({ ...entity, description: e.target.value })} />
+                    <div className="lg:col-span-3">
+                        <MarkdownEditor
+                            value={entity.description || ''}
+                            onChange={(v) => onUpdate({ ...entity, description: v })}
+                            allEntities={allEntities}
+                            isWikiMode={isWikiMode}
+                            placeholder="The echoes of history begin here...  Use **bold**, *italic*, # Heading, and [[Entity Name]] to link."
+                            minHeight="h-80"
+                        />
                     </div>
                 </EditorGroup>
 
@@ -99,9 +101,14 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                 {/* 5. SECRETS (UNIVERSAL) */}
                 <EditorGroup title="Secrets/Spoilers/DM notes" icon={Ghost} isWikiMode={isWikiMode}>
                     <div className="lg:col-span-3">
-                        <textarea className={`w-full ${isWikiMode ? 'bg-[#fff5f5] border-rose-200 text-rose-900' : 'bg-slate-950 border-rose-900/30 text-rose-300'} border rounded-2xl px-6 py-4 h-48 outline-none font-mono text-sm leading-relaxed shadow-sm`} 
+                        <MarkdownEditor
+                            value={entity.privateNotes || ''}
+                            onChange={(v) => onUpdate({ ...entity, privateNotes: v })}
+                            allEntities={allEntities}
+                            isWikiMode={isWikiMode}
                             placeholder="Private ruminations only visible in the scroll of creation..."
-                            value={entity.privateNotes} onChange={e => onUpdate({ ...entity, privateNotes: e.target.value })} />
+                            minHeight="h-48"
+                        />
                     </div>
                 </EditorGroup>
             </fieldset>

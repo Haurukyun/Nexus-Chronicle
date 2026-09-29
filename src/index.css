@@ -11,3 +11,88 @@ body {
 ::selection {
   background: rgba(254, 240, 138, 0.3);
 }
+
+/* ─── Prose / Markdown Renderer ───────────────────────────────────────── */
+.prose-nexus {
+  font-size: 0.9rem;
+  line-height: 1.75;
+  word-break: break-word;
+}
+.prose-nexus h1, .prose-nexus h2, .prose-nexus h3,
+.prose-nexus h4, .prose-nexus h5, .prose-nexus h6 {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 1.2em 0 0.4em;
+  line-height: 1.2;
+}
+.prose-nexus h1 { font-size: 1.5rem; }
+.prose-nexus h2 { font-size: 1.2rem; }
+.prose-nexus h3 { font-size: 1rem; }
+.prose-nexus p  { margin: 0.6em 0; }
+.prose-nexus ul, .prose-nexus ol { margin: 0.6em 0 0.6em 1.4em; }
+.prose-nexus ul { list-style-type: disc; }
+.prose-nexus ol { list-style-type: decimal; }
+.prose-nexus li { margin: 0.2em 0; }
+.prose-nexus blockquote {
+  border-left: 3px solid currentColor;
+  padding-left: 1em;
+  margin: 0.8em 0;
+  opacity: 0.7;
+  font-style: italic;
+}
+.prose-nexus code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.82em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.prose-nexus pre {
+  padding: 0.8em 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+  font-size: 0.8em;
+}
+.prose-nexus hr {
+  border: none;
+  border-top: 1px solid currentColor;
+  opacity: 0.2;
+  margin: 1.2em 0;
+}
+.prose-nexus strong { font-weight: 700; }
+.prose-nexus em { font-style: italic; }
+.prose-nexus del { text-decoration: line-through; opacity: 0.6; }
+.prose-nexus table { width: 100%; border-collapse: collapse; margin: 0.8em 0; }
+.prose-nexus th, .prose-nexus td { padding: 0.4em 0.8em; border: 1px solid; border-color: inherit; opacity: 0.8; font-size: 0.85em; }
+.prose-nexus th { font-weight: 700; }
+
+/* Dark (Sovereign) theme prose */
+.prose-nexus-dark { color: #cbd5e1; }
+.prose-nexus-dark h1, .prose-nexus-dark h2, .prose-nexus-dark h3 { color: #fef9c3; }
+.prose-nexus-dark code { background: rgba(255,255,255,0.08); color: #fbbf24; }
+.prose-nexus-dark pre { background: rgba(0,0,0,0.4); color: #e2e8f0; }
+
+/* Wiki (Light) theme prose */
+.prose-nexus-wiki { color: #2d2d2d; }
+.prose-nexus-wiki h1, .prose-nexus-wiki h2, .prose-nexus-wiki h3 { color: #7a200d; }
+.prose-nexus-wiki code { background: rgba(0,0,0,0.06); color: #7a200d; }
+.prose-nexus-wiki pre { background: rgba(0,0,0,0.04); color: #2d2d2d; }
+
+/* Wikilinks */
+a.wikilink {
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.15s;
+}
+.prose-nexus-dark a.wikilink  { color: #fef08a; }
+.prose-nexus-wiki  a.wikilink { color: #b91c1c; }
+a.wikilink:hover { opacity: 0.75; }
+
+span.wikilink--broken {
+  text-decoration: underline dashed;
+  opacity: 0.5;
+}

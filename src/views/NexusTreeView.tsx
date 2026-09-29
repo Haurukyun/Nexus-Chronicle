@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Network, UserPlus, GitBranch, GitMerge } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Network, UserPlus, GitBranch, GitMerge, ChevronDown, ChevronRight } from 'lucide-react';
 import { WorldData, WorldEntity, Character } from '../types';
 
 interface NexusTreeViewProps {
@@ -93,6 +93,7 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0 }
 
     const hasChildren = children.length > 0;
     const isAncestral = Boolean(entity.deathDate?.trim() || entity.deadSwitch || entity.isDead);
+    const [collapsed, setCollapsed] = useState(false);
 
     return (
         <div className="flex flex-col items-center relative">
@@ -114,6 +115,31 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0 }
                 </div>
             </div>
 
+            {/* Expand / Collapse Toggle for Branches */}
+            {hasChildren && depth < 5 && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setCollapsed(!collapsed);
+                    }}
+                    className={`mt-3 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 z-20 border transition-all ${
+                        isWikiMode 
+                            ? 'bg-white border-[#d4c8af] text-[#b91c1c] hover:bg-slate-100 shadow-sm' 
+                            : 'bg-slate-900 border-slate-700 text-[#fef08a] hover:bg-slate-800 shadow-md'
+                    }`}
+                >
+                    {collapsed ? (
+                        <>
+                            <ChevronRight size={12} /> Expand ({children.length})
+                        </>
+                    ) : (
+                        <>
+                            <ChevronDown size={12} /> Collapse
+                        </>
+                    )}
+                </button>
+            )}
+
             {/* Truncation Indicator if Depth Limit Reached */}
             {hasChildren && depth >= 5 && (
                 <div className={`mt-4 px-3 py-1 rounded-full text-[9px] font-bold border border-dashed opacity-60 ${accent}`}>
@@ -122,9 +148,9 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0 }
             )}
 
             {/* Connecting Lines */}
-            {hasChildren && depth < 5 && (
-                <div className="flex flex-col items-center mt-12 w-full">
-                    <div className={`w-px h-12 ${isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800'}`} />
+            {hasChildren && !collapsed && depth < 5 && (
+                <div className="flex flex-col items-center mt-6 w-full">
+                    <div className={`w-px h-10 ${isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800'}`} />
                     <div className="flex gap-12 relative">
                         {/* Horizontal connector for multiple siblings */}
                         {children.length > 1 && (
