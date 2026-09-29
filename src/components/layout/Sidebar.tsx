@@ -51,16 +51,20 @@ const EntityItem: React.FC<{
     const isRoyal = theme === 'royal-codex';
     const isBeingDragged = draggedEntityId === entity.id;
 
-    // Target is invalid if it's the dragged entity itself or a descendant
+    // Target is invalid if it's the dragged entity itself, a descendant, or a DIFFERENT entity type
     const isInvalidTarget = useMemo(() => {
         if (!draggedEntityId || draggedEntityId === entity.id) return true;
+        const draggedEntity = allEntities.find(e => e.id === draggedEntityId);
+        // STRICT TYPE MATCH: Cannot drag or reparent across different categories/types!
+        if (!draggedEntity || draggedEntity.type !== entity.type) return true;
+
         let cur = allEntities.find(e => e.id === entity.id);
         while (cur && cur.parentId) {
             if (cur.parentId === draggedEntityId) return true;
             cur = allEntities.find(e => e.id === cur.parentId);
         }
         return false;
-    }, [draggedEntityId, entity.id, allEntities]);
+    }, [draggedEntityId, entity.id, entity.type, allEntities]);
     
     const customStyle: React.CSSProperties = {
         paddingLeft: `${depth * 12 + 6}px`,
@@ -238,6 +242,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const [headerDropType, setHeaderDropType] = useState<EntityType | null>(null);
     const reorderAndReparentEntity = useWorldStore(state => state.reorderAndReparentEntity);
 
+    const draggedEntity = useMemo(() => {
+        return world.entities.find(e => e.id === draggedEntityId);
+    }, [world.entities, draggedEntityId]);
+
     const sidebarBg = isRoyal
         ? 'bg-[#181410] border-r-2 border-[#110e0b] shadow-[5px_0_15px_rgba(0,0,0,0.8)] relative'
         : isWikiMode ? 'bg-[#fdf6e3]' : 'bg-[#0f172a]/80';
@@ -343,7 +351,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     <div key={type} className="space-y-0.5 group/type">
                                         <div 
                                             onDragOver={(e) => {
-                                                if (!draggedEntityId) return;
+                                                if (!draggedEntityId || !draggedEntity || draggedEntity.type !== type) return;
                                                 e.preventDefault();
                                                 e.stopPropagation();
                                                 setHeaderDropType(type);
@@ -352,7 +360,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                 if (headerDropType === type) setHeaderDropType(null);
                                             }}
                                             onDrop={(e) => {
-                                                if (!draggedEntityId) return;
+                                                if (!draggedEntityId || !draggedEntity || draggedEntity.type !== type) return;
                                                 e.preventDefault();
                                                 e.stopPropagation();
                                                 reorderAndReparentEntity(draggedEntityId, null, 'inside', type);

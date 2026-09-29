@@ -1003,13 +1003,22 @@ export const useWorldStore = create<WorldStore>()(
                 // Prevent dragging onto self
                 if (targetId && draggedId === targetId) return state;
 
-                // Circular dependency guard: target cannot be a descendant of dragged
                 if (targetId) {
-                    let cur = world.entities.find(e => e.id === targetId);
+                    const target = world.entities.find(e => e.id === targetId);
+                    if (!target) return state;
+
+                    // STRICT TYPE CHECK: Entities can ONLY belong under or be placed adjacent to the SAME type!
+                    if (dragged.type !== target.type) return state;
+
+                    // Circular dependency guard: target cannot be a descendant of dragged
+                    let cur: WorldEntity | undefined = target;
                     while (cur && cur.parentId) {
                         if (cur.parentId === draggedId) return state; // Cycle prevented
-                        cur = world.entities.find(e => e.id === cur.parentId);
+                        cur = world.entities.find(e => e.id === cur?.parentId);
                     }
+                } else if (targetType) {
+                    // STRICT TYPE CHECK: Cannot drop onto a different type header!
+                    if (dragged.type !== targetType) return state;
                 }
 
                 const newEntities = [...world.entities];
@@ -1020,11 +1029,8 @@ export const useWorldStore = create<WorldStore>()(
                 const updatedEntity: WorldEntity = { ...removed };
 
                 if (!targetId) {
-                    // Dropped onto category / type header (unparent to root)
+                    // Dropped onto category / type header (unparent to root of its own type)
                     updatedEntity.parentId = null;
-                    if (targetType) {
-                        updatedEntity.type = targetType;
-                    }
                     newEntities.push(updatedEntity);
                 } else {
                     const target = newEntities.find(e => e.id === targetId);

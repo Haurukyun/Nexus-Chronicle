@@ -45,6 +45,7 @@ budget_tokens: 2000
 - **[2026-09-29]** Do NOT read `anatomy.md` whole as a doc — grep it for the specific path you need. It is a 6878-byte index.
 - **[2026-09-30]** Do NOT allow circular parent references when reparenting entities — always check `isDescendant(targetId, draggedId, entities)` before applying `parentId` change, otherwise both entities disappear from the root-driven sidebar tree.
 - **[2026-09-30]** When configuring `SmartSelect` for hierarchical parents ("Belongs under"), always pass `excludeIds={[entity.id]}` to block an entity from selecting itself.
+- **[2026-09-30]** Do NOT allow cross-category / cross-type drag and drop — an entity can ONLY be reparented or reordered within entities of its exact same EntityType. Never allow dragging a character under a location or dropping onto a different category's header.
 
 ## Decision Log
 

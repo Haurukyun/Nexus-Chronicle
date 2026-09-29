@@ -64,18 +64,18 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
             items: [
                 {
                     keys: ['Drag & Drop', 'Onto Entry'],
-                    action: 'Nest As Child',
-                    description: 'Reparents dragged item under target (sets parentId)'
+                    action: 'Nest As Child (Same Category)',
+                    description: 'Reparents dragged item under a target entity of the same type'
                 },
                 {
                     keys: ['Drag & Drop', 'Top/Bottom Edge'],
-                    action: 'Reorder As Sibling',
-                    description: 'Places item above or below target with the same parent'
+                    action: 'Reorder As Sibling (Same Category)',
+                    description: 'Places item above or below target entity within the same type'
                 },
                 {
                     keys: ['Drag & Drop', 'Onto Type Header'],
                     action: 'Unparent to Root',
-                    description: 'Removes parent hierarchy and places at top-level category'
+                    description: 'Removes parent hierarchy and places at top-level of its category'
                 }
             ]
         },
