@@ -25,6 +25,9 @@ budget_tokens: 1000
   - Fixed **BUG-002**: Stabilized `DashboardView` insights with `seed` state + deterministic prime math. Added "Consult the Oracle" reroll button.
   - Fixed **BUG-003 UX**: Added collapse/expand chevron buttons on `NexusTreeView` nodes for navigating deep family trees.
 - **Phase P2 Features & Enhancements** —
+  - Implemented **P2 #8 Interactive Nexus Graph** (`NexusGraphView.tsx`) — Full SVG force-directed relationship graph supporting all 20 entity types. Features interactive force simulation, dynamic curved connection ribbons color-coded by connection kind (Family, Ally, Enemy, Member, Connected, Event, Location), Category Glow filters, category filters (Story, World, Groups, Details), zoom in/out, fit-to-view, pan, clickable node inspection card with deep backlink connections, double-click / "Open Entry" navigation, and multi-view toggle between Interactive Graph and Bloodline Tree in `NexusTreeView.tsx`.
+  - Fixed **Tree Missing Entries Bug (Aurelius the Great)** — Implemented `getSafeParentId()` with recursive circular reference guards and strict type validation in `Sidebar.tsx`. Ensured orphaned children whose parents were deleted or invalid are safely classified as root items and never lost. Added self-healing `useEffect` in `Sidebar.tsx` to automatically sanitize corrupt `parentId` values. Updated `handleSaveDraft` and `handleDeleteToTrash` in `useWorldStore.ts` to reparent surviving children and prevent self-parenting or circular loops. Updated `NexusTreeView.tsx` root detection to prevent any character from vanishing.
+  - Fixed **Permanent Locked Entry Bug** — Added `updateEntityLock(id, isReadOnly)` action to `useWorldStore.ts`. Updated `ViewerHeaders.tsx` (`CodexHeader`, `WikiHeader`, `RoyalHeader`) to render a prominent golden `Locked (Click to Unlock)` button on locked records and a discreet lock toggle on unlocked records, enabling users to unlock and edit protected records directly from the viewer with one click.
   - Implemented **Markdown + Wikilinks** — New `MarkdownEditor` and `MarkdownRenderer` components. `[[Entity Name]]` wikilinks are auto-linked in both editor and viewer. Editor has a split Write/Preview/Split mode toolbar with bold/italic/heading/list/wikilink buttons and keyboard-driven autocomplete dropdown. Viewer renders markdown with full prose styling for both Sovereign and Wiki themes.
   - Implemented **Keybinds System & Grimoire Modal** — Global keyboard shortcuts: `Ctrl+Enter` / `Cmd+Enter` to commit draft to chronicle, `Ctrl+S` to quick-save, `Ctrl+E` to toggle edit mode, `Escape` to abandon scrawl or dismiss modals, `Ctrl+K` to focus sidebar search, `Alt+1` to `Alt+7` to switch system realms, and `?` to summon the shortcuts grimoire. Added discreet "Keybinds" button in top header next to ThemeSwitcher. Created responsive `KeybindsModal` component supporting Sovereign, Wiki, and Royal Codex themes.
   - Implemented **Sidebar Drag & Drop Tree Reparenting & Reordering** — Native HTML5 drag-and-drop on `Sidebar.tsx` `EntityItem`. Supports dragging an entry onto another entry to reparent as a nested child (`parentId = target.id`), dragging top or bottom edge to reorder as sibling before/after, and dragging onto category/type header to unparent to root level. Added circular dependency detection (`isDescendant` check) to prevent cycles. Added `reorderAndReparentEntity` action in `useWorldStore.ts`.
@@ -44,14 +47,13 @@ budget_tokens: 1000
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P2 Continued: Interactive Nexus Graph, Journey coordinate pickers, and Multi-World management_
+**Goal:** _Phase P2 Continued: Journey coordinate pickers and Multi-World management_
 
 ### Key known gaps / potential next features
-1. `NexusTreeView` general graph view: expand lineage tree beyond characters to include organizations, religions, and factions (P2 #8)
-2. Journey coordinate pickers in `LocationSpecifics.tsx` — let users set/see map coordinates directly inside the Location editor (P2 #10)
-3. Multi-World management — World switcher for multiple campaigns (P2 #11)
-4. `git push` pending — branch is multiple commits ahead of origin (BUG-006)
-5. `.wolf/`, `.claude/`, `.cursor/`, `.opencode/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` are untracked — decide whether to commit or gitignore them
+1. Journey coordinate pickers in `LocationSpecifics.tsx` — let users set/see map coordinates directly inside the Location editor (P2 #10)
+2. Multi-World management — World switcher for multiple campaigns (P2 #11)
+3. `git push` pending — branch is multiple commits ahead of origin (BUG-006)
+4. `.wolf/`, `.claude/`, `.cursor/`, `.opencode/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` are untracked — decide whether to commit or gitignore them
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)

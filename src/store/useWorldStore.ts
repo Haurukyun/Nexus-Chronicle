@@ -42,6 +42,7 @@ interface WorldStore {
     addMapConnection: (sourceId: string, targetId: string, type: any) => void;
     removeMapConnection: (id: string) => void;
     updateEntityParent: (entityId: string, parentId: string | null) => void;
+    updateEntityLock: (id: string, isReadOnly: boolean) => void;
     reorderAndReparentEntity: (draggedId: string, targetId: string | null, position: 'before' | 'after' | 'inside', targetType?: EntityType) => void;
 }
 
@@ -924,7 +925,31 @@ export const useWorldStore = create<WorldStore>()(
                 const { drafts, world, editingTabIds } = get();
                 if (!drafts[id]) return;
 
-                const updatedEntities = world.entities.map(e => e.id === id ? { ...drafts[id], lastModified: Date.now() } : e);
+                const draft = { ...drafts[id] };
+                // Safety: An entity can NEVER be its own parent
+                if (draft.parentId === id) {
+                    draft.parentId = null;
+                }
+                // Safety: Parent must exist, have the same entity type, and not form a circular loop
+                if (draft.parentId) {
+                    const parent = world.entities.find(e => e.id === draft.parentId);
+                    if (!parent || parent.type !== draft.type) {
+                        draft.parentId = null;
+                    } else {
+                        let cur: WorldEntity | undefined = parent;
+                        const visited = new Set<string>([id]);
+                        while (cur && cur.parentId) {
+                            if (visited.has(cur.id) || cur.parentId === id) {
+                                draft.parentId = null; // Break circular dependency
+                                break;
+                            }
+                            visited.add(cur.id);
+                            cur = world.entities.find(e => e.id === cur?.parentId);
+                        }
+                    }
+                }
+
+                const updatedEntities = world.entities.map(e => e.id === id ? { ...draft, lastModified: Date.now() } : e);
 
                 const newDrafts = { ...drafts };
                 delete newDrafts[id];
@@ -961,10 +986,16 @@ export const useWorldStore = create<WorldStore>()(
 
             handleDeleteToTrash: (entity) => {
                 const { world, handleCloseTab } = get();
+                // Safely reparent any children of the deleted entity so they are NEVER orphaned or lost from the tree
+                const safeParent = entity.parentId || null;
+                const updatedEntities = world.entities
+                    .filter(e => e.id !== entity.id)
+                    .map(e => e.parentId === entity.id ? { ...e, parentId: safeParent } : e);
+
                 set({
                     world: {
                         ...world,
-                        entities: world.entities.filter(e => e.id !== entity.id),
+                        entities: updatedEntities,
                         trash: [...world.trash, { ...entity, lastModified: Date.now() }]
                     }
                 });
@@ -986,14 +1017,26 @@ export const useWorldStore = create<WorldStore>()(
                 world: { ...state.world, mapConnections: state.world.mapConnections.filter(c => c.id !== id) }
             })),
 
-            updateEntityParent: (entityId, parentId) => set((state) => ({
+            updateEntityLock: (id, isReadOnly) => set((state) => ({
                 world: {
                     ...state.world,
                     entities: state.world.entities.map(e => 
-                        e.id === entityId ? { ...e, parentId } : e
+                        e.id === id ? { ...e, isReadOnly, lastModified: Date.now() } : e
                     )
                 }
             })),
+
+            updateEntityParent: (entityId, parentId) => set((state) => {
+                if (entityId === parentId) return state; // Prevent self-parenting
+                return {
+                    world: {
+                        ...state.world,
+                        entities: state.world.entities.map(e => 
+                            e.id === entityId ? { ...e, parentId } : e
+                        )
+                    }
+                };
+            }),
 
             reorderAndReparentEntity: (draggedId, targetId, position, targetType) => set((state) => {
                 const { world } = state;

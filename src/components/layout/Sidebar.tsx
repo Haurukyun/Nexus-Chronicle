@@ -26,6 +26,38 @@ interface SidebarProps {
 }
 
 
+/**
+ * Safely resolves the parent ID of an entity.
+ * An entity only has a valid parent if:
+ * 1. parentId is not null/empty
+ * 2. parentId !== entity.id (never self)
+ * 3. Parent exists in allEntities
+ * 4. Parent has the exact SAME entity type (strict category boundary)
+ * 5. Parent chain contains NO circular loops
+ * 
+ * If ANY condition fails, returns null — ensuring the entity is 
+ * immediately treated as a ROOT entity and NEVER lost or hidden from the tree.
+ */
+function getSafeParentId(entity: WorldEntity, allEntities: WorldEntity[]): string | null {
+    if (!entity.parentId || entity.parentId === entity.id) return null;
+    const parent = allEntities.find(e => e.id === entity.parentId);
+    if (!parent || parent.type !== entity.type) return null;
+
+    // Check circular references up the ancestor chain
+    const visited = new Set<string>([entity.id]);
+    let curr: WorldEntity | undefined = parent;
+    while (curr) {
+        if (visited.has(curr.id)) {
+            // Cycle detected! Break cycle so entity is never lost
+            return null;
+        }
+        visited.add(curr.id);
+        if (!curr.parentId || curr.parentId === curr.id) break;
+        curr = allEntities.find(e => e.id === curr?.parentId);
+    }
+    return parent.id;
+}
+
 const EntityItem: React.FC<{
     entity: WorldEntity;
     depth: number;
@@ -45,7 +77,8 @@ const EntityItem: React.FC<{
     const [isExpanded, setIsExpanded] = useState(true);
     const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null);
 
-    const children = allEntities.filter(e => e.parentId === entity.id);
+    // Bulletproof child lookup: Only includes entities whose safe parent is this entity
+    const children = allEntities.filter(e => getSafeParentId(e, allEntities) === entity.id);
     const hasChildren = children.length > 0;
     const isActive = activeTabId === entity.id;
     const isRoyal = theme === 'royal-codex';
@@ -58,9 +91,11 @@ const EntityItem: React.FC<{
         // STRICT TYPE MATCH: Cannot drag or reparent across different categories/types!
         if (!draggedEntity || draggedEntity.type !== entity.type) return true;
 
+        const visited = new Set<string>([draggedEntityId]);
         let cur = allEntities.find(e => e.id === entity.id);
         while (cur && cur.parentId) {
-            if (cur.parentId === draggedEntityId) return true;
+            if (visited.has(cur.id) || cur.parentId === draggedEntityId) return true;
+            visited.add(cur.id);
             cur = allEntities.find(e => e.id === cur.parentId);
         }
         return false;
@@ -283,6 +318,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
         });
     }, [world.entities, searchQuery]);
 
+    // Safety: Auto-heal any invalid, circular, or cross-type parentId in world.entities so entries can NEVER disappear
+    React.useEffect(() => {
+        let hasCorruptParent = false;
+        const healedEntities = world.entities.map(e => {
+            if (e.parentId) {
+                const safeParent = getSafeParentId(e, world.entities);
+                if (safeParent !== e.parentId) {
+                    hasCorruptParent = true;
+                    return { ...e, parentId: safeParent };
+                }
+            }
+            return e;
+        });
+
+        if (hasCorruptParent) {
+            useWorldStore.setState(state => ({
+                world: { ...state.world, entities: healedEntities }
+            }));
+        }
+    }, [world.entities]);
+
     const isSearching = searchQuery.length > 0;
 
     const navBtnStyle = (viewId: string, activeColor: string) => {
@@ -395,7 +451,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                         </div>
                                         <div className="space-y-px">
                                             {filteredEntities
-                                                .filter(e => e.type === type && (isSearching || !e.parentId))
+                                                .filter(e => e.type === type && (isSearching || getSafeParentId(e, world.entities) === null))
                                                 .map(entity => (
                                                     <EntityItem 
                                                         key={entity.id}

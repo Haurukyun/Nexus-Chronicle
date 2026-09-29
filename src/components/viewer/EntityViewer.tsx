@@ -16,8 +16,13 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const char = entity as Character;
     const loc = entity as Location;
     const theme = useWorldStore(state => state.theme);
+    const updateEntityLock = useWorldStore(state => state.updateEntityLock);
     const isRoyal = theme === 'royal-codex';
     const isWiki = theme === 'wiki' || isWikiMode;
+
+    const handleToggleLock = () => {
+        updateEntityLock(entity.id, !entity.isReadOnly);
+    };
 
     // Calculate categorized backlinks
     const backlinks = useMemo(() => getCategorizedBacklinks(entity.id, allEntities), [entity.id, allEntities]);
@@ -200,11 +205,11 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     return (
         <article className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {isRoyal ? (
-                <RoyalHeader entity={entity} onEdit={onEdit} onDelete={onDelete} />
+                <RoyalHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
             ) : isWiki ? (
-                <WikiHeader entity={entity} onEdit={onEdit} onDelete={onDelete} />
+                <WikiHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
             ) : (
-                <CodexHeader entity={entity} onEdit={onEdit} onDelete={onDelete} />
+                <CodexHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
             )}
             <MainView />
         </article>

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Network, UserPlus, GitBranch, GitMerge, ChevronDown, ChevronRight } from 'lucide-react';
+import { Network, GitBranch, GitMerge, ChevronDown, ChevronRight, Share2, Layers } from 'lucide-react';
 import { WorldData, WorldEntity, Character } from '../types';
+import { NexusGraphView } from './NexusGraphView';
 
 interface NexusTreeViewProps {
     world: WorldData;
@@ -9,27 +10,81 @@ interface NexusTreeViewProps {
 }
 
 export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode, onNavigate }) => {
+    const [viewMode, setViewMode] = useState<'graph' | 'tree'>('graph');
+
     const lineageData = useMemo(() => {
         const characters = world.entities.filter(e => e.type === 'character') as Character[];
-        
-        // A character has parents if:
-        // 1. parentsOfCharacter has valid IDs
-        // 2. parentIds has valid IDs
-        // 3. parentId is set
-        // 4. or another character in the list specifies this character in childOfCharacter / childrenIds
-        const hasParent = (c: Character) => {
-            if (c.parentId) return true;
-            if (c.parentsOfCharacter && c.parentsOfCharacter.length > 0) return true;
-            if (c.parentIds && c.parentIds.length > 0) return true;
-            return characters.some(other => 
-                other.id !== c.id && 
-                ((other.childOfCharacter && other.childOfCharacter.includes(c.id)) ||
-                 (other.childrenIds && other.childrenIds.includes(c.id)))
-            );
+        const characterMap = new Map(characters.map(c => [c.id, c]));
+
+        // Check if character c has at least one valid, existing parent
+        const getExistingParentIds = (c: Character): string[] => {
+            const ids = new Set<string>();
+            if (c.parentId && c.parentId !== c.id && characterMap.has(c.parentId)) {
+                ids.add(c.parentId);
+            }
+            (c.parentsOfCharacter || []).forEach(pid => {
+                if (pid && pid !== c.id && characterMap.has(pid)) ids.add(pid);
+            });
+            (c.parentIds || []).forEach(pid => {
+                if (pid && pid !== c.id && characterMap.has(pid)) ids.add(pid);
+            });
+            characters.forEach(other => {
+                if (other.id !== c.id) {
+                    if (other.childOfCharacter?.includes(c.id) || other.childrenIds?.includes(c.id)) {
+                        ids.add(other.id);
+                    }
+                }
+            });
+            return Array.from(ids);
         };
 
-        const roots = characters.filter(c => !hasParent(c));
-        
+        // Determine roots safely: no character is EVER dropped
+        const roots: Character[] = [];
+        const visitedInTree = new Set<string>();
+
+        // Characters with 0 existing parents in current characters are roots
+        characters.forEach(c => {
+            const parents = getExistingParentIds(c);
+            if (parents.length === 0) {
+                roots.push(c);
+                visitedInTree.add(c.id);
+            }
+        });
+
+        // Safety against disconnected cycles: if a group of characters points to each other in a loop,
+        // at least one of them MUST be placed in roots so they are never lost!
+        characters.forEach(c => {
+            if (!visitedInTree.has(c.id)) {
+                const queue = [c.id];
+                const seen = new Set<string>([c.id]);
+                let reachesRoot = false;
+
+                while (queue.length > 0) {
+                    const id = queue.shift()!;
+                    if (roots.some(r => r.id === id)) {
+                        reachesRoot = true;
+                        break;
+                    }
+                    const ch = characterMap.get(id);
+                    if (ch) {
+                        const pids = getExistingParentIds(ch);
+                        for (const pid of pids) {
+                            if (!seen.has(pid)) {
+                                seen.add(pid);
+                                queue.push(pid);
+                            }
+                        }
+                    }
+                }
+
+                if (!reachesRoot) {
+                    // Loop or orphan island detected! Add as root so they are NEVER hidden
+                    roots.push(c);
+                    visitedInTree.add(c.id);
+                }
+            }
+        });
+
         return { roots, all: characters };
     }, [world.entities]);
 
@@ -37,40 +92,92 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
     const bgCard = isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
 
     return (
-        <div className="p-12 h-full flex flex-col space-y-12 overflow-auto custom-scrollbar">
-            <header className="space-y-4">
-                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>The nexus lineages</h1>
-                <p className="opacity-50 text-sm tracking-[0.3em] uppercase ml-2 italic">Tree of Blood and Organizations</p>
-            </header>
+        <div className="h-full flex flex-col overflow-hidden relative">
+            {/* View Mode Switcher Header */}
+            <div className={`p-4 border-b flex items-center justify-between z-20 ${
+                isWikiMode 
+                    ? 'bg-[#f7f3ea] border-[#d4c8af]' 
+                    : 'bg-[#0f172a]/90 border-slate-800 backdrop-blur-md'
+            }`}>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5 p-1 rounded-xl bg-black/20 border border-white/5">
+                        <button
+                            onClick={() => setViewMode('graph')}
+                            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                                viewMode === 'graph'
+                                    ? isWikiMode
+                                        ? 'bg-[#b91c1c] text-white shadow-sm'
+                                        : 'bg-[#fef08a] text-black shadow-md'
+                                    : 'opacity-50 hover:opacity-100'
+                            }`}
+                        >
+                            <Share2 size={13} />
+                            Interactive Graph (All Entities)
+                        </button>
+                        <button
+                            onClick={() => setViewMode('tree')}
+                            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                                viewMode === 'tree'
+                                    ? isWikiMode
+                                        ? 'bg-[#b91c1c] text-white shadow-sm'
+                                        : 'bg-[#fef08a] text-black shadow-md'
+                                    : 'opacity-50 hover:opacity-100'
+                            }`}
+                        >
+                            <Layers size={13} />
+                            Bloodline Tree (Characters)
+                        </button>
+                    </div>
+                </div>
 
-            <div className="flex-1 flex flex-col items-center">
-                {lineageData.roots.length > 0 ? (
-                    <div className="flex flex-wrap justify-center gap-24 py-12">
-                        {lineageData.roots.map(root => (
-                            <TreeNode 
-                                key={root.id} 
-                                entity={root} 
-                                all={lineageData.all} 
-                                onNavigate={onNavigate} 
-                                isWikiMode={isWikiMode}
-                                accent={accent}
-                                bg={bgCard}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="h-full flex flex-col items-center justify-center opacity-20 gap-6">
-                        <Network size={120} />
-                        <p className="text-xl font-serif uppercase tracking-widest">No relationships documented</p>
-                    </div>
-                )}
+                <div className="text-[10px] font-mono opacity-40 uppercase tracking-widest">
+                    {viewMode === 'graph' ? 'Multi-Entity Force Graph' : `${lineageData.all.length} Characters Catalogued`}
+                </div>
             </div>
+
+            {/* View Body */}
+            {viewMode === 'graph' ? (
+                <div className="flex-1 w-full h-full relative overflow-hidden">
+                    <NexusGraphView world={world} isWikiMode={isWikiMode} onNavigate={onNavigate} />
+                </div>
+            ) : (
+                <div className="flex-1 p-12 overflow-auto custom-scrollbar space-y-12">
+                    <header className="space-y-4">
+                        <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>The nexus lineages</h1>
+                        <p className="opacity-50 text-sm tracking-[0.3em] uppercase ml-2 italic">Tree of Blood and Organizations</p>
+                    </header>
+
+                    <div className="flex-1 flex flex-col items-center">
+                        {lineageData.roots.length > 0 ? (
+                            <div className="flex flex-wrap justify-center gap-24 py-12">
+                                {lineageData.roots.map(root => (
+                                    <TreeNode 
+                                        key={root.id} 
+                                        entity={root} 
+                                        all={lineageData.all} 
+                                        onNavigate={onNavigate} 
+                                        isWikiMode={isWikiMode}
+                                        accent={accent}
+                                        bg={bgCard}
+                                        visitedIds={new Set([root.id])}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="h-full flex flex-col items-center justify-center opacity-20 gap-6 my-24">
+                                <Network size={120} />
+                                <p className="text-xl font-serif uppercase tracking-widest">No relationships documented</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
-const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0 }: any) => {
-    // Find child objects bidirectionally
+const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0, visitedIds = new Set<string>() }: any) => {
+    // Find child objects bidirectionally, filtering out any visited ancestors to prevent infinite recursion
     const children = useMemo(() => {
         const directChildIds = new Set<string>([
             ...(entity.childOfCharacter || []),
@@ -87,13 +194,17 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0 }
         });
 
         return Array.from(directChildIds)
+            .filter((id: string) => !visitedIds.has(id)) // Prevents infinite recursion
             .map((id: string) => all.find((e: any) => e.id === id))
             .filter(Boolean);
-    }, [entity, all]);
+    }, [entity, all, visitedIds]);
 
     const hasChildren = children.length > 0;
     const isAncestral = Boolean(entity.deathDate?.trim() || entity.deadSwitch || entity.isDead);
     const [collapsed, setCollapsed] = useState(false);
+
+    const nextVisited = new Set(visitedIds);
+    nextVisited.add(entity.id);
 
     return (
         <div className="flex flex-col items-center relative">
@@ -167,6 +278,7 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0 }
                                 accent={accent}
                                 bg={bg}
                                 depth={depth + 1}
+                                visitedIds={nextVisited}
                             />
                         ))}
                     </div>
