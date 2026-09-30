@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Users, Maximize2 } from 'lucide-react';
 import { TaperedDivider, WikiStatRow, LinksDisplay, RadarChart, EmeraldGem } from '../ui';
 import { NexusImage } from '../ui/NexusImage';
+import { ExpandedImageModal } from '../ui/ExpandedImageModal';
 import { Character, WorldEntity } from '../../types';
 import { CategorizedBacklinks } from '../../utils/backlinkUtils';
 import { useWorldStore } from '../../store/useWorldStore';
@@ -19,7 +20,8 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
     const char = entity as Character;
     const theme = useWorldStore(state => state.theme);
     const isRoyal = theme === 'royal-codex';
-    const isWikiMode = theme === 'wiki'; 
+    const isWikiMode = theme === 'wiki';
+    const [expandedImg, setExpandedImg] = useState<string | null>(null);
 
     const speciesNames = (char.pairedRace || char.speciesIds || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
     const occupationNames = (char.pairedProfession || char.occupationIds || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
@@ -120,17 +122,24 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
 
     if (isWikiMode) {
         return (
+            <>
             <div className="bg-[#fefce8] border-2 border-[#d4c8af] rounded shadow-md overflow-hidden font-sans space-y-0 text-[#1a1a1a]">
                 {/* Portrait Part (Living Entry) */}
-                <div className={`w-full aspect-square ${char.imageUri ? 'bg-black/10' : 'bg-[#ccc5a8] grayscale contrast-75'} flex items-center justify-center border-b border-[#d4c8af] overflow-hidden relative`}>
+                <div className={`w-full aspect-square ${char.imageUri ? 'bg-black/10' : 'bg-[#ccc5a8] grayscale contrast-75'} flex items-center justify-center border-b border-[#d4c8af] overflow-hidden relative group`}>
                     {char.imageUri ? (
                         <NexusImage src={char.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
                     ) : (
                         <Users size={120} className="text-[#a89d7d]" />
                     )}
-                    <div className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm pointer-events-none">
-                        <Maximize2 size={14} className="text-white/60" />
-                    </div>
+                    {char.imageUri && (
+                        <button
+                            onClick={() => setExpandedImg(char.imageUri!)}
+                            className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/40 cursor-pointer"
+                            title="View full image"
+                        >
+                            <Maximize2 size={14} className="text-white/80" />
+                        </button>
+                    )}
                 </div>
 
                 {/* Wiki Header */}
@@ -232,11 +241,20 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                     </div>
                 )}
             </div>
-        );
+            {expandedImg && (
+                <ExpandedImageModal
+                    imageUri={expandedImg}
+                    entityName={char.name}
+                    onClose={() => setExpandedImg(null)}
+                    theme="wiki"
+                />
+            )}
+        </>);
     }
 
     // Sovereign (Dark Theme)
     return (
+        <>
         <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-[2rem] p-6 shadow-2xl space-y-5 text-slate-200">
             {/* Portrait Frame (Living Entry) */}
             <div className={`w-full aspect-square rounded-2xl overflow-hidden border ${char.imageUri ? 'border-slate-700/60 shadow-xl' : 'border-slate-800/80 bg-slate-950/40'} flex items-center justify-center relative group`}>
@@ -247,6 +265,15 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                         <Users size={64} className="opacity-40" />
                         <span className="text-[10px] font-mono tracking-widest uppercase opacity-40">No Portrait Inscribed</span>
                     </div>
+                )}
+                {char.imageUri && (
+                    <button
+                        onClick={() => setExpandedImg(char.imageUri!)}
+                        className="absolute bottom-2 right-2 bg-slate-900/60 p-1.5 rounded-lg border border-slate-600/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-slate-800/80 cursor-pointer"
+                        title="View full image"
+                    >
+                        <Maximize2 size={14} className="text-slate-300" />
+                    </button>
                 )}
             </div>
 
@@ -356,6 +383,15 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                 </div>
             )}
         </div>
+        {expandedImg && (
+            <ExpandedImageModal
+                imageUri={expandedImg}
+                entityName={char.name}
+                onClose={() => setExpandedImg(null)}
+                theme="sovereign"
+            />
+        )}
+    </>
     );
 };
 

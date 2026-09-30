@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Users, Globe, Maximize2, Eye } from 'lucide-react';
 import { WikiInfoboxRow, LinksDisplay } from '../ui';
 import { NexusImage } from '../ui/NexusImage';
+import { ExpandedImageModal } from '../ui/ExpandedImageModal';
 import { WorldEntity } from '../../types';
 import { TYPE_LABELS } from '../../constants';
 import { useWorldStore } from '../../store/useWorldStore';
@@ -17,24 +18,32 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
     const isChar = entity.type === 'character';
     const theme = useWorldStore(state => state.theme);
     const isRoyal = theme === 'royal-codex';
+    const [expandedImg, setExpandedImg] = useState<string | null>(null);
 
     if (isRoyal) {
         return (
-            <aside className="lg:w-80 shrink-0 space-y-6">
-                <div className="bg-[#3f0d19] text-[#fff8e7] border-4 border-[#c8a96e] rounded-3xl shadow-2xl overflow-hidden">
+            <>
+                <aside className="lg:w-80 shrink-0 space-y-6">
+                    <div className="bg-[#3f0d19] text-[#fff8e7] border-4 border-[#c8a96e] rounded-3xl shadow-2xl overflow-hidden">
                     <div className="bg-[#2a060e] p-3 text-center border-b border-[#c8a96e]/40">
                         <h3 className="font-serif font-bold text-xl uppercase tracking-tight text-[#e6c687]">{entity.name}</h3>
                     </div>
 
-                    <div className="w-full aspect-square bg-[#21040a] flex items-center justify-center border-b border-[#c8a96e]/30 overflow-hidden relative">
+                    <div className="w-full aspect-square bg-[#21040a] flex items-center justify-center border-b border-[#c8a96e]/30 overflow-hidden relative group">
                         {entity.imageUri ? (
                             <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
                         ) : (
                             isChar ? <Users size={120} className="text-[#c8a96e]/30" /> : <Globe size={120} className="text-[#c8a96e]/30" />
                         )}
-                        <div className="absolute bottom-2 right-2 bg-black/40 p-1.5 rounded-lg border border-[#c8a96e]/40 backdrop-blur-sm pointer-events-none">
-                            <Maximize2 size={14} className="text-[#e6c687]" />
-                        </div>
+                        {entity.imageUri && (
+                            <button
+                                onClick={() => setExpandedImg(entity.imageUri!)}
+                                className="absolute bottom-2 right-2 bg-black/40 p-1.5 rounded-lg border border-[#c8a96e]/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60 cursor-pointer"
+                                title="View full image"
+                            >
+                                <Maximize2 size={14} className="text-[#e6c687]" />
+                            </button>
+                        )}
                     </div>
 
                     <div className="p-3 border-b border-[#c8a96e]/30 flex justify-center items-center gap-2 text-xs">
@@ -64,12 +73,22 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                             </div>
                         </div>
                     </div>
-                </div>
-            </aside>
+                    </div>
+                </aside>
+            {expandedImg && (
+                <ExpandedImageModal
+                    imageUri={expandedImg}
+                    entityName={entity.name}
+                    onClose={() => setExpandedImg(null)}
+                    theme="royal-codex"
+                />
+            )}
+        </>
         );
     }
 
     return (
+        <>
         <aside className="lg:w-80 shrink-0 space-y-6">
             <div className="bg-[#fefce8] border-2 border-[#d4c8af] rounded shadow-md overflow-hidden">
                 <div className="bg-[#fef9c3] p-2 text-center border-b-2 border-[#d4c8af]">
@@ -77,15 +96,21 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                 </div>
 
                 {/* Image / Portrait Display */}
-                <div className={`w-full aspect-square ${entity.imageUri ? 'bg-black/10' : 'bg-[#ccc5a8] grayscale contrast-75'} flex items-center justify-center border-b border-[#d4c8af] overflow-hidden relative`}>
+                <div className={`w-full aspect-square ${entity.imageUri ? 'bg-black/10' : 'bg-[#ccc5a8] grayscale contrast-75'} flex items-center justify-center border-b border-[#d4c8af] overflow-hidden relative group`}>
                     {entity.imageUri ? (
                         <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
                     ) : (
                         isChar ? <Users size={120} className="text-[#a89d7d]" /> : <Globe size={120} className="text-[#a89d7d]" />
                     )}
-                    <div className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm pointer-events-none">
-                        <Maximize2 size={14} className="text-white/60" />
-                    </div>
+                    {entity.imageUri && (
+                        <button
+                            onClick={() => setExpandedImg(entity.imageUri!)}
+                            className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/40 cursor-pointer"
+                            title="View full image"
+                        >
+                            <Maximize2 size={14} className="text-white/80" />
+                        </button>
+                    )}
                 </div>
 
                 <div className="p-3 border-b border-[#d4c8af] flex justify-center items-center gap-2">
@@ -128,6 +153,15 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                 </div>
             </div>
         </aside>
+        {expandedImg && (
+            <ExpandedImageModal
+                imageUri={expandedImg}
+                entityName={entity.name}
+                onClose={() => setExpandedImg(null)}
+                theme="wiki"
+            />
+        )}
+    </>
     );
 };
 
