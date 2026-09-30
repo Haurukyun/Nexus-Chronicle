@@ -3,7 +3,8 @@ import { Location, WorldEntity, EntityType } from '../../../types';
 import { EditorGroup } from '../EditorGroup';
 import { GroupRoleGroup } from '../GroupRoleGroup';
 import { FormInput, SmartSelect } from '../../ui';
-import { Info, MapPin, Calendar, Hourglass, Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe, Gem, Tent, UserCircle, User, Leaf, Globe } from 'lucide-react';
+import { Info, MapPin, Calendar, Hourglass, Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe, Gem, Tent, UserCircle, User, Leaf, Globe, Compass, Crosshair, Trash2, Navigation } from 'lucide-react';
+import { useWorldStore } from '../../../store/useWorldStore';
 
 interface Props {
     entity: Location;
@@ -14,8 +15,171 @@ interface Props {
 }
 
 export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, onUpdate, onCreateNew, isWikiMode }) => {
+    const mapImage = useWorldStore(state => state.world.mapImage);
+
     return (
         <>
+            {/* Atlas Anchor & Coordinate Picker (P2 #10) */}
+            <EditorGroup title="Atlas Anchor & Map Coordinates" icon={Compass} isWikiMode={isWikiMode}>
+                <div className="col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl bg-black/10 border border-white/5">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold uppercase tracking-wider">Atlas Pin Status:</span>
+                            {loc.coordinates ? (
+                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 ${
+                                    isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/20 text-[#fef08a]'
+                                }`}>
+                                    <MapPin size={11} /> Anchored (X: {loc.coordinates.x}%, Y: {loc.coordinates.y}%)
+                                </span>
+                            ) : (
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-500/20 text-slate-400">
+                                    Unanchored (Abstract / Uncharted)
+                                </span>
+                            )}
+                        </div>
+                        <p className="text-[10px] opacity-50 mt-1">
+                            Coordinates anchor this location to the Atlas and enable automated League / Journey calculations in The Grand Voyager.
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        {loc.coordinates ? (
+                            <button
+                                type="button"
+                                onClick={() => onUpdate({ ...loc, coordinates: undefined })}
+                                className="px-3 py-1.5 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer"
+                                title="Remove map coordinates"
+                            >
+                                <Trash2 size={12} /> Clear Pin
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => onUpdate({ ...loc, coordinates: { x: 50, y: 50 } })}
+                                className={`px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+                                    isWikiMode 
+                                        ? 'border-[#b91c1c]/40 text-[#b91c1c] hover:bg-[#b91c1c]/10' 
+                                        : 'border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10'
+                                }`}
+                            >
+                                <Crosshair size={12} /> Pin at Center (50%, 50%)
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Coordinate Number Inputs */}
+                <div className="col-span-6">
+                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">
+                        Coordinate X (% across map, 0 - 100)
+                    </label>
+                    <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        placeholder="e.g. 45.2"
+                        value={loc.coordinates?.x ?? ""}
+                        onChange={(e) => {
+                            const val = e.target.value === "" ? null : parseFloat(e.target.value);
+                            if (val === null) {
+                                if (!loc.coordinates?.y) onUpdate({ ...loc, coordinates: undefined });
+                                else onUpdate({ ...loc, coordinates: { x: 0, y: loc.coordinates.y } });
+                            } else {
+                                onUpdate({ ...loc, coordinates: { x: Math.max(0, Math.min(100, val)), y: loc.coordinates?.y ?? 50 } });
+                            }
+                        }}
+                        className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-yellow-500`}
+                    />
+                </div>
+
+                <div className="col-span-6">
+                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">
+                        Coordinate Y (% down map, 0 - 100)
+                    </label>
+                    <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        placeholder="e.g. 62.8"
+                        value={loc.coordinates?.y ?? ""}
+                        onChange={(e) => {
+                            const val = e.target.value === "" ? null : parseFloat(e.target.value);
+                            if (val === null) {
+                                if (!loc.coordinates?.x) onUpdate({ ...loc, coordinates: undefined });
+                                else onUpdate({ ...loc, coordinates: { x: loc.coordinates.x, y: 0 } });
+                            } else {
+                                onUpdate({ ...loc, coordinates: { x: loc.coordinates?.x ?? 50, y: Math.max(0, Math.min(100, val)) } });
+                            }
+                        }}
+                        className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-yellow-500`}
+                    />
+                </div>
+
+                {/* Interactive Mini-Map Canvas */}
+                <div className="col-span-12 space-y-2">
+                    <div className="flex items-center justify-between pl-1">
+                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest flex items-center gap-1.5">
+                            <Navigation size={12} className="opacity-60" /> Interactive Atlas Pin Picker
+                        </span>
+                        <span className="text-[9px] opacity-40 italic">
+                            Click anywhere on the map below to place or move the pin
+                        </span>
+                    </div>
+
+                    <div
+                        onClick={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const x = Math.round(((e.clientX - rect.left) / rect.width) * 1000) / 10;
+                            const y = Math.round(((e.clientY - rect.top) / rect.height) * 1000) / 10;
+                            onUpdate({ ...loc, coordinates: { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) } });
+                        }}
+                        className={`relative w-full aspect-[21/9] rounded-2xl overflow-hidden border-2 cursor-crosshair shadow-lg group select-none ${
+                            isWikiMode ? 'border-[#d4c8af] bg-[#eadecc]' : 'border-slate-700 bg-slate-950'
+                        }`}
+                    >
+                        {/* Map Image */}
+                        <img
+                            src={mapImage}
+                            alt="World Map"
+                            className="w-full h-full object-cover pointer-events-none filter contrast-105"
+                        />
+
+                        {/* Subtle Grid Overlay */}
+                        <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+
+                        {/* Pin marker */}
+                        {loc.coordinates && (
+                            <div
+                                style={{
+                                    left: `${loc.coordinates.x}%`,
+                                    top: `${loc.coordinates.y}%`
+                                }}
+                                className="absolute -translate-x-1/2 -translate-y-full pointer-events-none flex flex-col items-center animate-in zoom-in duration-200"
+                            >
+                                <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider mb-0.5 shadow-md whitespace-nowrap ${
+                                    isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-black/90 text-yellow-300 border border-yellow-500/40'
+                                }`}>
+                                    {loc.name || 'Location'}
+                                </div>
+                                <div className={`relative flex items-center justify-center p-1.5 rounded-full shadow-2xl ${
+                                    isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.8)]'
+                                }`}>
+                                    <MapPin size={18} fill="currentColor" />
+                                </div>
+                                <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-md -mt-0.5" />
+                            </div>
+                        )}
+
+                        {/* Hover hint */}
+                        <div className="absolute bottom-3 right-3 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-sm text-[9px] font-mono text-white/70 pointer-events-none">
+                            {loc.coordinates ? `Pin: ${loc.coordinates.x}%, ${loc.coordinates.y}%` : 'Click map to place pin'}
+                        </div>
+                    </div>
+                </div>
+            </EditorGroup>
+
             <EditorGroup title="Basic information" icon={Info} isWikiMode={isWikiMode}>
                 <SmartSelect label="Succeeding Locations" icon={MapPin} ids={loc.succeedingLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, succeedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Preceding Locations" icon={MapPin} ids={loc.precedingLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, precedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />

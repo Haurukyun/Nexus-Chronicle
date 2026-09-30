@@ -48,6 +48,7 @@ budget_tokens: 2000
 - **[2026-09-30]** Do NOT allow cross-category / cross-type drag and drop — an entity can ONLY be reparented or reordered within entities of its exact same EntityType. Never allow dragging a character under a location or dropping onto a different category's header.
 - **[2026-09-30]** ALWAYS use `getSafeParentId()` when calculating roots and children in tree views — an entity must ONLY be considered a child if its parent exists, is of the exact same type, and does not form a circular dependency. If any check fails, the entity MUST be treated as a root so it can NEVER be lost or hidden from view.
 - **[2026-09-30]** NEVER hide edit controls on locked records without providing an explicit, prominent "Unlock" action. In `ViewerHeaders.tsx`, locked records must render `Locked (Click to Unlock)` to guarantee records can always be recovered and edited.
+- **[2026-09-30]** In WorldMap and entity creation workflows, NEVER allow creating duplicate or identically named entries (case-insensitive) across the codex without clear error messages and guidance. Auto-increment default names in `handleCreate` to avoid silent name collisions.
 
 ## Decision Log
 
@@ -58,4 +59,5 @@ budget_tokens: 2000
 - **[2026-09-30] Native HTML5 Drag and Drop over external libs** — Implemented zero-dependency native HTML5 drag and drop for sidebar tree reparenting and sibling reordering to keep the bundle lean and performant.
 - **[2026-09-30] Universal Keyboard Shortcuts & Grimoire** — Global window keydown listener combined with in-form `onKeyDown` allows seamless `Ctrl+Enter` commit from text inputs/markdown editors, with a discreet header trigger and `?` key to inspect all available keybinds.
 - **[2026-09-30] Dual-Mode Nexus Lines (Force Graph & Bloodline Tree)** — Integrated SVG force-directed simulation for multi-entity relationship visualization alongside the generational bloodline tree, accessible via a header toggle.
+- **[2026-09-30] Dual-Mode Atlas Anchor Modal** — Implemented two tabs when planting a map anchor: "Pin Existing Location" with real-time search, anchored status indicators, and two-step relocation confirmation; and "Create New Location" with live duplicate hint and hard submit blocking for identical names.
 

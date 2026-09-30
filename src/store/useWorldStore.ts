@@ -95,7 +95,17 @@ export const useWorldStore = create<WorldStore>()(
             handleCreate: (type, prefilledName, shouldOpen = true) => {
                 const id = crypto.randomUUID();
                 const world = get().world;
-                const name = prefilledName || `New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                let name = prefilledName;
+                if (!name) {
+                    const baseName = `New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                    let counter = 1;
+                    let candidate = baseName;
+                    while (world.entities.some(e => e.name.trim().toLowerCase() === candidate.toLowerCase())) {
+                        counter++;
+                        candidate = `${baseName} ${counter}`;
+                    }
+                    name = candidate;
+                }
 
                 const newEntity: any = {
                     id, name, type, description: "",

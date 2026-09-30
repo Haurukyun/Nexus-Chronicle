@@ -6,7 +6,7 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-09-29
+> Last updated: 2026-09-30
 
 ---
 
@@ -32,6 +32,7 @@ budget_tokens: 1000
   - Implemented **Keybinds System & Grimoire Modal** — Global keyboard shortcuts: `Ctrl+Enter` / `Cmd+Enter` to commit draft to chronicle, `Ctrl+S` to quick-save, `Ctrl+E` to toggle edit mode, `Escape` to abandon scrawl or dismiss modals, `Ctrl+K` to focus sidebar search, `Alt+1` to `Alt+7` to switch system realms, and `?` to summon the shortcuts grimoire. Added discreet "Keybinds" button in top header next to ThemeSwitcher. Created responsive `KeybindsModal` component supporting Sovereign, Wiki, and Royal Codex themes.
   - Implemented **Sidebar Drag & Drop Tree Reparenting & Reordering** — Native HTML5 drag-and-drop on `Sidebar.tsx` `EntityItem`. Supports dragging an entry onto another entry to reparent as a nested child (`parentId = target.id`), dragging top or bottom edge to reorder as sibling before/after, and dragging onto category/type header to unparent to root level. Added circular dependency detection (`isDescendant` check) to prevent cycles. Added `reorderAndReparentEntity` action in `useWorldStore.ts`.
   - Fixed **Belongs Under Self-Reference Bug** — Added `excludeIds` prop to `SmartSelect` and passed `excludeIds={[entity.id]}` in `EntityEditor` to prevent entities from selecting themselves as parent.
+  - Implemented **Atlas Anchor Smart Selection & Duplicate Prevention (BUG-007)** (`WorldMap.tsx`) — Click-to-anchor modal features two tabs: "Pin Existing Location" (searchable list of existing locations with anchored status badge, and two-step "Confirm Replace" relocation warning if already anchored) and "Create New Location" (with live warning hint and hard submit block against identical/duplicate names across the codex). Auto-incremented default entity names in `handleCreate` (`useWorldStore.ts`) to avoid identical name collisions across all creation paths.
 - **Initial Architecture** — Full entity type system (20 types), Zustand persist store, editor/viewer split per entity type
 - **Roleplay Theme V1** — `royal-codex` theme with parchment textures, quill pen overlay, woodgrain bg
 - **Multi-Theme system** — `sovereign` (dark), `wiki` (light), `royal-codex` (fantasy parchment)
@@ -39,7 +40,7 @@ budget_tokens: 1000
 - **Map + Marker System** — WorldMap with click-to-place location anchors and connection lines (trade/magic/diplomatic/war)
 - **Timeline View** — Chronos timeline renders character lifespans and dated events as horizontal ribbons
 - **Nexus Tree View** — Character family/lineage tree with recursive depth rendering
-- **Journey View** — Travel distance calculator between locations using map coordinates
+- **Journey View (P2 #10)** — Travel distance calculator with interactive Atlas coordinate pickers in Location editor (`LocationSpecifics.tsx`), trajectory projection mini-map in `JourneyView.tsx`, auto-calculated league distance from pin coordinates, manual override, terrain multipliers, party logistics (rations/camps)
 - **Backlink System** — `backlinkUtils.ts` performs deep cross-entity backlink scanning
 - **GitHub repo** — https://github.com/Haurukyun/Nexus-Chronicle (main branch)
 
@@ -47,13 +48,12 @@ budget_tokens: 1000
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P2 Continued: Journey coordinate pickers and Multi-World management_
+**Goal:** _Phase P2 Continued: Multi-World management (P2 #11)_
 
 ### Key known gaps / potential next features
-1. Journey coordinate pickers in `LocationSpecifics.tsx` — let users set/see map coordinates directly inside the Location editor (P2 #10)
-2. Multi-World management — World switcher for multiple campaigns (P2 #11)
-3. `git push` pending — branch is multiple commits ahead of origin (BUG-006)
-4. `.wolf/`, `.claude/`, `.cursor/`, `.opencode/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` are untracked — decide whether to commit or gitignore them
+1. Multi-World management — World switcher for multiple campaigns (P2 #11)
+2. `git push` pending — branch is multiple commits ahead of origin (BUG-006)
+3. `.wolf/`, `.claude/`, `.cursor/`, `.opencode/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` are untracked — decide whether to commit or gitignore them
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)

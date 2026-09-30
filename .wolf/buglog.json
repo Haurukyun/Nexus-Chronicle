@@ -77,6 +77,19 @@
       "tags": ["git", "github", "deployment"],
       "occurrences": 1,
       "last_seen": "2026-09-29"
+    },
+    {
+      "id": "BUG-007",
+      "timestamp": "2026-09-30T01:30:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-09-30T01:57:00Z",
+      "error_message": "WorldMap anchor placement does not allow selecting existing locations and permits duplicate identical-name entries",
+      "file": "src/views/WorldMap.tsx",
+      "root_cause": "Clicking the map in WorldMap only allowed typing a text name for a newly created location, with no option to choose an existing unanchored/anchored location, and no duplicate name validation.",
+      "fix": "Added two-tab anchor modal ('Pin Existing Location' with search and relocation confirmation warning, and 'Create New Location' with live and submit-time case-insensitive duplicate checks across all entity types). Auto-incremented default entity names in store handleCreate.",
+      "tags": ["worldmap", "atlas", "data-integrity", "ux"],
+      "occurrences": 1,
+      "last_seen": "2026-09-30"
     }
   ]
 }
