@@ -100,78 +100,235 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
     }
 
 
+    const stats = (char.stats || {}) as any;
+    const getMod = (valStr: string | undefined) => {
+        const val = parseInt(valStr || '10', 10) || 10;
+        const mod = Math.floor((val - 10) / 2);
+        return mod >= 0 ? `+${mod}` : `${mod}`;
+    };
+
+    const attributes = [
+        { label: 'STR', val: stats.strength || '10' },
+        { label: 'DEX', val: stats.dexterity || '10' },
+        { label: 'CON', val: stats.constitution || '10' },
+        { label: 'INT', val: stats.intelligence || '10' },
+        { label: 'WIS', val: stats.wisdom || '10' },
+        { label: 'CHA', val: stats.charisma || '10' },
+    ];
+
+    if (isWikiMode) {
+        return (
+            <div className="bg-[#fefce8] border-2 border-[#d4c8af] rounded shadow-md overflow-hidden font-sans space-y-0 text-[#1a1a1a]">
+                {/* Wiki Header */}
+                <div className="bg-[#fef9c3] p-2.5 text-center border-b-2 border-[#d4c8af] flex items-center justify-between">
+                    <h3 className="font-serif font-bold text-xs uppercase tracking-wider text-[#854d0e]">
+                        Combat & Attributes
+                    </h3>
+                    <span
+                        className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded border ${
+                            isDeceased
+                                ? 'bg-rose-100 text-rose-800 border-rose-300'
+                                : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                        }`}
+                    >
+                        {isDeceased ? 'Deceased' : 'Living'}
+                    </span>
+                </div>
+
+                {char.powerLevel && (
+                    <div className="px-3 py-1.5 bg-[#fdfcf0] border-b border-[#d4c8af] flex justify-between items-center text-[11px]">
+                        <span className="font-bold text-[#854d0e] uppercase text-[10px]">Combat Rating</span>
+                        <span className="font-mono font-bold text-[#7a200d]">{char.powerLevel}</span>
+                    </div>
+                )}
+
+                {/* Radar Chart */}
+                <div className="py-2 flex items-center justify-center bg-[#fdfcf0]/70 border-b border-[#d4c8af]">
+                    <RadarChart stats={stats} isWikiMode={true} />
+                </div>
+
+                {/* Attributes Grid */}
+                <div className="p-3 bg-white/70">
+                    <div className="text-[9px] font-bold uppercase tracking-widest text-[#854d0e] text-center mb-2">
+                        Attribute Scores
+                    </div>
+                    <div className="grid grid-cols-3 gap-1.5 text-center">
+                        {attributes.map((st) => (
+                            <div
+                                key={st.label}
+                                className="bg-[#fefce8] border border-[#d4c8af] rounded p-1.5 flex flex-col items-center justify-center"
+                            >
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#7a200d] leading-none">
+                                    {st.label}
+                                </span>
+                                <span className="text-base font-serif font-bold text-[#1a1a1a] my-1 leading-none">
+                                    {st.val}
+                                </span>
+                                <span className="text-[10px] font-mono font-semibold text-[#854d0e] leading-none">
+                                    {getMod(st.val)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Skills / Languages minimal summary if present */}
+                {((char.pairedSkills && char.pairedSkills.length > 0) || (char.pairedLanguage && char.pairedLanguage.length > 0)) && (
+                    <div className="p-3 border-t border-[#d4c8af] bg-[#fdfcf0]/60 space-y-2 text-xs">
+                        {char.pairedSkills && char.pairedSkills.length > 0 && (
+                            <div>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-[#854d0e] block mb-1">Skills</span>
+                                <div className="flex flex-wrap gap-1">
+                                    {char.pairedSkills.map(id => {
+                                        const ent = allEntities.find(e => e.id === id);
+                                        if (!ent) return null;
+                                        return (
+                                            <button
+                                                key={id}
+                                                onClick={() => onNavigate(id)}
+                                                className="text-[10px] px-2 py-0.5 rounded bg-white border border-[#d4c8af] text-[#7a200d] hover:bg-[#fef9c3] transition-colors"
+                                            >
+                                                {ent.name}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                        {char.pairedLanguage && char.pairedLanguage.length > 0 && (
+                            <div>
+                                <span className="text-[9px] font-bold uppercase tracking-wider text-[#854d0e] block mb-1">Languages</span>
+                                <div className="flex flex-wrap gap-1">
+                                    {char.pairedLanguage.map(id => {
+                                        const ent = allEntities.find(e => e.id === id);
+                                        if (!ent) return null;
+                                        return (
+                                            <button
+                                                key={id}
+                                                onClick={() => onNavigate(id)}
+                                                className="text-[10px] px-2 py-0.5 rounded bg-white border border-[#d4c8af] text-[#7a200d] hover:bg-[#fef9c3] transition-colors"
+                                            >
+                                                {ent.name}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    // Sovereign (Dark Theme)
     return (
-        <div className={`bg-[#fdfcf0] ${hideName ? 'p-4' : 'p-6'} border-t-8 border-b-8 border-[#7a200d] space-y-2 shadow-inner font-sans select-text text-[#1a1a1a]`}>
-            {!hideName && (
-                <div className="border-b-2 border-[#7a200d] pb-1">
-                    <h2 className="text-4xl font-serif font-bold text-[#7a200d] uppercase leading-none tracking-tight">{char.name}</h2>
-                    <p className="text-sm italic text-[#2d2d2d] mt-1">{subtitle}</p>
-                    {((char as any).otherNamesAndEpithets || (char.otherNames && char.otherNames.join(', '))) && (
-                        <p className="text-[10px] uppercase font-black text-[#7a200d]/60 mt-1 tracking-widest">
-                            {(char as any).otherNamesAndEpithets || char.otherNames?.join(', ')}
-                        </p>
+        <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-[2rem] p-6 shadow-2xl space-y-5 text-slate-200">
+            {/* Header / Vitals row */}
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#fef08a]">
+                    Combat Specs
+                </span>
+                <div className="flex items-center gap-2">
+                    {char.powerLevel && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-400/10 text-amber-300 border border-amber-400/20">
+                            CR {char.powerLevel}
+                        </span>
+                    )}
+                    <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            isDeceased
+                                ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+                                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                        }`}
+                    >
+                        <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                                isDeceased
+                                    ? 'bg-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.8)]'
+                                    : 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]'
+                            }`}
+                        />
+                        {isDeceased ? 'Deceased' : 'Living'}
+                    </span>
+                </div>
+            </div>
+
+            {/* Radar Chart */}
+            <div className="py-1 flex items-center justify-center relative">
+                <RadarChart stats={stats} isWikiMode={false} />
+            </div>
+
+            {/* Core Attributes Grid */}
+            <div>
+                <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-slate-400 text-center mb-2.5">
+                    Core Attributes
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                    {attributes.map((st) => (
+                        <div
+                            key={st.label}
+                            className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5 flex flex-col items-center justify-center hover:border-slate-700/80 transition-all"
+                        >
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
+                                {st.label}
+                            </span>
+                            <span className="text-xl font-bold font-mono text-white my-1 leading-none">
+                                {st.val}
+                            </span>
+                            <span className="text-[10px] font-mono font-medium text-[#fef08a]/80 leading-none">
+                                {getMod(st.val)}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Skills / Languages minimal summary if present */}
+            {((char.pairedSkills && char.pairedSkills.length > 0) || (char.pairedLanguage && char.pairedLanguage.length > 0)) && (
+                <div className="border-t border-slate-800/80 pt-3 space-y-2">
+                    {char.pairedSkills && char.pairedSkills.length > 0 && (
+                        <div>
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Skills</span>
+                            <div className="flex flex-wrap gap-1">
+                                {char.pairedSkills.map(id => {
+                                    const ent = allEntities.find(e => e.id === id);
+                                    if (!ent) return null;
+                                    return (
+                                        <button
+                                            key={id}
+                                            onClick={() => onNavigate(id)}
+                                            className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/60 text-slate-300 hover:text-white hover:border-[#fef08a]/40 transition-colors"
+                                        >
+                                            {ent.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                    {char.pairedLanguage && char.pairedLanguage.length > 0 && (
+                        <div>
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Languages</span>
+                            <div className="flex flex-wrap gap-1">
+                                {char.pairedLanguage.map(id => {
+                                    const ent = allEntities.find(e => e.id === id);
+                                    if (!ent) return null;
+                                    return (
+                                        <button
+                                            key={id}
+                                            onClick={() => onNavigate(id)}
+                                            className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/60 text-slate-300 hover:text-white hover:border-[#fef08a]/40 transition-colors"
+                                        >
+                                            {ent.name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     )}
                 </div>
             )}
-            {hideName && (
-                <div className="border-b border-[#7a200d]/40 pb-1 mb-2">
-                    <p className="text-[10px] uppercase font-bold text-[#7a200d]">{char.isDead || Boolean(char.deathDate?.trim() || char.deadSwitch) ? 'Status: Deceased' : 'Status: Living'}</p>
-                </div>
-            )}
-
-            <TaperedDivider />
-
-            <div className="space-y-1">
-                <div className="space-y-1">
-                    <WikiStatRow label="Sex" value={char.sex} />
-                    <WikiStatRow label="Ethnicity" value={char.ethnicity} />
-                    <WikiStatRow label="Species" value={speciesNames} />
-                    <WikiStatRow label="Occupation" value={occupationNames} />
-                    <WikiStatRow label="Age" value={char.age} />
-                    <WikiStatRow label="Combat Rating" value={char.powerLevel || (char as any).combatRating} />
-                    <WikiStatRow label="Height / Weight" value={char.height && char.weight ? `${char.height} / ${char.weight}` : (char.height || char.weight)} />
-                    <WikiStatRow label="Titles" value={char.titles} />
-                    <WikiStatRow label="Birth" value={char.birthDate || char.dateOfBirth} />
-                    <WikiStatRow label="Death" value={char.deathDate || char.dateOfDeath} />
-                    <LinksDisplay label="Origin" ids={char.pairedOriginLocationNew || char.placeOfOriginId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <LinksDisplay label="Residence" ids={char.pairedCurrentLocationNew || char.placeOfResidenceId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <LinksDisplay label="Place of Demise" ids={char.pairedDemiseLocationNew || char.placeOfDemiseId || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                    <WikiStatRow label="Other Info" value={(char as any).otherBasicInfo} />
-                </div>
-            </div>
-
-            <TaperedDivider />
-            
-            <RadarChart stats={(char.stats || {}) as any} isWikiMode={isWikiMode} />
-
-            <TaperedDivider />
-
-            <div className="grid grid-cols-3 gap-y-2 py-2 text-center">
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">STR</span><span className="text-sm">{(char.stats as any)?.strength || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">DEX</span><span className="text-sm">{(char.stats as any)?.dexterity || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">CON</span><span className="text-sm">{(char.stats as any)?.constitution || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">INT</span><span className="text-sm">{(char.stats as any)?.intelligence || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">WIS</span><span className="text-sm">{(char.stats as any)?.wisdom || '10'}</span></div>
-                <div><span className="block font-bold text-[#7a200d] text-[10px] uppercase">CHA</span><span className="text-sm">{(char.stats as any)?.charisma || '10'}</span></div>
-            </div>
-
-            <TaperedDivider />
-
-            <div className="space-y-1">
-                <WikiStatRow label="Traits" value={char.personalityTraits || (char as any).traitsAndCharacteristics} />
-                <WikiStatRow label="Features" value={char.traits || (char as any).unusualFeatures} />
-                <LinksDisplay label="Parents" ids={merge(char.parentsOfCharacter || char.parentIds, backlinks?.parents)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Children" ids={merge(char.childOfCharacter || char.childrenIds, backlinks?.children)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Relatives" ids={merge(char.relativesOfCharacter || char.relativeIds, backlinks?.relatives)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Friends" ids={merge(char.allyResCharacter || char.friendIds, backlinks?.friends)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Enemies" ids={merge(char.enemydResCharacter || char.enemyIds, backlinks?.enemies)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                
-                <LinksDisplay label="Skills/Abilities" ids={char.pairedSkills || char.skillIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Languages" ids={char.pairedLanguage || (char as any).languageIds} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                <LinksDisplay label="Boons/Conditions" ids={merge(char.pairedConditionsPositive || (char as any).affectedByBoonsIds, backlinks?.referencedIn)} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-                
-                <LinksDisplay label="Equipment" ids={char.pairedConnectedItems || char.equipmentIds || []} all={allEntities} onNav={onNavigate} isWikiMode={true} wikiStyle="inline" />
-            </div>
         </div>
     );
 };

@@ -190,7 +190,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                     </>
                 ) : (
                     <>
-                        {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} backlinks={backlinks} />}
+                        {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
                         <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10">
                             <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
                             <div className="space-y-6">
