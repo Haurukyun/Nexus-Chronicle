@@ -73,6 +73,7 @@ export interface BaseEntity {
   privateNotes?: string;
   coordinates?: { x: number; y: number };
   spoilerNotes?: string; // Standardized spoiler field from blueprints
+  imageUri?: string; // Portrait / illustration — asset:// vault URI or external web URL
 }
 
 // --- GENERATED SPECIFIC INTERFACES ---

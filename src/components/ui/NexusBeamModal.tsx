@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
     Radio, X, Send, Download, Sparkles, Check,
     AlertCircle, Copy, HardDrive, Smartphone, Monitor, ArrowRight, RefreshCw, FileArchive, Upload
@@ -165,8 +166,8 @@ export const NexusBeamModal: React.FC<NexusBeamModalProps> = ({
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    const modalElement = (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
             <div className={`w-full max-w-2xl p-8 rounded-3xl border shadow-2xl space-y-6 ${modalBg} relative max-h-[92vh] overflow-y-auto`}>
                 {/* Header */}
                 <div className="flex items-center justify-between border-b pb-4 border-current/10">
@@ -470,4 +471,6 @@ export const NexusBeamModal: React.FC<NexusBeamModalProps> = ({
             </div>
         </div>
     );
+
+    return typeof document !== 'undefined' ? createPortal(modalElement, document.body) : modalElement;
 };

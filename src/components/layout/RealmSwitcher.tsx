@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
-    Globe, ChevronDown, Plus, Copy, Download,
+    Globe, ChevronDown, Plus, Copy, Download, Trash2,
     Check, Sparkles, Compass, BookMarked, Search, Layers, Settings
 } from 'lucide-react';
 import { WorldData, ThemeMode, WorldPhase } from '../../types';
 import { useWorldStore } from '../../store/useWorldStore';
 import { NewRealmModal } from '../ui/NewRealmModal';
+import { DeleteRealmModal } from '../ui/DeleteRealmModal';
 
 interface RealmSwitcherProps {
     theme: ThemeMode;
@@ -41,6 +42,7 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
         switchWorld,
         createWorld,
         duplicateWorld,
+        deleteWorld,
         exportWorld,
         setActiveTabId
     } = useWorldStore();
@@ -48,6 +50,7 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+    const [realmToDelete, setRealmToDelete] = useState<WorldData | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const isRoyal = theme === 'royal-codex';
@@ -282,6 +285,20 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
                                             >
                                                 <Download size={11} />
                                             </button>
+                                            {worlds.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setIsOpen(false);
+                                                        setRealmToDelete(w);
+                                                    }}
+                                                    title="Dissolve / Delete Realm"
+                                                    className="p-1 rounded hover:bg-red-500/20 text-red-400 text-xs transition-colors opacity-70 hover:opacity-100"
+                                                >
+                                                    <Trash2 size={11} />
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 );
@@ -325,6 +342,21 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
                 onCreate={(name, desc, mapImage, phase) => {
                     createWorld(name, desc, mapImage, phase);
                 }}
+                theme={theme}
+                isWikiMode={isWikiMode}
+            />
+
+            {/* Dissolve Realm Confirmation Modal */}
+            <DeleteRealmModal
+                realm={realmToDelete}
+                canDelete={worlds.length > 1}
+                onConfirm={() => {
+                    if (realmToDelete) {
+                        deleteWorld(realmToDelete.id || activeWorldId);
+                        setRealmToDelete(null);
+                    }
+                }}
+                onCancel={() => setRealmToDelete(null)}
                 theme={theme}
                 isWikiMode={isWikiMode}
             />

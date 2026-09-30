@@ -2,6 +2,7 @@ import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { WorldData, WorldEntity, EntityType, ThemeMode, WorldPhase, UniverseArchive } from '../types';
+import { downloadFileToDevice } from '../utils/nexusArchive';
 
 export const DEFAULT_REALM_MAP = "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000";
 
@@ -1215,19 +1216,23 @@ export const useWorldStore = create<WorldStore>()(
 
             deleteWorld: (worldId) => {
                 const state = get();
-                if (state.worlds.length <= 1) {
+                if (!state.worlds || state.worlds.length <= 1) {
                     return false;
                 }
-                const remaining = state.worlds.filter(w => w.id !== worldId);
-                const nextActive = state.activeWorldId === worldId ? remaining[0] : state.world;
+                const remaining = state.worlds.filter(w => (w.id || '') !== worldId);
+                if (remaining.length === state.worlds.length) {
+                    return false;
+                }
+                const isDeletingActive = state.activeWorldId === worldId;
+                const nextActive = isDeletingActive ? remaining[0] : state.world;
                 set({
                     worlds: remaining,
                     world: nextActive,
                     activeWorldId: nextActive.id,
-                    openTabIds: state.activeWorldId === worldId ? [] : state.openTabIds,
-                    drafts: state.activeWorldId === worldId ? {} : state.drafts,
-                    editingTabIds: state.activeWorldId === worldId ? [] : state.editingTabIds,
-                    activeTabId: state.activeWorldId === worldId ? 'dashboard' : state.activeTabId
+                    openTabIds: isDeletingActive ? [] : state.openTabIds,
+                    drafts: isDeletingActive ? {} : state.drafts,
+                    editingTabIds: isDeletingActive ? [] : state.editingTabIds,
+                    activeTabId: isDeletingActive ? 'dashboard' : state.activeTabId
                 });
                 return true;
             },
@@ -1254,12 +1259,8 @@ export const useWorldStore = create<WorldStore>()(
                 const targetId = worldId || get().activeWorldId;
                 const targetWorld = get().worlds.find(w => w.id === targetId) || get().world;
                 const blob = new Blob([JSON.stringify(targetWorld, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${targetWorld.name.toLowerCase().replace(/[^a-z0-9]/gi, '_')}_realm_chronicle.json`;
-                a.click();
-                URL.revokeObjectURL(url);
+                const fileName = `${targetWorld.name.toLowerCase().replace(/[^a-z0-9]/gi, '_')}_realm_chronicle.json`;
+                downloadFileToDevice(blob, fileName, 'application/json');
             },
 
             exportUniverse: () => {
@@ -1271,12 +1272,8 @@ export const useWorldStore = create<WorldStore>()(
                     worlds: state.worlds
                 };
                 const blob = new Blob([JSON.stringify(archive, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `nexus_universe_archive_${new Date().toISOString().slice(0, 10)}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
+                const fileName = `nexus_universe_archive_${new Date().toISOString().slice(0, 10)}.json`;
+                downloadFileToDevice(blob, fileName, 'application/json');
             },
 
             importWorldData: (payload: any, mode: 'new' | 'replace') => {
@@ -1332,15 +1329,16 @@ export const useWorldStore = create<WorldStore>()(
                     }
 
                     const importedRealm: WorldData = {
+                        ...payload,
                         id: mode === 'new' ? crypto.randomUUID() : (payload.id || get().activeWorldId || crypto.randomUUID()),
                         name: payload.name,
                         description: payload.description || '',
                         createdAt: payload.createdAt || Date.now(),
                         lastModified: Date.now(),
-                        entities: payload.entities || [],
-                        trash: payload.trash || [],
+                        entities: Array.isArray(payload.entities) ? payload.entities : [],
+                        trash: Array.isArray(payload.trash) ? payload.trash : [],
                         mapImage: payload.mapImage || DEFAULT_REALM_MAP,
-                        mapConnections: payload.mapConnections || [],
+                        mapConnections: Array.isArray(payload.mapConnections) ? payload.mapConnections : [],
                         worldPhase: payload.worldPhase || 'golden'
                     };
 

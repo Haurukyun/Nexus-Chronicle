@@ -4,8 +4,9 @@ import {
     Scale, FolderTree, Type, PaintBucket, CheckSquare, Search, Skull, 
     Box, Hash, Tag, FileText, Code, UserCircle, MapPin, Calendar, Hourglass, 
     Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe, 
-    Gem, User, Leaf, Sun, Moon, Tent, Pencil
+    Gem, User, Leaf, Sun, Moon, Tent, Pencil, ImageIcon
 } from 'lucide-react';
+import { AssetImageUploader } from '../ui/AssetImageUploader';
 import { EditorGroup } from './EditorGroup';
 import { GroupRoleGroup } from './GroupRoleGroup';
 import { FormInput, FormToggle, SmartSelect, MarkdownEditor } from '../ui';
@@ -92,7 +93,20 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                     <FormInput label="Other Names & Epithets" icon={UserCircle} value={entity.otherNamesAndEpithets || ""} onChange={(v: string) => onUpdate({ ...entity, otherNamesAndEpithets: v })} isWikiMode={isWikiMode} gridSpan={12} />
                 </EditorGroup>
 
-                {/* 2. DESCRIPTION & HISTORY (UNIVERSAL) */}
+                {/* 2. PORTRAIT & IMAGERY (UNIVERSAL) */}
+                <EditorGroup title="Portrait & Imagery" icon={ImageIcon} isWikiMode={isWikiMode}>
+                    <div className="lg:col-span-3">
+                        <AssetImageUploader
+                            label="Portrait / Illustration"
+                            value={entity.imageUri || ''}
+                            onChange={(uri) => onUpdate({ ...entity, imageUri: uri })}
+                            isWikiMode={isWikiMode}
+                            helperText="Upload a high-resolution portrait from your device or paste a web URL. Stored uncompressed in the local IndexedDB asset vault — preserved inside .nexus archives."
+                        />
+                    </div>
+                </EditorGroup>
+
+                {/* 3. DESCRIPTION & HISTORY (UNIVERSAL) */}
                 <EditorGroup title="Description & History" icon={BookOpen} isWikiMode={isWikiMode}>
                     <div className="lg:col-span-3">
                         <MarkdownEditor

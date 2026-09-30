@@ -49,6 +49,8 @@ budget_tokens: 2000
 - **[2026-09-30]** ALWAYS use `getSafeParentId()` when calculating roots and children in tree views — an entity must ONLY be considered a child if its parent exists, is of the exact same type, and does not form a circular dependency. If any check fails, the entity MUST be treated as a root so it can NEVER be lost or hidden from view.
 - **[2026-09-30]** NEVER hide edit controls on locked records without providing an explicit, prominent "Unlock" action. In `ViewerHeaders.tsx`, locked records must render `Locked (Click to Unlock)` to guarantee records can always be recovered and edited.
 - **[2026-09-30]** In WorldMap and entity creation workflows, NEVER allow creating duplicate or identically named entries (case-insensitive) across the codex without clear error messages and guidance. Auto-increment default names in `handleCreate` to avoid silent name collisions.
+- **[2026-09-30]** ALWAYS wrap full-screen overlay dialogs/modals in `createPortal(..., document.body)`. Ancestor containers with `backdrop-filter` (like `Sidebar`'s `backdrop-blur-md`) or CSS `filter` create containing blocks that constrain and squish `position: fixed` elements into their local width/height instead of the viewport.
+- **[2026-09-30]** NEVER rely solely on `URL.createObjectURL(blob)` + `a.download` for downloading files on Chromium/Edge desktop. Edge often discards `a.download` when handling opaque `blob:` URLs and saves the file as its internal GUID string (e.g. `278eaac1-...`). Always use `downloadFileToDevice()` which invokes `window.showSaveFilePicker()` on desktop or Data URL fallback for guaranteed filename and extension fidelity.
 
 ## Decision Log
 

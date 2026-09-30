@@ -10,6 +10,8 @@ import { FormInput } from '../components/ui';
 import { useWorldStore } from '../store/useWorldStore';
 import { NewRealmModal } from '../components/ui/NewRealmModal';
 import { NexusBeamModal } from '../components/ui/NexusBeamModal';
+import { DeleteRealmModal } from '../components/ui/DeleteRealmModal';
+import { WipeRealmModal } from '../components/ui/WipeRealmModal';
 import { exportNexusArchiveFile, unpackNexusArchive } from '../utils/nexusArchive';
 
 interface OptionsViewProps {
@@ -48,11 +50,17 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
         exportUniverse,
         importWorldData,
         theme,
-        setTheme
+        setTheme,
+        setOpenTabIds,
+        setDrafts,
+        setEditingTabIds,
+        setActiveTabId
     } = useWorldStore();
 
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);
     const [isBeamModalOpen, setIsBeamModalOpen] = useState(false);
+    const [isWipeModalOpen, setIsWipeModalOpen] = useState(false);
+    const [realmToDelete, setRealmToDelete] = useState<WorldData | null>(null);
     const [editingWorldId, setEditingWorldId] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const [editDescription, setEditDescription] = useState('');
@@ -117,10 +125,8 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                 const result = importWorldData(manifest.universe, 'new');
                 setNexusNotice({ text: `✓ Universe archive restored — ${result.message}. ${assetsImported} assets loaded to vault.`, isError: !result.success });
             } else if (manifest.world) {
-                const asNew = confirm(
-                    `Restore "${manifest.world.name}" (${manifest.world.entities.length} entities + ${assetsImported} HD assets)?\n\n• OK → Import as a NEW realm\n• Cancel → Overwrite CURRENT active realm`
-                );
-                const mode = asNew ? 'new' : 'replace';
+                // If active world is empty template, overwrite it; otherwise import as new campaign to guarantee no data is lost
+                const mode = world.entities.length === 0 ? 'replace' : 'new';
                 const result = importWorldData(manifest.world, mode);
                 setNexusNotice({ text: `✓ Realm restored — ${result.message}. ${assetsImported} assets loaded to vault.`, isError: !result.success });
             } else {
@@ -143,18 +149,10 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                 const isUniverse = parsed && Array.isArray(parsed.worlds) && parsed.version === 1;
 
                 if (isUniverse) {
-                    const shouldReplace = confirm(
-                        `Universe Archive detected containing ${parsed.worlds.length} realms.\n\nClick OK to MERGE into your existing archive as new realms.\nClick CANCEL to ABORT.`
-                    );
-                    if (shouldReplace) {
-                        const result = importWorldData(parsed, 'new');
-                        setImportNotice({ text: result.message, isError: !result.success });
-                    }
+                    const result = importWorldData(parsed, 'new');
+                    setImportNotice({ text: result.message, isError: !result.success });
                 } else if (parsed && parsed.name && Array.isArray(parsed.entities)) {
-                    const asNew = confirm(
-                        `Single Realm detected: "${parsed.name}" (${parsed.entities.length} entities).\n\n• Click OK to import as a BRAND NEW campaign realm.\n• Click CANCEL to overwrite your CURRENT active realm ("${world.name}").`
-                    );
-                    const mode = asNew ? 'new' : 'replace';
+                    const mode = world.entities.length === 0 ? 'replace' : 'new';
                     const result = importWorldData(parsed, mode);
                     setImportNotice({ text: result.message, isError: !result.success });
                 } else {
@@ -354,13 +352,9 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
 
                                     {worlds.length > 1 && (
                                         <button
-                                            onClick={() => {
-                                                if (confirm(`Are you sure you want to delete "${w.name}"? This action cannot be undone.`)) {
-                                                    deleteWorld(w.id || activeWorldId);
-                                                }
-                                            }}
+                                            onClick={() => setRealmToDelete(w)}
                                             className="p-1.5 rounded-lg hover:bg-red-500/20 text-red-400 opacity-60 hover:opacity-100 transition-all"
-                                            title="Delete Realm"
+                                            title="Dissolve / Delete Realm"
                                         >
                                             <Trash2 size={13} />
                                         </button>
@@ -564,16 +558,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                 <p className="text-[10px] text-rose-200/50">Permanently reset the entities and map markers of the active realm ("{world.name}").</p>
                             </div>
                             <button
-                                onClick={() => {
-                                    if (confirm(`DANGER: This will delete all entities in "${world.name}". Are you absolutely certain?`)) {
-                                        setWorld({ 
-                                            ...world,
-                                            entities: [], 
-                                            trash: [], 
-                                            mapConnections: []
-                                        });
-                                    }
-                                }}
+                                onClick={() => setIsWipeModalOpen(true)}
                                 className="px-6 py-2 bg-rose-900/40 hover:bg-rose-600 text-rose-200 text-[10px] font-black rounded-lg transition-all border border-rose-500/30 whitespace-nowrap"
                             >
                                 WIPE ACTIVE REALM
@@ -598,6 +583,44 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
             <NexusBeamModal
                 isOpen={isBeamModalOpen}
                 onClose={() => setIsBeamModalOpen(false)}
+                theme={theme}
+                isWikiMode={isWikiMode}
+            />
+
+            {/* Dissolve Realm Confirmation Modal */}
+            <DeleteRealmModal
+                realm={realmToDelete}
+                canDelete={worlds.length > 1}
+                onConfirm={() => {
+                    if (realmToDelete) {
+                        deleteWorld(realmToDelete.id || activeWorldId);
+                        setRealmToDelete(null);
+                    }
+                }}
+                onCancel={() => setRealmToDelete(null)}
+                theme={theme}
+                isWikiMode={isWikiMode}
+            />
+
+            {/* Oblivion Protocol Wipe Active Realm Modal */}
+            <WipeRealmModal
+                isOpen={isWipeModalOpen}
+                realm={world}
+                onConfirm={() => {
+                    setWorld({
+                        ...world,
+                        entities: [],
+                        trash: [],
+                        mapConnections: []
+                    });
+                    setOpenTabIds([]);
+                    setDrafts({});
+                    setEditingTabIds([]);
+                    setActiveTabId('dashboard');
+                    setIsWipeModalOpen(false);
+                    setNexusNotice({ text: `✓ Oblivion Protocol executed: Active realm "${world.name}" cache purged. All entities reset.` });
+                }}
+                onCancel={() => setIsWipeModalOpen(false)}
                 theme={theme}
                 isWikiMode={isWikiMode}
             />

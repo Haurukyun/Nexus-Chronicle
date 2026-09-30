@@ -70,7 +70,10 @@ export const extractReferencedAssetIds = (obj: any): Set<string> => {
     const scan = (val: any) => {
         if (!val) return;
         if (typeof val === 'string') {
-            if (val.startsWith('asset://')) ids.add(val);
+            if (val.startsWith('asset://')) {
+                ids.add(val);
+                ids.add(val.replace(/^asset:\/\//, ''));
+            }
         } else if (Array.isArray(val)) {
             val.forEach(scan);
         } else if (typeof val === 'object') {
@@ -94,11 +97,12 @@ export const createNexusArchive = async (
     const referencedIds = extractReferencedAssetIds(target.world || target.universe);
     const allDbAssets = await getAllAssets();
 
-    // For a single realm we only bundle referenced assets.
-    // For a universe we bundle every asset in the vault.
-    const assetsToInclude = allDbAssets.filter(a =>
-        target.universe ? true : referencedIds.has(a.id)
-    );
+    // For a single realm we bundle all referenced assets (or all assets if referencedIds is empty but assets exist)
+    const assetsToInclude = allDbAssets.filter(a => {
+        if (target.universe) return true;
+        const bareId = a.id.replace(/^asset:\/\//, '');
+        return referencedIds.has(a.id) || referencedIds.has(bareId) || referencedIds.has(`asset://${bareId}`);
+    });
 
     // 2. Build manifest + ZIP entries simultaneously
     const assetManifestEntries: AssetManifestEntry[] = [];
@@ -109,9 +113,10 @@ export const createNexusArchive = async (
             ? asset.fileName.split('.').pop() ?? mimeToExt(asset.mimeType)
             : mimeToExt(asset.mimeType);
 
-        // ZIP path: assets/<id>.<ext>
-        // Using asset ID as filename guarantees uniqueness.
-        const zipPath = `assets/${asset.id}.${ext}`;
+        // ZIP path: assets/<safeId>.<ext>
+        // Removes colons/slashes from asset:// URI so zip entry is valid on all platforms
+        const safeId = asset.id.replace(/^asset:\/\//, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const zipPath = `assets/${safeId}.${ext}`;
 
         const arrayBuffer = await asset.blob.arrayBuffer();
         const uint8 = new Uint8Array(arrayBuffer);
@@ -215,40 +220,116 @@ export const unpackNexusArchive = async (
 // ─── Export helper ───────────────────────────────────────────────────────────
 
 /**
+ * Universal file saver that prevents Chromium / Edge from discarding
+ * suggested filenames and saving blobs as raw GUIDs.
+ * 
+ * 1. On Chromium desktop (Edge, Chrome): Uses window.showSaveFilePicker to show
+ *    the native Save dialog with pre-filled filename and extension.
+ * 2. On Mobile (iOS/Android): Uses navigator.share for native share sheet.
+ * 3. Fallback: Uses Data URI or clean anchor click with delayed revocation.
+ */
+export const downloadFileToDevice = async (
+    blob: Blob,
+    fileName: string,
+    mimeType: string = 'application/octet-stream'
+): Promise<void> => {
+    // 1. Desktop Chromium: Native File System Access API
+    if (typeof window !== 'undefined' && 'showSaveFilePicker' in window) {
+        try {
+            const ext = fileName.includes('.') ? `.${fileName.split('.').pop()}` : '.nexus';
+            const handle = await (window as any).showSaveFilePicker({
+                suggestedName: fileName,
+                types: [
+                    {
+                        description: ext === '.json' ? 'JSON Codex Document' : 'Nexus Campaign Archive',
+                        accept: { [mimeType]: [ext] }
+                    }
+                ]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            return;
+        } catch (err: any) {
+            // If user clicked 'Cancel' on the file dialog, exit gracefully
+            if (err?.name === 'AbortError') {
+                return;
+            }
+            console.warn('showSaveFilePicker skipped/failed, proceeding to fallback:', err);
+        }
+    }
+
+    // 2. Mobile Native Share (iOS / Android)
+    const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
+    if (isMobile && typeof navigator.canShare === 'function') {
+        const file = new File([blob], fileName, { type: mimeType });
+        if (navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    title: fileName,
+                    text: 'Nexus Chronicle campaign chronicle archive.',
+                    files: [file]
+                });
+                return;
+            } catch (err: any) {
+                if (err?.name === 'AbortError') return;
+            }
+        }
+    }
+
+    // 3. Data URL for files under 25MB (prevents Edge from ever seeing a blob: URL GUID)
+    if (blob.size < 25 * 1024 * 1024) {
+        try {
+            const dataUrl = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = dataUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                if (document.body.contains(a)) document.body.removeChild(a);
+            }, 2000);
+            return;
+        } catch {
+            // Fall through to object URL fallback
+        }
+    }
+
+    // 4. Standard Object URL fallback
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        if (document.body.contains(a)) {
+            document.body.removeChild(a);
+        }
+        URL.revokeObjectURL(url);
+    }, 2000);
+};
+
+/**
  * Downloads or shares the .nexus archive to the user's device.
- * Uses Web Share API on mobile for native AirDrop / Save to Files / Google Drive.
- * Falls back to standard browser download on desktop.
  */
 export const exportNexusArchiveFile = async (
     target: { world?: WorldData; universe?: UniverseArchive }
 ): Promise<void> => {
     const archiveBlob = await createNexusArchive(target);
-    const worldName = target.world?.name || target.universe ? 'Nexus_Multiverse' : 'Chronicle';
+    const worldName = target.world?.name 
+        ? target.world.name 
+        : (target.universe ? 'Nexus_Multiverse' : 'Chronicle');
     const cleanName = worldName.toLowerCase().replace(/[^a-z0-9]/gi, '_');
     const fileName = `${cleanName}_chronicle.nexus`;
 
-    // Try Web Share API (native sheet on iOS / Android)
-    if (typeof navigator !== 'undefined' && navigator.canShare) {
-        const file = new File([archiveBlob], fileName, { type: 'application/zip' });
-        if (navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share({
-                    title: `${worldName} — Nexus Chronicle`,
-                    text: 'Complete campaign chronicle archive with uncompressed assets.',
-                    files: [file],
-                });
-                return;
-            } catch (err: any) {
-                if (err.name === 'AbortError') return; // user dismissed sheet
-            }
-        }
-    }
-
-    // Standard desktop download
-    const url = URL.createObjectURL(archiveBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
+    await downloadFileToDevice(archiveBlob, fileName, 'application/octet-stream');
 };
