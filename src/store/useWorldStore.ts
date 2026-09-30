@@ -1,11 +1,41 @@
 import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { WorldData, WorldEntity, EntityType, ThemeMode } from '../types';
+import { WorldData, WorldEntity, EntityType, ThemeMode, WorldPhase, UniverseArchive } from '../types';
+
+export const DEFAULT_REALM_MAP = "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000";
+
+const defaultInitialRealm: WorldData = {
+    id: "realm-prime",
+    name: "Aethelgard Chronicle",
+    description: "The Prime Realm — an eternal dominion of arcane spires, warring guilds, and forgotten leylines.",
+    createdAt: 1700000000000,
+    lastModified: Date.now(),
+    entities: [],
+    trash: [],
+    mapImage: DEFAULT_REALM_MAP,
+    mapConnections: [],
+    worldPhase: 'golden'
+};
 
 interface WorldStore {
+    // Active world (maintained for zero-breaking backward compatibility)
     world: WorldData;
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
+
+    // Multi-World State
+    worlds: WorldData[];
+    activeWorldId: string;
+
+    // Multi-World Actions
+    createWorld: (name: string, description?: string, mapImage?: string, worldPhase?: WorldPhase) => string;
+    switchWorld: (worldId: string) => void;
+    duplicateWorld: (worldId: string, customName?: string) => string;
+    deleteWorld: (worldId: string) => boolean;
+    updateWorldDetails: (worldId: string, updates: Partial<Pick<WorldData, 'name' | 'description' | 'mapImage' | 'worldPhase'>>) => void;
+    exportWorld: (worldId?: string) => void;
+    exportUniverse: () => void;
+    importWorldData: (payload: any, mode: 'new' | 'replace') => { success: boolean; message: string; worldId?: string };
 
     openTabIds: string[];
     setOpenTabIds: (update: string[] | ((prev: string[]) => string[])) => void;
@@ -46,18 +76,32 @@ interface WorldStore {
     reorderAndReparentEntity: (draggedId: string, targetId: string | null, position: 'before' | 'after' | 'inside', targetType?: EntityType) => void;
 }
 
+const syncWorld = (state: WorldStore, nextWorld: WorldData) => {
+    const updatedWorld: WorldData = {
+        ...nextWorld,
+        id: nextWorld.id || state.activeWorldId || defaultInitialRealm.id,
+        lastModified: Date.now()
+    };
+    const currentWorlds = state.worlds && state.worlds.length > 0 ? state.worlds : [updatedWorld];
+    const updatedWorlds = currentWorlds.map(w => w.id === updatedWorld.id ? updatedWorld : w);
+    const worlds = updatedWorlds.some(w => w.id === updatedWorld.id) ? updatedWorlds : [...updatedWorlds, updatedWorld];
+    return {
+        world: updatedWorld,
+        worlds,
+        activeWorldId: updatedWorld.id
+    };
+};
+
 export const useWorldStore = create<WorldStore>()(
     persist(
         (set, get) => ({
-            world: { 
-                name: "New Realm", entities: [], trash: [], 
-                mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000",
-                mapConnections: [],
-                worldPhase: 'golden'
-            },
-            setWorld: (update) => set((state) => ({
-                world: typeof update === 'function' ? update(state.world) : update
-            })),
+            worlds: [defaultInitialRealm],
+            activeWorldId: defaultInitialRealm.id,
+            world: defaultInitialRealm,
+            setWorld: (update) => set((state) => {
+                const nextWorld = typeof update === 'function' ? update(state.world) : update;
+                return syncWorld(state, nextWorld);
+            }),
 
             openTabIds: [],
             setOpenTabIds: (update) => set((state) => ({
@@ -889,8 +933,9 @@ export const useWorldStore = create<WorldStore>()(
                     } : {})
                 };
 
-                set((state) => ({
-                    world: { ...state.world, entities: [...state.world.entities, newEntity] }
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    entities: [...state.world.entities, newEntity]
                 }));
 
                 if (shouldOpen) {
@@ -966,11 +1011,11 @@ export const useWorldStore = create<WorldStore>()(
 
                 const newEditing = editingTabIds.filter(tid => tid !== id);
 
-                set({
-                    world: { ...world, entities: updatedEntities },
+                set((state) => ({
+                    ...syncWorld(state, { ...state.world, entities: updatedEntities }),
                     drafts: newDrafts,
                     editingTabIds: newEditing
-                });
+                }));
             },
 
             handleToggleEdit: (id) => {
@@ -1002,50 +1047,43 @@ export const useWorldStore = create<WorldStore>()(
                     .filter(e => e.id !== entity.id)
                     .map(e => e.parentId === entity.id ? { ...e, parentId: safeParent } : e);
 
-                set({
-                    world: {
-                        ...world,
-                        entities: updatedEntities,
-                        trash: [...world.trash, { ...entity, lastModified: Date.now() }]
-                    }
-                });
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    entities: updatedEntities,
+                    trash: [...state.world.trash, { ...entity, lastModified: Date.now() }]
+                }));
                 handleCloseTab(entity.id);
             },
             setWorldPhase: (phase) => {
-                set((state) => ({ world: { ...state.world, worldPhase: phase as any } }));
+                set((state) => syncWorld(state, { ...state.world, worldPhase: phase as any }));
             },
             addMapConnection: (sourceId, targetId, type) => {
                 const id = crypto.randomUUID();
-                set((state) => ({ 
-                    world: { 
-                        ...state.world, 
-                        mapConnections: [...(state.world.mapConnections || []), { id, sourceId, targetId, type }] 
-                    } 
+                set((state) => syncWorld(state, { 
+                    ...state.world, 
+                    mapConnections: [...(state.world.mapConnections || []), { id, sourceId, targetId, type }] 
                 }));
             },
-            removeMapConnection: (id) => set((state) => ({
-                world: { ...state.world, mapConnections: state.world.mapConnections.filter(c => c.id !== id) }
+            removeMapConnection: (id) => set((state) => syncWorld(state, {
+                ...state.world,
+                mapConnections: state.world.mapConnections.filter(c => c.id !== id)
             })),
 
-            updateEntityLock: (id, isReadOnly) => set((state) => ({
-                world: {
-                    ...state.world,
-                    entities: state.world.entities.map(e => 
-                        e.id === id ? { ...e, isReadOnly, lastModified: Date.now() } : e
-                    )
-                }
+            updateEntityLock: (id, isReadOnly) => set((state) => syncWorld(state, {
+                ...state.world,
+                entities: state.world.entities.map(e => 
+                    e.id === id ? { ...e, isReadOnly, lastModified: Date.now() } : e
+                )
             })),
 
             updateEntityParent: (entityId, parentId) => set((state) => {
                 if (entityId === parentId) return state; // Prevent self-parenting
-                return {
-                    world: {
-                        ...state.world,
-                        entities: state.world.entities.map(e => 
-                            e.id === entityId ? { ...e, parentId } : e
-                        )
-                    }
-                };
+                return syncWorld(state, {
+                    ...state.world,
+                    entities: state.world.entities.map(e => 
+                        e.id === entityId ? { ...e, parentId } : e
+                    )
+                });
             }),
 
             reorderAndReparentEntity: (draggedId, targetId, position, targetType) => set((state) => {
@@ -1103,20 +1141,275 @@ export const useWorldStore = create<WorldStore>()(
                     }
                 }
 
-                return {
-                    world: {
-                        ...world,
-                        entities: newEntities
-                    }
+                return syncWorld(state, {
+                    ...world,
+                    entities: newEntities
+                });
+            }),
+
+            // Multi-World Actions
+            createWorld: (name, description, mapImage, worldPhase = 'golden') => {
+                const newId = crypto.randomUUID();
+                const newRealm: WorldData = {
+                    id: newId,
+                    name: name.trim() || 'Untitled Realm',
+                    description: description?.trim() || '',
+                    createdAt: Date.now(),
+                    lastModified: Date.now(),
+                    entities: [],
+                    trash: [],
+                    mapImage: mapImage || DEFAULT_REALM_MAP,
+                    mapConnections: [],
+                    worldPhase
                 };
-            })
+                set((state) => ({
+                    worlds: [...state.worlds, newRealm],
+                    world: newRealm,
+                    activeWorldId: newId,
+                    openTabIds: [],
+                    drafts: {},
+                    editingTabIds: [],
+                    searchQuery: '',
+                    activeTabId: 'dashboard'
+                }));
+                return newId;
+            },
+
+            switchWorld: (worldId) => {
+                const state = get();
+                const targetWorld = state.worlds.find(w => w.id === worldId);
+                if (!targetWorld) return;
+                set({
+                    world: targetWorld,
+                    activeWorldId: targetWorld.id,
+                    openTabIds: [],
+                    drafts: {},
+                    editingTabIds: [],
+                    searchQuery: '',
+                    activeTabId: 'dashboard'
+                });
+            },
+
+            duplicateWorld: (worldId, customName) => {
+                const source = get().worlds.find(w => w.id === worldId) || get().world;
+                const newId = crypto.randomUUID();
+                const clonedWorld: WorldData = {
+                    ...JSON.parse(JSON.stringify(source)),
+                    id: newId,
+                    name: customName?.trim() || `${source.name} (Fork)`,
+                    createdAt: Date.now(),
+                    lastModified: Date.now()
+                };
+                set((state) => ({
+                    worlds: [...state.worlds, clonedWorld],
+                    world: clonedWorld,
+                    activeWorldId: newId,
+                    openTabIds: [],
+                    drafts: {},
+                    editingTabIds: [],
+                    searchQuery: '',
+                    activeTabId: 'dashboard'
+                }));
+                return newId;
+            },
+
+            deleteWorld: (worldId) => {
+                const state = get();
+                if (state.worlds.length <= 1) {
+                    return false;
+                }
+                const remaining = state.worlds.filter(w => w.id !== worldId);
+                const nextActive = state.activeWorldId === worldId ? remaining[0] : state.world;
+                set({
+                    worlds: remaining,
+                    world: nextActive,
+                    activeWorldId: nextActive.id,
+                    openTabIds: state.activeWorldId === worldId ? [] : state.openTabIds,
+                    drafts: state.activeWorldId === worldId ? {} : state.drafts,
+                    editingTabIds: state.activeWorldId === worldId ? [] : state.editingTabIds,
+                    activeTabId: state.activeWorldId === worldId ? 'dashboard' : state.activeTabId
+                });
+                return true;
+            },
+
+            updateWorldDetails: (worldId, updates) => {
+                set((state) => {
+                    const updatedWorlds = state.worlds.map(w => {
+                        if (w.id === worldId) {
+                            return { ...w, ...updates, lastModified: Date.now() };
+                        }
+                        return w;
+                    });
+                    const activeUpdated = state.activeWorldId === worldId
+                        ? { ...state.world, ...updates, lastModified: Date.now() }
+                        : state.world;
+                    return {
+                        worlds: updatedWorlds,
+                        world: activeUpdated
+                    };
+                });
+            },
+
+            exportWorld: (worldId) => {
+                const targetId = worldId || get().activeWorldId;
+                const targetWorld = get().worlds.find(w => w.id === targetId) || get().world;
+                const blob = new Blob([JSON.stringify(targetWorld, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${targetWorld.name.toLowerCase().replace(/[^a-z0-9]/gi, '_')}_realm_chronicle.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            },
+
+            exportUniverse: () => {
+                const state = get();
+                const archive: UniverseArchive = {
+                    version: 1,
+                    exportedAt: Date.now(),
+                    activeWorldId: state.activeWorldId,
+                    worlds: state.worlds
+                };
+                const blob = new Blob([JSON.stringify(archive, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `nexus_universe_archive_${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            },
+
+            importWorldData: (payload: any, mode: 'new' | 'replace') => {
+                try {
+                    // Check if it's a universe archive
+                    if (payload && Array.isArray(payload.worlds) && payload.version === 1) {
+                        const importedWorlds: WorldData[] = payload.worlds.map((w: any) => ({
+                            ...w,
+                            id: w.id || crypto.randomUUID(),
+                            entities: Array.isArray(w.entities) ? w.entities : [],
+                            trash: Array.isArray(w.trash) ? w.trash : [],
+                            mapConnections: Array.isArray(w.mapConnections) ? w.mapConnections : [],
+                            worldPhase: w.worldPhase || 'golden'
+                        }));
+                        if (importedWorlds.length === 0) {
+                            return { success: false, message: 'Archive contains no valid realms.' };
+                        }
+                        if (mode === 'replace') {
+                            const first = importedWorlds[0];
+                            set({
+                                worlds: importedWorlds,
+                                world: first,
+                                activeWorldId: first.id,
+                                openTabIds: [],
+                                drafts: {},
+                                editingTabIds: [],
+                                activeTabId: 'dashboard'
+                            });
+                            return { success: true, message: `Successfully restored ${importedWorlds.length} realms into the archive.`, worldId: first.id };
+                        } else {
+                            let firstNewId: string | undefined;
+                            set((state) => {
+                                const newWorlds = [...state.worlds];
+                                for (const iw of importedWorlds) {
+                                    if (!newWorlds.some(w => w.id === iw.id)) {
+                                        newWorlds.push(iw);
+                                        if (!firstNewId) firstNewId = iw.id;
+                                    } else {
+                                        const newId = crypto.randomUUID();
+                                        newWorlds.push({ ...iw, id: newId, name: `${iw.name} (Imported)` });
+                                        if (!firstNewId) firstNewId = newId;
+                                    }
+                                }
+                                return { worlds: newWorlds };
+                            });
+                            return { success: true, message: `Appended ${importedWorlds.length} realms to your archive.`, worldId: firstNewId };
+                        }
+                    }
+
+                    // Single realm JSON
+                    if (!payload || !payload.name || !Array.isArray(payload.entities)) {
+                        return { success: false, message: 'Invalid realm data format. Must include "name" and "entities".' };
+                    }
+
+                    const importedRealm: WorldData = {
+                        id: mode === 'new' ? crypto.randomUUID() : (payload.id || get().activeWorldId || crypto.randomUUID()),
+                        name: payload.name,
+                        description: payload.description || '',
+                        createdAt: payload.createdAt || Date.now(),
+                        lastModified: Date.now(),
+                        entities: payload.entities || [],
+                        trash: payload.trash || [],
+                        mapImage: payload.mapImage || DEFAULT_REALM_MAP,
+                        mapConnections: payload.mapConnections || [],
+                        worldPhase: payload.worldPhase || 'golden'
+                    };
+
+                    if (mode === 'new') {
+                        set((state) => ({
+                            worlds: [...state.worlds, importedRealm],
+                            world: importedRealm,
+                            activeWorldId: importedRealm.id,
+                            openTabIds: [],
+                            drafts: {},
+                            editingTabIds: [],
+                            activeTabId: 'dashboard'
+                        }));
+                        return { success: true, message: `Realm "${importedRealm.name}" imported as a new campaign!`, worldId: importedRealm.id };
+                    } else {
+                        get().setWorld(importedRealm);
+                        return { success: true, message: `Realm "${importedRealm.name}" updated successfully!`, worldId: importedRealm.id };
+                    }
+                } catch (e: any) {
+                    return { success: false, message: e?.message || 'Error processing realm file.' };
+                }
+            }
         }),
         {
             name: 'nexus-chronicle-storage',
             partialize: (state) => ({
+                worlds: state.worlds,
+                activeWorldId: state.activeWorldId,
                 world: state.world,
+                theme: state.theme,
                 isWikiMode: state.isWikiMode
             }),
+            onRehydrateStorage: () => (state) => {
+                if (!state) return;
+                let activeId = state.activeWorldId;
+                let worlds = state.worlds;
+                let currentWorld = state.world;
+
+                if (!currentWorld?.id) {
+                    currentWorld = { ...(currentWorld || defaultInitialRealm), id: crypto.randomUUID() };
+                }
+
+                if (!Array.isArray(worlds) || worlds.length === 0) {
+                    worlds = [currentWorld];
+                    activeId = currentWorld.id;
+                } else {
+                    worlds = worlds.map(w => ({
+                        ...w,
+                        id: w.id || crypto.randomUUID(),
+                        entities: Array.isArray(w.entities) ? w.entities : [],
+                        trash: Array.isArray(w.trash) ? w.trash : [],
+                        mapConnections: Array.isArray(w.mapConnections) ? w.mapConnections : [],
+                        worldPhase: w.worldPhase || 'golden'
+                    }));
+                    if (!activeId || !worlds.some(w => w.id === activeId)) {
+                        activeId = worlds[0].id;
+                        currentWorld = worlds[0];
+                    } else {
+                        const matched = worlds.find(w => w.id === activeId);
+                        if (matched) currentWorld = matched;
+                    }
+                }
+
+                useWorldStore.setState({
+                    worlds,
+                    activeWorldId: activeId,
+                    world: currentWorld
+                });
+            }
         }
     )
 );

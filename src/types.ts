@@ -884,12 +884,23 @@ export interface Ability extends BaseEntity {
 export type WorldEntity = Chapter | Note | Myth | Character | Location | Event | Species | Language | Culture | PoliticalGroup | Religion | Organization | Magic | Tech | Ability | Item | Occupation | Condition | Resource | BaseEntity;
 
 export interface WorldData {
+  id?: string;
   name: string;
+  description?: string;
+  createdAt?: number;
+  lastModified?: number;
   entities: WorldEntity[];
   trash: WorldEntity[];
   mapImage?: string;
   mapConnections: MapConnection[];
   worldPhase: WorldPhase;
+}
+
+export interface UniverseArchive {
+  version: 1;
+  exportedAt: number;
+  activeWorldId?: string;
+  worlds: WorldData[];
 }
 
 export interface EntityEditorProps {

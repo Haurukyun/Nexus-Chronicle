@@ -120,8 +120,8 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
                 },
                 {
                     keys: ['Alt', '7'],
-                    action: 'System Archive',
-                    description: 'Open realm settings, import/export, and backups'
+                    action: 'Multiverse Registry',
+                    description: 'Open realm settings, multi-campaign switcher, and backups'
                 }
             ]
         },

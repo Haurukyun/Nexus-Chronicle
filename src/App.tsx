@@ -42,7 +42,7 @@ const App = () => {
                 if (world.entities.length > 0) {
                     setActiveTabId(world.entities[0].id);
                 } else {
-                    setActiveTabId('options');
+                    setActiveTabId('dashboard');
                 }
             }
         }

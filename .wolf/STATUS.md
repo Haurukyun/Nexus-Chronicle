@@ -33,6 +33,18 @@ budget_tokens: 1000
   - Implemented **Sidebar Drag & Drop Tree Reparenting & Reordering** — Native HTML5 drag-and-drop on `Sidebar.tsx` `EntityItem`. Supports dragging an entry onto another entry to reparent as a nested child (`parentId = target.id`), dragging top or bottom edge to reorder as sibling before/after, and dragging onto category/type header to unparent to root level. Added circular dependency detection (`isDescendant` check) to prevent cycles. Added `reorderAndReparentEntity` action in `useWorldStore.ts`.
   - Fixed **Belongs Under Self-Reference Bug** — Added `excludeIds` prop to `SmartSelect` and passed `excludeIds={[entity.id]}` in `EntityEditor` to prevent entities from selecting themselves as parent.
   - Implemented **Atlas Anchor Smart Selection & Duplicate Prevention (BUG-007)** (`WorldMap.tsx`) — Click-to-anchor modal features two tabs: "Pin Existing Location" (searchable list of existing locations with anchored status badge, and two-step "Confirm Replace" relocation warning if already anchored) and "Create New Location" (with live warning hint and hard submit block against identical/duplicate names across the codex). Auto-incremented default entity names in `handleCreate` (`useWorldStore.ts`) to avoid identical name collisions across all creation paths.
+  - Implemented **P2 #11 Multi-World Management & Multiverse Registry** (`useWorldStore.ts`, `RealmSwitcher.tsx`, `NewRealmModal.tsx`, `OptionsView.tsx`) — Full multi-campaign world architecture allowing worldbuilders to create, clone, switch, and manage multiple independent realms. Features:
+    - **Sidebar Realm Switcher Header**: Interactive dropdown widget displaying active realm name, phase aura pill, entity count, and quick switch selector with search.
+    - **Found New Realm Modal**: Custom realm creation dialog with world name, synopsis/preface, starting World Phase selector with live visual color previews, and starting Atlas map preset selection (High Fantasy Cartography, Archaic Archipelago, Celestial Starchart, or custom URL).
+    - **Multiverse Registry in System Settings**: Dedicated management grid to enter realms, fork/duplicate campaigns with full entity preservation, rename and edit lore, export individual realm JSONs, or delete worlds (with protection against deleting the last remaining realm).
+    - **Universal Backup & Multiverse Archive**: Export single realms or the complete multiverse universe archive (`UniverseArchive`) into a single file. Smart JSON import automatically detects single realms vs universe archives, offering the option to import as a new separate realm or overwrite the active realm.
+    - **Zero-Loss Data Migration**: Backward-compatible persist rehydration that automatically encapsulates legacy single-world stores into the new multi-world schema without data loss.
+  - Implemented **P2 #11 3-Way Synergy Save System** (`assetStore.ts`, `nexusArchive.ts`, `nexusBeam.ts`, `NexusBeamModal.tsx`, `NexusImage.tsx`, `AssetImageUploader.tsx`, `OptionsView.tsx`) — Full cross-device portable save system:
+    - **IndexedDB Asset Vault** (`assetStore.ts`): Binary blob storage for 100+ uncompressed HD images bypassing localStorage 5MB cap.
+    - **.nexus Archive Format** (`nexusArchive.ts`): Single portable container bundling lore JSON + all asset binaries with exact byte offsets. Supports single realm and full universe export/import.
+    - **NexusBeam P2P Transfer** (`nexusBeam.ts`): WebRTC DataChannel-based direct device-to-device binary streaming (no cloud, global via STUN, no size limits).
+    - **NexusBeamModal** (`NexusBeamModal.tsx`): Full UI for Send/Receive/File modes including WebRTC offer/answer token exchange and real-time progress display.
+    - **System Settings Integration** (`OptionsView.tsx`): "Nexus Archive (.nexus)" section in System Settings with Active Realm (.nexus), Full Multiverse (.nexus), Restore .nexus, and NexusBeam (P2P) buttons alongside classic JSON backup section.
 - **Initial Architecture** — Full entity type system (20 types), Zustand persist store, editor/viewer split per entity type
 - **Roleplay Theme V1** — `royal-codex` theme with parchment textures, quill pen overlay, woodgrain bg
 - **Multi-Theme system** — `sovereign` (dark), `wiki` (light), `royal-codex` (fantasy parchment)
@@ -48,12 +60,12 @@ budget_tokens: 1000
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P2 Continued: Multi-World management (P2 #11)_
+**Goal:** _Phase P3: Architecture, TypeScript & Aesthetic Polish_
 
 ### Key known gaps / potential next features
-1. Multi-World management — World switcher for multiple campaigns (P2 #11)
+1. World Phase Visual Legibility Tuning (P3 #14) — Ensure heavy filters (like `ruin`) don't degrade form readability
 2. `git push` pending — branch is multiple commits ahead of origin (BUG-006)
-3. `.wolf/`, `.claude/`, `.cursor/`, `.opencode/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` are untracked — decide whether to commit or gitignore them
+3. Full codebase sanity verification and test coverage
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)

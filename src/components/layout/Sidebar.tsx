@@ -7,6 +7,7 @@ import {
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
 import { useWorldStore } from '../../store/useWorldStore';
+import { RealmSwitcher } from './RealmSwitcher';
 
 interface SidebarProps {
     world: WorldData;
@@ -363,12 +364,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </>
             )}
 
-            {/* Header */}
-            <div className={`p-5 border-b ${borderColor} relative z-10`}>
-                <h1 className={`text-base font-serif font-bold ${accentText} tracking-widest flex items-center gap-2 uppercase mb-4 text-center justify-center`}>
-                    {isRoyal ? null : isWikiMode ? <BookMarked size={22} /> : <Compass size={22} className="animate-pulse" />}
-                    {world.name}
-                </h1>
+            {/* Header with Realm Switcher */}
+            <div className={`p-3.5 border-b ${borderColor} relative z-10 space-y-3`}>
+                <RealmSwitcher theme={theme || 'sovereign'} isWikiMode={isWikiMode} onOpenOptions={() => setActiveTabId('options')} />
                 <div className="relative group">
                     <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isRoyal ? 'text-[#c8a96e]/50' : 'text-slate-500 group-focus-within:text-yellow-500'}`} size={13} />
                     <input

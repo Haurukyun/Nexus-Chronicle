@@ -406,13 +406,13 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate 
         hit.fx = hit.x;
         hit.fy = hit.y;
         alphaRef.current = Math.max(alphaRef.current, 0.3);
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        (e.currentTarget as unknown as Element).setPointerCapture(e.pointerId);
         return;
       }
       // Pan
       isPanning.current = true;
       panStart.current = { x: e.clientX, y: e.clientY, ox: pan.x, oy: pan.y };
-      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      (e.currentTarget as unknown as Element).setPointerCapture(e.pointerId);
     },
     [pan, svgToWorld]
   );
@@ -447,7 +447,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate 
       draggingNode.current = null;
     }
     isPanning.current = false;
-    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    (e.currentTarget as unknown as Element).releasePointerCapture(e.pointerId);
   }, []);
 
   const onNodeClick = useCallback(
