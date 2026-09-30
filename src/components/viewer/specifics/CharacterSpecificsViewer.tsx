@@ -101,24 +101,35 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                 </ViewerSectionCard>
             )}
             
-            <ViewerSectionCard title="Inventory">
+            <ViewerSectionCard title="Inventory & Conditions">
                 {isRoyal ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 py-1">
-                        <div className="flex items-center gap-2.5 border-b border-[#c8a96e]/30 pb-2">
-                            <span className="text-base">📖</span>
-                            <span className="font-serif font-bold text-[#2b1810] text-sm">'Ancient Tome'</span>
+                    <div className="space-y-4 font-serif">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 py-1">
+                            <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
+                                <span className="text-sm font-bold text-[#2b1810]">Equipment / Items:</span>
+                                <span className="text-sm text-[#3d271d]">{entity.possessedItems || '—'}</span>
+                            </div>
+                            <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
+                                <span className="text-sm font-bold text-[#2b1810]">Wealth / Currencies:</span>
+                                <span className="text-sm text-[#3d271d]">{entity.possessedCurrencies || '—'}</span>
+                            </div>
+                            <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
+                                <span className="text-sm font-bold text-[#2b1810]">Known Skills:</span>
+                                <span className="text-sm text-[#3d271d]">{entity.knownSkills || '—'}</span>
+                            </div>
+                            <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
+                                <span className="text-sm font-bold text-[#2b1810]">Known Spells:</span>
+                                <span className="text-sm text-[#3d271d]">{entity.knownSpells || '—'}</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2.5 border-b border-[#c8a96e]/30 pb-2">
-                            <span className="text-base">⚔️</span>
-                            <span className="font-serif font-bold text-[#2b1810] text-sm">Nama Homes</span>
-                        </div>
-                        <div className="flex items-center gap-2.5 border-b border-[#c8a96e]/30 pb-2">
-                            <span className="text-base">🪄</span>
-                            <span className="font-serif font-bold text-[#2b1810] text-sm">{entity.possessedItems || 'Runed Staff'}</span>
-                        </div>
-                        <div className="flex items-center gap-2.5 border-b border-[#c8a96e]/30 pb-2">
-                            <span className="text-base">🧪</span>
-                            <span className="font-serif font-bold text-[#2b1810] text-sm">{entity.possessedCurrencies || '—'}</span>
+                        <div className="space-y-3 border-t border-[#c8a96e]/30 pt-4">
+                            <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
                         </div>
                     </div>
                 ) : (
@@ -148,12 +159,12 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
 
             <ViewerSectionCard title="Interpersonal Web">
                 <div className="space-y-3">
-                    <LinksDisplay label="Parents" ids={entity.parentsOfCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Children" ids={entity.childOfCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Relatives" ids={entity.relativesOfCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Friends" ids={entity.allyResCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Enemies" ids={entity.enemydResCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Complicated" ids={entity.complicatedResCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
+                    <LinksDisplay label="Parents" ids={[...new Set([...(entity.parentsOfCharacter || []), ...(backlinks?.parents || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                    <LinksDisplay label="Children" ids={[...new Set([...(entity.childOfCharacter || []), ...(backlinks?.children || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                    <LinksDisplay label="Relatives" ids={[...new Set([...(entity.relativesOfCharacter || []), ...(backlinks?.relatives || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                    <LinksDisplay label="Friends" ids={[...new Set([...(entity.allyResCharacter || []), ...(backlinks?.friends || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
+                    <LinksDisplay label="Enemies" ids={[...new Set([...(entity.enemydResCharacter || []), ...(backlinks?.enemies || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
+                    <LinksDisplay label="Complicated" ids={[...new Set([...(entity.complicatedResCharacter || []), ...(backlinks?.complicated || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
                 </div>
             </ViewerSectionCard>
             

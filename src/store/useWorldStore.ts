@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { WorldData, WorldEntity, EntityType, ThemeMode, WorldPhase, UniverseArchive } from '../types';
 import { downloadFileToDevice } from '../utils/nexusArchive';
+import { applyBidirectionalSync, removeEntityRelationsOnDelete, reconcileAllBidirectionalRelations } from '../utils/bidirectionalSync';
 
 export const DEFAULT_REALM_MAP = "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000";
 
@@ -1005,15 +1006,24 @@ export const useWorldStore = create<WorldStore>()(
                     }
                 }
 
-                const updatedEntities = world.entities.map(e => e.id === id ? { ...draft, lastModified: Date.now() } : e);
+                const prevEntity = world.entities.find(e => e.id === id);
+                const savedEntity: WorldEntity = { ...draft, lastModified: Date.now() };
 
-                const newDrafts = { ...drafts };
+                // Apply bidirectional relationship synchronization across all connected entities
+                const { entities: syncedEntities, drafts: syncedDrafts } = applyBidirectionalSync(
+                    savedEntity,
+                    prevEntity,
+                    world.entities,
+                    drafts
+                );
+
+                const newDrafts = syncedDrafts ? { ...syncedDrafts } : { ...drafts };
                 delete newDrafts[id];
 
                 const newEditing = editingTabIds.filter(tid => tid !== id);
 
                 set((state) => ({
-                    ...syncWorld(state, { ...state.world, entities: updatedEntities }),
+                    ...syncWorld(state, { ...state.world, entities: syncedEntities }),
                     drafts: newDrafts,
                     editingTabIds: newEditing
                 }));
@@ -1041,17 +1051,27 @@ export const useWorldStore = create<WorldStore>()(
             },
 
             handleDeleteToTrash: (entity) => {
-                const { world, handleCloseTab } = get();
+                const { world, drafts, handleCloseTab } = get();
                 // Safely reparent any children of the deleted entity so they are NEVER orphaned or lost from the tree
                 const safeParent = entity.parentId || null;
-                const updatedEntities = world.entities
+                const reparentedEntities = world.entities
                     .filter(e => e.id !== entity.id)
                     .map(e => e.parentId === entity.id ? { ...e, parentId: safeParent } : e);
 
-                set((state) => syncWorld(state, {
-                    ...state.world,
-                    entities: updatedEntities,
-                    trash: [...state.world.trash, { ...entity, lastModified: Date.now() }]
+                // Clean up any bidirectional relation pointers to this deleted entity
+                const { entities: cleanedEntities, drafts: cleanedDrafts } = removeEntityRelationsOnDelete(
+                    entity.id,
+                    reparentedEntities,
+                    drafts
+                );
+
+                set((state) => ({
+                    ...syncWorld(state, {
+                        ...state.world,
+                        entities: cleanedEntities,
+                        trash: [...state.world.trash, { ...entity, lastModified: Date.now() }]
+                    }),
+                    drafts: cleanedDrafts || state.drafts
                 }));
                 handleCloseTab(entity.id);
             },
@@ -1401,6 +1421,16 @@ export const useWorldStore = create<WorldStore>()(
                         if (matched) currentWorld = matched;
                     }
                 }
+
+                // Automatically heal and reconcile any one-way legacy relationships across all realms
+                currentWorld = {
+                    ...currentWorld,
+                    entities: reconcileAllBidirectionalRelations(currentWorld.entities)
+                };
+                worlds = worlds.map(w => ({
+                    ...w,
+                    entities: reconcileAllBidirectionalRelations(w.entities)
+                }));
 
                 useWorldStore.setState({
                     worlds,
