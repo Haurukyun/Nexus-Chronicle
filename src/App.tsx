@@ -206,7 +206,7 @@ const App = () => {
 
                                 let tabStyle = 'bg-slate-900/40 border-slate-800 text-slate-500 hover:text-slate-200';
                                 if (isActive) {
-                                    if (theme === 'royal-codex') tabStyle = 'bg-[#70121e] text-[#fef08a] border-2 border-[#c8a96e] shadow-lg font-serif font-bold';
+                                    if (theme === 'royal-codex') tabStyle = 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] shadow-lg font-serif font-bold';
                                     else if (isWikiMode) tabStyle = 'bg-[#b91c1c] text-white border-[#b91c1c] shadow-md';
                                     else tabStyle = 'bg-[#fef08a] text-black border-[#fef08a] shadow-md';
                                 } else {

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Calendar, History, ArrowLeft, ArrowRight } from 'lucide-react';
 import { WorldData, WorldEntity, Character, Event } from '../types';
+import { useWorldStore } from '../store/useWorldStore';
 
 interface TimelineViewProps {
     world: WorldData;
@@ -9,6 +10,8 @@ interface TimelineViewProps {
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ world, isWikiMode, onNavigate }) => {
+    const theme = useWorldStore(state => state.theme);
+    const isRoyal = theme === 'royal-codex';
     const timelineData = useMemo(() => {
         const events: any[] = [];
         const extractYear = (dateStr: string | undefined) => {
@@ -63,13 +66,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ world, isWikiMode, o
         };
     }, [world.entities]);
 
-    const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const trackColor = isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800';
+    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const accentBg = isRoyal ? '#70121e' : isWikiMode ? '#b91c1c' : '#fef08a';
+    const trackColor = isRoyal ? 'bg-[#c8a96e]/40' : isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800';
 
     return (
         <div className="p-12 h-full flex flex-col space-y-12">
             <header className="space-y-4">
-                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>Chronos Timeline</h1>
+                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>Chronos Timeline</h1>
                 <p className="opacity-50 text-sm tracking-[0.3em] uppercase ml-2 italic">The Flow of Historical Paradoxes</p>
             </header>
 
@@ -108,15 +112,19 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ world, isWikiMode, o
                                 >
                                     {e.type === 'event' ? (
                                         <div onClick={() => onNavigate(e.id)} className="flex flex-col items-center -translate-x-1/2 cursor-pointer">
-                                            <div className={`w-4 h-4 rounded-full border-2 ${isWikiMode ? 'bg-[#b91c1c] border-white' : 'bg-[#fef08a] border-black'} shadow-lg group-hover:scale-150 transition-transform`} />
-                                            <div className={`mt-4 px-3 py-1 rounded-lg ${isWikiMode ? 'bg-white border-[#b91c1c]' : 'bg-slate-900 border-[#fef08a]'} border text-[9px] font-black uppercase tracking-widest whitespace-nowrap shadow-2xl`}>
+                                            <div className={`w-4 h-4 rounded-full border-2 shadow-lg group-hover:scale-150 transition-transform`} style={{ backgroundColor: accentBg, borderColor: isRoyal ? '#c8a96e' : isWikiMode ? 'white' : 'black' }} />
+                                            <div className={`mt-4 px-3 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest whitespace-nowrap shadow-2xl ${
+                                                isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]'
+                                                : isWikiMode ? 'bg-white border-[#b91c1c]' 
+                                                : 'bg-slate-900 border-[#fef08a]'
+                                            }`}>
                                                 {e.name} ({e.start})
                                             </div>
                                         </div>
                                     ) : (
                                         <div onClick={() => onNavigate(e.id)} className="relative h-6 cursor-pointer">
-                                            <div className={`absolute inset-0 rounded-full opacity-20 ${isWikiMode ? 'bg-[#b91c1c]' : 'bg-[#fef08a]'} group-hover:opacity-40 transition-opacity`} />
-                                            <div className={`absolute inset-y-0 left-0 border-l-2 ${isWikiMode ? 'border-[#b91c1c]' : 'border-[#fef08a]'} h-full`} />
+                                            <div className={`absolute inset-0 rounded-full opacity-20 group-hover:opacity-40 transition-opacity`} style={{ backgroundColor: accentBg }} />
+                                            <div className={`absolute inset-y-0 left-0 border-l-2 h-full`} style={{ borderColor: accentBg }} />
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 whitespace-nowrap text-[8px] font-black uppercase tracking-[0.2em] group-hover:scale-105 transition-transform">
                                                 {e.name} <span className="opacity-40">{e.start} - {e.isDead ? e.end : 'Present'}</span>
                                             </div>
@@ -132,8 +140,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ world, isWikiMode, o
             <footer className="flex justify-between items-center opacity-40 text-[10px] uppercase font-black tracking-widest px-4">
                 <div className="flex items-center gap-2"><ArrowLeft size={12} /> Prehistoric Eras</div>
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2"><div className={`w-3 h-3 rounded-full ${isWikiMode ? 'bg-[#b91c1c]' : 'bg-[#fef08a]'}`} /> Events</div>
-                    <div className="flex items-center gap-2"><div className={`w-8 h-2 rounded-full opacity-30 ${isWikiMode ? 'bg-[#b91c1c]' : 'bg-[#fef08a]'}`} /> Lifespans</div>
+                    <div className="flex items-center gap-2"><div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: accentBg }} /> Events</div>
+                    <div className="flex items-center gap-2"><div className={`w-8 h-2 rounded-full opacity-30`} style={{ backgroundColor: accentBg }} /> Lifespans</div>
                 </div>
                 <div className="flex items-center gap-2">Future Horizons <ArrowRight size={12} /></div>
             </footer>

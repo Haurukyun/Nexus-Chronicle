@@ -103,14 +103,14 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
             {entity.isReadOnly ? (
                 <button 
                     onClick={onToggleLock} 
-                    className="flex items-center gap-2 bg-[#3f2210] text-[#fef08a] border border-[#d4af37] px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#522d16] transition-all shadow-md"
+                    className="flex items-center gap-2 bg-[#3f2210] text-[#fff8e7] border border-[#d4af37] px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#522d16] transition-all shadow-md"
                     title="Entry is locked. Click to Unlock and edit."
                 >
                     <Lock size={14} /> Locked (Click to Unlock)
                 </button>
             ) : (
                 <>
-                    <button onClick={onEdit} className="bg-[#70121e] text-[#fef08a] border border-[#c8a96e] px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#881337] transition-all shadow-md">
+                    <button onClick={onEdit} className="bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#881337] transition-all shadow-md">
                         Edit Scroll
                     </button>
                     <button onClick={onToggleLock} className="p-2 text-[#70121e]/60 hover:text-[#70121e] hover:bg-[#70121e]/10 rounded-full transition-all" title="Lock Entry">

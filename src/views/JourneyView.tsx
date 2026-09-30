@@ -124,7 +124,7 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
         };
     }, [effectiveBaseLeagues, terrain, travelMethod, partySize]);
 
-    const accent = isRoyal ? 'text-[#d4af37]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
     const bgCard = isRoyal
         ? 'bg-[#181410] border-[#c8a96e]/30 shadow-2xl'
         : isWikiMode 
@@ -146,7 +146,7 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
                     <span className="text-[11px] font-black uppercase tracking-[0.4em] opacity-50">Logistics & Expedition Planner</span>
                 </div>
                 <h1 className={`text-5xl lg:text-7xl font-serif font-black uppercase tracking-tighter ${
-                    isRoyal ? 'text-[#f0ddb0]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'
+                    isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'
                 }`}>
                     The Grand Voyager
                 </h1>
@@ -420,10 +420,12 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
                                         onClick={() => setTravelMethod(m)}
                                         className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between h-20 ${
                                             isSelected 
-                                                ? (isWikiMode 
+                                                ? (isRoyal
+                                                    ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e] shadow-md'
+                                                    : isWikiMode 
                                                     ? 'bg-[#b91c1c] text-white border-transparent shadow-md' 
                                                     : 'bg-[#fef08a] text-black border-transparent shadow-lg shadow-yellow-500/20') 
-                                                : 'hover:bg-white/5 opacity-60 border-slate-500/20'
+                                                : isRoyal ? 'hover:bg-[#d9c9a3]/20 opacity-60 border-[#c8a96e]/20' : 'hover:bg-white/5 opacity-60 border-slate-500/20'
                                         }`}
                                     >
                                         <Icon size={18} />
@@ -803,7 +805,9 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
                                 }}
                                 disabled={!quickPinCoords}
                                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                                    isWikiMode
+                                    isRoyal
+                                        ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] disabled:opacity-40 border border-[#c8a96e] shadow-md'
+                                        : isWikiMode
                                         ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] disabled:opacity-40'
                                         : 'bg-[#fef08a] text-black hover:bg-yellow-400 disabled:opacity-40 shadow-lg shadow-yellow-500/20'
                                 }`}

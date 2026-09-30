@@ -1,13 +1,13 @@
 {
   "version": 1,
   "meta": {
-    "lastScanned": "2026-09-29T21:51:32.455Z",
-    "fileCount": 100,
+    "lastScanned": "2026-09-30T02:38:51.869Z",
+    "fileCount": 114,
     "hits": 0,
     "misses": 0,
-    "renderedHash": "f761cf84765fdd36fa886d6d5c74e46ee3e254c6f17ae82a1dfad2e9ada8f2e9",
-    "storeUpdatedAt": "2026-09-29T21:51:32.457Z",
-    "rootHash": "c4c40a78a1b64586"
+    "renderedHash": "08d028c5fa52fff805a493bd91f9344b4f4fb30eb38ec5063cc6917f5781035b",
+    "storeUpdatedAt": "2026-09-30T02:38:51.875Z",
+    "rootHash": "c1c1e21e58f25728"
   },
   "files": {
     ".eslintrc.js": {
@@ -16,9 +16,9 @@
       "hash": "4a6869d72e894df2",
       "size": 68,
       "mtimeMs": 1774726396918.7642,
-      "updatedAt": "2026-09-29T21:51:31.006Z",
+      "updatedAt": "2026-09-30T02:38:50.488Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     ".gitattributes": {
       "description": "Git attributes",
@@ -26,9 +26,9 @@
       "hash": "5adbd679651fa5aa",
       "size": 77,
       "mtimeMs": 1786271030285.35,
-      "updatedAt": "2026-09-29T21:51:31.007Z",
+      "updatedAt": "2026-09-30T02:38:50.490Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     ".gitignore": {
       "description": "Git ignore rules",
@@ -36,9 +36,9 @@
       "hash": "d50ab07e11fa4bf3",
       "size": 277,
       "mtimeMs": 1774726396918.7642,
-      "updatedAt": "2026-09-29T21:51:31.007Z",
+      "updatedAt": "2026-09-30T02:38:50.491Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     ".prettierrc.js": {
       "description": "",
@@ -46,9 +46,9 @@
       "hash": "b0090e54c5a4263f",
       "size": 148,
       "mtimeMs": 1774726396918.7642,
-      "updatedAt": "2026-09-29T21:51:31.020Z",
+      "updatedAt": "2026-09-30T02:38:50.515Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "AGENTS.md": {
       "description": "OpenWolf",
@@ -56,9 +56,9 @@
       "hash": "e401f79554a8d796",
       "size": 297,
       "mtimeMs": 1790718690949.9912,
-      "updatedAt": "2026-09-29T21:51:31.020Z",
+      "updatedAt": "2026-09-30T02:38:50.516Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "assemble.py": {
       "description": "Exports EntityType",
@@ -66,9 +66,9 @@
       "hash": "efbd6adab2b0e109",
       "size": 4509,
       "mtimeMs": 1776805648320.67,
-      "updatedAt": "2026-09-29T21:51:31.023Z",
+      "updatedAt": "2026-09-30T02:38:50.523Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "CLAUDE.md": {
       "description": "OpenWolf",
@@ -76,9 +76,9 @@
       "hash": "074d6b42b583729a",
       "size": 395,
       "mtimeMs": 1790718690814.7395,
-      "updatedAt": "2026-09-29T21:51:31.023Z",
+      "updatedAt": "2026-09-30T02:38:50.525Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "GEMINI.md": {
       "description": "OpenWolf",
@@ -86,9 +86,9 @@
       "hash": "e401f79554a8d796",
       "size": 297,
       "mtimeMs": 1790718690953.0408,
-      "updatedAt": "2026-09-29T21:51:31.024Z",
+      "updatedAt": "2026-09-30T02:38:50.526Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "generate_components.py": {
       "description": "generate_editor_components, get_category",
@@ -96,7 +96,7 @@
       "hash": "f3159792d15d1da2",
       "size": 9162,
       "mtimeMs": 1776823567177.2273,
-      "updatedAt": "2026-09-29T21:51:31.024Z",
+      "updatedAt": "2026-09-30T02:38:50.531Z",
       "source": "scan",
       "symbols": [
         {
@@ -109,7 +109,7 @@
       ],
       "symbolSource": "ts",
       "skeleton": "def generate_editor_components():",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "generate_viewers.py": {
       "description": "generate_viewer_components, get_category",
@@ -117,7 +117,7 @@
       "hash": "ab8dbe583cb2907f",
       "size": 7951,
       "mtimeMs": 1776823595771.7334,
-      "updatedAt": "2026-09-29T21:51:31.025Z",
+      "updatedAt": "2026-09-30T02:38:50.539Z",
       "source": "scan",
       "symbols": [
         {
@@ -130,7 +130,7 @@
       ],
       "symbolSource": "ts",
       "skeleton": "def generate_viewer_components():",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "index.html": {
       "description": "Chronicle Codex - Worldbuilding Suite",
@@ -138,9 +138,9 @@
       "hash": "71f1f92fb055d2da",
       "size": 1196,
       "mtimeMs": 1786283129584.4236,
-      "updatedAt": "2026-09-29T21:51:31.026Z",
+      "updatedAt": "2026-09-30T02:38:50.542Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "metadata.json": {
       "description": "",
@@ -148,19 +148,19 @@
       "hash": "e317010cb130f232",
       "size": 267,
       "mtimeMs": 1774726396920.7617,
-      "updatedAt": "2026-09-29T21:51:31.027Z",
+      "updatedAt": "2026-09-30T02:38:50.544Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "package.json": {
       "description": "Node.js package manifest",
-      "tokens": 175,
-      "hash": "a5246332bb0bd048",
-      "size": 612,
-      "mtimeMs": 1786283212374.3213,
-      "updatedAt": "2026-09-29T21:51:31.027Z",
+      "tokens": 228,
+      "hash": "c773cae980e56668",
+      "size": 796,
+      "mtimeMs": 1790727839378.4167,
+      "updatedAt": "2026-09-30T02:38:50.547Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "README.md": {
       "description": "Project documentation",
@@ -168,25 +168,25 @@
       "hash": "7eb70257593da06f",
       "size": 2,
       "mtimeMs": 1775654192283.5017,
-      "updatedAt": "2026-09-29T21:51:31.027Z",
+      "updatedAt": "2026-09-30T02:38:50.547Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "src/App.tsx": {
-      "description": "App — renders chart — uses useEffect, useMemo",
-      "tokens": 4717,
-      "hash": "e8babe1c5943857b",
-      "size": 16510,
-      "mtimeMs": 1786274661586.284,
-      "updatedAt": "2026-09-29T21:51:31.028Z",
+      "description": "App — renders chart — uses useEffect, useMemo, useState",
+      "tokens": 6132,
+      "hash": "dae43e7356aeded9",
+      "size": 21460,
+      "mtimeMs": 1790726853466.5293,
+      "updatedAt": "2026-09-30T02:38:50.556Z",
       "source": "scan",
       "symbols": [
         {
           "name": "App",
           "kind": "fn",
-          "startLine": 22,
-          "endLine": 250,
-          "tokens": 4428
+          "startLine": 23,
+          "endLine": 362,
+          "tokens": 5819
         }
       ],
       "symbolSource": "ts",
@@ -205,9 +205,10 @@
         "src/components/editor/EntityEditor.tsx",
         "src/components/layout/Sidebar.tsx",
         "src/components/ui/ThemeSwitcher.tsx",
-        "src/components/ui/ErrorBoundary.tsx"
+        "src/components/ui/ErrorBoundary.tsx",
+        "src/components/ui/KeybindsModal.tsx"
       ],
-      "importance": 0.0375
+      "importance": 0.0341
     },
     "src/components/editor/EditorGroup.tsx": {
       "description": "EditorGroup",
@@ -215,7 +216,7 @@
       "hash": "aa4c7f05b8085ce0",
       "size": 2121,
       "mtimeMs": 1786271442859.1248,
-      "updatedAt": "2026-09-29T21:51:31.029Z",
+      "updatedAt": "2026-09-30T02:38:50.559Z",
       "source": "scan",
       "symbols": [
         {
@@ -237,57 +238,58 @@
       "imports": [
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.1223
+      "importance": 0.1096
     },
     "src/components/editor/EntityEditor.tsx": {
       "description": "EntityEditor — renders form",
-      "tokens": 2955,
-      "hash": "0a3c9d442b813992",
-      "size": 10342,
-      "mtimeMs": 1776924478486.9253,
-      "updatedAt": "2026-09-29T21:51:31.029Z",
+      "tokens": 3489,
+      "hash": "d0cc34886c0533ba",
+      "size": 12214,
+      "mtimeMs": 1790732093163.8235,
+      "updatedAt": "2026-09-30T02:38:50.562Z",
       "source": "scan",
       "symbols": [
         {
           "name": "EntityEditor",
           "kind": "fn",
-          "startLine": 15,
-          "endLine": 110,
-          "tokens": 2755
+          "startLine": 16,
+          "endLine": 160,
+          "tokens": 3264
         }
       ],
       "symbolSource": "ts",
       "skeleton": "export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWikiMode, onUpdate }: EntityEditorProps) => {",
       "imports": [
+        "src/components/ui/AssetImageUploader.tsx",
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx",
         "src/components/ui/index.ts",
         "src/types.ts",
         "src/components/editor/specifics/EntitySpecificsRegistry.tsx"
       ],
-      "importance": 0.0283
+      "importance": 0.0256
     },
     "src/components/editor/GroupRoleGroup.tsx": {
       "description": "GroupRoleGroup",
-      "tokens": 530,
-      "hash": "ef54b694aaa87bf9",
-      "size": 1855,
-      "mtimeMs": 1786294037808.636,
-      "updatedAt": "2026-09-29T21:51:31.029Z",
+      "tokens": 540,
+      "hash": "31e45231b7dc8df5",
+      "size": 1888,
+      "mtimeMs": 1790720715472.159,
+      "updatedAt": "2026-09-30T02:38:50.565Z",
       "source": "scan",
       "symbols": [
         {
           "name": "GroupRoleGroupProps",
           "kind": "section",
           "startLine": 5,
-          "endLine": 13,
-          "tokens": 77
+          "endLine": 14,
+          "tokens": 86
         },
         {
           "name": "GroupRoleGroup",
           "kind": "fn",
-          "startLine": 15,
-          "endLine": 38,
+          "startLine": 16,
+          "endLine": 39,
           "tokens": 419
         }
       ],
@@ -296,7 +298,7 @@
         "src/components/ui/index.ts",
         "src/types.ts"
       ],
-      "importance": 0.1163
+      "importance": 0.1041
     },
     "src/components/editor/index.ts": {
       "description": "",
@@ -304,14 +306,14 @@
       "hash": "4e506f2efb6f3962",
       "size": 97,
       "mtimeMs": 1775656587032.1274,
-      "updatedAt": "2026-09-29T21:51:31.030Z",
+      "updatedAt": "2026-09-30T02:38:50.566Z",
       "source": "scan",
       "imports": [
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx",
         "src/components/editor/EntityEditor.tsx"
       ],
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "src/components/editor/specifics/AbilitySpecifics.tsx": {
       "description": "AbilitySpecifics — renders form",
@@ -319,7 +321,7 @@
       "hash": "05734ab8ff7806d4",
       "size": 11409,
       "mtimeMs": 1786270656104.6094,
-      "updatedAt": "2026-09-29T21:51:31.030Z",
+      "updatedAt": "2026-09-30T02:38:50.570Z",
       "source": "scan",
       "symbols": [
         {
@@ -345,7 +347,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/ChapterSpecifics.tsx": {
       "description": "ChapterSpecifics — renders form",
@@ -353,7 +355,7 @@
       "hash": "bf14f3bd5e2f372d",
       "size": 1864,
       "mtimeMs": 1786270656105.61,
-      "updatedAt": "2026-09-29T21:51:31.030Z",
+      "updatedAt": "2026-09-30T02:38:50.574Z",
       "source": "scan",
       "symbols": [
         {
@@ -377,7 +379,7 @@
         "src/components/ui/index.ts",
         "src/components/editor/EditorGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/CharacterSpecifics.tsx": {
       "description": "CharacterSpecifics — renders form",
@@ -385,7 +387,7 @@
       "hash": "f9484819db50b2fc",
       "size": 16987,
       "mtimeMs": 1786270656108.72,
-      "updatedAt": "2026-09-29T21:51:31.031Z",
+      "updatedAt": "2026-09-30T02:38:50.576Z",
       "source": "scan",
       "symbols": [
         {
@@ -411,7 +413,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/ConditionSpecifics.tsx": {
       "description": "ConditionSpecifics — renders form",
@@ -419,7 +421,7 @@
       "hash": "eab4c4147ea9a826",
       "size": 13635,
       "mtimeMs": 1786270656113.926,
-      "updatedAt": "2026-09-29T21:51:31.031Z",
+      "updatedAt": "2026-09-30T02:38:50.582Z",
       "source": "scan",
       "symbols": [
         {
@@ -445,7 +447,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/CultureSpecifics.tsx": {
       "description": "CultureSpecifics — renders form",
@@ -453,7 +455,7 @@
       "hash": "55dc379e837951f5",
       "size": 8923,
       "mtimeMs": 1786270656116.5103,
-      "updatedAt": "2026-09-29T21:51:31.031Z",
+      "updatedAt": "2026-09-30T02:38:50.588Z",
       "source": "scan",
       "symbols": [
         {
@@ -479,7 +481,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/CurrencySpecifics.tsx": {
       "description": "CurrencySpecifics — renders form",
@@ -487,7 +489,7 @@
       "hash": "7b1413d904b59065",
       "size": 4817,
       "mtimeMs": 1786270656120.1367,
-      "updatedAt": "2026-09-29T21:51:31.031Z",
+      "updatedAt": "2026-09-30T02:38:50.590Z",
       "source": "scan",
       "symbols": [
         {
@@ -512,7 +514,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/EntitySpecificsRegistry.tsx": {
       "description": "EntitySpecificsRegistry",
@@ -520,7 +522,7 @@
       "hash": "c9d86c9d330f249e",
       "size": 4622,
       "mtimeMs": 1786270656126.6682,
-      "updatedAt": "2026-09-29T21:51:31.032Z",
+      "updatedAt": "2026-09-30T02:38:50.592Z",
       "source": "scan",
       "symbols": [
         {
@@ -542,7 +544,7 @@
       "imports": [
         "src/types.ts"
       ],
-      "importance": 0.0251
+      "importance": 0.0221
     },
     "src/components/editor/specifics/EventSpecifics.tsx": {
       "description": "EventSpecifics — renders form",
@@ -550,7 +552,7 @@
       "hash": "f522a5d6afb87dec",
       "size": 7861,
       "mtimeMs": 1786270656129.298,
-      "updatedAt": "2026-09-29T21:51:31.032Z",
+      "updatedAt": "2026-09-30T02:38:50.597Z",
       "source": "scan",
       "symbols": [
         {
@@ -576,7 +578,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/index.ts": {
       "description": "",
@@ -584,7 +586,7 @@
       "hash": "099f389b8086a2d4",
       "size": 746,
       "mtimeMs": 1786270656189.822,
-      "updatedAt": "2026-09-29T21:51:31.032Z",
+      "updatedAt": "2026-09-30T02:38:50.600Z",
       "source": "scan",
       "imports": [
         "src/components/editor/specifics/ChapterSpecifics.tsx",
@@ -608,7 +610,7 @@
         "src/components/editor/specifics/TechSpecifics.tsx",
         "src/components/editor/specifics/AbilitySpecifics.tsx"
       ],
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "src/components/editor/specifics/ItemSpecifics.tsx": {
       "description": "ItemSpecifics — renders form",
@@ -616,7 +618,7 @@
       "hash": "06ce24bd302896a7",
       "size": 11265,
       "mtimeMs": 1786270656134.8445,
-      "updatedAt": "2026-09-29T21:51:31.032Z",
+      "updatedAt": "2026-09-30T02:38:50.607Z",
       "source": "scan",
       "symbols": [
         {
@@ -642,7 +644,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/LanguageSpecifics.tsx": {
       "description": "LanguageSpecifics — renders form",
@@ -650,7 +652,7 @@
       "hash": "ae5428a8720a56ea",
       "size": 6367,
       "mtimeMs": 1786270656135.8499,
-      "updatedAt": "2026-09-29T21:51:31.033Z",
+      "updatedAt": "2026-09-30T02:38:50.609Z",
       "source": "scan",
       "symbols": [
         {
@@ -675,30 +677,30 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/LocationSpecifics.tsx": {
-      "description": "LocationSpecifics — renders form",
-      "tokens": 3457,
-      "hash": "fec7ed52ab1d049f",
-      "size": 12101,
-      "mtimeMs": 1786270656138.9019,
-      "updatedAt": "2026-09-29T21:51:31.033Z",
+      "description": "LocationSpecifics — renders form, chart, map",
+      "tokens": 6459,
+      "hash": "a08bf2a7e74e523b",
+      "size": 22608,
+      "mtimeMs": 1790724993338.4429,
+      "updatedAt": "2026-09-30T02:38:50.616Z",
       "source": "scan",
       "symbols": [
         {
           "name": "Props",
           "kind": "section",
-          "startLine": 8,
-          "endLine": 14,
+          "startLine": 9,
+          "endLine": 15,
           "tokens": 66
         },
         {
           "name": "LocationSpecifics",
           "kind": "fn",
-          "startLine": 16,
-          "endLine": 91,
-          "tokens": 3267
+          "startLine": 17,
+          "endLine": 255,
+          "tokens": 6240
         }
       ],
       "symbolSource": "ts",
@@ -707,9 +709,10 @@
         "src/types.ts",
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx",
-        "src/components/ui/index.ts"
+        "src/components/ui/index.ts",
+        "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/MagicSpecifics.tsx": {
       "description": "MagicSpecifics — renders form",
@@ -717,7 +720,7 @@
       "hash": "435877ded72bbe52",
       "size": 14720,
       "mtimeMs": 1786270656145.922,
-      "updatedAt": "2026-09-29T21:51:31.033Z",
+      "updatedAt": "2026-09-30T02:38:50.649Z",
       "source": "scan",
       "symbols": [
         {
@@ -743,7 +746,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/MythSpecifics.tsx": {
       "description": "MythSpecifics",
@@ -751,7 +754,7 @@
       "hash": "57fb57a4c42fe7bc",
       "size": 7636,
       "mtimeMs": 1786270656148.9224,
-      "updatedAt": "2026-09-29T21:51:31.034Z",
+      "updatedAt": "2026-09-30T02:38:50.652Z",
       "source": "scan",
       "symbols": [
         {
@@ -777,7 +780,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/NoteSpecifics.tsx": {
       "description": "NoteSpecifics — renders form",
@@ -785,7 +788,7 @@
       "hash": "0ebb82f57384f975",
       "size": 8107,
       "mtimeMs": 1786270656150.9224,
-      "updatedAt": "2026-09-29T21:51:31.034Z",
+      "updatedAt": "2026-09-30T02:38:50.654Z",
       "source": "scan",
       "symbols": [
         {
@@ -811,7 +814,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/OccupationSpecifics.tsx": {
       "description": "OccupationSpecifics — renders form",
@@ -819,7 +822,7 @@
       "hash": "0a064b75b19e2e5f",
       "size": 9200,
       "mtimeMs": 1786270656159.0603,
-      "updatedAt": "2026-09-29T21:51:31.034Z",
+      "updatedAt": "2026-09-30T02:38:50.660Z",
       "source": "scan",
       "symbols": [
         {
@@ -845,7 +848,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/OrganizationSpecifics.tsx": {
       "description": "OrganizationSpecifics — renders form",
@@ -853,7 +856,7 @@
       "hash": "117dfe9353abb3e1",
       "size": 12971,
       "mtimeMs": 1786270656161.175,
-      "updatedAt": "2026-09-29T21:51:31.034Z",
+      "updatedAt": "2026-09-30T02:38:50.667Z",
       "source": "scan",
       "symbols": [
         {
@@ -879,7 +882,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/PoliticalGroupSpecifics.tsx": {
       "description": "PoliticalGroupSpecifics — renders form",
@@ -887,7 +890,7 @@
       "hash": "12349cf7faa52f8e",
       "size": 14413,
       "mtimeMs": 1786270656167.1885,
-      "updatedAt": "2026-09-29T21:51:31.035Z",
+      "updatedAt": "2026-09-30T02:38:50.689Z",
       "source": "scan",
       "symbols": [
         {
@@ -913,7 +916,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/ReligionSpecifics.tsx": {
       "description": "ReligionSpecifics — renders form",
@@ -921,7 +924,7 @@
       "hash": "e0dcc270dabefb72",
       "size": 14311,
       "mtimeMs": 1786270656171.0542,
-      "updatedAt": "2026-09-29T21:51:31.035Z",
+      "updatedAt": "2026-09-30T02:38:50.693Z",
       "source": "scan",
       "symbols": [
         {
@@ -947,7 +950,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/ResourceSpecifics.tsx": {
       "description": "ResourceSpecifics — renders form",
@@ -955,7 +958,7 @@
       "hash": "024065eda09a3cec",
       "size": 11670,
       "mtimeMs": 1786270656178.8484,
-      "updatedAt": "2026-09-29T21:51:31.035Z",
+      "updatedAt": "2026-09-30T02:38:50.699Z",
       "source": "scan",
       "symbols": [
         {
@@ -981,7 +984,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/SpeciesSpecifics.tsx": {
       "description": "SpeciesSpecifics — renders form",
@@ -989,7 +992,7 @@
       "hash": "372e14790d07764c",
       "size": 12694,
       "mtimeMs": 1786270656181.4207,
-      "updatedAt": "2026-09-29T21:51:31.035Z",
+      "updatedAt": "2026-09-30T02:38:50.714Z",
       "source": "scan",
       "symbols": [
         {
@@ -1015,7 +1018,7 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
     },
     "src/components/editor/specifics/TechSpecifics.tsx": {
       "description": "TechSpecifics — renders form",
@@ -1023,7 +1026,7 @@
       "hash": "81e7df7234f9a93c",
       "size": 14528,
       "mtimeMs": 1786270656183.6226,
-      "updatedAt": "2026-09-29T21:51:31.036Z",
+      "updatedAt": "2026-09-30T02:38:50.728Z",
       "source": "scan",
       "symbols": [
         {
@@ -1049,32 +1052,116 @@
         "src/components/editor/EditorGroup.tsx",
         "src/components/editor/GroupRoleGroup.tsx"
       ],
-      "importance": 0.0212
+      "importance": 0.0192
+    },
+    "src/components/layout/RealmSwitcher.tsx": {
+      "description": "PHASE_COLORS — uses useState, useEffect, useMemo",
+      "tokens": 4970,
+      "hash": "2c9f28671bc04c4a",
+      "size": 17395,
+      "mtimeMs": 1790728957572.2837,
+      "updatedAt": "2026-09-30T02:38:50.736Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "RealmSwitcherProps",
+          "kind": "section",
+          "startLine": 11,
+          "endLine": 15,
+          "tokens": 32
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface RealmSwitcherProps {",
+      "imports": [
+        "src/types.ts",
+        "src/store/useWorldStore.ts",
+        "src/components/ui/NewRealmModal.tsx",
+        "src/components/ui/DeleteRealmModal.tsx"
+      ],
+      "importance": 0.0228
     },
     "src/components/layout/Sidebar.tsx": {
-      "description": "EntityItem — renders chart — uses useState, useMemo",
-      "tokens": 4779,
-      "hash": "8bf02c72ffa35120",
-      "size": 16733,
-      "mtimeMs": 1786274661592.449,
-      "updatedAt": "2026-09-29T21:51:31.037Z",
+      "description": "Safely resolves the parent ID of an entity.",
+      "tokens": 7748,
+      "hash": "abcc4b2b6f57c5f2",
+      "size": 27129,
+      "mtimeMs": 1790726811742.6182,
+      "updatedAt": "2026-09-30T02:38:50.744Z",
       "source": "scan",
       "symbols": [
         {
           "name": "SidebarProps",
           "kind": "section",
-          "startLine": 10,
-          "endLine": 25,
+          "startLine": 12,
+          "endLine": 27,
           "tokens": 181
+        },
+        {
+          "name": "getSafeParentId",
+          "kind": "fn",
+          "startLine": 42,
+          "endLine": 60,
+          "tokens": 226
         }
       ],
       "symbolSource": "ts",
-      "skeleton": "interface SidebarProps {",
+      "skeleton": "interface SidebarProps {\nfunction getSafeParentId(entity: WorldEntity, allEntities: WorldEntity[]): string | null {",
       "imports": [
         "src/types.ts",
-        "src/constants.ts"
+        "src/constants.ts",
+        "src/store/useWorldStore.ts",
+        "src/components/layout/RealmSwitcher.tsx"
       ],
-      "importance": 0.0226
+      "importance": 0.0204
+    },
+    "src/components/ui/AssetImageUploader.tsx": {
+      "description": "AssetImageUploader — uses useState",
+      "tokens": 2637,
+      "hash": "bf04eb5f2c0c6490",
+      "size": 9229,
+      "mtimeMs": 1790731959880.2776,
+      "updatedAt": "2026-09-30T02:38:50.751Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "AssetImageUploaderProps",
+          "kind": "section",
+          "startLine": 6,
+          "endLine": 12,
+          "tokens": 49
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface AssetImageUploaderProps {",
+      "imports": [
+        "src/utils/assetStore.ts",
+        "src/components/ui/NexusImage.tsx"
+      ],
+      "importance": 0.0221
+    },
+    "src/components/ui/DeleteRealmModal.tsx": {
+      "description": "DeleteRealmModal — uses useEffect",
+      "tokens": 1626,
+      "hash": "c13d41d0fbeacca6",
+      "size": 5688,
+      "mtimeMs": 1790728871212.1624,
+      "updatedAt": "2026-09-30T02:38:50.754Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "DeleteRealmModalProps",
+          "kind": "section",
+          "startLine": 6,
+          "endLine": 13,
+          "tokens": 54
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0257
     },
     "src/components/ui/EmeraldGem.tsx": {
       "description": "EmeraldGem",
@@ -1082,7 +1169,7 @@
       "hash": "4bb76841b2b4f7de",
       "size": 3299,
       "mtimeMs": 1786272253844.1057,
-      "updatedAt": "2026-09-29T21:51:31.037Z",
+      "updatedAt": "2026-09-30T02:38:50.758Z",
       "source": "scan",
       "symbols": [
         {
@@ -1094,15 +1181,15 @@
         }
       ],
       "symbolSource": "ts",
-      "importance": 0.0485
+      "importance": 0.0381
     },
     "src/components/ui/ErrorBoundary.tsx": {
       "description": "Exports ErrorBoundary",
-      "tokens": 534,
-      "hash": "89e6e83681bf88d9",
-      "size": 1866,
-      "mtimeMs": 1786294037821.575,
-      "updatedAt": "2026-09-29T21:51:31.037Z",
+      "tokens": 553,
+      "hash": "441f4ae2aea96d21",
+      "size": 1933,
+      "mtimeMs": 1790720704666.74,
+      "updatedAt": "2026-09-30T02:38:50.761Z",
       "source": "scan",
       "symbols": [
         {
@@ -1123,33 +1210,40 @@
           "name": "ErrorBoundary",
           "kind": "class",
           "startLine": 13,
-          "endLine": 50,
-          "tokens": 474
+          "endLine": 53,
+          "tokens": 493
+        },
+        {
+          "name": "ErrorBoundary.constructor",
+          "kind": "method",
+          "startLine": 14,
+          "endLine": 20,
+          "tokens": 42
         },
         {
           "name": "ErrorBoundary.getDerivedStateFromError",
           "kind": "method",
-          "startLine": 19,
-          "endLine": 21,
+          "startLine": 22,
+          "endLine": 24,
           "tokens": 33
         },
         {
           "name": "ErrorBoundary.componentDidCatch",
           "kind": "method",
-          "startLine": 23,
-          "endLine": 25,
+          "startLine": 26,
+          "endLine": 28,
           "tokens": 42
         },
         {
           "name": "ErrorBoundary.render",
           "kind": "method",
-          "startLine": 27,
-          "endLine": 49,
+          "startLine": 30,
+          "endLine": 52,
           "tokens": 357
         }
       ],
       "symbolSource": "ts",
-      "importance": 0.0507
+      "importance": 0.04
     },
     "src/components/ui/FieldRow.tsx": {
       "description": "FieldRow",
@@ -1157,13 +1251,13 @@
       "hash": "4a3d0c7c474b7a76",
       "size": 1252,
       "mtimeMs": 1786272138097.2024,
-      "updatedAt": "2026-09-29T21:51:31.037Z",
+      "updatedAt": "2026-09-30T02:38:50.762Z",
       "source": "scan",
       "imports": [
         "src/types.ts",
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0485
+      "importance": 0.0381
     },
     "src/components/ui/FormInput.tsx": {
       "description": "FormInput — uses useState, useEffect",
@@ -1171,7 +1265,7 @@
       "hash": "a6d6e9242c1e2218",
       "size": 3591,
       "mtimeMs": 1786271466514.3186,
-      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "updatedAt": "2026-09-30T02:38:50.767Z",
       "source": "scan",
       "symbols": [
         {
@@ -1187,7 +1281,7 @@
         "src/types.ts",
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0485
+      "importance": 0.0381
     },
     "src/components/ui/FormToggle.tsx": {
       "description": "FormToggle",
@@ -1195,20 +1289,20 @@
       "hash": "63d3dc9f705ac127",
       "size": 1238,
       "mtimeMs": 1776917106088.721,
-      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "updatedAt": "2026-09-30T02:38:50.769Z",
       "source": "scan",
       "imports": [
         "src/types.ts"
       ],
-      "importance": 0.0485
+      "importance": 0.0381
     },
     "src/components/ui/index.ts": {
       "description": "",
-      "tokens": 98,
-      "hash": "643e55a976a05ca8",
-      "size": 341,
-      "mtimeMs": 1786272800262.4812,
-      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "tokens": 126,
+      "hash": "b7e8cfa1d0a9ca5e",
+      "size": 441,
+      "mtimeMs": 1790722928384.0322,
+      "updatedAt": "2026-09-30T02:38:50.770Z",
       "source": "scan",
       "imports": [
         "src/components/ui/FormInput.tsx",
@@ -1221,9 +1315,50 @@
         "src/components/ui/RadarChart.tsx",
         "src/components/ui/ThemeSwitcher.tsx",
         "src/components/ui/EmeraldGem.tsx",
-        "src/components/ui/ErrorBoundary.tsx"
+        "src/components/ui/ErrorBoundary.tsx",
+        "src/components/ui/MarkdownEditor.tsx",
+        "src/components/ui/MarkdownRenderer.tsx",
+        "src/components/ui/KeybindsModal.tsx"
       ],
-      "importance": 0.3644
+      "importance": 0.3232
+    },
+    "src/components/ui/KeybindsModal.tsx": {
+      "description": "KeybindsModal — renders chart",
+      "tokens": 3293,
+      "hash": "42d32d002c18864a",
+      "size": 11524,
+      "mtimeMs": 1790726871697.9854,
+      "updatedAt": "2026-09-30T02:38:50.775Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "KeybindsModalProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 10,
+          "tokens": 37
+        },
+        {
+          "name": "KeybindItem",
+          "kind": "section",
+          "startLine": 12,
+          "endLine": 16,
+          "tokens": 26
+        },
+        {
+          "name": "KeybindCategory",
+          "kind": "section",
+          "startLine": 18,
+          "endLine": 22,
+          "tokens": 30
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface KeybindsModalProps {\ninterface KeybindItem {\ninterface KeybindCategory {",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.04
     },
     "src/components/ui/LinksDisplay.tsx": {
       "description": "LinksDisplay",
@@ -1231,7 +1366,7 @@
       "hash": "10db2f87521a5903",
       "size": 2798,
       "mtimeMs": 1786272144395.7659,
-      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "updatedAt": "2026-09-30T02:38:50.777Z",
       "source": "scan",
       "symbols": [
         {
@@ -1247,7 +1382,151 @@
         "src/types.ts",
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0485
+      "importance": 0.0381
+    },
+    "src/components/ui/MarkdownEditor.tsx": {
+      "description": "MarkdownEditor — uses useState, useCallback, useEffect",
+      "tokens": 3631,
+      "hash": "64d3655af419c2d3",
+      "size": 12714,
+      "mtimeMs": 1790721886566.8577,
+      "updatedAt": "2026-09-30T02:38:50.783Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "MarkdownEditorProps",
+          "kind": "section",
+          "startLine": 6,
+          "endLine": 15,
+          "tokens": 73
+        },
+        {
+          "name": "WikiSuggestion",
+          "kind": "section",
+          "startLine": 17,
+          "endLine": 21,
+          "tokens": 23
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface MarkdownEditorProps {\ninterface WikiSuggestion {",
+      "imports": [
+        "src/components/ui/MarkdownRenderer.tsx",
+        "src/types.ts"
+      ],
+      "importance": 0.0381
+    },
+    "src/components/ui/MarkdownRenderer.tsx": {
+      "description": "Extra class names on the outer wrapper",
+      "tokens": 887,
+      "hash": "5a110d11dd32ec30",
+      "size": 3108,
+      "mtimeMs": 1790721903320.8723,
+      "updatedAt": "2026-09-30T02:38:50.786Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "MarkdownRendererProps",
+          "kind": "section",
+          "startLine": 6,
+          "endLine": 13,
+          "tokens": 65
+        },
+        {
+          "name": "buildNameMap",
+          "kind": "fn",
+          "startLine": 16,
+          "endLine": 31,
+          "tokens": 160
+        },
+        {
+          "name": "processWikilinks",
+          "kind": "fn",
+          "startLine": 37,
+          "endLine": 46,
+          "tokens": 133
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0542
+    },
+    "src/components/ui/NewRealmModal.tsx": {
+      "description": "MAP_PRESETS — renders form, chart — uses useState",
+      "tokens": 3983,
+      "hash": "258670aa2cf8a075",
+      "size": 13940,
+      "mtimeMs": 1790728395035.7048,
+      "updatedAt": "2026-09-30T02:38:50.792Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "NewRealmModalProps",
+          "kind": "section",
+          "startLine": 7,
+          "endLine": 13,
+          "tokens": 64
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface NewRealmModalProps {",
+      "imports": [
+        "src/types.ts",
+        "src/store/useWorldStore.ts"
+      ],
+      "importance": 0.0257
+    },
+    "src/components/ui/NexusBeamModal.tsx": {
+      "description": "NexusBeamModal — uses useState, useEffect",
+      "tokens": 7259,
+      "hash": "e6e95d4061bc24f7",
+      "size": 25408,
+      "mtimeMs": 1790728419832.187,
+      "updatedAt": "2026-09-30T02:38:50.796Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "NexusBeamModalProps",
+          "kind": "section",
+          "startLine": 12,
+          "endLine": 17,
+          "tokens": 36
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface NexusBeamModalProps {",
+      "imports": [
+        "src/types.ts",
+        "src/store/useWorldStore.ts",
+        "src/utils/nexusBeam.ts",
+        "src/utils/nexusArchive.ts"
+      ],
+      "importance": 0.0209
+    },
+    "src/components/ui/NexusImage.tsx": {
+      "description": "NexusImage — uses useEffect",
+      "tokens": 777,
+      "hash": "0a5bd972b305749c",
+      "size": 2719,
+      "mtimeMs": 1790727336401.6492,
+      "updatedAt": "2026-09-30T02:38:50.800Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "NexusImageProps",
+          "kind": "section",
+          "startLine": 5,
+          "endLine": 9,
+          "tokens": 48
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/utils/assetStore.ts"
+      ],
+      "importance": 0.0382
     },
     "src/components/ui/RadarChart.tsx": {
       "description": "RadarChart — renders chart",
@@ -1255,7 +1534,7 @@
       "hash": "933c33bb07d1ad07",
       "size": 4126,
       "mtimeMs": 1775664110814.9558,
-      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "updatedAt": "2026-09-30T02:38:50.801Z",
       "source": "scan",
       "symbols": [
         {
@@ -1274,15 +1553,15 @@
         }
       ],
       "symbolSource": "ts",
-      "importance": 0.0485
+      "importance": 0.0381
     },
     "src/components/ui/SmartSelect.tsx": {
       "description": "SmartSelect — uses useState, useEffect",
-      "tokens": 1387,
-      "hash": "4d9c8d282451cf65",
-      "size": 4854,
-      "mtimeMs": 1776917119134.1726,
-      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "tokens": 1401,
+      "hash": "72c71b836c66d9b8",
+      "size": 4901,
+      "mtimeMs": 1790722260353.837,
+      "updatedAt": "2026-09-30T02:38:50.806Z",
       "source": "scan",
       "symbols": [
         {
@@ -1290,14 +1569,14 @@
           "kind": "fn",
           "startLine": 5,
           "endLine": 76,
-          "tokens": 1339
+          "tokens": 1352
         }
       ],
       "symbolSource": "ts",
       "imports": [
         "src/types.ts"
       ],
-      "importance": 0.0485
+      "importance": 0.0381
     },
     "src/components/ui/TaperedDivider.tsx": {
       "description": "TaperedDivider",
@@ -1305,9 +1584,9 @@
       "hash": "92b1d6ba986097a5",
       "size": 320,
       "mtimeMs": 1775659496645.694,
-      "updatedAt": "2026-09-29T21:51:31.038Z",
+      "updatedAt": "2026-09-30T02:38:50.806Z",
       "source": "scan",
-      "importance": 0.0485
+      "importance": 0.0381
     },
     "src/components/ui/ThemeSwitcher.tsx": {
       "description": "THEME_OPTIONS — uses useState, useEffect",
@@ -1315,7 +1594,7 @@
       "hash": "6c56a4c765e8ee37",
       "size": 5311,
       "mtimeMs": 1786271344121.2158,
-      "updatedAt": "2026-09-29T21:51:31.039Z",
+      "updatedAt": "2026-09-30T02:38:50.808Z",
       "source": "scan",
       "symbols": [
         {
@@ -1337,7 +1616,7 @@
       "imports": [
         "src/types.ts"
       ],
-      "importance": 0.0507
+      "importance": 0.04
     },
     "src/components/ui/WikiInfoboxRow.tsx": {
       "description": "WikiInfoboxRow",
@@ -1345,9 +1624,9 @@
       "hash": "c51a76788a0b4660",
       "size": 504,
       "mtimeMs": 1775656517569.2563,
-      "updatedAt": "2026-09-29T21:51:31.039Z",
+      "updatedAt": "2026-09-30T02:38:50.809Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "src/components/ui/WikiRows.tsx": {
       "description": "WikiStatRow",
@@ -1355,9 +1634,9 @@
       "hash": "5344fec2f668df22",
       "size": 957,
       "mtimeMs": 1775659503615.767,
-      "updatedAt": "2026-09-29T21:51:31.039Z",
+      "updatedAt": "2026-09-30T02:38:50.810Z",
       "source": "scan",
-      "importance": 0.0485
+      "importance": 0.0381
     },
     "src/components/ui/WikiStatRow.tsx": {
       "description": "WikiStatRow",
@@ -1365,17 +1644,40 @@
       "hash": "00f1a63dacb972ae",
       "size": 481,
       "mtimeMs": 1775656511134.5625,
-      "updatedAt": "2026-09-29T21:51:31.039Z",
+      "updatedAt": "2026-09-30T02:38:50.811Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
+    },
+    "src/components/ui/WipeRealmModal.tsx": {
+      "description": "WipeRealmModal — uses useEffect",
+      "tokens": 1494,
+      "hash": "93417e4e5d4ef9b7",
+      "size": 5226,
+      "mtimeMs": 1790729517233.306,
+      "updatedAt": "2026-09-30T02:38:50.815Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "WipeRealmModalProps",
+          "kind": "section",
+          "startLine": 6,
+          "endLine": 13,
+          "tokens": 51
+        }
+      ],
+      "symbolSource": "ts",
+      "imports": [
+        "src/types.ts"
+      ],
+      "importance": 0.0209
     },
     "src/components/viewer/CharacterStatBlock.tsx": {
       "description": "CharacterStatBlock — renders chart",
-      "tokens": 3086,
-      "hash": "4dc01998ea2c66ed",
-      "size": 10800,
-      "mtimeMs": 1786294037833.0554,
-      "updatedAt": "2026-09-29T21:51:31.040Z",
+      "tokens": 3380,
+      "hash": "581145c392e0c72a",
+      "size": 11830,
+      "mtimeMs": 1790730531321.4814,
+      "updatedAt": "2026-09-30T02:38:50.818Z",
       "source": "scan",
       "symbols": [
         {
@@ -1389,8 +1691,8 @@
           "name": "CharacterStatBlock",
           "kind": "fn",
           "startLine": 15,
-          "endLine": 171,
-          "tokens": 2944
+          "endLine": 177,
+          "tokens": 3239
         }
       ],
       "symbolSource": "ts",
@@ -1401,23 +1703,23 @@
         "src/utils/backlinkUtils.ts",
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0269
+      "importance": 0.0244
     },
     "src/components/viewer/EntityViewer.tsx": {
       "description": "EntityViewer — uses useMemo",
-      "tokens": 3745,
-      "hash": "2202f6d3e3c4bd99",
-      "size": 13105,
-      "mtimeMs": 1786294037844.494,
-      "updatedAt": "2026-09-29T21:51:31.040Z",
+      "tokens": 4098,
+      "hash": "c1be4b2099c65d26",
+      "size": 14343,
+      "mtimeMs": 1790732152709.2527,
+      "updatedAt": "2026-09-30T02:38:50.822Z",
       "source": "scan",
       "symbols": [
         {
           "name": "EntityViewer",
           "kind": "fn",
           "startLine": 13,
-          "endLine": 198,
-          "tokens": 3553
+          "endLine": 222,
+          "tokens": 3902
         }
       ],
       "symbolSource": "ts",
@@ -1434,7 +1736,7 @@
         "src/components/viewer/ViewerSectionCard.tsx",
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0269
+      "importance": 0.0243
     },
     "src/components/viewer/index.ts": {
       "description": "",
@@ -1442,7 +1744,7 @@
       "hash": "dae9600d42adeda9",
       "size": 134,
       "mtimeMs": 1775656636707.2573,
-      "updatedAt": "2026-09-29T21:51:31.040Z",
+      "updatedAt": "2026-09-30T02:38:50.823Z",
       "source": "scan",
       "imports": [
         "src/components/viewer/ViewerHeaders.tsx",
@@ -1450,7 +1752,7 @@
         "src/components/viewer/WikiInfobox.tsx",
         "src/components/viewer/EntityViewer.tsx"
       ],
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "src/components/viewer/specifics/AbilitySpecificsViewer.tsx": {
       "description": "AbilitySpecificsViewer",
@@ -1458,7 +1760,7 @@
       "hash": "4988184ec5a578bf",
       "size": 9672,
       "mtimeMs": 1776823603460.9036,
-      "updatedAt": "2026-09-29T21:51:31.040Z",
+      "updatedAt": "2026-09-30T02:38:50.829Z",
       "source": "scan",
       "symbols": [
         {
@@ -1482,7 +1784,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/ChapterSpecificsViewer.tsx": {
       "description": "ChapterSpecificsViewer",
@@ -1490,21 +1792,21 @@
       "hash": "b4490e5245118b4b",
       "size": 1249,
       "mtimeMs": 1776823603433.149,
-      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "updatedAt": "2026-09-30T02:38:50.831Z",
       "source": "scan",
       "imports": [
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/CharacterSpecificsViewer.tsx": {
       "description": "CharacterSpecificsViewer",
-      "tokens": 3769,
-      "hash": "a265746656b29665",
-      "size": 13201,
-      "mtimeMs": 1786274661598.8945,
-      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "tokens": 4265,
+      "hash": "224f3ed9ee87af73",
+      "size": 14953,
+      "mtimeMs": 1790730618289.0745,
+      "updatedAt": "2026-09-30T02:38:50.837Z",
       "source": "scan",
       "symbols": [
         {
@@ -1518,8 +1820,8 @@
           "name": "CharacterSpecificsViewer",
           "kind": "fn",
           "startLine": 15,
-          "endLine": 155,
-          "tokens": 3650
+          "endLine": 173,
+          "tokens": 4146
         }
       ],
       "symbolSource": "ts",
@@ -1530,7 +1832,7 @@
         "src/components/viewer/ViewerSectionCard.tsx",
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/ConditionSpecificsViewer.tsx": {
       "description": "ConditionSpecificsViewer",
@@ -1538,7 +1840,7 @@
       "hash": "e31bbbd98614a7b4",
       "size": 10797,
       "mtimeMs": 1776823603434.3037,
-      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "updatedAt": "2026-09-30T02:38:50.840Z",
       "source": "scan",
       "symbols": [
         {
@@ -1562,7 +1864,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/CultureSpecificsViewer.tsx": {
       "description": "CultureSpecificsViewer",
@@ -1570,7 +1872,7 @@
       "hash": "4c3cb04a77b2bb3a",
       "size": 8031,
       "mtimeMs": 1776823603436.3025,
-      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "updatedAt": "2026-09-30T02:38:50.843Z",
       "source": "scan",
       "symbols": [
         {
@@ -1594,7 +1896,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/CurrencySpecificsViewer.tsx": {
       "description": "CurrencySpecificsViewer",
@@ -1602,7 +1904,7 @@
       "hash": "5f3a91c8e35cdaea",
       "size": 3838,
       "mtimeMs": 1776823603437.3047,
-      "updatedAt": "2026-09-29T21:51:31.041Z",
+      "updatedAt": "2026-09-30T02:38:50.845Z",
       "source": "scan",
       "symbols": [
         {
@@ -1625,7 +1927,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/EntitySpecificsViewerRegistry.tsx": {
       "description": "EntitySpecificsViewerRegistry",
@@ -1633,7 +1935,7 @@
       "hash": "c91b3e133ffd0a6e",
       "size": 4310,
       "mtimeMs": 1776823626436.0276,
-      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "updatedAt": "2026-09-30T02:38:50.846Z",
       "source": "scan",
       "symbols": [
         {
@@ -1656,7 +1958,7 @@
         "src/types.ts",
         "src/components/viewer/specifics/index.ts"
       ],
-      "importance": 0.0226
+      "importance": 0.0205
     },
     "src/components/viewer/specifics/EventSpecificsViewer.tsx": {
       "description": "EventSpecificsViewer",
@@ -1664,7 +1966,7 @@
       "hash": "d3c13109ab273199",
       "size": 7394,
       "mtimeMs": 1776823603438.906,
-      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "updatedAt": "2026-09-30T02:38:50.851Z",
       "source": "scan",
       "symbols": [
         {
@@ -1688,7 +1990,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/index.ts": {
       "description": "",
@@ -1696,7 +1998,7 @@
       "hash": "28399d690bc52235",
       "size": 866,
       "mtimeMs": 1776807782232.3267,
-      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "updatedAt": "2026-09-30T02:38:50.852Z",
       "source": "scan",
       "imports": [
         "src/components/viewer/specifics/ChapterSpecificsViewer.tsx",
@@ -1720,7 +2022,7 @@
         "src/components/viewer/specifics/TechSpecificsViewer.tsx",
         "src/components/viewer/specifics/AbilitySpecificsViewer.tsx"
       ],
-      "importance": 0.0299
+      "importance": 0.0272
     },
     "src/components/viewer/specifics/ItemSpecificsViewer.tsx": {
       "description": "ItemSpecificsViewer",
@@ -1728,7 +2030,7 @@
       "hash": "8f38c9e21e06c45d",
       "size": 10047,
       "mtimeMs": 1776823603440.9988,
-      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "updatedAt": "2026-09-30T02:38:50.858Z",
       "source": "scan",
       "symbols": [
         {
@@ -1752,7 +2054,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/LanguageSpecificsViewer.tsx": {
       "description": "LanguageSpecificsViewer",
@@ -1760,7 +2062,7 @@
       "hash": "90dea1540729ae71",
       "size": 4568,
       "mtimeMs": 1776823603443.004,
-      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "updatedAt": "2026-09-30T02:38:50.860Z",
       "source": "scan",
       "symbols": [
         {
@@ -1783,38 +2085,40 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/LocationSpecificsViewer.tsx": {
-      "description": "LocationSpecificsViewer",
-      "tokens": 1342,
-      "hash": "27c349cdb196992b",
-      "size": 4694,
-      "mtimeMs": 1776821394410.2937,
-      "updatedAt": "2026-09-29T21:51:31.042Z",
+      "description": "LocationSpecificsViewer — renders map",
+      "tokens": 2049,
+      "hash": "e2c75af9f2fdfb14",
+      "size": 7170,
+      "mtimeMs": 1790725013969.525,
+      "updatedAt": "2026-09-30T02:38:50.861Z",
       "source": "scan",
       "symbols": [
         {
           "name": "Props",
           "kind": "section",
-          "startLine": 5,
-          "endLine": 11,
+          "startLine": 7,
+          "endLine": 13,
           "tokens": 47
         },
         {
           "name": "LocationSpecificsViewer",
           "kind": "fn",
-          "startLine": 13,
-          "endLine": 57,
-          "tokens": 1254
+          "startLine": 15,
+          "endLine": 93,
+          "tokens": 1929
         }
       ],
       "symbolSource": "ts",
+      "skeleton": "interface Props {\nexport const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntities, onNavigate, isWikiMode, backlinks }) => {",
       "imports": [
         "src/types.ts",
-        "src/components/ui/index.ts"
+        "src/components/ui/index.ts",
+        "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/MagicSpecificsViewer.tsx": {
       "description": "MagicSpecificsViewer",
@@ -1822,7 +2126,7 @@
       "hash": "cd0117a322602e4e",
       "size": 12217,
       "mtimeMs": 1776823603445.0024,
-      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "updatedAt": "2026-09-30T02:38:50.866Z",
       "source": "scan",
       "symbols": [
         {
@@ -1846,7 +2150,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/MythSpecificsViewer.tsx": {
       "description": "MythSpecificsViewer",
@@ -1854,7 +2158,7 @@
       "hash": "81c0cc3530714d86",
       "size": 6579,
       "mtimeMs": 1776823603446.0024,
-      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "updatedAt": "2026-09-30T02:38:50.867Z",
       "source": "scan",
       "symbols": [
         {
@@ -1877,7 +2181,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/NoteSpecificsViewer.tsx": {
       "description": "NoteSpecificsViewer",
@@ -1885,7 +2189,7 @@
       "hash": "d2951f362ad14a2e",
       "size": 7106,
       "mtimeMs": 1776823603444.0027,
-      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "updatedAt": "2026-09-30T02:38:50.872Z",
       "source": "scan",
       "symbols": [
         {
@@ -1909,7 +2213,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/OccupationSpecificsViewer.tsx": {
       "description": "OccupationSpecificsViewer",
@@ -1917,7 +2221,7 @@
       "hash": "7c20b70c6420b5a4",
       "size": 8127,
       "mtimeMs": 1776823603449.5051,
-      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "updatedAt": "2026-09-30T02:38:50.874Z",
       "source": "scan",
       "symbols": [
         {
@@ -1941,7 +2245,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/OrganizationSpecificsViewer.tsx": {
       "description": "OrganizationSpecificsViewer",
@@ -1949,7 +2253,7 @@
       "hash": "957ba4e49f1bf44a",
       "size": 11833,
       "mtimeMs": 1776823603440.4116,
-      "updatedAt": "2026-09-29T21:51:31.043Z",
+      "updatedAt": "2026-09-30T02:38:50.879Z",
       "source": "scan",
       "symbols": [
         {
@@ -1973,7 +2277,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/PoliticalGroupSpecificsViewer.tsx": {
       "description": "PoliticalGroupSpecificsViewer",
@@ -1981,7 +2285,7 @@
       "hash": "d6d22c11d45aa7ed",
       "size": 12012,
       "mtimeMs": 1776823603448.0027,
-      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "updatedAt": "2026-09-30T02:38:50.882Z",
       "source": "scan",
       "symbols": [
         {
@@ -2005,7 +2309,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/ReligionSpecificsViewer.tsx": {
       "description": "ReligionSpecificsViewer",
@@ -2013,7 +2317,7 @@
       "hash": "68b31ce621a102e4",
       "size": 11931,
       "mtimeMs": 1776823603452.0784,
-      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "updatedAt": "2026-09-30T02:38:50.886Z",
       "source": "scan",
       "symbols": [
         {
@@ -2037,7 +2341,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/ResourceSpecificsViewer.tsx": {
       "description": "ResourceSpecificsViewer",
@@ -2045,7 +2349,7 @@
       "hash": "12c637b8baa51da8",
       "size": 10124,
       "mtimeMs": 1776823603453.0813,
-      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "updatedAt": "2026-09-30T02:38:50.892Z",
       "source": "scan",
       "symbols": [
         {
@@ -2069,7 +2373,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/SpeciesSpecificsViewer.tsx": {
       "description": "SpeciesSpecificsViewer",
@@ -2077,7 +2381,7 @@
       "hash": "2b895327ffee71dd",
       "size": 10787,
       "mtimeMs": 1776823603451.0107,
-      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "updatedAt": "2026-09-30T02:38:50.894Z",
       "source": "scan",
       "symbols": [
         {
@@ -2101,7 +2405,7 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/specifics/TechSpecificsViewer.tsx": {
       "description": "TechSpecificsViewer",
@@ -2109,7 +2413,7 @@
       "hash": "9e16ebc46c2b0ff9",
       "size": 12100,
       "mtimeMs": 1776823603459.8555,
-      "updatedAt": "2026-09-29T21:51:31.044Z",
+      "updatedAt": "2026-09-30T02:38:50.899Z",
       "source": "scan",
       "symbols": [
         {
@@ -2133,51 +2437,53 @@
         "src/types.ts",
         "src/components/ui/index.ts"
       ],
-      "importance": 0.0216
+      "importance": 0.0196
     },
     "src/components/viewer/ViewerHeaders.tsx": {
       "description": "CodexHeader",
-      "tokens": 989,
-      "hash": "a975daeb01d3a1ba",
-      "size": 3461,
-      "mtimeMs": 1786294037853.9622,
-      "updatedAt": "2026-09-29T21:51:31.045Z",
+      "tokens": 2102,
+      "hash": "3296f4bd8edf07cf",
+      "size": 7354,
+      "mtimeMs": 1790729849973.9678,
+      "updatedAt": "2026-09-30T02:38:50.905Z",
       "source": "scan",
       "symbols": [
         {
           "name": "HeaderProps",
           "kind": "section",
-          "startLine": 5,
-          "endLine": 9,
-          "tokens": 29
+          "startLine": 6,
+          "endLine": 11,
+          "tokens": 38
         },
         {
           "name": "CodexHeader",
           "kind": "fn",
-          "startLine": 11,
-          "endLine": 25,
-          "tokens": 316
+          "startLine": 13,
+          "endLine": 49,
+          "tokens": 743
         },
         {
           "name": "WikiHeader",
           "kind": "fn",
-          "startLine": 27,
-          "endLine": 40,
-          "tokens": 245
+          "startLine": 51,
+          "endLine": 84,
+          "tokens": 564
         },
         {
           "name": "RoyalHeader",
           "kind": "fn",
-          "startLine": 42,
-          "endLine": 62,
-          "tokens": 363
+          "startLine": 86,
+          "endLine": 126,
+          "tokens": 703
         }
       ],
       "symbolSource": "ts",
+      "skeleton": "interface HeaderProps {\nexport const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => (\nexport const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => (\nexport const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => (",
       "imports": [
-        "src/types.ts"
+        "src/types.ts",
+        "src/components/ui/NexusImage.tsx"
       ],
-      "importance": 0.0269
+      "importance": 0.0244
     },
     "src/components/viewer/ViewerSectionCard.tsx": {
       "description": "ViewerSectionCard",
@@ -2185,7 +2491,7 @@
       "hash": "1a9080c826155ba0",
       "size": 4215,
       "mtimeMs": 1786274661607.3296,
-      "updatedAt": "2026-09-29T21:51:31.045Z",
+      "updatedAt": "2026-09-30T02:38:50.907Z",
       "source": "scan",
       "symbols": [
         {
@@ -2207,7 +2513,7 @@
       "imports": [
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0272
+      "importance": 0.0247
     },
     "src/components/viewer/WikiInfobox.tsx": {
       "description": "WikiInfobox — renders table, chart",
@@ -2215,7 +2521,7 @@
       "hash": "3ea2c9f452537854",
       "size": 7947,
       "mtimeMs": 1786271460031.3474,
-      "updatedAt": "2026-09-29T21:51:31.045Z",
+      "updatedAt": "2026-09-30T02:38:50.909Z",
       "source": "scan",
       "symbols": [
         {
@@ -2241,30 +2547,30 @@
         "src/constants.ts",
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0269
+      "importance": 0.0244
     },
     "src/constants.ts": {
       "description": "Exports TYPE_LABELS, HIERARCHY_CONFIG",
-      "tokens": 368,
-      "hash": "89e82f003ac0485d",
-      "size": 1285,
-      "mtimeMs": 1786294037853.9622,
-      "updatedAt": "2026-09-29T21:51:31.045Z",
+      "tokens": 385,
+      "hash": "e2a8581778c3a430",
+      "size": 1347,
+      "mtimeMs": 1790720618943.9065,
+      "updatedAt": "2026-09-30T02:38:50.913Z",
       "source": "scan",
       "imports": [
         "src/types.ts"
       ],
-      "importance": 0.0646
+      "importance": 0.0626
     },
     "src/index.css": {
-      "description": "Styles: 1 rules",
-      "tokens": 57,
-      "hash": "f7853c055d216c74",
-      "size": 197,
-      "mtimeMs": 1786283170108.7275,
-      "updatedAt": "2026-09-29T21:51:31.046Z",
+      "description": "Styles: 32 rules",
+      "tokens": 816,
+      "hash": "9e3df9cb0718a902",
+      "size": 2944,
+      "mtimeMs": 1790721927132.3918,
+      "updatedAt": "2026-09-30T02:38:50.916Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "src/index.tsx": {
       "description": "rootElement",
@@ -2272,44 +2578,52 @@
       "hash": "c8368b4685b86541",
       "size": 367,
       "mtimeMs": 1775656212028.7554,
-      "updatedAt": "2026-09-29T21:51:31.046Z",
+      "updatedAt": "2026-09-30T02:38:50.918Z",
       "source": "scan",
       "imports": [
         "src/App.tsx"
       ],
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "src/store/useWorldStore.ts": {
-      "description": "Exports useWorldStore",
-      "tokens": 13542,
-      "hash": "ce562ed22ef19eff",
-      "size": 47394,
-      "mtimeMs": 1786271336883.9148,
-      "updatedAt": "2026-09-29T21:51:31.047Z",
+      "description": "Exports DEFAULT_REALM_MAP, useWorldStore",
+      "tokens": 19311,
+      "hash": "f3771130cea3ed53",
+      "size": 67590,
+      "mtimeMs": 1790729595138.4438,
+      "updatedAt": "2026-09-30T02:38:50.934Z",
       "source": "scan",
       "symbols": [
         {
           "name": "WorldStore",
           "kind": "section",
-          "startLine": 6,
-          "endLine": 45,
-          "tokens": 506
+          "startLine": 22,
+          "endLine": 78,
+          "tokens": 797
+        },
+        {
+          "name": "syncWorld",
+          "kind": "fn",
+          "startLine": 80,
+          "endLine": 94,
+          "tokens": 194
         }
       ],
       "symbolSource": "ts",
-      "skeleton": "interface WorldStore {",
+      "skeleton": "interface WorldStore {\nconst syncWorld = (state: WorldStore, nextWorld: WorldData) => {",
       "imports": [
-        "src/types.ts"
+        "src/types.ts",
+        "src/utils/nexusArchive.ts"
       ],
-      "importance": 0.2421
+      "importance": 0.2608
     },
     "src/types.ts": {
-      "description": "Exports EntityType, WorldPhase, ThemeMode, MapConnection + 8 more",
-      "tokens": 14175,
-      "hash": "640b731a66116d50",
-      "size": 49610,
-      "mtimeMs": 1786294037866.7441,
-      "updatedAt": "2026-09-29T21:51:31.047Z",
+      "description": "Exports EntityType, WorldPhase, ThemeMode, MapConnection + 6 more",
+      "tokens": 14762,
+      "hash": "0fbb8ecb03fa8295",
+      "size": 51668,
+      "mtimeMs": 1790729775030.0688,
+      "updatedAt": "2026-09-30T02:38:50.938Z",
       "source": "scan",
       "symbols": [
         {
@@ -2317,7 +2631,7 @@
           "kind": "section",
           "startLine": 3,
           "endLine": 7,
-          "tokens": 77
+          "tokens": 83
         },
         {
           "name": "WorldPhase",
@@ -2351,219 +2665,514 @@
           "name": "BaseEntity",
           "kind": "section",
           "startLine": 29,
-          "endLine": 57,
-          "tokens": 304
+          "endLine": 77,
+          "tokens": 481
         },
         {
           "name": "Chapter",
           "kind": "section",
-          "startLine": 61,
-          "endLine": 66,
+          "startLine": 81,
+          "endLine": 86,
           "tokens": 67
         },
         {
           "name": "Character",
           "kind": "section",
-          "startLine": 68,
-          "endLine": 145,
-          "tokens": 1382
+          "startLine": 88,
+          "endLine": 179,
+          "tokens": 1482
         },
         {
           "name": "Condition",
           "kind": "section",
-          "startLine": 147,
-          "endLine": 189,
+          "startLine": 181,
+          "endLine": 223,
           "tokens": 827
         },
         {
           "name": "Culture",
           "kind": "section",
-          "startLine": 191,
-          "endLine": 218,
+          "startLine": 225,
+          "endLine": 252,
           "tokens": 459
         },
         {
           "name": "Currency",
           "kind": "section",
-          "startLine": 220,
-          "endLine": 233,
+          "startLine": 254,
+          "endLine": 267,
           "tokens": 203
         },
         {
           "name": "Event",
           "kind": "section",
-          "startLine": 235,
-          "endLine": 259,
-          "tokens": 398
+          "startLine": 269,
+          "endLine": 294,
+          "tokens": 409
         },
         {
           "name": "Organization",
           "kind": "section",
-          "startLine": 261,
-          "endLine": 308,
+          "startLine": 296,
+          "endLine": 343,
           "tokens": 850
         },
         {
           "name": "Item",
           "kind": "section",
-          "startLine": 310,
-          "endLine": 345,
+          "startLine": 345,
+          "endLine": 380,
           "tokens": 657
         },
         {
           "name": "Language",
           "kind": "section",
-          "startLine": 347,
-          "endLine": 366,
+          "startLine": 382,
+          "endLine": 401,
           "tokens": 331
         },
         {
           "name": "Location",
           "kind": "section",
-          "startLine": 368,
-          "endLine": 412,
-          "tokens": 788
+          "startLine": 403,
+          "endLine": 469,
+          "tokens": 986
         },
         {
           "name": "Note",
           "kind": "section",
-          "startLine": 414,
-          "endLine": 439,
+          "startLine": 471,
+          "endLine": 496,
           "tokens": 468
         },
         {
           "name": "Magic",
           "kind": "section",
-          "startLine": 441,
-          "endLine": 493,
+          "startLine": 498,
+          "endLine": 550,
           "tokens": 907
         },
         {
           "name": "Myth",
           "kind": "section",
-          "startLine": 495,
-          "endLine": 517,
+          "startLine": 552,
+          "endLine": 574,
           "tokens": 415
         },
         {
           "name": "PoliticalGroup",
           "kind": "section",
-          "startLine": 519,
-          "endLine": 569,
+          "startLine": 576,
+          "endLine": 626,
           "tokens": 896
         },
         {
           "name": "Occupation",
           "kind": "section",
-          "startLine": 571,
-          "endLine": 597,
+          "startLine": 628,
+          "endLine": 654,
           "tokens": 461
         },
         {
           "name": "Species",
           "kind": "section",
-          "startLine": 599,
-          "endLine": 641,
+          "startLine": 656,
+          "endLine": 698,
           "tokens": 720
         },
         {
           "name": "Religion",
           "kind": "section",
-          "startLine": 643,
-          "endLine": 693,
+          "startLine": 700,
+          "endLine": 750,
           "tokens": 890
         },
         {
           "name": "Resource",
           "kind": "section",
-          "startLine": 695,
-          "endLine": 731,
+          "startLine": 752,
+          "endLine": 788,
           "tokens": 643
         },
         {
           "name": "Tech",
           "kind": "section",
-          "startLine": 733,
-          "endLine": 783,
-          "tokens": 891
+          "startLine": 790,
+          "endLine": 840,
+          "tokens": 894
         },
         {
           "name": "Ability",
           "kind": "section",
-          "startLine": 785,
-          "endLine": 821,
+          "startLine": 842,
+          "endLine": 878,
           "tokens": 662
         },
         {
           "name": "WorldEntity",
           "kind": "section",
-          "startLine": 828,
-          "endLine": 828,
+          "startLine": 885,
+          "endLine": 885,
           "tokens": 67
         },
         {
           "name": "WorldData",
           "kind": "section",
-          "startLine": 830,
-          "endLine": 837,
-          "tokens": 52
+          "startLine": 887,
+          "endLine": 898,
+          "tokens": 76
+        },
+        {
+          "name": "UniverseArchive",
+          "kind": "section",
+          "startLine": 900,
+          "endLine": 905,
+          "tokens": 35
         },
         {
           "name": "EntityEditorProps",
           "kind": "section",
-          "startLine": 839,
-          "endLine": 847,
+          "startLine": 907,
+          "endLine": 915,
           "tokens": 81
-        },
-        {
-          "name": "EntityViewerProps",
-          "kind": "section",
-          "startLine": 849,
-          "endLine": 857,
-          "tokens": 68
         }
       ],
       "symbolSource": "ts",
       "skeleton": "export type EntityType =\nexport type WorldPhase = 'creation' | 'golden' | 'shadow' | 'eclipse' | 'ruin';\nexport type ThemeMode = 'sovereign' | 'wiki' | 'royal-codex';\nexport interface MapConnection {\nexport interface GroupRoleLinks {\nexport interface BaseEntity {\nexport interface Chapter extends BaseEntity {\nexport interface Character extends BaseEntity {\nexport interface Condition extends BaseEntity {\nexport interface Culture extends BaseEntity {\nexport interface Currency extends BaseEntity {\nexport interface Event extends BaseEntity {\nexport interface Organization extends BaseEntity {\nexport interface Item extends BaseEntity {\nexport interface Language extends BaseEntity {\nexport interface Location extends BaseEntity {\nexport interface Note extends BaseEntity {\nexport interface Magic extends BaseEntity {\nexport interface Myth extends BaseEntity {\nexport interface PoliticalGroup extends BaseEntity {\nexport interface Occupation extends BaseEntity {\nexport interface Species extends BaseEntity {\nexport interface Religion extends BaseEntity {\nexport interface Resource extends BaseEntity {\nexport interface Tech extends BaseEntity {\nexport interface Ability extends BaseEntity {",
       "importance": 1
     },
+    "src/utils/assetStore.ts": {
+      "description": "Nexus Chronicle - IndexedDB Asset Engine",
+      "tokens": 1968,
+      "hash": "28457faa09ea144c",
+      "size": 6887,
+      "mtimeMs": 1790727325526.8442,
+      "updatedAt": "2026-09-30T02:38:50.942Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "StoredAsset",
+          "kind": "section",
+          "startLine": 7,
+          "endLine": 14,
+          "tokens": 52
+        },
+        {
+          "name": "getAssetDb",
+          "kind": "fn",
+          "startLine": 26,
+          "endLine": 57,
+          "tokens": 311
+        },
+        {
+          "name": "saveAsset",
+          "kind": "fn",
+          "startLine": 63,
+          "endLine": 97,
+          "tokens": 304
+        },
+        {
+          "name": "getAsset",
+          "kind": "fn",
+          "startLine": 102,
+          "endLine": 117,
+          "tokens": 163
+        },
+        {
+          "name": "resolveAssetUrl",
+          "kind": "fn",
+          "startLine": 123,
+          "endLine": 137,
+          "tokens": 130
+        },
+        {
+          "name": "deleteAsset",
+          "kind": "fn",
+          "startLine": 142,
+          "endLine": 158,
+          "tokens": 165
+        },
+        {
+          "name": "getAllAssets",
+          "kind": "fn",
+          "startLine": 163,
+          "endLine": 176,
+          "tokens": 130
+        },
+        {
+          "name": "importAssets",
+          "kind": "fn",
+          "startLine": 181,
+          "endLine": 198,
+          "tokens": 157
+        },
+        {
+          "name": "requestPersistentStorage",
+          "kind": "fn",
+          "startLine": 203,
+          "endLine": 208,
+          "tokens": 70
+        },
+        {
+          "name": "getStorageEstimate",
+          "kind": "fn",
+          "startLine": 213,
+          "endLine": 222,
+          "tokens": 164
+        }
+      ],
+      "symbolSource": "ts",
+      "importance": 0.1223
+    },
     "src/utils/backlinkUtils.ts": {
       "description": "Exports CategorizedBacklinks, getCategorizedBacklinks",
-      "tokens": 1567,
-      "hash": "b9c343e88f68073b",
-      "size": 5483,
-      "mtimeMs": 1786294037875.2473,
-      "updatedAt": "2026-09-29T21:51:31.048Z",
+      "tokens": 2582,
+      "hash": "3fc14a7729e4f260",
+      "size": 9036,
+      "mtimeMs": 1790720822793.7817,
+      "updatedAt": "2026-09-30T02:38:50.946Z",
       "source": "scan",
       "symbols": [
         {
           "name": "CategorizedBacklinks",
           "kind": "section",
           "startLine": 3,
-          "endLine": 29,
-          "tokens": 368
+          "endLine": 30,
+          "tokens": 382
         },
         {
           "name": "getCategorizedBacklinks",
           "kind": "fn",
-          "startLine": 31,
-          "endLine": 105,
-          "tokens": 1184
+          "startLine": 32,
+          "endLine": 166,
+          "tokens": 2185
         }
       ],
       "symbolSource": "ts",
+      "skeleton": "export interface CategorizedBacklinks {\nexport function getCategorizedBacklinks(targetId: string, allEntities: WorldEntity[]): CategorizedBacklinks {",
       "imports": [
         "src/types.ts"
       ],
-      "importance": 0.0283
+      "importance": 0.0257
+    },
+    "src/utils/nexusArchive.ts": {
+      "description": "Nexus Chronicle - Unified .nexus Archive Bundler (ZIP Format)",
+      "tokens": 3405,
+      "hash": "a778e16da204917f",
+      "size": 12609,
+      "mtimeMs": 1790729530614.4763,
+      "updatedAt": "2026-09-30T02:38:50.950Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "AssetManifestEntry",
+          "kind": "section",
+          "startLine": 23,
+          "endLine": 29,
+          "tokens": 57
+        },
+        {
+          "name": "ArchiveManifest",
+          "kind": "section",
+          "startLine": 31,
+          "endLine": 39,
+          "tokens": 60
+        },
+        {
+          "name": "mimeToExt",
+          "kind": "fn",
+          "startLine": 44,
+          "endLine": 62,
+          "tokens": 155
+        },
+        {
+          "name": "extractReferencedAssetIds",
+          "kind": "fn",
+          "startLine": 68,
+          "endLine": 85,
+          "tokens": 162
+        },
+        {
+          "name": "createNexusArchive",
+          "kind": "fn",
+          "startLine": 93,
+          "endLine": 155,
+          "tokens": 705
+        },
+        {
+          "name": "unpackNexusArchive",
+          "kind": "fn",
+          "startLine": 164,
+          "endLine": 218,
+          "tokens": 528
+        },
+        {
+          "name": "downloadFileToDevice",
+          "kind": "fn",
+          "startLine": 231,
+          "endLine": 319,
+          "tokens": 930
+        },
+        {
+          "name": "exportNexusArchiveFile",
+          "kind": "fn",
+          "startLine": 324,
+          "endLine": 335,
+          "tokens": 154
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "export interface AssetManifestEntry {\nexport interface ArchiveManifest {\nconst mimeToExt = (mime: string): string => {\nexport const extractReferencedAssetIds = (obj: any): Set<string> => {\nexport const createNexusArchive = async (\nexport const unpackNexusArchive = async (\nexport const downloadFileToDevice = async (\nexport const exportNexusArchiveFile = async (",
+      "imports": [
+        "src/types.ts",
+        "src/utils/assetStore.ts"
+      ],
+      "importance": 0.1458
+    },
+    "src/utils/nexusBeam.ts": {
+      "description": "Nexus Beam - High-Speed Direct P2P WebRTC Transfer Engine",
+      "tokens": 3623,
+      "hash": "3d381fbb38ec8475",
+      "size": 12680,
+      "mtimeMs": 1790727373838.1316,
+      "updatedAt": "2026-09-30T02:38:50.956Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "BeamStage",
+          "kind": "section",
+          "startLine": 18,
+          "endLine": 27,
+          "tokens": 56
+        },
+        {
+          "name": "BeamProgress",
+          "kind": "section",
+          "startLine": 29,
+          "endLine": 36,
+          "tokens": 50
+        },
+        {
+          "name": "ProgressCallback",
+          "kind": "section",
+          "startLine": 38,
+          "endLine": 38,
+          "tokens": 19
+        },
+        {
+          "name": "encodeSignalToken",
+          "kind": "fn",
+          "startLine": 43,
+          "endLine": 50,
+          "tokens": 60
+        },
+        {
+          "name": "decodeSignalToken",
+          "kind": "fn",
+          "startLine": 55,
+          "endLine": 62,
+          "tokens": 62
+        },
+        {
+          "name": "NexusBeamSender",
+          "kind": "class",
+          "startLine": 67,
+          "endLine": 205,
+          "tokens": 1477
+        },
+        {
+          "name": "NexusBeamSender.constructor",
+          "kind": "method",
+          "startLine": 73,
+          "endLine": 76,
+          "tokens": 48
+        },
+        {
+          "name": "NexusBeamSender.initialize",
+          "kind": "method",
+          "startLine": 81,
+          "endLine": 119,
+          "tokens": 469
+        },
+        {
+          "name": "NexusBeamSender.connectWithAnswer",
+          "kind": "method",
+          "startLine": 124,
+          "endLine": 131,
+          "tokens": 130
+        },
+        {
+          "name": "NexusBeamSender.startStreaming",
+          "kind": "method",
+          "startLine": 136,
+          "endLine": 199,
+          "tokens": 679
+        },
+        {
+          "name": "NexusBeamSender.close",
+          "kind": "method",
+          "startLine": 201,
+          "endLine": 204,
+          "tokens": 20
+        },
+        {
+          "name": "NexusBeamReceiver",
+          "kind": "class",
+          "startLine": 210,
+          "endLine": 352,
+          "tokens": 1629
+        },
+        {
+          "name": "NexusBeamReceiver.constructor",
+          "kind": "method",
+          "startLine": 219,
+          "endLine": 228,
+          "tokens": 96
+        },
+        {
+          "name": "NexusBeamReceiver.initializeWithOffer",
+          "kind": "method",
+          "startLine": 233,
+          "endLine": 263,
+          "tokens": 386
+        },
+        {
+          "name": "NexusBeamReceiver.setupDataChannel",
+          "kind": "method",
+          "startLine": 265,
+          "endLine": 309,
+          "tokens": 611
+        },
+        {
+          "name": "NexusBeamReceiver.finalizeStream",
+          "kind": "method",
+          "startLine": 311,
+          "endLine": 346,
+          "tokens": 402
+        },
+        {
+          "name": "NexusBeamReceiver.close",
+          "kind": "method",
+          "startLine": 348,
+          "endLine": 351,
+          "tokens": 20
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "export type BeamStage =\nexport interface BeamProgress {\nexport type ProgressCallback = (progress: BeamProgress) => void;\nexport const encodeSignalToken = (data: any): string => {\nexport const decodeSignalToken = (token: string): any => {\nexport class NexusBeamSender {\n    constructor(onProgress: ProgressCallback) {\n    async initialize(target: { world?: WorldData; universe?: UniverseArchive }): Promise<string> {\n    async connectWithAnswer(answerToken: string): Promise<void> {\n    private async startStreaming(): Promise<void> {\n    close() {\nexport class NexusBeamReceiver {\n    constructor(onProgress: ProgressCallback) {\n    async initializeWithOffer(offerToken: string): Promise<string> {\n    private setupDataChannel() {\n    private async finalizeStream() {\n    close() {",
+      "imports": [
+        "src/utils/nexusArchive.ts",
+        "src/types.ts"
+      ],
+      "importance": 0.0229
     },
     "src/views/DashboardView.tsx": {
-      "description": "DashboardView — renders chart — uses useMemo",
-      "tokens": 3364,
-      "hash": "0d35b9d7d2dbec92",
-      "size": 11774,
-      "mtimeMs": 1786294037879.1956,
-      "updatedAt": "2026-09-29T21:51:31.048Z",
+      "description": "DashboardView — renders chart — uses useMemo, useState",
+      "tokens": 3898,
+      "hash": "1d4e004c62fc99e1",
+      "size": 13643,
+      "mtimeMs": 1790721564202.665,
+      "updatedAt": "2026-09-30T02:38:50.966Z",
       "source": "scan",
       "symbols": [
         {
@@ -2577,14 +3186,14 @@
           "name": "DashboardView",
           "kind": "fn",
           "startLine": 13,
-          "endLine": 186,
-          "tokens": 3078
+          "endLine": 216,
+          "tokens": 3607
         },
         {
           "name": "StatCard",
           "kind": "fn",
-          "startLine": 188,
-          "endLine": 198,
+          "startLine": 218,
+          "endLine": 228,
           "tokens": 170
         }
       ],
@@ -2595,7 +3204,7 @@
         "src/constants.ts",
         "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0226
+      "importance": 0.0204
     },
     "src/views/index.ts": {
       "description": "",
@@ -2603,105 +3212,203 @@
       "hash": "822d170ee03faf8b",
       "size": 88,
       "mtimeMs": 1775656681416.262,
-      "updatedAt": "2026-09-29T21:51:31.048Z",
+      "updatedAt": "2026-09-30T02:38:50.968Z",
       "source": "scan",
       "imports": [
         "src/views/TrashView.tsx",
         "src/views/OptionsView.tsx",
         "src/views/WorldMap.tsx"
       ],
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "src/views/JourneyView.tsx": {
-      "description": "JourneyView — renders map — uses useMemo",
-      "tokens": 2271,
-      "hash": "6512bd6ba5c51ef0",
-      "size": 7949,
-      "mtimeMs": 1775664231207.1624,
-      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "description": "TRAVEL_SPEEDS — renders map — uses useMemo",
+      "tokens": 14713,
+      "hash": "418cfe817269ff4e",
+      "size": 51513,
+      "mtimeMs": 1790731128924.4497,
+      "updatedAt": "2026-09-30T02:38:50.973Z",
       "source": "scan",
       "symbols": [
         {
           "name": "JourneyViewProps",
           "kind": "section",
-          "startLine": 5,
-          "endLine": 9,
+          "startLine": 12,
+          "endLine": 16,
           "tokens": 33
+        },
+        {
+          "name": "TravelMethod",
+          "kind": "section",
+          "startLine": 18,
+          "endLine": 18,
+          "tokens": 19
+        },
+        {
+          "name": "TerrainType",
+          "kind": "section",
+          "startLine": 19,
+          "endLine": 19,
+          "tokens": 22
         },
         {
           "name": "JourneyView",
           "kind": "fn",
-          "startLine": 11,
-          "endLine": 130,
-          "tokens": 2185
+          "startLine": 37,
+          "endLine": 820,
+          "tokens": 14112
         }
       ],
       "symbolSource": "ts",
-      "skeleton": "interface JourneyViewProps {\nexport const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onNavigate }) => {",
+      "skeleton": "interface JourneyViewProps {\ntype TravelMethod = 'foot' | 'wagon' | 'horse' | 'ship' | 'magic';\ntype TerrainType = 'highway' | 'hills' | 'forest' | 'mountains' | 'chasm';\nexport const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onNavigate }) => {",
       "imports": [
-        "src/types.ts"
+        "src/types.ts",
+        "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0226
+      "importance": 0.0204
+    },
+    "src/views/NexusGraphView.tsx": {
+      "description": "CATEGORY_COLORS",
+      "tokens": 10052,
+      "hash": "c6b4fa1942e001e3",
+      "size": 37236,
+      "mtimeMs": 1790727651568.807,
+      "updatedAt": "2026-09-30T02:38:50.978Z",
+      "source": "scan",
+      "symbols": [
+        {
+          "name": "GraphNode",
+          "kind": "section",
+          "startLine": 24,
+          "endLine": 35,
+          "tokens": 55
+        },
+        {
+          "name": "GraphEdge",
+          "kind": "section",
+          "startLine": 37,
+          "endLine": 41,
+          "tokens": 22
+        },
+        {
+          "name": "EdgeKind",
+          "kind": "section",
+          "startLine": 43,
+          "endLine": 50,
+          "tokens": 73
+        },
+        {
+          "name": "buildEdges",
+          "kind": "fn",
+          "startLine": 87,
+          "endLine": 204,
+          "tokens": 1344
+        },
+        {
+          "name": "initNodes",
+          "kind": "fn",
+          "startLine": 208,
+          "endLine": 226,
+          "tokens": 153
+        },
+        {
+          "name": "tickForces",
+          "kind": "fn",
+          "startLine": 228,
+          "endLine": 286,
+          "tokens": 476
+        },
+        {
+          "name": "Props",
+          "kind": "section",
+          "startLine": 290,
+          "endLine": 294,
+          "tokens": 28
+        },
+        {
+          "name": "ActiveFilters",
+          "kind": "section",
+          "startLine": 296,
+          "endLine": 296,
+          "tokens": 14
+        },
+        {
+          "name": "NexusGraphView",
+          "kind": "fn",
+          "startLine": 298,
+          "endLine": 974,
+          "tokens": 7472
+        }
+      ],
+      "symbolSource": "ts",
+      "skeleton": "interface GraphNode {\ninterface GraphEdge {\ntype EdgeKind =\nfunction buildEdges(entities: WorldEntity[]): GraphEdge[] {\nfunction initNodes(entities: WorldEntity[], w: number, h: number): GraphNode[] {\nfunction tickForces(\ninterface Props {\ntype ActiveFilters = Set<string>; // category ids\nexport const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate }) => {",
+      "imports": [
+        "src/types.ts",
+        "src/constants.ts"
+      ],
+      "importance": 0.0271
     },
     "src/views/NexusTreeView.tsx": {
-      "description": "NexusTreeView — uses useMemo",
-      "tokens": 1574,
-      "hash": "e8e26ea6ac9fdd59",
-      "size": 5507,
-      "mtimeMs": 1786294037888.8813,
-      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "description": "NexusTreeView — uses useMemo, useState",
+      "tokens": 3922,
+      "hash": "a683f9f636fd3eed",
+      "size": 13727,
+      "mtimeMs": 1790724485199.939,
+      "updatedAt": "2026-09-30T02:38:50.985Z",
       "source": "scan",
       "symbols": [
         {
           "name": "NexusTreeViewProps",
           "kind": "section",
-          "startLine": 5,
-          "endLine": 9,
+          "startLine": 6,
+          "endLine": 10,
           "tokens": 34
         },
         {
           "name": "NexusTreeView",
           "kind": "fn",
-          "startLine": 11,
-          "endLine": 55,
-          "tokens": 632
+          "startLine": 12,
+          "endLine": 177,
+          "tokens": 2268
         },
         {
           "name": "TreeNode",
           "kind": "fn",
-          "startLine": 57,
-          "endLine": 115,
-          "tokens": 858
+          "startLine": 179,
+          "endLine": 289,
+          "tokens": 1544
         }
       ],
       "symbolSource": "ts",
+      "skeleton": "interface NexusTreeViewProps {\nexport const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode, onNavigate }) => {\nconst TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0, visitedIds = new Set<string>() }: any) => {",
       "imports": [
-        "src/types.ts"
+        "src/types.ts",
+        "src/views/NexusGraphView.tsx"
       ],
-      "importance": 0.0226
+      "importance": 0.0204
     },
     "src/views/OptionsView.tsx": {
-      "description": "OptionsView — renders form — uses useMemo",
-      "tokens": 3365,
-      "hash": "6a23f750b18aa9c6",
-      "size": 11782,
-      "mtimeMs": 1786294037897.924,
-      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "description": "PHASE_COLORS — uses useState, useMemo",
+      "tokens": 10461,
+      "hash": "3fee44e164504200",
+      "size": 36651,
+      "mtimeMs": 1790729619941.9038,
+      "updatedAt": "2026-09-30T02:38:50.994Z",
       "source": "scan",
       "symbols": [
         {
           "name": "OptionsViewProps",
           "kind": "section",
-          "startLine": 9,
-          "endLine": 14,
+          "startLine": 17,
+          "endLine": 22,
           "tokens": 57
         },
         {
           "name": "OptionsView",
           "kind": "fn",
-          "startLine": 16,
-          "endLine": 185,
-          "tokens": 3222
+          "startLine": 40,
+          "endLine": 634,
+          "tokens": 10065
         }
       ],
       "symbolSource": "ts",
@@ -2710,17 +3417,22 @@
         "src/types.ts",
         "src/constants.ts",
         "src/components/ui/index.ts",
-        "src/store/useWorldStore.ts"
+        "src/store/useWorldStore.ts",
+        "src/components/ui/NewRealmModal.tsx",
+        "src/components/ui/NexusBeamModal.tsx",
+        "src/components/ui/DeleteRealmModal.tsx",
+        "src/components/ui/WipeRealmModal.tsx",
+        "src/utils/nexusArchive.ts"
       ],
-      "importance": 0.0283
+      "importance": 0.0256
     },
     "src/views/TimelineView.tsx": {
       "description": "TimelineView — uses useMemo",
-      "tokens": 2221,
-      "hash": "25691ff5e85b50cf",
-      "size": 7772,
-      "mtimeMs": 1786294037906.927,
-      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "tokens": 2270,
+      "hash": "fde1c63155117094",
+      "size": 7943,
+      "mtimeMs": 1790720640799.12,
+      "updatedAt": "2026-09-30T02:38:50.997Z",
       "source": "scan",
       "symbols": [
         {
@@ -2734,8 +3446,8 @@
           "name": "TimelineView",
           "kind": "fn",
           "startLine": 11,
-          "endLine": 141,
-          "tokens": 2135
+          "endLine": 142,
+          "tokens": 2184
         }
       ],
       "symbolSource": "ts",
@@ -2743,7 +3455,7 @@
       "imports": [
         "src/types.ts"
       ],
-      "importance": 0.0226
+      "importance": 0.0204
     },
     "src/views/TrashView.tsx": {
       "description": "TrashView",
@@ -2751,7 +3463,7 @@
       "hash": "a6f1b2587c556fba",
       "size": 1992,
       "mtimeMs": 1775658623067.7625,
-      "updatedAt": "2026-09-29T21:51:31.049Z",
+      "updatedAt": "2026-09-30T02:38:50.998Z",
       "source": "scan",
       "symbols": [
         {
@@ -2774,38 +3486,46 @@
         "src/types.ts",
         "src/constants.ts"
       ],
-      "importance": 0.0283
+      "importance": 0.0256
     },
     "src/views/WorldMap.tsx": {
-      "description": "WorldMap — renders map",
-      "tokens": 2777,
-      "hash": "9835e7deeaec98ff",
-      "size": 9718,
-      "mtimeMs": 1775664172871.1797,
-      "updatedAt": "2026-09-29T21:51:31.050Z",
+      "description": "WorldMap — uses useState, useMemo",
+      "tokens": 9893,
+      "hash": "8bd4e0b40e1af2c3",
+      "size": 34627,
+      "mtimeMs": 1790731042595.3855,
+      "updatedAt": "2026-09-30T02:38:51.013Z",
       "source": "scan",
       "symbols": [
         {
           "name": "WorldMapProps",
           "kind": "section",
-          "startLine": 5,
-          "endLine": 10,
-          "tokens": 55
+          "startLine": 7,
+          "endLine": 12,
+          "tokens": 56
+        },
+        {
+          "name": "AnchorMode",
+          "kind": "section",
+          "startLine": 14,
+          "endLine": 14,
+          "tokens": 11
         },
         {
           "name": "WorldMap",
           "kind": "fn",
-          "startLine": 12,
-          "endLine": 158,
-          "tokens": 2671
+          "startLine": 16,
+          "endLine": 550,
+          "tokens": 9720
         }
       ],
       "symbolSource": "ts",
-      "skeleton": "interface WorldMapProps {\nexport const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapProps) => {",
+      "skeleton": "interface WorldMapProps {\ntype AnchorMode = 'existing' | 'new';\nexport const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapProps) => {",
       "imports": [
-        "src/types.ts"
+        "src/types.ts",
+        "src/store/useWorldStore.ts"
       ],
-      "importance": 0.0283
+      "importance": 0.0256
     },
     "tsconfig.json": {
       "description": "TypeScript configuration",
@@ -2813,19 +3533,19 @@
       "hash": "87d3eb8a957369a3",
       "size": 570,
       "mtimeMs": 1775653649314.5894,
-      "updatedAt": "2026-09-29T21:51:31.050Z",
+      "updatedAt": "2026-09-30T02:38:51.015Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     },
     "vite.config.ts": {
       "description": "Vite build configuration",
-      "tokens": 98,
-      "hash": "3a908f111ffaa29f",
-      "size": 340,
-      "mtimeMs": 1786283069512.7053,
-      "updatedAt": "2026-09-29T21:51:31.050Z",
+      "tokens": 96,
+      "hash": "fd0c73c73de31f3b",
+      "size": 335,
+      "mtimeMs": 1790720685272.026,
+      "updatedAt": "2026-09-30T02:38:51.018Z",
       "source": "scan",
-      "importance": 0.0203
+      "importance": 0.0184
     }
   },
   "preamble": [

@@ -47,7 +47,7 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
 
         return (
             <div 
-                className="bg-gradient-to-b from-[#4a0d1b] via-[#300611] to-[#1b0207] border-4 border-[#c8a96e] rounded-t-2xl shadow-2xl p-5 pb-10 text-[#fef08a] font-sans relative overflow-hidden"
+                className="bg-gradient-to-b from-[#4a0d1b] via-[#300611] to-[#1b0207] border-4 border-[#c8a96e] rounded-t-2xl shadow-2xl p-5 pb-10 text-[#fff8e7] font-sans relative overflow-hidden"
                 style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 24px), 50% 100%, 0 calc(100% - 24px))' }}
             >
                 {/* Inner Decorative Gold Filigree Border */}

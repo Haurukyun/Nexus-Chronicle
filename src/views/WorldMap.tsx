@@ -14,6 +14,8 @@ interface WorldMapProps {
 type AnchorMode = 'existing' | 'new';
 
 export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapProps) => {
+    const theme = useWorldStore(state => state.theme);
+    const isRoyal = theme === 'royal-codex';
     const [editMode, setEditMode] = useState<'marker' | 'link'>('marker');
     const [linkSource, setLinkSource] = useState<string | null>(null);
 
@@ -177,9 +179,11 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
         pendingConnection ? world.entities.find(e => e.id === pendingConnection.targetId) : null
     , [pendingConnection, world.entities]);
 
-    const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const bgCard = isWikiMode ? 'bg-[#f5e6d3]' : 'bg-slate-900';
-    const inputCls = isWikiMode
+    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = isRoyal ? 'bg-[#f5ead0]' : isWikiMode ? 'bg-[#f5e6d3]' : 'bg-slate-900';
+    const inputCls = isRoyal
+        ? 'bg-[#fcf5e9] border-[#c8a96e]/50 text-[#2b1810] placeholder:text-[#a08a70] focus:ring-2 focus:ring-[#70121e] focus:border-[#70121e]'
+        : isWikiMode
         ? 'bg-white border-[#d4c8af] text-[#2b1810] placeholder:text-[#b0a090] focus:ring-2 focus:ring-[#b91c1c] focus:border-[#b91c1c]'
         : 'bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#fef08a]';
 
@@ -187,26 +191,26 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
         <div className="w-full h-full flex flex-col animate-in fade-in duration-1000 p-12 space-y-8 relative">
             <div className="flex items-end justify-between">
                 <div>
-                    <h2 className={`text-8xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>{world.name} Atlas</h2>
+                    <h2 className={`text-8xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>{world.name} Atlas</h2>
                     <p className="opacity-40 text-xs tracking-[0.4em] uppercase ml-2 italic">Strategic Overlays &amp; Ley-Line Cartography</p>
                 </div>
                 
-                <div className={`flex p-2 rounded-3xl border ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900 border-slate-800'} shadow-xl`}>
+                <div className={`flex p-2 rounded-3xl border ${isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/40' : isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900 border-slate-800'} shadow-xl`}>
                     <button 
                         onClick={() => { setEditMode('marker'); setLinkSource(null); }}
-                        className={`px-6 py-3 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase transition-all ${editMode === 'marker' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black shadow-lg shadow-yellow-500/20') : 'hover:bg-white/5 opacity-70'}`}>
+                        className={`px-6 py-3 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase transition-all ${editMode === 'marker' ? (isRoyal ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-md' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black shadow-lg shadow-yellow-500/20') : 'hover:bg-white/5 opacity-70'}`}>
                         <Globe size={14} /> Anchors
                     </button>
                     <button 
                         onClick={() => setEditMode('link')}
-                        className={`px-6 py-3 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase transition-all ${editMode === 'link' ? (isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-blue-500 text-white shadow-lg shadow-blue-500/20') : 'hover:bg-white/5 opacity-70'}`}>
+                        className={`px-6 py-3 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase transition-all ${editMode === 'link' ? (isRoyal ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-md' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-blue-500 text-white shadow-lg shadow-blue-500/20') : 'hover:bg-white/5 opacity-70'}`}>
                         <Link2 size={14} /> {linkSource ? 'Select Target Pin...' : 'Ley-Lines'}
                     </button>
                 </div>
             </div>
 
             <div 
-                className={`flex-1 ${bgCard} rounded-[5rem] border-[16px] ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/40'} shadow-2xl relative overflow-hidden group ${editMode === 'marker' ? 'cursor-crosshair' : 'cursor-default'}`} 
+                className={`flex-1 ${bgCard} rounded-[5rem] border-[16px] ${isRoyal ? 'border-[#c8a96e]/40' : isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/40'} shadow-2xl relative overflow-hidden group ${editMode === 'marker' ? 'cursor-crosshair' : 'cursor-default'}`} 
                 onClick={handleMapClick}
             >
                 <img src={world.mapImage} className={`w-full h-full object-cover opacity-50 ${isWikiMode ? 'sepia-[.8]' : 'sepia-[.4]'} transition-transform duration-[120s] group-hover:scale-110`} alt="World Map" />
@@ -254,9 +258,9 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                         className={`absolute -translate-x-1/2 -translate-y-1/2 group/marker z-10 transition-all ${linkSource === loc.id ? 'scale-150 brightness-150 animate-bounce' : ''}`}
                         onClick={(e) => handleMarkerClick(loc.id, e)}>
                         <div className="relative cursor-pointer">
-                            <MapPin className={`${linkSource === loc.id ? 'text-blue-400' : accent} drop-shadow-lg group-hover/marker:scale-150 transition-transform duration-300`} size={32} strokeWidth={2.5} fill={isWikiMode ? "#b91c1c22" : "#fef08a44"} />
-                            <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 p-1 opacity-0 group-hover/marker:opacity-100 transition-all ${isWikiMode ? 'bg-[#fdfcf0] border-[#b91c1c]' : 'bg-slate-950 border-[#fef08a]'} border-2 px-5 py-2 rounded-2xl whitespace-nowrap shadow-2xl pointer-events-none`}>
-                                <span className={`text-sm font-black ${isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'} uppercase tracking-widest`}>{loc.name}</span>
+                            <MapPin className={`${linkSource === loc.id ? 'text-blue-400' : accent} drop-shadow-lg group-hover/marker:scale-150 transition-transform duration-300`} size={32} strokeWidth={2.5} fill={isRoyal ? "#70121e22" : isWikiMode ? "#b91c1c22" : "#fef08a44"} />
+                            <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 p-1 opacity-0 group-hover/marker:opacity-100 transition-all ${isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]' : isWikiMode ? 'bg-[#fdfcf0] border-[#b91c1c]' : 'bg-slate-950 border-[#fef08a]'} border-2 px-5 py-2 rounded-2xl whitespace-nowrap shadow-2xl pointer-events-none`}>
+                                <span className={`text-sm font-black ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'} uppercase tracking-widest`}>{loc.name}</span>
                             </div>
                         </div>
                     </div>
@@ -268,10 +272,10 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <form
                         onSubmit={handleConfirmAnchor}
-                        className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${isWikiMode ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}
+                        className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]' : isWikiMode ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between border-b pb-4 border-slate-700/30">
+                        <div className="flex items-center justify-between border-b pb-4 border-current/10">
                             <div className="flex items-center gap-3">
                                 <MapPin size={22} className={accent} />
                                 <div>
@@ -285,13 +289,13 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                         </div>
 
                         {/* Mode tabs */}
-                        <div className={`flex rounded-2xl p-1 border ${isWikiMode ? 'bg-[#f0e8d8] border-[#d4c8af]' : 'bg-black/30 border-slate-700/50'}`}>
+                        <div className={`flex rounded-2xl p-1 border ${isRoyal ? 'bg-[#e8dbbf] border-[#c8a96e]/40' : isWikiMode ? 'bg-[#f0e8d8] border-[#d4c8af]' : 'bg-black/30 border-slate-700/50'}`}>
                             <button
                                 type="button"
                                 onClick={() => { setAnchorMode('existing'); setDuplicateError(''); setReplaceConfirm(false); }}
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${
                                     anchorMode === 'existing'
-                                        ? isWikiMode ? 'bg-[#b91c1c] text-white shadow' : 'bg-[#fef08a] text-black shadow-lg'
+                                        ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm' : isWikiMode ? 'bg-[#b91c1c] text-white shadow' : 'bg-[#fef08a] text-black shadow-lg'
                                         : 'opacity-50 hover:opacity-80'
                                 }`}
                             >
@@ -302,7 +306,7 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                                 onClick={() => { setAnchorMode('new'); setDuplicateError(''); setReplaceConfirm(false); }}
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${
                                     anchorMode === 'new'
-                                        ? isWikiMode ? 'bg-[#b91c1c] text-white shadow' : 'bg-[#fef08a] text-black shadow-lg'
+                                        ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm' : isWikiMode ? 'bg-[#b91c1c] text-white shadow' : 'bg-[#fef08a] text-black shadow-lg'
                                         : 'opacity-50 hover:opacity-80'
                                 }`}
                             >
@@ -451,7 +455,9 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                                         : !markerNameInput.trim()
                                 }
                                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                                    isWikiMode
+                                    isRoyal
+                                        ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] disabled:opacity-40 border border-[#c8a96e] shadow-md'
+                                        : isWikiMode
                                         ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] disabled:opacity-40'
                                         : 'bg-[#fef08a] text-black hover:bg-yellow-400 disabled:opacity-40 shadow-lg shadow-yellow-500/20'
                                 }`}
@@ -470,7 +476,7 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
             {/* ===== Modal: New Ley-Line Connection ===== */}
             {pendingConnection && createPortal(
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${isWikiMode ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}>
+                    <div className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]' : isWikiMode ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}>
                         <div className="flex items-center justify-between border-b pb-4 border-slate-700/50">
                             <div className="flex items-center gap-3">
                                 <Link2 size={22} className={accent} />
@@ -505,10 +511,12 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                                         onClick={() => setSelectedConnectionType(option.id as any)}
                                         className={`p-4 rounded-2xl border text-left flex flex-col gap-2 transition-all ${
                                             selectedConnectionType === option.id
-                                                ? isWikiMode 
+                                                ? isRoyal
+                                                    ? 'bg-[#70121e]/15 border-[#70121e] ring-1 ring-[#70121e]'
+                                                    : isWikiMode 
                                                     ? 'bg-[#b91c1c]/10 border-[#b91c1c] ring-1 ring-[#b91c1c]'
                                                     : 'bg-slate-800 border-[#fef08a] ring-1 ring-[#fef08a]'
-                                                : 'border-slate-700/60 hover:border-slate-500 opacity-60 hover:opacity-100'
+                                                : 'border-current/10 hover:border-current/30 opacity-60 hover:opacity-100'
                                         }`}
                                     >
                                         <div className="flex items-center gap-2">
@@ -533,7 +541,9 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                                 type="button"
                                 onClick={handleConfirmConnection}
                                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                                    isWikiMode 
+                                    isRoyal
+                                        ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border border-[#c8a96e] shadow-md'
+                                        : isWikiMode 
                                         ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]' 
                                         : 'bg-blue-500 text-white hover:bg-blue-400 shadow-lg shadow-blue-500/20'
                                 }`}

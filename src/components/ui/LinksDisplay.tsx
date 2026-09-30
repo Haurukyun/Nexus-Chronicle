@@ -36,7 +36,7 @@ export const LinksDisplay = ({ label, ids, all, onNav, isWikiMode, wikiStyle = '
 
     if (isRoyal) {
         labelStyle = 'text-[#451a03] font-serif font-bold';
-        btnStyle = 'border-[#c8a96e]/60 bg-[#ede2cc] text-[#70121e] font-bold hover:bg-[#70121e] hover:text-[#fef08a] shadow-sm';
+        btnStyle = 'border-[#c8a96e]/60 bg-[#ede2cc] text-[#70121e] font-bold hover:bg-[#70121e] hover:text-[#fff8e7] shadow-sm';
     } else if (isWiki) {
         labelStyle = 'text-[#854d0e]';
         btnStyle = 'border-[#d4c8af] bg-white text-[#b91c1c] hover:bg-[#b91c1c] hover:text-white';

@@ -12,6 +12,8 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode, onNavigate }) => {
     const setWorldPhase = useWorldStore(state => (state as any).setWorldPhase);
+    const theme = useWorldStore(state => state.theme);
+    const isRoyal = theme === 'royal-codex';
     const stats = useMemo(() => {
         const counts: Record<string, number> = {};
         world.entities.forEach(e => {
@@ -64,12 +66,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
         ];
     }, [world.entities, world.trash.length, stats.counts, stats.topInterconnected, seed]);
 
-    const colors = isWikiMode 
+    const colors = isRoyal
+        ? ['#70121e', '#c8a96e', '#3d5a80', '#2d6a4f', '#6d3b1e']
+        : isWikiMode 
         ? ['#b91c1c', '#7a200d', '#1e40af', '#166534', '#854d0e'] 
         : ['#fef08a', '#fbbf24', '#38bdf8', '#4ade80', '#fb7185'];
 
-    const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const bgCard = isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
+    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/40' : isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
 
     const renderPieChart = () => {
         let offset = 0;
@@ -103,7 +107,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
     return (
         <div className="p-12 max-w-7xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <header className="space-y-2">
-                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>The Architect's Ledger</h1>
+                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>The Architect's Ledger</h1>
                 <p className="opacity-50 text-sm tracking-[0.3em] uppercase ml-2 italic">World Analytics & Historical Balance</p>
             </header>
 
@@ -144,14 +148,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                     <h3 className="text-xl font-serif font-bold flex items-center gap-3 uppercase tracking-widest"><Activity size={20} className={accent} /> Nexus Focus</h3>
                     <div className="space-y-4">
                         {stats.topInterconnected.length > 0 ? stats.topInterconnected.map((e, i) => (
-                            <div key={e.id} 
-                                onClick={() => onNavigate(e.id)}
-                                className={`flex items-center justify-between p-4 rounded-3xl border ${isWikiMode ? 'bg-[#fdfcf0]/50 border-black/5' : 'bg-white/5 border-white/5'} hover:border-yellow-500/50 cursor-pointer transition-all hover:scale-[1.02]`}>
+                            <div key={e.id} onClick={() => onNavigate(e.id)}
+                                className={`flex items-center justify-between p-4 rounded-3xl border ${isRoyal ? 'bg-[#ede0c4]/50 border-[#c8a96e]/20' : isWikiMode ? 'bg-[#fdfcf0]/50 border-black/5' : 'bg-white/5 border-white/5'} hover:border-yellow-500/50 cursor-pointer transition-all hover:scale-[1.02]`}>
                                 <div className="flex items-center gap-4">
                                     <span className="text-xl font-serif font-black opacity-20 italic">#{i+1}</span>
                                     <span className="text-xs font-black uppercase tracking-widest">{e.name}</span>
                                 </div>
-                                <div className={`px-4 py-1 rounded-full text-[9px] font-black uppercase ${isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/10 text-[#fef08a]'}`}>
+                                <div className={`px-4 py-1 rounded-full text-[9px] font-black uppercase ${isRoyal ? 'bg-[#70121e]/10 text-[#70121e]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/10 text-[#fef08a]'}`}>
                                     {(e.parentIds?.length || 0) + (e.childrenIds?.length || 0) + (e.friendIds?.length || 0) + (e.enemyIds?.length || 0)} Ties
                                 </div>
                             </div>
@@ -170,7 +173,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                         <button 
                             onClick={rerollInsights}
                             className={`px-5 py-2.5 rounded-2xl border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${
-                                isWikiMode 
+                                isRoyal
+                                    ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border-[#c8a96e] shadow-md'
+                                    : isWikiMode 
                                     ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] border-[#b91c1c]' 
                                     : 'bg-[#fef08a] text-black hover:bg-yellow-400 border-[#fef08a] shadow-lg shadow-yellow-500/20'
                             }`}
@@ -197,7 +202,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                         <button 
                             key={phase}
                             onClick={() => setWorldPhase(phase)}
-                            className={`p-5 rounded-3xl border transition-all text-left space-y-2 group ${world.worldPhase === phase ? (isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-[#fef08a] text-black border-[#fef08a]') : 'hover:bg-white/5 opacity-60'}`}
+                            className={`p-5 rounded-3xl border transition-all text-left space-y-2 group ${world.worldPhase === phase 
+                                ? (isRoyal ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-[#fef08a] text-black border-[#fef08a]') 
+                                : isRoyal ? 'hover:bg-[#d9c9a3]/30 opacity-60 border-[#c8a96e]/20' : 'hover:bg-white/5 opacity-60'
+                            }`}
                         >
                             <span className="block text-[10px] font-black uppercase tracking-tighter">{phase}</span>
                             <span className="block text-[8px] opacity-60 group-hover:opacity-100 italic">

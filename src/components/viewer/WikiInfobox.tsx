@@ -20,7 +20,7 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
     if (isRoyal) {
         return (
             <aside className="lg:w-80 shrink-0 space-y-6">
-                <div className="bg-[#3f0d19] text-[#fef08a] border-4 border-[#c8a96e] rounded-3xl shadow-2xl overflow-hidden">
+                <div className="bg-[#3f0d19] text-[#fff8e7] border-4 border-[#c8a96e] rounded-3xl shadow-2xl overflow-hidden">
                     <div className="bg-[#2a060e] p-3 text-center border-b border-[#c8a96e]/40">
                         <h3 className="font-serif font-bold text-xl uppercase tracking-tight text-[#e6c687]">{entity.name}</h3>
                     </div>

@@ -72,7 +72,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
     const isRoyal = theme === 'royal-codex';
 
     const accent = isRoyal
-        ? 'text-[#d4af37]'
+        ? 'text-[#70121e]'
         : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
 
     const bgCard = isRoyal
@@ -192,7 +192,9 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                 <button
                     onClick={() => setIsNewModalOpen(true)}
                     className={`px-5 py-3 rounded-2xl flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all ${
-                        isWikiMode
+                        isRoyal
+                            ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border border-[#c8a96e] shadow-md'
+                            : isWikiMode
                             ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
                             : 'bg-[#fef08a] text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20'
                     }`}
@@ -245,7 +247,9 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                 key={w.id}
                                 className={`p-5 rounded-2xl border flex flex-col justify-between gap-4 transition-all relative ${
                                     isCurrent
-                                        ? isWikiMode
+                                        ? isRoyal
+                                            ? 'bg-[#70121e]/15 border-[#70121e] ring-1 ring-[#70121e]'
+                                            : isWikiMode
                                             ? 'bg-[#b91c1c]/10 border-[#b91c1c] ring-1 ring-[#b91c1c]'
                                             : 'bg-yellow-400/10 border-yellow-400/50 ring-1 ring-yellow-400/50 shadow-lg'
                                         : 'bg-black/20 border-white/5 hover:border-white/20'
@@ -276,7 +280,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
 
                                         {isCurrent ? (
                                             <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full ${
-                                                isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
+                                                isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
                                             }`}>
                                                 Active Realm
                                             </span>
@@ -438,7 +442,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                     }}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'royal-codex'
-                                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-lg'
+                                            ? 'bg-[#70121e]/25 text-[#fff8e7] border-[#c8a96e] shadow-lg'
                                             : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
                                     }`}
                                 >

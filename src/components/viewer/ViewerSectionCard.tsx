@@ -36,7 +36,7 @@ export const ViewerSectionCard: React.FC<ViewerSectionCardProps> = ({ title, chi
                         <h3 className="font-serif font-medium text-2xl text-[#2b1810] tracking-tight">{title}</h3>
                     </div>
                     {badgeText && (
-                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#70121e] text-[#fef08a] border border-[#c8a96e]">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-[#70121e] text-[#fff8e7] border border-[#c8a96e]">
                             {badgeText}
                         </span>
                     )}

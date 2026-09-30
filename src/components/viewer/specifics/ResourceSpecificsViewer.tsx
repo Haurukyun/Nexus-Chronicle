@@ -1,6 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { Resource, WorldEntity } from '../../../types';
 import { FieldRow, LinksDisplay } from '../../ui';
+import { useTheme } from '../../../theme';
 
 interface Props {
     entity: Resource;
@@ -11,24 +12,25 @@ interface Props {
 }
 
 export const ResourceSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {
+    const { t } = useTheme();
     return (
         <div className="space-y-8">
             {entity.features && (
-                <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
-                    <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Prominent features</h3>
-                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.features}</p>
+                <div className={`${t.card.panel} p-10 rounded-[2rem] mb-12`}>
+                    <h3 className={`text-2xl font-serif font-bold ${t.colors.textHeading} mb-6 tracking-tight`}>Prominent features</h3>
+                    <p className={`${t.typography.body} whitespace-pre-wrap`}>{entity.features}</p>
                 </div>
             )}
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Traits & Features</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Traits & Features</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <FieldRow label="Density" value={entity.density} isWikiMode={isWikiMode} />
                     <FieldRow label="Hardness" value={entity.hardness} isWikiMode={isWikiMode} />
                     <FieldRow label="Rarity" value={entity.rarity} isWikiMode={isWikiMode} />
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Inventory & Resources</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Inventory & Resources</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <FieldRow label="Price in Currencies" value={entity.priceCurrencies} isWikiMode={isWikiMode} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
@@ -41,8 +43,8 @@ export const ResourceSpecificsViewer: React.FC<Props> = ({ entity, allEntities, 
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Vital Records</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Vital Records</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <FieldRow label="Found in biomes" value={entity.biomeType} isWikiMode={isWikiMode} />
                     <FieldRow label="Resources/Materials type" value={entity.resourceType} isWikiMode={isWikiMode} />
@@ -51,8 +53,8 @@ export const ResourceSpecificsViewer: React.FC<Props> = ({ entity, allEntities, 
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Stats & Knowledge</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Stats & Knowledge</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <FieldRow label="Other material physical properties" value={entity.otherStats} isWikiMode={isWikiMode} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
@@ -61,8 +63,8 @@ export const ResourceSpecificsViewer: React.FC<Props> = ({ entity, allEntities, 
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Connections</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Connections</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <FieldRow label="Description & History" value={entity.description} isWikiMode={isWikiMode} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
@@ -80,21 +82,21 @@ export const ResourceSpecificsViewer: React.FC<Props> = ({ entity, allEntities, 
                 </div>
             </div>
             {entity.traditions && (
-                <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
-                    <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Traditions & customs connected to the item</h3>
-                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.traditions}</p>
+                <div className={`${t.card.panel} p-10 rounded-[2rem] mb-12`}>
+                    <h3 className={`text-2xl font-serif font-bold ${t.colors.textHeading} mb-6 tracking-tight`}>Traditions & customs connected to the item</h3>
+                    <p className={`${t.typography.body} whitespace-pre-wrap`}>{entity.traditions}</p>
                 </div>
             )}
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Traditions & Customs</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Traditions & Customs</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-2">
                         <LinksDisplay label="Connected to Cultures/Art" ids={entity.relatedCultures || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Governance</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Governance</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
                         <LinksDisplay label="Connected to Ideologies/Political groups" ids={entity.pairedConnectedPoliticalGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />

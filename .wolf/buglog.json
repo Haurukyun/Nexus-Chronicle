@@ -90,6 +90,19 @@
       "tags": ["worldmap", "atlas", "data-integrity", "ux"],
       "occurrences": 1,
       "last_seen": "2026-09-30"
+    },
+    {
+      "id": "BUG-008",
+      "timestamp": "2026-09-30T16:26:30Z",
+      "status": "resolved",
+      "resolved_at": "2026-09-30T16:26:50Z",
+      "error_message": "TrashView.tsx: Expected corresponding JSX closing tag for <ThemeCard>",
+      "file": "src/views/TrashView.tsx",
+      "root_cause": "Replaced opening <div> with <ThemeCard> but left closing </div> instead of </ThemeCard>.",
+      "fix": "Changed closing tag </div> to </ThemeCard> on line 32.",
+      "tags": ["jsx", "refactoring", "syntax"],
+      "occurrences": 1,
+      "last_seen": "2026-09-30"
     }
   ]
 }

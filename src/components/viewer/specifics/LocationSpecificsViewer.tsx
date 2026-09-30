@@ -1,6 +1,7 @@
 import React from 'react';
 import { Location, WorldEntity } from '../../../types';
 import { FieldRow, LinksDisplay } from '../../ui';
+import { useTheme } from '../../../theme';
 import { Compass, MapPin } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
 
@@ -13,11 +14,12 @@ interface Props {
 }
 
 export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntities, onNavigate, isWikiMode, backlinks }) => {
+    const { t } = useTheme();
     return (
         <div className="space-y-8">
             {!isWikiMode && (
-                <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                    <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a] flex items-center gap-2">
+                <div className={`${t.card.base} p-8 rounded-2xl`}>
+                    <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent} flex items-center gap-2`}>
                         <Compass size={14} /> Geographic Intelligence & Atlas Anchor
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
@@ -41,10 +43,10 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                     {/* Mini visual map preview if coordinates exist */}
                     {loc.coordinates && (
                         <div className="mt-6 pt-6 border-t border-slate-800/80">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3 block flex items-center gap-1.5">
-                                <MapPin size={12} className="text-[#fef08a]" /> Cartographic Fixation
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${t.colors.textMuted} mb-3 flex items-center gap-1.5`}>
+                                <MapPin size={12} className={t.colors.textAccent} /> Atlas Anchor Pin
                             </span>
-                            <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shadow-inner">
+                            <div className={`relative w-full aspect-[21/9] rounded-xl overflow-hidden ${t.colors.borderDefault} border bg-slate-950 shadow-inner`}>
                                 <img
                                     src={useWorldStore.getState().world.mapImage}
                                     alt="Atlas Pin"
@@ -54,10 +56,10 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                                     style={{ left: `${loc.coordinates.x}%`, top: `${loc.coordinates.y}%` }}
                                     className="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center animate-in zoom-in"
                                 >
-                                    <div className="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider mb-0.5 shadow-md bg-black/90 text-yellow-300 border border-yellow-500/40">
+                                    <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider mb-0.5 shadow-md ${t.card.panel} ${t.colors.textAccent}`}>
                                         {loc.name}
                                     </div>
-                                    <div className="p-1 rounded-full bg-yellow-400 text-black shadow-[0_0_12px_rgba(250,204,21,0.8)]">
+                                    <div className={`p-1 rounded-full ${t.colors.accentBg} text-white shadow-lg`}>
                                         <MapPin size={14} fill="currentColor" />
                                     </div>
                                 </div>
@@ -68,9 +70,9 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
             )}
 
             {loc.traditionsAndCustoms && (
-                <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
-                    <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Traditions & Customs</h3>
-                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{loc.traditionsAndCustoms}</p>
+                <div className={`${t.card.panel} p-10 rounded-[2rem] mb-12`}>
+                    <h3 className={`text-2xl font-serif font-bold ${t.colors.textHeading} mb-6 tracking-tight`}>Traditions & Customs</h3>
+                    <p className={`${t.typography.body} whitespace-pre-wrap`}>{loc.traditionsAndCustoms}</p>
                 </div>
             )}
 

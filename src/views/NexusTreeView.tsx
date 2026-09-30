@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Network, GitBranch, GitMerge, ChevronDown, ChevronRight, Share2, Layers } from 'lucide-react';
 import { WorldData, WorldEntity, Character } from '../types';
 import { NexusGraphView } from './NexusGraphView';
+import { useWorldStore } from '../store/useWorldStore';
 
 interface NexusTreeViewProps {
     world: WorldData;
@@ -10,6 +11,8 @@ interface NexusTreeViewProps {
 }
 
 export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode, onNavigate }) => {
+    const theme = useWorldStore(state => state.theme);
+    const isRoyal = theme === 'royal-codex';
     const [viewMode, setViewMode] = useState<'graph' | 'tree'>('graph');
 
     const lineageData = useMemo(() => {
@@ -88,24 +91,28 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
         return { roots, all: characters };
     }, [world.entities]);
 
-    const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const bgCard = isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
+    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/50' : isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
 
     return (
         <div className="h-full flex flex-col overflow-hidden relative">
             {/* View Mode Switcher Header */}
             <div className={`p-4 border-b flex items-center justify-between z-20 ${
-                isWikiMode 
+                isRoyal
+                    ? 'bg-[#eee2cb] border-[#c8a96e]/40'
+                    : isWikiMode 
                     ? 'bg-[#f7f3ea] border-[#d4c8af]' 
                     : 'bg-[#0f172a]/90 border-slate-800 backdrop-blur-md'
             }`}>
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5 p-1 rounded-xl bg-black/20 border border-white/5">
+                    <div className={`flex items-center gap-1.5 p-1 rounded-xl border ${isRoyal ? 'bg-[#d9c9a3]/30 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'}`}>
                         <button
                             onClick={() => setViewMode('graph')}
                             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                                 viewMode === 'graph'
-                                    ? isWikiMode
+                                    ? isRoyal
+                                        ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                        : isWikiMode
                                         ? 'bg-[#b91c1c] text-white shadow-sm'
                                         : 'bg-[#fef08a] text-black shadow-md'
                                     : 'opacity-50 hover:opacity-100'
@@ -118,7 +125,9 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
                             onClick={() => setViewMode('tree')}
                             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                                 viewMode === 'tree'
-                                    ? isWikiMode
+                                    ? isRoyal
+                                        ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                        : isWikiMode
                                         ? 'bg-[#b91c1c] text-white shadow-sm'
                                         : 'bg-[#fef08a] text-black shadow-md'
                                     : 'opacity-50 hover:opacity-100'
@@ -143,7 +152,7 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
             ) : (
                 <div className="flex-1 p-12 overflow-auto custom-scrollbar space-y-12">
                     <header className="space-y-4">
-                        <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>The nexus lineages</h1>
+                        <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>The nexus lineages</h1>
                         <p className="opacity-50 text-sm tracking-[0.3em] uppercase ml-2 italic">Tree of Blood and Organizations</p>
                     </header>
 
@@ -157,6 +166,7 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
                                         all={lineageData.all} 
                                         onNavigate={onNavigate} 
                                         isWikiMode={isWikiMode}
+                                        isRoyal={isRoyal}
                                         accent={accent}
                                         bg={bgCard}
                                         visitedIds={new Set([root.id])}
@@ -176,7 +186,7 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
     );
 };
 
-const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0, visitedIds = new Set<string>() }: any) => {
+const TreeNode = ({ entity, all, onNavigate, isWikiMode, isRoyal, accent, bg, depth = 0, visitedIds = new Set<string>() }: any) => {
     // Find child objects bidirectionally, filtering out any visited ancestors to prevent infinite recursion
     const children = useMemo(() => {
         const directChildIds = new Set<string>([
@@ -219,7 +229,7 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0, 
                     </span>
                     <h4 className="text-sm font-black uppercase tracking-tight truncate w-full">{entity.name}</h4>
                     {entity.type === 'character' && (
-                        <div className={`px-3 py-0.5 rounded-full text-[8px] font-bold ${isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/10 text-[#fef08a]'}`}>
+                        <div className={`px-3 py-0.5 rounded-full text-[8px] font-bold ${isRoyal ? 'bg-[#70121e]/10 text-[#70121e]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/10 text-[#fef08a]'}`}>
                             {isAncestral ? 'Ancestral' : 'Living'}
                         </div>
                     )}
@@ -234,7 +244,9 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0, 
                         setCollapsed(!collapsed);
                     }}
                     className={`mt-3 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 z-20 border transition-all ${
-                        isWikiMode 
+                        isRoyal
+                            ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#70121e] hover:bg-[#ede0c4] shadow-sm'
+                            : isWikiMode 
                             ? 'bg-white border-[#d4c8af] text-[#b91c1c] hover:bg-slate-100 shadow-sm' 
                             : 'bg-slate-900 border-slate-700 text-[#fef08a] hover:bg-slate-800 shadow-md'
                     }`}
@@ -261,11 +273,11 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0, 
             {/* Connecting Lines */}
             {hasChildren && !collapsed && depth < 5 && (
                 <div className="flex flex-col items-center mt-6 w-full">
-                    <div className={`w-px h-10 ${isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800'}`} />
+                    <div className={`w-px h-10 ${isRoyal ? 'bg-[#c8a96e]/50' : isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800'}`} />
                     <div className="flex gap-12 relative">
                         {/* Horizontal connector for multiple siblings */}
                         {children.length > 1 && (
-                            <div className={`absolute top-0 left-1/2 -translate-x-1/2 h-px ${isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800'}`} 
+                            <div className={`absolute top-0 left-1/2 -translate-x-1/2 h-px ${isRoyal ? 'bg-[#c8a96e]/50' : isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800'}`} 
                                 style={{ width: `calc(100% - 4rem)` }} />
                         )}
                         {children.map((child: any) => (
@@ -275,6 +287,7 @@ const TreeNode = ({ entity, all, onNavigate, isWikiMode, accent, bg, depth = 0, 
                                 all={all} 
                                 onNavigate={onNavigate} 
                                 isWikiMode={isWikiMode}
+                                isRoyal={isRoyal}
                                 accent={accent}
                                 bg={bg}
                                 depth={depth + 1}

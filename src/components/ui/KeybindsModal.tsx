@@ -152,13 +152,13 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
         : 'border-b border-slate-800 bg-slate-900/60';
 
     const kbdClass = isRoyal
-        ? 'bg-[#3b2315] border border-[#c8a96e]/60 text-[#fef08a] shadow-[0_2px_0_rgba(200,169,110,0.4)]'
+        ? 'bg-[#3b2315] border border-[#c8a96e]/60 text-[#fff8e7] shadow-[0_2px_0_rgba(200,169,110,0.4)]'
         : isWikiMode
         ? 'bg-white border border-[#d4c8af] text-[#b91c1c] shadow-[0_1.5px_0_rgba(185,28,28,0.25)]'
         : 'bg-slate-800 border border-slate-600 text-yellow-400 shadow-[0_1.5px_0_rgba(234,179,8,0.3)]';
 
     const accentTitle = isRoyal
-        ? 'text-[#fef08a] font-serif'
+        ? 'text-[#fff8e7] font-serif'
         : isWikiMode
         ? 'text-[#b91c1c] font-serif'
         : 'text-[#fef08a] font-sans';
@@ -175,7 +175,7 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
                 {/* Header */}
                 <div className={`flex items-center justify-between px-6 py-4 ${headerBg}`}>
                     <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-xl ${isRoyal ? 'bg-[#3b2315] text-[#d4af37]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-yellow-500/10 text-yellow-400'}`}>
+                        <div className={`p-2 rounded-xl ${isRoyal ? 'bg-[#3b2315] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-yellow-500/10 text-yellow-400'}`}>
                             <Keyboard size={20} />
                         </div>
                         <div>

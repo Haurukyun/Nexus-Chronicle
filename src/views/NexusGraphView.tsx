@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { WorldData, WorldEntity, EntityType } from '../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../constants';
+import { useWorldStore } from '../store/useWorldStore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -296,6 +297,8 @@ interface Props {
 type ActiveFilters = Set<string>; // category ids
 
 export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate }) => {
+  const theme = useWorldStore((s) => s.theme);
+  const isRoyal = theme === 'royal-codex';
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const nodesRef = useRef<GraphNode[]>([]);
@@ -493,11 +496,13 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate 
   const nodes = nodesRef.current;
   const edgeList = edgesRef.current;
 
-  const wikiText = isWikiMode ? 'text-[#3d2b1f]' : 'text-white';
-  const wikiPanel = isWikiMode
+  const wikiText = isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#3d2b1f]' : 'text-white';
+  const wikiPanel = isRoyal
+    ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#3d0a10]'
+    : isWikiMode
     ? 'bg-[#f5f0e8] border-[#d4c8af] text-[#3d2b1f]'
     : 'bg-slate-900/90 border-slate-700/60 text-white';
-  const accentColor = isWikiMode ? '#b91c1c' : '#fef08a';
+  const accentColor = isRoyal ? '#70121e' : isWikiMode ? '#b91c1c' : '#fef08a';
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
@@ -702,7 +707,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate 
       {/* ── Top-left: title ─────────────────────────────────────────────────── */}
       <div className="absolute top-4 left-4 pointer-events-none">
         <h1
-          className={`text-5xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}
+          className={`text-5xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}
         >
           The Nexus
         </h1>
@@ -721,7 +726,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate 
         {/* Filter panel toggle */}
         <button
           onClick={() => setFilterOpen((o) => !o)}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all ${wikiPanel} ${filterOpen ? 'ring-2 ring-yellow-400/50' : ''}`}
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all ${wikiPanel} ${filterOpen ? (isRoyal ? 'ring-2 ring-[#70121e]' : isWikiMode ? 'ring-2 ring-[#b91c1c]' : 'ring-2 ring-yellow-400/50') : ''}`}
         >
           <Filter size={13} />
           Filters
@@ -735,7 +740,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate 
           >
             <ZoomIn size={14} />
           </button>
-          <div className={`h-px ${isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
+          <div className={`h-px ${isRoyal ? 'bg-[#c8a96e]/50' : isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
           <button
             className="p-2 hover:bg-white/10 transition-colors"
             onClick={() => setZoom((z) => Math.max(0.15, z * 0.8))}

@@ -1,6 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { PoliticalGroup, WorldEntity } from '../../../types';
 import { FieldRow, LinksDisplay } from '../../ui';
+import { useTheme } from '../../../theme';
 
 interface Props {
     entity: PoliticalGroup;
@@ -11,10 +12,11 @@ interface Props {
 }
 
 export const PoliticalGroupSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {
+    const { t } = useTheme();
     return (
         <div className="space-y-8">
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Governance</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Governance</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <FieldRow label="Leading Figures (legacy)" value={entity.leaders} isWikiMode={isWikiMode} />
                     <FieldRow label="Form of government" value={entity.formGovernment} isWikiMode={isWikiMode} />
@@ -42,8 +44,8 @@ export const PoliticalGroupSpecificsViewer: React.FC<Props> = ({ entity, allEnti
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Vital Records</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Vital Records</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <FieldRow label="Date of creation" value={entity.creationTime} isWikiMode={isWikiMode} />
                     <FieldRow label="Date of end" value={entity.endTIme} isWikiMode={isWikiMode} />
@@ -54,8 +56,8 @@ export const PoliticalGroupSpecificsViewer: React.FC<Props> = ({ entity, allEnti
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Connections</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Connections</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <FieldRow label="Name for members/followers" value={entity.followerName} isWikiMode={isWikiMode} />
                     <FieldRow label="Follower/Subject count" value={entity.followers} isWikiMode={isWikiMode} />
@@ -73,8 +75,8 @@ export const PoliticalGroupSpecificsViewer: React.FC<Props> = ({ entity, allEnti
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Inventory & Resources</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Inventory & Resources</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
                         <LinksDisplay label="Used Currencies" ids={entity.localCurrencies || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
@@ -84,21 +86,21 @@ export const PoliticalGroupSpecificsViewer: React.FC<Props> = ({ entity, allEnti
                 </div>
             </div>
             {entity.traditions && (
-                <div className={isWikiMode ? 'mb-12' : 'bg-slate-900/10 border-slate-800/40 p-10 rounded-[2rem] border'}>
-                    <h3 className={`text-2xl font-serif font-bold ${isWikiMode ? 'text-[#e69a28] border-b border-[#e69a28] pb-2' : 'text-[#fef08a]'} mb-6 tracking-tight`}>Traditions & Customs</h3>
-                    <p className={`${isWikiMode ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'} whitespace-pre-wrap`}>{entity.traditions}</p>
+                <div className={`${t.card.panel} p-10 rounded-[2rem] mb-12`}>
+                    <h3 className={`text-2xl font-serif font-bold ${t.colors.textHeading} mb-6 tracking-tight`}>Traditions & Customs</h3>
+                    <p className={`${t.typography.body} whitespace-pre-wrap`}>{entity.traditions}</p>
                 </div>
             )}
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Traditions & Customs</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Traditions & Customs</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-2">
                         <LinksDisplay label="Connected to Cultures/Art" ids={entity.pairedConnectedCultures || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Interpersonal Web</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Interpersonal Web</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
                         <LinksDisplay label="Prominent Allies" ids={entity.pairedAllyCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
@@ -106,8 +108,8 @@ export const PoliticalGroupSpecificsViewer: React.FC<Props> = ({ entity, allEnti
                     </div>
                 </div>
             </div>
-            <div className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl">
-                <h3 className="text-xs font-black uppercase mb-6 tracking-widest text-[#fef08a]">Stats & Knowledge</h3>
+            <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Stats & Knowledge</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
                         <LinksDisplay label="Connected to Skills/Spells/Other" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />

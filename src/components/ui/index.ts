@@ -12,3 +12,6 @@ export * from './ErrorBoundary';
 export * from './MarkdownEditor';
 export * from './MarkdownRenderer';
 export * from './KeybindsModal';
+export * from './ThemeButton';
+export * from './ThemeCard';
+export * from './ThemeBadge';
