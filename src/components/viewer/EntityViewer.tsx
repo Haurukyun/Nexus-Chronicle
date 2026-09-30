@@ -133,7 +133,12 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 {entity.privateNotes && (
                     <div className="bg-rose-500/5 border border-rose-900/20 p-8 rounded-2xl">
                         <h3 className="text-xs font-black uppercase mb-4 tracking-widest text-rose-500">DM Confidential Notes</h3>
-                        <p className="text-rose-200/70 font-mono text-sm whitespace-pre-wrap">{entity.privateNotes}</p>
+                        <MarkdownRenderer
+                            content={entity.privateNotes}
+                            allEntities={allEntities}
+                            onNavigate={onNavigate}
+                            isWikiMode={isWiki}
+                        />
                     </div>
                 )}
             </div>

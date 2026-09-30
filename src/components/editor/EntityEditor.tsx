@@ -80,7 +80,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                     <FormToggle label="Is finished" icon={CheckSquare} checked={entity.isFinished} onChange={(v: boolean) => onUpdate({ ...entity, isFinished: v })} isWikiMode={isWikiMode} gridSpan={3} />
                     <FormInput label="Order number" icon={Hash} value={entity.orderNumber || ""} onChange={(v: string) => onUpdate({ ...entity, orderNumber: v })} isWikiMode={isWikiMode} gridSpan={3} />
 
-                    <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-500/5">
+                    <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-500/5">
                         <FormToggle label="Is a minor document" icon={Search} checked={entity.isMinorDocument} onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v })} isWikiMode={isWikiMode} />
                         <FormToggle label="Is Dead/Gone/Destroyed" icon={Skull} checked={entity.isDead} onChange={(v: boolean) => onUpdate({ ...entity, isDead: v })} isWikiMode={isWikiMode} />
                         <FormToggle label="Is a category" icon={Box} checked={entity.isCategory} onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v })} isWikiMode={isWikiMode} />
@@ -95,7 +95,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
 
                 {/* 2. PORTRAIT & IMAGERY (UNIVERSAL) */}
                 <EditorGroup title="Portrait & Imagery" icon={ImageIcon} isWikiMode={isWikiMode}>
-                    <div className="lg:col-span-3">
+                    <div className="col-span-12 max-w-2xl mx-auto w-full py-2">
                         <AssetImageUploader
                             label="Portrait / Illustration"
                             value={entity.imageUri || ''}
@@ -108,13 +108,13 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
 
                 {/* 3. DESCRIPTION & HISTORY (UNIVERSAL) */}
                 <EditorGroup title="Description & History" icon={BookOpen} isWikiMode={isWikiMode}>
-                    <div className="lg:col-span-3">
+                    <div className="col-span-12 w-full">
                         <MarkdownEditor
                             value={entity.description || ''}
                             onChange={(v) => onUpdate({ ...entity, description: v })}
                             allEntities={allEntities}
                             isWikiMode={isWikiMode}
-                            placeholder="The echoes of history begin here...  Use **bold**, *italic*, # Heading, and [[Entity Name]] to link."
+                            placeholder="The echoes of history begin here... Use **bold**, *italic*, # Heading, and [[Entity Name]] to link."
                             minHeight="h-80"
                         />
                     </div>
@@ -124,7 +124,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
 
                 {/* 4. UNIVERSAL CONNECTIONS */}
                 <EditorGroup title="World & Details" icon={Scroll} isWikiMode={isWikiMode}>
-                    <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
+                    <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
                         <SmartSelect label="Lore Notes" icon={BookOpen} ids={entity.loreNoteIds} type="note" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, loreNoteIds: ids })} onCreate={onCreateNew} />
                         <SmartSelect label="Myths & Legends" icon={Scroll} ids={entity.mythIds} type="myth" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, mythIds: ids })} onCreate={onCreateNew} />
                     </div>
@@ -140,7 +140,10 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
 
                 {/* 5. SECRETS (UNIVERSAL) */}
                 <EditorGroup title="Secrets/Spoilers/DM notes" icon={Ghost} isWikiMode={isWikiMode}>
-                    <div className="lg:col-span-3">
+                    <div className="col-span-12 space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest opacity-60 block">
+                            Private Ruminations
+                        </label>
                         <MarkdownEditor
                             value={entity.privateNotes || ''}
                             onChange={(v) => onUpdate({ ...entity, privateNotes: v })}
