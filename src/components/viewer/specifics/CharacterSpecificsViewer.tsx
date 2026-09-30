@@ -16,7 +16,11 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
     const theme = useWorldStore(state => state.theme);
     const isRoyal = theme === 'royal-codex';
 
-    const speciesNames = entity.pairedRace?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const speciesNames = (entity.pairedRace || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const occupationNames = (entity.pairedProfession || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const residenceNames = (entity.pairedCurrentLocationNew || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const originNames = (entity.pairedOriginLocationNew || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const isDeceased = Boolean(entity.deathDate?.trim() || (entity as any).dateOfDeath?.trim() || entity.deadSwitch);
 
     return (
         <div className="space-y-6">
@@ -25,28 +29,42 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-3 py-1 font-serif">
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Name:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{entity.name || 'Elara Vance'}</span>
+                            <span className="text-[#3d271d] text-sm font-medium">{entity.name}</span>
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                            <span className="font-bold text-[#2b1810] text-sm">Study:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">112</span>
+                            <span className="font-bold text-[#2b1810] text-sm">Status:</span>
+                            <span className="text-[#3d271d] text-sm font-medium">{isDeceased ? 'Deceased' : 'Living'}</span>
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Species:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{speciesNames || 'High Elf'}</span>
+                            <span className="text-[#3d271d] text-sm font-medium">{speciesNames || '—'}</span>
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                            <span className="font-bold text-[#2b1810] text-sm">Origin:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">Ungmerned</span>
+                            <span className="font-bold text-[#2b1810] text-sm">Occupation:</span>
+                            <span className="text-[#3d271d] text-sm font-medium">{occupationNames || '—'}</span>
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Age:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{entity.age || '112'}</span>
+                            <span className="text-[#3d271d] text-sm font-medium">{entity.age || '—'}</span>
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Origin:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">Silverwood Kingdom</span>
+                            <span className="text-[#3d271d] text-sm font-medium">{originNames || '—'}</span>
                         </div>
+                        <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                            <span className="font-bold text-[#2b1810] text-sm">Residence:</span>
+                            <span className="text-[#3d271d] text-sm font-medium">{residenceNames || '—'}</span>
+                        </div>
+                        <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                            <span className="font-bold text-[#2b1810] text-sm">Birth:</span>
+                            <span className="text-[#3d271d] text-sm font-medium">{entity.birthDate || '—'}</span>
+                        </div>
+                        {isDeceased && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Death:</span>
+                                <span className="text-[#3d271d] text-sm font-medium">{entity.deathDate || '—'}</span>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
@@ -100,7 +118,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                         </div>
                         <div className="flex items-center gap-2.5 border-b border-[#c8a96e]/30 pb-2">
                             <span className="text-base">🧪</span>
-                            <span className="font-serif font-bold text-[#2b1810] text-sm">{entity.possessedCurrencies || 'Mana Potions'}</span>
+                            <span className="font-serif font-bold text-[#2b1810] text-sm">{entity.possessedCurrencies || '—'}</span>
                         </div>
                     </div>
                 ) : (

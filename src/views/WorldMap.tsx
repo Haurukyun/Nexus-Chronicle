@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { MapPin, Globe, Link2, Trash2, X, Plus, Sparkles, Shield, Swords, Compass, Search, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { WorldData, WorldEntity, MapConnection } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
@@ -263,8 +264,8 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
             </div>
 
             {/* ===== Modal: Plant / Assign Anchor ===== */}
-            {pendingMarkerPos && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            {pendingMarkerPos && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <form
                         onSubmit={handleConfirmAnchor}
                         className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${isWikiMode ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}
@@ -462,12 +463,13 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                             </button>
                         </div>
                     </form>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* ===== Modal: New Ley-Line Connection ===== */}
-            {pendingConnection && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            {pendingConnection && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${isWikiMode ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}>
                         <div className="flex items-center justify-between border-b pb-4 border-slate-700/50">
                             <div className="flex items-center gap-3">
@@ -540,7 +542,8 @@ export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapPr
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

@@ -19,15 +19,17 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
     const isRoyal = theme === 'royal-codex';
     const isWikiMode = theme === 'wiki'; 
 
-    const speciesNames = char.speciesIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
-    const occupationNames = char.occupationIds?.map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const speciesNames = (char.pairedRace || char.speciesIds || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const occupationNames = (char.pairedProfession || char.occupationIds || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+
+    const isDeceased = Boolean(char.deathDate?.trim() || char.dateOfDeath?.trim() || char.deadSwitch || (char as any).isDead);
 
     const subtitle = [
         char.sex,
         char.ethnicity,
         speciesNames,
         occupationNames,
-        char.isDead ? 'deceased' : 'living'
+        isDeceased ? 'deceased' : 'living'
     ].filter(Boolean).join(' ');
 
     const merge = (forward: string[] | undefined, back: string[] | undefined) => {
@@ -90,8 +92,8 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
 
                 {/* Living Status Header & Glowing Emerald Gem */}
                 <div className="border-t border-[#c8a96e]/40 pt-3 mt-4 text-center">
-                    <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687]">LIVING</div>
-                    <EmeraldGem active={!char.isDead} />
+                    <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687]">{isDeceased ? 'DECEASED' : 'LIVING'}</div>
+                    <EmeraldGem active={!isDeceased} />
                 </div>
             </div>
         );

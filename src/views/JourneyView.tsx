@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { 
     Compass, Wind, MapPin, Footprints, Clock, Scale, 
     Ship, Shield, Flame, Mountain, TreePine, AlertTriangle, 
-    CheckCircle2, Edit3, ArrowRight, Backpack, Users, Sparkles
+    CheckCircle2, Edit3, ArrowRight, Backpack, Users, Sparkles,
+    ExternalLink, X, Crosshair
 } from 'lucide-react';
 import { WorldData, Location } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
@@ -44,8 +46,23 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
     const [manualDistanceInput, setManualDistanceInput] = useState<string>('');
 
     const theme = useWorldStore(state => state.theme);
+    const setWorld = useWorldStore(state => state.setWorld);
+    const handleOpenEntity = useWorldStore(state => state.handleOpenEntity);
+    const handleToggleEdit = useWorldStore(state => state.handleToggleEdit);
+    const editingTabIds = useWorldStore(state => state.editingTabIds);
+
+    const [quickPinTarget, setQuickPinTarget] = useState<Location | null>(null);
+    const [quickPinCoords, setQuickPinCoords] = useState<{ x: number; y: number } | null>(null);
+
     const isRoyal = theme === 'royal-codex';
     const mapImage = world.mapImage;
+
+    const handleOpenInEditor = (id: string) => {
+        handleOpenEntity(id);
+        if (!editingTabIds.includes(id)) {
+            handleToggleEdit(id);
+        }
+    };
 
     const locations = useMemo(() => {
         return world.entities.filter(e => e.type === 'location') as Location[];
@@ -150,16 +167,45 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {/* Starting Location */}
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-black uppercase opacity-60 flex items-center justify-between">
-                                <span>Origin Anchor</span>
-                                {startLoc?.coordinates ? (
-                                    <span className="text-[9px] text-emerald-400 font-mono">
-                                        Pinned ({startLoc.coordinates.x}%, {startLoc.coordinates.y}%)
-                                    </span>
-                                ) : startLoc ? (
-                                    <span className="text-[9px] text-amber-400 font-mono">Unanchored</span>
-                                ) : null}
-                            </label>
+                            <div className="flex items-center justify-between">
+                                <label className="text-[10px] font-black uppercase opacity-60">
+                                    Origin Anchor
+                                </label>
+                                {startLoc && (
+                                    <div className="flex items-center gap-1.5">
+                                        {startLoc.coordinates ? (
+                                            <span className="text-[9px] text-emerald-400 font-mono">
+                                                [{startLoc.coordinates.x}%, {startLoc.coordinates.y}%]
+                                            </span>
+                                        ) : (
+                                            <span className="text-[9px] text-amber-400 font-mono">Unanchored</span>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setQuickPinTarget(startLoc);
+                                                setQuickPinCoords(startLoc.coordinates || { x: 50, y: 50 });
+                                            }}
+                                            className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all flex items-center gap-1 ${
+                                                startLoc.coordinates
+                                                    ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                                                    : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
+                                            }`}
+                                            title="Set or update map coordinates"
+                                        >
+                                            <MapPin size={10} /> {startLoc.coordinates ? 'Re-pin' : 'Pin'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleOpenInEditor(startLoc.id)}
+                                            className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase opacity-60 hover:opacity-100 hover:bg-white/10 transition-all"
+                                            title="Open in Location Editor"
+                                        >
+                                            <ExternalLink size={10} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                             <select 
                                 value={startId} 
                                 onChange={(e) => {
@@ -179,16 +225,45 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
 
                         {/* Destination Location */}
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-black uppercase opacity-60 flex items-center justify-between">
-                                <span>Destination Anchor</span>
-                                {endLoc?.coordinates ? (
-                                    <span className="text-[9px] text-emerald-400 font-mono">
-                                        Pinned ({endLoc.coordinates.x}%, {endLoc.coordinates.y}%)
-                                    </span>
-                                ) : endLoc ? (
-                                    <span className="text-[9px] text-amber-400 font-mono">Unanchored</span>
-                                ) : null}
-                            </label>
+                            <div className="flex items-center justify-between">
+                                <label className="text-[10px] font-black uppercase opacity-60">
+                                    Destination Anchor
+                                </label>
+                                {endLoc && (
+                                    <div className="flex items-center gap-1.5">
+                                        {endLoc.coordinates ? (
+                                            <span className="text-[9px] text-emerald-400 font-mono">
+                                                [{endLoc.coordinates.x}%, {endLoc.coordinates.y}%]
+                                            </span>
+                                        ) : (
+                                            <span className="text-[9px] text-amber-400 font-mono">Unanchored</span>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setQuickPinTarget(endLoc);
+                                                setQuickPinCoords(endLoc.coordinates || { x: 50, y: 50 });
+                                            }}
+                                            className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase transition-all flex items-center gap-1 ${
+                                                endLoc.coordinates
+                                                    ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                                                    : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
+                                            }`}
+                                            title="Set or update map coordinates"
+                                        >
+                                            <MapPin size={10} /> {endLoc.coordinates ? 'Re-pin' : 'Pin'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleOpenInEditor(endLoc.id)}
+                                            className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase opacity-60 hover:opacity-100 hover:bg-white/10 transition-all"
+                                            title="Open in Location Editor"
+                                        >
+                                            <ExternalLink size={10} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                             <select 
                                 value={endId} 
                                 onChange={(e) => {
@@ -209,18 +284,64 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
 
                     {/* Unanchored Locations Warning & Guidance */}
                     {startLoc && endLoc && !hasCoordinates && (
-                        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
-                            <AlertTriangle size={18} className="text-amber-400 shrink-0 mt-0.5" />
-                            <div className="text-xs space-y-1">
-                                <p className="font-bold text-amber-300">Unanchored Route Detected</p>
-                                <p className="opacity-75 leading-relaxed">
-                                    {!startLoc.coordinates && !endLoc.coordinates 
-                                        ? "Both selected locations lack Atlas map coordinates."
-                                        : !startLoc.coordinates
-                                        ? `Origin "${startLoc.name}" does not have map coordinates.`
-                                        : `Destination "${endLoc.name}" does not have map coordinates.`
-                                    } You can set coordinates in each Location's editor, or use the <strong>Manual Distance Override</strong> below.
-                                </p>
+                        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3">
+                            <div className="flex items-start gap-3">
+                                <AlertTriangle size={18} className="text-amber-400 shrink-0 mt-0.5" />
+                                <div className="text-xs space-y-1">
+                                    <p className="font-bold text-amber-300">Unanchored Route Detected</p>
+                                    <p className="opacity-75 leading-relaxed">
+                                        {!startLoc.coordinates && !endLoc.coordinates 
+                                            ? "Both selected locations lack Atlas map coordinates."
+                                            : !startLoc.coordinates
+                                            ? `Origin "${startLoc.name}" does not have map coordinates.`
+                                            : `Destination "${endLoc.name}" does not have map coordinates.`
+                                        } Anchor them directly using the quick pin buttons below, open them in the Location editor, or use the <strong>Manual Distance Override</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-amber-500/20">
+                                {!startLoc.coordinates && (
+                                    <div className="flex items-center gap-1.5">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setQuickPinTarget(startLoc);
+                                                setQuickPinCoords({ x: 50, y: 50 });
+                                            }}
+                                            className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
+                                        >
+                                            <MapPin size={12} /> Pin {startLoc.name}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleOpenInEditor(startLoc.id)}
+                                            className="px-2.5 py-1.5 rounded-xl bg-black/20 hover:bg-white/10 text-slate-300 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all"
+                                        >
+                                            <ExternalLink size={11} /> Editor
+                                        </button>
+                                    </div>
+                                )}
+                                {!endLoc.coordinates && (
+                                    <div className="flex items-center gap-1.5">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setQuickPinTarget(endLoc);
+                                                setQuickPinCoords({ x: 50, y: 50 });
+                                            }}
+                                            className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
+                                        >
+                                            <MapPin size={12} /> Pin {endLoc.name}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleOpenInEditor(endLoc.id)}
+                                            className="px-2.5 py-1.5 rounded-xl bg-black/20 hover:bg-white/10 text-slate-300 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 transition-all"
+                                        >
+                                            <ExternalLink size={11} /> Editor
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -541,6 +662,159 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
                     </div>
                 </div>
             </div>
+
+            {/* Quick Pin Modal */}
+            {quickPinTarget && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className={`w-full max-w-2xl p-6 rounded-3xl border shadow-2xl space-y-5 ${
+                        isRoyal
+                            ? 'bg-[#181410] border-[#c8a96e]/50 text-[#f0ddb0]'
+                            : isWikiMode
+                            ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]'
+                            : 'bg-slate-900 border-slate-700 text-slate-100'
+                    }`}>
+                        {/* Header */}
+                        <div className="flex items-center justify-between border-b pb-4 border-slate-500/20">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-2xl bg-amber-500/20 text-amber-400">
+                                    <MapPin size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-serif font-black uppercase tracking-tight">
+                                        Quick Anchor: {quickPinTarget.name}
+                                    </h3>
+                                    <p className="text-[10px] opacity-60 font-mono tracking-widest">
+                                        CLICK ANYWHERE ON MAP TO FIX COORD PIN
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => { setQuickPinTarget(null); setQuickPinCoords(null); }}
+                                className="opacity-50 hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-white/10"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        {/* Interactive Map Canvas */}
+                        <div className="space-y-3">
+                            <div
+                                onClick={(e) => {
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    const x = Math.round(((e.clientX - rect.left) / rect.width) * 1000) / 10;
+                                    const y = Math.round(((e.clientY - rect.top) / rect.height) * 1000) / 10;
+                                    setQuickPinCoords({
+                                        x: Math.max(0, Math.min(100, x)),
+                                        y: Math.max(0, Math.min(100, y))
+                                    });
+                                }}
+                                className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden border-2 border-slate-700 bg-slate-950 cursor-crosshair shadow-inner group select-none"
+                            >
+                                <img
+                                    src={mapImage}
+                                    alt="Realm Map"
+                                    className="w-full h-full object-cover filter contrast-105 pointer-events-none select-none"
+                                />
+
+                                {/* Render current pin marker if coords exist */}
+                                {quickPinCoords && (
+                                    <div
+                                        style={{ left: `${quickPinCoords.x}%`, top: `${quickPinCoords.y}%` }}
+                                        className="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center pointer-events-none transition-all duration-150 animate-in zoom-in"
+                                    >
+                                        <div className="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider mb-0.5 shadow-md bg-black/90 text-yellow-300 border border-yellow-500/40">
+                                            {quickPinTarget.name}
+                                        </div>
+                                        <div className="p-1.5 rounded-full bg-yellow-400 text-black shadow-[0_0_16px_rgba(250,204,21,0.9)] animate-pulse">
+                                            <MapPin size={16} fill="currentColor" />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Inputs & Quick Actions */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-bold uppercase opacity-60">X%:</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.1"
+                                        value={quickPinCoords?.x ?? 50}
+                                        onChange={(e) => {
+                                            const val = Math.max(0, Math.min(100, parseFloat(e.target.value) || 0));
+                                            setQuickPinCoords(prev => ({ x: val, y: prev?.y ?? 50 }));
+                                        }}
+                                        className={`w-full px-3 py-1.5 rounded-xl border text-xs outline-none ${inputBg}`}
+                                    />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-bold uppercase opacity-60">Y%:</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        step="0.1"
+                                        value={quickPinCoords?.y ?? 50}
+                                        onChange={(e) => {
+                                            const val = Math.max(0, Math.min(100, parseFloat(e.target.value) || 0));
+                                            setQuickPinCoords(prev => ({ x: prev?.x ?? 50, y: val }));
+                                        }}
+                                        className={`w-full px-3 py-1.5 rounded-xl border text-xs outline-none ${inputBg}`}
+                                    />
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => setQuickPinCoords({ x: 50, y: 50 })}
+                                        className="text-[10px] font-bold uppercase tracking-wider opacity-60 hover:opacity-100 hover:text-yellow-400 transition-colors flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg border border-slate-500/20"
+                                    >
+                                        <Crosshair size={12} /> Center (50%, 50%)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer Controls */}
+                        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-500/20">
+                            <button
+                                type="button"
+                                onClick={() => { setQuickPinTarget(null); setQuickPinCoords(null); }}
+                                className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase opacity-60 hover:opacity-100 transition-opacity"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (!quickPinTarget || !quickPinCoords) return;
+                                    setWorld(prev => ({
+                                        ...prev,
+                                        entities: prev.entities.map(ent =>
+                                            ent.id === quickPinTarget.id
+                                                ? { ...ent, coordinates: quickPinCoords }
+                                                : ent
+                                        )
+                                    }));
+                                    setQuickPinTarget(null);
+                                    setQuickPinCoords(null);
+                                }}
+                                disabled={!quickPinCoords}
+                                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                                    isWikiMode
+                                        ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] disabled:opacity-40'
+                                        : 'bg-[#fef08a] text-black hover:bg-yellow-400 disabled:opacity-40 shadow-lg shadow-yellow-500/20'
+                                }`}
+                            >
+                                Save Coordinates
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
         </div>
     );
 };
