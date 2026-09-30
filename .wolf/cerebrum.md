@@ -57,6 +57,7 @@ budget_tokens: 2000
 - **[2026-09-30]** In Royal Codex, NEVER use bright yellow (`text-[#fef08a]`) on cream/parchment backgrounds or buttons. Use `text-[#3d0a10]` for headings, `text-[#70121e]` for accents, and `text-[#fff8e7]` (warm ivory) for text inside crimson buttons (`bg-[#70121e]`).
 - **[2026-09-30]** NEVER hardcode long conditional ternary styling strings (`isRoyal ? '...' : isWikiMode ? '...' : '...'`) in new components. Use `useTheme()` from `src/theme` and targeted primitives (`<ThemeButton>`, `<ThemeCard>`, `<ThemeBadge>`) to allow adding or updating themes instantly from a single configuration.
 - **[2026-10-01]** ALWAYS enforce bidirectional relationship synchronization when saving entities. When entity A links to entity B (e.g. parent/child, boon/affliction on character, member of group), entity B's inverse field MUST be automatically updated via `applyBidirectionalSync()` in `handleSaveDraft()`. When an entity is deleted, references must be cleaned via `removeEntityRelationsOnDelete()`. Never allow one-way relation links in the store.
+- **[2026-10-01]** ALWAYS put the `applyBidirectionalSync` call INSIDE the Zustand `set((state) => { ... })` callback in `handleSaveDraft`, NOT outside it using `get()`. Using `set(state => ...)` guarantees the computation reads the freshest store state (including entities created by concurrent `handleCreate` calls) and avoids stale snapshot bugs. The `state` parameter inside `set` is always the latest committed state.
 
 ## Decision Log
 

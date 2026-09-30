@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef } from 'react';
 import {
     Palette, Skull, Globe, Layers, Plus, Copy,
     Download, Upload, Trash2, Edit2, Check, Sparkles, AlertTriangle, ArrowRight, BookOpen,
-    Radio, FileArchive, Zap
+    Radio, FileArchive, Zap, Heart
 } from 'lucide-react';
 import { WorldData, EntityType, WorldPhase } from '../types';
 import { TYPE_LABELS } from '../constants';
@@ -54,8 +54,16 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
         setOpenTabIds,
         setDrafts,
         setEditingTabIds,
-        setActiveTabId
+        setActiveTabId,
+        handleHealRelations
     } = useWorldStore();
+
+    const [healDone, setHealDone] = useState(false);
+    const handleHeal = () => {
+        handleHealRelations();
+        setHealDone(true);
+        setTimeout(() => setHealDone(false), 3000);
+    };
 
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);
     const [isBeamModalOpen, setIsBeamModalOpen] = useState(false);
@@ -546,6 +554,33 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                     NexusBeam transfers archives directly device-to-device via WebRTC — no cloud, no size limits, works globally via STUN relay.
                                 </p>
                             </div>
+                        </div>
+                    </section>
+
+                    {/* Data Integrity */}
+                    <section className="pt-8 border-t border-slate-800/40 space-y-6">
+                        <div className="flex items-center gap-3">
+                            <Heart size={14} className="text-emerald-400" />
+                            <h3 className="text-xs font-black uppercase tracking-widest text-emerald-400">Data Integrity</h3>
+                        </div>
+                        <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div>
+                                <p className="text-xs font-bold text-emerald-200">Heal Bidirectional Relations</p>
+                                <p className="text-[10px] text-emerald-200/50 max-w-md">
+                                    Scans all entities and repairs any one-way links — e.g. if a Character lists a Condition as a boon but the Condition page doesn't show the Character back, this fixes it instantly.
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleHeal}
+                                className={`px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 ${
+                                    healDone
+                                        ? 'bg-emerald-600 text-white border-emerald-400'
+                                        : 'bg-emerald-900/40 hover:bg-emerald-700 text-emerald-200 border-emerald-500/30'
+                                }`}
+                            >
+                                <Heart size={12} />
+                                {healDone ? '✓ Relations Healed!' : 'HEAL RELATIONS'}
+                            </button>
                         </div>
                     </section>
 

@@ -76,6 +76,7 @@ interface WorldStore {
     updateEntityParent: (entityId: string, parentId: string | null) => void;
     updateEntityLock: (id: string, isReadOnly: boolean) => void;
     reorderAndReparentEntity: (draggedId: string, targetId: string | null, position: 'before' | 'after' | 'inside', targetType?: EntityType) => void;
+    handleHealRelations: () => void;
 }
 
 const syncWorld = (state: WorldStore, nextWorld: WorldData) => {
@@ -979,54 +980,57 @@ export const useWorldStore = create<WorldStore>()(
             },
 
             handleSaveDraft: (id) => {
-                const { drafts, world, editingTabIds } = get();
-                if (!drafts[id]) return;
+                set((state) => {
+                    const { drafts, world, editingTabIds } = state;
+                    if (!drafts[id]) return state;
 
-                const draft = { ...drafts[id] };
-                // Safety: An entity can NEVER be its own parent
-                if (draft.parentId === id) {
-                    draft.parentId = null;
-                }
-                // Safety: Parent must exist, have the same entity type, and not form a circular loop
-                if (draft.parentId) {
-                    const parent = world.entities.find(e => e.id === draft.parentId);
-                    if (!parent || parent.type !== draft.type) {
+                    const draft = { ...drafts[id] };
+                    // Safety: An entity can NEVER be its own parent
+                    if (draft.parentId === id) {
                         draft.parentId = null;
-                    } else {
-                        let cur: WorldEntity | undefined = parent;
-                        const visited = new Set<string>([id]);
-                        while (cur && cur.parentId) {
-                            if (visited.has(cur.id) || cur.parentId === id) {
-                                draft.parentId = null; // Break circular dependency
-                                break;
+                    }
+                    // Safety: Parent must exist, have the same entity type, and not form a circular loop
+                    if (draft.parentId) {
+                        const parent = world.entities.find(e => e.id === draft.parentId);
+                        if (!parent || parent.type !== draft.type) {
+                            draft.parentId = null;
+                        } else {
+                            let cur: WorldEntity | undefined = parent;
+                            const visited = new Set<string>([id]);
+                            while (cur && cur.parentId) {
+                                if (visited.has(cur.id) || cur.parentId === id) {
+                                    draft.parentId = null; // Break circular dependency
+                                    break;
+                                }
+                                visited.add(cur.id);
+                                cur = world.entities.find(e => e.id === cur?.parentId);
                             }
-                            visited.add(cur.id);
-                            cur = world.entities.find(e => e.id === cur?.parentId);
                         }
                     }
-                }
 
-                const prevEntity = world.entities.find(e => e.id === id);
-                const savedEntity: WorldEntity = { ...draft, lastModified: Date.now() };
+                    const prevEntity = world.entities.find(e => e.id === id);
+                    const savedEntity: WorldEntity = { ...draft, lastModified: Date.now() };
 
-                // Apply bidirectional relationship synchronization across all connected entities
-                const { entities: syncedEntities, drafts: syncedDrafts } = applyBidirectionalSync(
-                    savedEntity,
-                    prevEntity,
-                    world.entities,
-                    drafts
-                );
+                    // Apply bidirectional relationship synchronization across all connected entities.
+                    // Running inside set() guarantees we always operate on the freshest store state.
+                    const { entities: syncedEntities, drafts: syncedDrafts } = applyBidirectionalSync(
+                        savedEntity,
+                        prevEntity,
+                        world.entities,
+                        drafts
+                    );
 
-                const newDrafts = syncedDrafts ? { ...syncedDrafts } : { ...drafts };
-                delete newDrafts[id];
+                    const newDrafts = syncedDrafts ? { ...syncedDrafts } : { ...drafts };
+                    delete newDrafts[id];
 
-                const newEditing = editingTabIds.filter(tid => tid !== id);
+                    const newEditing = editingTabIds.filter(tid => tid !== id);
 
-                set((state) => ({
-                    ...syncWorld(state, { ...state.world, entities: syncedEntities }),
-                    drafts: newDrafts,
-                    editingTabIds: newEditing
-                }));
+                    return {
+                        ...syncWorld(state, { ...world, entities: syncedEntities }),
+                        drafts: newDrafts,
+                        editingTabIds: newEditing
+                    };
+                });
             },
 
             handleToggleEdit: (id) => {
@@ -1380,6 +1384,13 @@ export const useWorldStore = create<WorldStore>()(
                 } catch (e: any) {
                     return { success: false, message: e?.message || 'Error processing realm file.' };
                 }
+            },
+
+            handleHealRelations: () => {
+                set((state) => {
+                    const healedEntities = reconcileAllBidirectionalRelations(state.world.entities);
+                    return syncWorld(state, { ...state.world, entities: healedEntities });
+                });
             }
         }),
         {
