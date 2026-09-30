@@ -1,5 +1,7 @@
 import React from 'react';
+import { Users, Maximize2 } from 'lucide-react';
 import { TaperedDivider, WikiStatRow, LinksDisplay, RadarChart, EmeraldGem } from '../ui';
+import { NexusImage } from '../ui/NexusImage';
 import { Character, WorldEntity } from '../../types';
 import { CategorizedBacklinks } from '../../utils/backlinkUtils';
 import { useWorldStore } from '../../store/useWorldStore';
@@ -119,6 +121,18 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
     if (isWikiMode) {
         return (
             <div className="bg-[#fefce8] border-2 border-[#d4c8af] rounded shadow-md overflow-hidden font-sans space-y-0 text-[#1a1a1a]">
+                {/* Portrait Part (Living Entry) */}
+                <div className={`w-full aspect-square ${char.imageUri ? 'bg-black/10' : 'bg-[#ccc5a8] grayscale contrast-75'} flex items-center justify-center border-b border-[#d4c8af] overflow-hidden relative`}>
+                    {char.imageUri ? (
+                        <NexusImage src={char.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
+                    ) : (
+                        <Users size={120} className="text-[#a89d7d]" />
+                    )}
+                    <div className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm pointer-events-none">
+                        <Maximize2 size={14} className="text-white/60" />
+                    </div>
+                </div>
+
                 {/* Wiki Header */}
                 <div className="bg-[#fef9c3] p-2.5 text-center border-b-2 border-[#d4c8af] flex items-center justify-between">
                     <h3 className="font-serif font-bold text-xs uppercase tracking-wider text-[#854d0e]">
@@ -224,6 +238,18 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
     // Sovereign (Dark Theme)
     return (
         <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-[2rem] p-6 shadow-2xl space-y-5 text-slate-200">
+            {/* Portrait Frame (Living Entry) */}
+            <div className={`w-full aspect-square rounded-2xl overflow-hidden border ${char.imageUri ? 'border-slate-700/60 shadow-xl' : 'border-slate-800/80 bg-slate-950/40'} flex items-center justify-center relative group`}>
+                {char.imageUri ? (
+                    <NexusImage src={char.imageUri} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" containerClassName="w-full h-full" />
+                ) : (
+                    <div className="flex flex-col items-center justify-center gap-2 text-slate-600">
+                        <Users size={64} className="opacity-40" />
+                        <span className="text-[10px] font-mono tracking-widest uppercase opacity-40">No Portrait Inscribed</span>
+                    </div>
+                )}
+            </div>
+
             {/* Header / Vitals row */}
             <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#fef08a]">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Users, Globe, Maximize2, Eye } from 'lucide-react';
 import { WikiInfoboxRow, LinksDisplay } from '../ui';
+import { NexusImage } from '../ui/NexusImage';
 import { WorldEntity } from '../../types';
 import { TYPE_LABELS } from '../../constants';
 import { useWorldStore } from '../../store/useWorldStore';
@@ -25,9 +26,13 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                         <h3 className="font-serif font-bold text-xl uppercase tracking-tight text-[#e6c687]">{entity.name}</h3>
                     </div>
 
-                    <div className="h-56 bg-[#21040a] flex items-center justify-center border-b border-[#c8a96e]/30 overflow-hidden relative">
-                        {isChar ? <Users size={120} className="text-[#c8a96e]/30" /> : <Globe size={120} className="text-[#c8a96e]/30" />}
-                        <div className="absolute bottom-2 right-2 bg-black/40 p-1.5 rounded-lg border border-[#c8a96e]/40 backdrop-blur-sm">
+                    <div className="w-full aspect-square bg-[#21040a] flex items-center justify-center border-b border-[#c8a96e]/30 overflow-hidden relative">
+                        {entity.imageUri ? (
+                            <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
+                        ) : (
+                            isChar ? <Users size={120} className="text-[#c8a96e]/30" /> : <Globe size={120} className="text-[#c8a96e]/30" />
+                        )}
+                        <div className="absolute bottom-2 right-2 bg-black/40 p-1.5 rounded-lg border border-[#c8a96e]/40 backdrop-blur-sm pointer-events-none">
                             <Maximize2 size={14} className="text-[#e6c687]" />
                         </div>
                     </div>
@@ -71,10 +76,14 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                     <h3 className="font-serif font-bold text-xl uppercase tracking-tighter text-[#1a1a1a]">{entity.name}</h3>
                 </div>
 
-                {/* Image Placeholder */}
-                <div className="h-56 bg-[#ccc5a8] flex items-center justify-center border-b border-[#d4c8af] overflow-hidden grayscale contrast-75 relative">
-                    {isChar ? <Users size={120} className="text-[#a89d7d]" /> : <Globe size={120} className="text-[#a89d7d]" />}
-                    <div className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm">
+                {/* Image / Portrait Display */}
+                <div className={`w-full aspect-square ${entity.imageUri ? 'bg-black/10' : 'bg-[#ccc5a8] grayscale contrast-75'} flex items-center justify-center border-b border-[#d4c8af] overflow-hidden relative`}>
+                    {entity.imageUri ? (
+                        <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
+                    ) : (
+                        isChar ? <Users size={120} className="text-[#a89d7d]" /> : <Globe size={120} className="text-[#a89d7d]" />
+                    )}
+                    <div className="absolute bottom-2 right-2 bg-black/20 p-1 rounded backdrop-blur-sm pointer-events-none">
                         <Maximize2 size={14} className="text-white/60" />
                     </div>
                 </div>

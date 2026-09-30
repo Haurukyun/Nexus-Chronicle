@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Link2, X, Check, Image as ImageIcon, Sparkles, HardDrive } from 'lucide-react';
+import { Upload, Link2, X, Sparkles, HardDrive, Crop } from 'lucide-react';
 import { saveAsset } from '../../utils/assetStore';
 import { NexusImage } from './NexusImage';
+import { ImageCropModal } from './ImageCropModal';
 
 interface AssetImageUploaderProps {
     label: string;
@@ -23,39 +24,77 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
     const [isSaving, setIsSaving] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Crop Modal State
+    const [isCropOpen, setIsCropOpen] = useState(false);
+    const [cropImageSource, setCropImageSource] = useState<string>('');
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+
     const isLocalAsset = Boolean(value && value.startsWith('asset://'));
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        try {
-            setIsSaving(true);
-            const assetUri = await saveAsset(file);
-            onChange(assetUri);
-        } catch (err) {
-            console.error('Failed to save asset:', err);
-            alert('Failed to store image in local asset vault.');
-        } finally {
-            setIsSaving(false);
-            if (fileInputRef.current) fileInputRef.current.value = '';
-        }
+    const prepareCropForFile = (file: File) => {
+        const objectUrl = URL.createObjectURL(file);
+        setPendingFile(file);
+        setCropImageSource(objectUrl);
+        setIsCropOpen(true);
     };
 
-    const handleDrop = async (e: React.DragEvent) => {
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        prepareCropForFile(file);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         const file = e.dataTransfer.files?.[0];
         if (!file || !file.type.startsWith('image/')) return;
+        prepareCropForFile(file);
+    };
 
+    const handleOpenCropForCurrent = () => {
+        if (!value) return;
+        setPendingFile(null);
+        setCropImageSource(value);
+        setIsCropOpen(true);
+    };
+
+    const handleApplyCrop = async (croppedBlob: Blob) => {
         try {
             setIsSaving(true);
-            const assetUri = await saveAsset(file);
+            const assetUri = await saveAsset(croppedBlob);
             onChange(assetUri);
         } catch (err) {
-            console.error('Failed to drop asset:', err);
+            console.error('Failed to save cropped asset:', err);
+            alert('Failed to store cropped image in asset vault.');
         } finally {
             setIsSaving(false);
+            cleanupCrop();
         }
+    };
+
+    const handleKeepOriginal = async () => {
+        if (!pendingFile) return;
+        try {
+            setIsSaving(true);
+            const assetUri = await saveAsset(pendingFile);
+            onChange(assetUri);
+        } catch (err) {
+            console.error('Failed to save original asset:', err);
+            alert('Failed to store image in local asset vault.');
+        } finally {
+            setIsSaving(false);
+            cleanupCrop();
+        }
+    };
+
+    const cleanupCrop = () => {
+        if (cropImageSource && cropImageSource.startsWith('blob:')) {
+            URL.revokeObjectURL(cropImageSource);
+        }
+        setCropImageSource('');
+        setPendingFile(null);
+        setIsCropOpen(false);
     };
 
     const handleApplyUrl = () => {
@@ -103,35 +142,62 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
 
             {/* Preview Box & Controls */}
             {value ? (
-                <div className={`p-4 rounded-2xl border space-y-3 max-w-lg mx-auto ${
-                    isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/60 border-slate-800'
+                <div className={`p-5 rounded-[2rem] border space-y-4 max-w-xs mx-auto shadow-2xl ${
+                    isWikiMode ? 'bg-[#fefce8] border-[#d4c8af]' : 'bg-slate-900/60 border-slate-800/80 backdrop-blur-md'
                 }`}>
-                    <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden border border-white/10 bg-black/40 group">
-                        <NexusImage src={value} className="w-full h-full object-cover" />
-                        <button
-                            type="button"
-                            onClick={handleClear}
-                            className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-black/75 text-white opacity-80 hover:opacity-100 hover:bg-red-600 transition-all shadow"
-                            title="Remove Image"
-                        >
-                            <X size={15} />
-                        </button>
+                    <div className="flex items-center justify-between px-1">
+                        <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${
+                            isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]'
+                        }`}>
+                            Card Portrait (1:1)
+                        </span>
+                        <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full ${
+                            isLocalAsset ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-500/20 text-blue-300'
+                        }`}>
+                            {isLocalAsset ? 'Vault HD' : 'Web URL'}
+                        </span>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 px-1">
-                        <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
-                            isLocalAsset
-                                ? 'bg-emerald-500/20 text-emerald-300'
-                                : 'bg-blue-500/20 text-blue-300'
-                        }`}>
-                            {isLocalAsset ? 'Vault Asset (HD Uncompressed)' : 'External Web URL'}
-                        </span>
+                    <div className={`relative w-full aspect-square rounded-2xl overflow-hidden border ${
+                        isWikiMode ? 'border-[#d4c8af] bg-[#ccc5a8]/20' : 'border-slate-700/60 shadow-xl bg-slate-950/40'
+                    } flex items-center justify-center group`}>
+                        <NexusImage src={value} className="w-full h-full object-cover" containerClassName="w-full h-full" />
+                        <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity z-10">
+                            <button
+                                type="button"
+                                onClick={handleOpenCropForCurrent}
+                                className="p-2 rounded-xl bg-black/80 hover:bg-yellow-400 hover:text-black text-white transition-all shadow-lg backdrop-blur-sm"
+                                title="Crop & Reposition"
+                            >
+                                <Crop size={14} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleClear}
+                                className="p-2 rounded-xl bg-black/80 text-white hover:bg-red-600 transition-all shadow-lg backdrop-blur-sm"
+                                title="Remove Image"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2 px-1 pt-1 border-t border-white/5">
+                        <button
+                            type="button"
+                            onClick={handleOpenCropForCurrent}
+                            className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-colors ${
+                                isWikiMode ? 'text-[#b91c1c] hover:underline' : 'text-yellow-400 hover:text-yellow-300'
+                            }`}
+                        >
+                            <Crop size={13} /> Crop / Center
+                        </button>
                         <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
-                            className="text-xs font-bold uppercase tracking-wider text-yellow-400 hover:underline cursor-pointer"
+                            className="text-xs font-bold uppercase tracking-wider opacity-70 hover:opacity-100 cursor-pointer"
                         >
-                            Replace Image
+                            Replace
                         </button>
                     </div>
                     <input
@@ -208,6 +274,17 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                 <p className="text-[11px] opacity-40 italic font-serif text-center pt-1">
                     {helperText}
                 </p>
+            )}
+
+            {isCropOpen && cropImageSource && (
+                <ImageCropModal
+                    isOpen={isCropOpen}
+                    imageSrc={cropImageSource}
+                    onApplyCrop={handleApplyCrop}
+                    onClose={cleanupCrop}
+                    onKeepOriginal={pendingFile ? handleKeepOriginal : undefined}
+                    isWikiMode={isWikiMode}
+                />
             )}
         </div>
     );

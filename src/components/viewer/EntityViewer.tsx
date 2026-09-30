@@ -3,6 +3,7 @@ import { CodexHeader, WikiHeader, RoyalHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
 import { FieldRow, LinksDisplay, MarkdownRenderer } from '../ui';
+import { NexusImage } from '../ui/NexusImage';
 import { EntityViewerProps, Character, EntityType, Location } from '../../types';
 import { TYPE_LABELS } from '../../constants';
 import { getCategorizedBacklinks } from '../../utils/backlinkUtils';
@@ -150,6 +151,11 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                         {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
                         {!isChar && (
                             <div className="bg-[#3f0d19] text-[#fef08a] border-4 border-[#c8a96e] rounded-3xl p-6 shadow-2xl space-y-4">
+                                {entity.imageUri && (
+                                    <div className="w-full aspect-square rounded-2xl overflow-hidden border border-[#c8a96e]/40 shadow-lg">
+                                        <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
+                                    </div>
+                                )}
                                 <div className="text-center border-b border-[#c8a96e]/30 pb-3">
                                     <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#e6c687]">Record Vitals</span>
                                     <h3 className="font-serif font-black text-lg text-[#e6c687] uppercase mt-1">{entity.name}</h3>
@@ -191,14 +197,21 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 ) : (
                     <>
                         {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
-                        <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10">
-                            <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
-                            <div className="space-y-6">
-                                <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} isWikiMode={false} />
-                                <FieldRow label="Template" value={entity.docTemplate?.join(', ') || (entity as any).documentTemplate || "Generic"} isWikiMode={false} />
-                                <FieldRow label="Order" value={entity.order || (entity as any).orderNumber} isWikiMode={false} />
-                                <FieldRow label="Status" value={(entity as any).status || (entity.deadSwitch ? 'Lost' : 'Active')} isWikiMode={false} />
-                                <FieldRow label="Hierarchy" value={allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId))?.name} isWikiMode={false} />
+                        <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10 space-y-6">
+                            {!isChar && entity.imageUri && (
+                                <div className="w-full aspect-square rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl">
+                                    <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
+                                </div>
+                            )}
+                            <div>
+                                <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
+                                <div className="space-y-6">
+                                    <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} isWikiMode={false} />
+                                    <FieldRow label="Template" value={entity.docTemplate?.join(', ') || (entity as any).documentTemplate || "Generic"} isWikiMode={false} />
+                                    <FieldRow label="Order" value={entity.order || (entity as any).orderNumber} isWikiMode={false} />
+                                    <FieldRow label="Status" value={(entity as any).status || (entity.deadSwitch ? 'Lost' : 'Active')} isWikiMode={false} />
+                                    <FieldRow label="Hierarchy" value={allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId))?.name} isWikiMode={false} />
+                                </div>
                             </div>
                         </div>
                     </>

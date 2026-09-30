@@ -11,21 +11,14 @@ interface HeaderProps {
 }
 
 export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => (
-    <header className="border-b border-slate-800/80 pb-12 mb-12">
-        <div className="flex justify-between items-end">
-            <div className="flex items-end gap-8">
-                {entity.imageUri && (
-                    <div className="w-40 h-40 rounded-3xl overflow-hidden shrink-0 border border-white/10 shadow-2xl ring-1 ring-[#fef08a]/20 mb-1">
-                        <NexusImage src={entity.imageUri} className="w-full h-full object-cover" />
-                    </div>
-                )}
-                <div>
-                    <div className="flex items-center gap-3 text-[#fef08a] mb-4 uppercase tracking-[0.4em] font-black text-[10px]"><Scroll size={14} /> Record Entry</div>
-                    <h1 className="text-[7rem] font-serif font-black text-white tracking-tighter uppercase leading-[0.8] mb-4">{entity.name}</h1>
-                    {entity.otherNames && <p className="text-slate-500 text-3xl font-serif italic opacity-60">"{entity.otherNames}"</p>}
-                </div>
+    <header className="border-b border-slate-800/80 pb-8 mb-8">
+        <div className="flex justify-between items-end gap-6">
+            <div>
+                <div className="flex items-center gap-3 text-[#fef08a] mb-3 uppercase tracking-[0.4em] font-black text-[10px]"><Scroll size={14} /> Record Entry</div>
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-black text-white tracking-tighter uppercase leading-[0.9] mb-3">{entity.name}</h1>
+                {entity.otherNames && <p className="text-slate-500 text-2xl font-serif italic opacity-60">"{entity.otherNames}"</p>}
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 shrink-0">
                 {entity.isReadOnly ? (
                     <button 
                         onClick={onToggleLock} 
@@ -50,18 +43,11 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
 
 export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => (
     <header className="border-b-4 border-[#b91c1c] pb-2 flex justify-between items-end mb-10">
-        <div className="flex items-end gap-4">
-            {entity.imageUri && (
-                <div className="w-20 h-20 rounded overflow-hidden shrink-0 border-2 border-[#b91c1c]/40 shadow-md mb-1">
-                    <NexusImage src={entity.imageUri} className="w-full h-full object-cover" />
-                </div>
-            )}
-            <div>
-                <h1 className="text-6xl font-serif font-bold text-[#b91c1c] uppercase tracking-tight leading-none">{entity.name}</h1>
-                {entity.otherNames && <p className="text-[#854d0e] text-lg font-serif italic mt-1">"{entity.otherNames}"</p>}
-            </div>
+        <div>
+            <h1 className="text-6xl font-serif font-bold text-[#b91c1c] uppercase tracking-tight leading-none">{entity.name}</h1>
+            {entity.otherNames && <p className="text-[#854d0e] text-lg font-serif italic mt-1">"{entity.otherNames}"</p>}
         </div>
-        <div className="flex items-center gap-3 pb-2">
+        <div className="flex items-center gap-3 pb-2 shrink-0">
             {entity.isReadOnly ? (
                 <button 
                     onClick={onToggleLock} 
@@ -85,19 +71,12 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
 
 export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => (
     <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-            {entity.imageUri && (
-                <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 border-[#c8a96e]/60 shadow-lg">
-                    <NexusImage src={entity.imageUri} className="w-full h-full object-cover" />
-                </div>
-            )}
-            <div>
-                <div className="flex items-center gap-2 text-[#70121e] mb-1 uppercase tracking-[0.2em] font-serif font-bold text-xs">
-                    <Scroll size={14} /> Codex Record
-                </div>
-                <h1 className="text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-none">{entity.name}</h1>
-                {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1">"{entity.otherNames}"</p>}
+        <div>
+            <div className="flex items-center gap-2 text-[#70121e] mb-1 uppercase tracking-[0.2em] font-serif font-bold text-xs">
+                <Scroll size={14} /> Codex Record
             </div>
+            <h1 className="text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-none">{entity.name}</h1>
+            {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1">"{entity.otherNames}"</p>}
         </div>
         <div className="flex items-center gap-3">
             {entity.isReadOnly ? (
