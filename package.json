@@ -9,9 +9,12 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "tauri:dev": "node -e \"const p=require('path'),cp=require('child_process'),cb=p.join(process.env.USERPROFILE||process.env.HOME,'.cargo','bin');process.env.PATH=cb+';'+process.env.PATH;cp.spawnSync('node',['node_modules/@tauri-apps/cli/tauri.js','dev'],{stdio:'inherit',env:process.env,shell:true})\"",
+    "tauri:build": "node -e \"const p=require('path'),cp=require('child_process'),cb=p.join(process.env.USERPROFILE||process.env.HOME,'.cargo','bin');process.env.PATH=cb+';'+process.env.PATH;cp.spawnSync('node',['node_modules/@tauri-apps/cli/tauri.js','build'],{stdio:'inherit',env:process.env,shell:true})\""
   },
   "dependencies": {
+    "@tauri-apps/api": "^2.12.1",
     "@types/dompurify": "^3.0.5",
     "clsx": "^2.1.1",
     "dompurify": "^3.4.16",
@@ -26,6 +29,7 @@
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.32.0",
+    "@tauri-apps/cli": "^2.12.1",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^22.14.0",
     "@types/react": "^19.3.0",

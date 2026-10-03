@@ -6,7 +6,7 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-10-03
+> Last updated: 2026-10-03 (04:04)
 
 ---
 
@@ -70,6 +70,12 @@ budget_tokens: 1000
   - **Zero-Friction Dev State Sync Engine** (`vite.config.ts`, `useWorldStore.ts`): Lightweight Vite dev plugin listening on `POST /__dev_state` coupled with debounced Zustand store subscriber in `import.meta.env.DEV`. Automatically updates `.dev-state.json` silently as worldbuilders edit lore without adding any production bundle size or backend dependencies.
   - **Workspace-Scoped MCP Plugin (`nexus-chronicle-tools`)** (`.agents/plugins/nexus-chronicle-tools/`): Namespaced, workspace-scoped Antigravity MCP integration hosting `nexus-openwolf` (`tools/openwolf-mcp.mjs`) and `nexus-state-inspector` (`tools/state-inspector-mcp.mjs`). Guarantees zero global path collisions or pollution in other IDE projects.
   - **State Inspector MCP & Dev Snapshot UI** (`tools/state-inspector-mcp.mjs`, `OptionsView.tsx`): 1-click `EXPORT DEV SNAPSHOT (.dev-state.json)` in System Settings and MCP inspection tools (`get_active_realm_summary`, `query_dev_entities`) for live campaign inspection.
+- **Phase P4 Tauri v2 Desktop Packaging** —
+  - **Tauri v2 Scaffold** (`src-tauri/`): Full `cargo tauri init` scaffold with `Cargo.toml` (nexus-chronicle, `tauri-plugin-fs`, `tauri-plugin-dialog`, `tauri-plugin-shell`, `tauri-plugin-log`), `build.rs`, and `src/main.rs` + `src/lib.rs` registering all plugins.
+  - **Window Configuration** (`tauri.conf.json`): App ID `com.haurukyun.nexuschronicle`, 1280×800 default, 900×600 minimum, centered, resizable. Asset protocol enabled (`assetProtocol.enable: true`, scope `**`) for local image display (portraits, maps). CSP permits `asset:`, `blob:`, `data:`, and Google Fonts.
+  - **Capabilities** (`src-tauri/capabilities/default.json`): Full `fs:*`, `dialog:allow-open/save`, `shell:allow-open` permission set using correct Tauri v2 identifiers. Scoped to `appdata`, `download`, and `document` directories.
+  - **PATH injection npm scripts**: `tauri:dev` and `tauri:build` scripts self-inject `~/.cargo/bin` into PATH at runtime so they work regardless of whether the terminal was opened before or after Rust was installed.
+  - **Desktop app confirmed working**: App launches with native chrome, displays all UI and data correctly in Tauri WebView (WebView2 on Windows).
 - **Initial Architecture** — Full entity type system (20 types), Zustand persist store, editor/viewer split per entity type
 - **Roleplay Theme V1** — `royal-codex` theme with parchment textures, quill pen overlay, woodgrain bg
 - **Multi-Theme system** — `sovereign` (dark), `wiki` (light), `royal-codex` (fantasy parchment)
@@ -85,12 +91,14 @@ budget_tokens: 1000
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P3: Architecture, TypeScript & Aesthetic Polish_
+**Goal:** _Phase P4 continued: Tauri integration polish & native features_
 
 ### Key known gaps / potential next features
-1. World Phase Visual Legibility Tuning (P3 #14) — Ensure heavy filters (like `ruin`) don't degrade form readability
-2. `git push` pending — branch is multiple commits ahead of origin (BUG-006)
-3. Full codebase sanity verification and test coverage
+1. **`convertFileSrc()` for portraits/maps** — Images stored as IndexedDB blobs need to be exposed via Tauri's `asset://` protocol using `convertFileSrc()` in `NexusImage.tsx` so they render correctly in the desktop app (they currently only work in the browser)
+2. **Native file save dialog** — Wire `tauri-plugin-dialog` `save()` into `downloadFileToDevice()` in `nexusArchive.ts` for proper native save-as dialogs when exporting `.nexus` files on desktop
+3. **World Phase Visual Legibility Tuning** — Ensure heavy filters (`ruin`) don't degrade form readability
+4. **`git push` pending** — branch is multiple commits ahead of origin
+5. **App icon** — Replace placeholder icons in `src-tauri/icons/` with Nexus Chronicle branded artwork
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
@@ -109,7 +117,7 @@ budget_tokens: 1000
 
 ## 📁 Active architecture
 
-- **Stack:** React 19, TypeScript 5.8, Vite 6, Zustand 5, TailwindCSS 3, Lucide React
+- **Stack:** React 19, TypeScript 5.8, Vite 6, Zustand 5, TailwindCSS 3, Lucide React, **Tauri v2** (`tauri-plugin-fs`, `tauri-plugin-dialog`, `tauri-plugin-shell`, `tauri-plugin-log`)
 - **Entry:** `index.html` → `src/index.tsx` → `src/App.tsx`
 - **State:** `src/store/useWorldStore.ts` — single Zustand store, persisted to localStorage under key `nexus-world-storage`
 - **Types:** `src/types.ts` — `EntityType` union (20 types), `WorldEntity` = union of all specifics, `WorldData` = `{ name, entities[], trash[], mapImage, mapConnections[], worldPhase }`
@@ -138,11 +146,14 @@ budget_tokens: 1000
 ## 🔧 Useful commands
 
 ```bash
-npm run dev          # Start Vite dev server
+npm run tauri:dev    # Launch desktop app (starts Vite + Tauri window) ← PRIMARY DEV COMMAND
+npm run dev          # Vite only (browser, fast hot-reload for UI-only work)
 npm run build        # Production build to dist/
-npm run typecheck    # Run tsc --noEmit (no emit, just check)
+npm run tauri:build  # Full desktop bundle (dist/ + Tauri installer)
+npm run typecheck    # Run tsc --noEmit
+npm run test         # Vitest unit tests
 git log --oneline    # Review commit history
-git push             # Push pending Phase 0 cleanup commit
+git push             # Push pending commits
 ```
 
 ---
