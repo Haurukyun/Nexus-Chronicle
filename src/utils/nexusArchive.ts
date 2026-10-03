@@ -217,105 +217,21 @@ export const unpackNexusArchive = async (
     return { manifest, assetsImported };
 };
 
-// ─── Export helper ───────────────────────────────────────────────────────────
+import { saveFileNative } from './nativeFileBridge';
 
 /**
- * Universal file saver that prevents Chromium / Edge from discarding
- * suggested filenames and saving blobs as raw GUIDs.
- * 
- * 1. On Chromium desktop (Edge, Chrome): Uses window.showSaveFilePicker to show
- *    the native Save dialog with pre-filled filename and extension.
- * 2. On Mobile (iOS/Android): Uses navigator.share for native share sheet.
- * 3. Fallback: Uses Data URI or clean anchor click with delayed revocation.
+ * Universal file saver that saves files to disk.
+ * 1. On Tauri Desktop: Opens native Windows Explorer Save As dialog and writes directly to disk.
+ * 2. On Web (Edge, Chrome): Uses window.showSaveFilePicker with pre-filled filename and extension.
+ * 3. On Mobile (iOS/Android): Uses navigator.share for native share sheet.
+ * 4. Fallback: Uses Data URI or clean anchor click with delayed revocation.
  */
 export const downloadFileToDevice = async (
     blob: Blob,
     fileName: string,
     mimeType: string = 'application/octet-stream'
 ): Promise<void> => {
-    // 1. Desktop Chromium: Native File System Access API
-    if (typeof window !== 'undefined' && 'showSaveFilePicker' in window) {
-        try {
-            const ext = fileName.includes('.') ? `.${fileName.split('.').pop()}` : '.nexus';
-            const handle = await (window as any).showSaveFilePicker({
-                suggestedName: fileName,
-                types: [
-                    {
-                        description: ext === '.json' ? 'JSON Codex Document' : 'Nexus Campaign Archive',
-                        accept: { [mimeType]: [ext] }
-                    }
-                ]
-            });
-            const writable = await handle.createWritable();
-            await writable.write(blob);
-            await writable.close();
-            return;
-        } catch (err: any) {
-            // If user clicked 'Cancel' on the file dialog, exit gracefully
-            if (err?.name === 'AbortError') {
-                return;
-            }
-            console.warn('showSaveFilePicker skipped/failed, proceeding to fallback:', err);
-        }
-    }
-
-    // 2. Mobile Native Share (iOS / Android)
-    const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
-    if (isMobile && typeof navigator.canShare === 'function') {
-        const file = new File([blob], fileName, { type: mimeType });
-        if (navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share({
-                    title: fileName,
-                    text: 'Nexus Chronicle campaign chronicle archive.',
-                    files: [file]
-                });
-                return;
-            } catch (err: any) {
-                if (err?.name === 'AbortError') return;
-            }
-        }
-    }
-
-    // 3. Data URL for files under 25MB (prevents Edge from ever seeing a blob: URL GUID)
-    if (blob.size < 25 * 1024 * 1024) {
-        try {
-            const dataUrl = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result as string);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = dataUrl;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                if (document.body.contains(a)) document.body.removeChild(a);
-            }, 2000);
-            return;
-        } catch {
-            // Fall through to object URL fallback
-        }
-    }
-
-    // 4. Standard Object URL fallback
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-        if (document.body.contains(a)) {
-            document.body.removeChild(a);
-        }
-        URL.revokeObjectURL(url);
-    }, 2000);
+    await saveFileNative(blob, fileName, undefined, mimeType);
 };
 
 /**

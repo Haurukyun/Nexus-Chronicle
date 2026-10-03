@@ -11,8 +11,8 @@ import { useWorldStore } from '../store/useWorldStore';
 import { NewRealmModal } from '../components/ui/NewRealmModal';
 import { NexusBeamModal } from '../components/ui/NexusBeamModal';
 import { DeleteRealmModal } from '../components/ui/DeleteRealmModal';
-import { WipeRealmModal } from '../components/ui/WipeRealmModal';
-import { exportNexusArchiveFile, unpackNexusArchive } from '../utils/nexusArchive';
+import { exportNexusArchiveFile, unpackNexusArchive, downloadFileToDevice } from '../utils/nexusArchive';
+import { isDesktopApp, openFileNative } from '../utils/nativeFileBridge';
 
 interface OptionsViewProps {
     world: WorldData;
@@ -76,6 +76,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
     const [nexusNotice, setNexusNotice] = useState<{ text: string; isError?: boolean } | null>(null);
     const [nexusExporting, setNexusExporting] = useState(false);
     const nexusImportRef = useRef<HTMLInputElement>(null);
+    const jsonImportRef = useRef<HTMLInputElement>(null);
 
     const isRoyal = theme === 'royal-codex';
 
@@ -122,10 +123,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
         }
     };
 
-    const handleImportNexusFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        e.target.value = '';
+    const processNexusFile = async (file: File | Blob) => {
         setNexusNotice(null);
         try {
             const { manifest, assetsImported } = await unpackNexusArchive(file);
@@ -133,7 +131,6 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                 const result = importWorldData(manifest.universe, 'new');
                 setNexusNotice({ text: `✓ Universe archive restored — ${result.message}. ${assetsImported} assets loaded to vault.`, isError: !result.success });
             } else if (manifest.world) {
-                // If active world is empty template, overwrite it; otherwise import as new campaign to guarantee no data is lost
                 const mode = world.entities.length === 0 ? 'replace' : 'new';
                 const result = importWorldData(manifest.world, mode);
                 setNexusNotice({ text: `✓ Realm restored — ${result.message}. ${assetsImported} assets loaded to vault.`, isError: !result.success });
@@ -145,33 +142,63 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
         }
     };
 
+    const processJsonText = (jsonString: string) => {
+        try {
+            const parsed = JSON.parse(jsonString);
+            const isUniverse = parsed && Array.isArray(parsed.worlds) && parsed.version === 1;
+
+            if (isUniverse) {
+                const result = importWorldData(parsed, 'new');
+                setImportNotice({ text: result.message, isError: !result.success });
+            } else if (parsed && parsed.name && Array.isArray(parsed.entities)) {
+                const mode = world.entities.length === 0 ? 'replace' : 'new';
+                const result = importWorldData(parsed, mode);
+                setImportNotice({ text: result.message, isError: !result.success });
+            } else {
+                setImportNotice({ text: 'Invalid JSON format for Nexus Chronicle realm data.', isError: true });
+            }
+        } catch (err: any) {
+            setImportNotice({ text: `Failed to parse JSON file: ${err?.message || 'Syntax error'}`, isError: true });
+        }
+    };
+
+    const handleImportNexusClick = async () => {
+        if (isDesktopApp()) {
+            const fileData = await openFileNative([{ name: 'Nexus Campaign Archive', extensions: ['nexus'] }]);
+            if (!fileData) return;
+            const file = new File([fileData.data], fileData.fileName, { type: 'application/octet-stream' });
+            await processNexusFile(file);
+        } else {
+            nexusImportRef.current?.click();
+        }
+    };
+
+    const handleImportJsonClick = async () => {
+        if (isDesktopApp()) {
+            const fileData = await openFileNative([{ name: 'JSON Codex Document', extensions: ['json'] }]);
+            if (!fileData) return;
+            processJsonText(fileData.text);
+        } else {
+            jsonImportRef.current?.click();
+        }
+    };
+
+    const handleImportNexusFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        e.target.value = '';
+        await processNexusFile(file);
+    };
+
     const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (event) => {
-            try {
-                const parsed = JSON.parse(event.target?.result as string);
-                
-                // Detect whether this is a universe archive or single realm
-                const isUniverse = parsed && Array.isArray(parsed.worlds) && parsed.version === 1;
-
-                if (isUniverse) {
-                    const result = importWorldData(parsed, 'new');
-                    setImportNotice({ text: result.message, isError: !result.success });
-                } else if (parsed && parsed.name && Array.isArray(parsed.entities)) {
-                    const mode = world.entities.length === 0 ? 'replace' : 'new';
-                    const result = importWorldData(parsed, mode);
-                    setImportNotice({ text: result.message, isError: !result.success });
-                } else {
-                    setImportNotice({ text: 'Invalid JSON format for Nexus Chronicle realm data.', isError: true });
-                }
-            } catch (err: any) {
-                setImportNotice({ text: `Failed to parse JSON file: ${err?.message || 'Syntax error'}`, isError: true });
-            }
+            processJsonText(event.target?.result as string);
         };
         reader.readAsText(file);
-        e.target.value = ''; // Reset input
+        e.target.value = '';
     };
 
     const handleStartEdit = (w: WorldData) => {
@@ -484,10 +511,13 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                         <Layers size={13} /> Full Multiverse (.json)
                                     </button>
 
-                                    <label className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-slate-700 hover:border-yellow-400 transition-all flex items-center justify-center gap-2 cursor-pointer text-center">
+                                    <button
+                                        onClick={handleImportJsonClick}
+                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-slate-700 hover:border-yellow-400 transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+                                    >
                                         <Upload size={13} /> Import JSON
-                                        <input type="file" className="hidden" accept=".json" onChange={handleImportFile} />
-                                    </label>
+                                        <input ref={jsonImportRef} type="file" className="hidden" accept=".json" onChange={handleImportFile} />
+                                    </button>
                                 </div>
                             </div>
 
@@ -531,7 +561,10 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                         <Layers size={13} />{nexusExporting ? 'Packing…' : 'Full Multiverse (.nexus)'}
                                     </button>
 
-                                    <label className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer text-center">
+                                    <button
+                                        onClick={handleImportNexusClick}
+                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+                                    >
                                         <Upload size={13} /> Restore .nexus
                                         <input
                                             ref={nexusImportRef}
@@ -540,7 +573,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                             accept=".nexus"
                                             onChange={handleImportNexusFile}
                                         />
-                                    </label>
+                                    </button>
 
                                     <button
                                         onClick={() => setIsBeamModalOpen(true)}
@@ -598,7 +631,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                 </p>
                             </div>
                             <button
-                                onClick={() => {
+                                onClick={async () => {
                                     const stateData = {
                                         timestamp: new Date().toISOString(),
                                         world,
@@ -606,11 +639,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                                         theme,
                                     };
                                     const blob = new Blob([JSON.stringify(stateData, null, 2)], { type: 'application/json' });
-                                    const a = document.createElement('a');
-                                    a.href = URL.createObjectURL(blob);
-                                    a.download = '.dev-state.json';
-                                    a.click();
-                                    URL.revokeObjectURL(a.href);
+                                    await downloadFileToDevice(blob, '.dev-state.json', 'application/json');
                                 }}
                                 className="px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 bg-yellow-400/20 hover:bg-yellow-400/30 text-yellow-200 border-yellow-400/40"
                             >
