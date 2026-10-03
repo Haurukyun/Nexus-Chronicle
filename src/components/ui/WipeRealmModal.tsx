@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Skull, AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, Skull, X } from 'lucide-react';
 import { WorldData, ThemeMode } from '../../types';
 
 interface WipeRealmModalProps {
@@ -18,11 +18,12 @@ export const WipeRealmModal: React.FC<WipeRealmModalProps> = ({
     onConfirm,
     onCancel,
     theme,
-    isWikiMode
+    isWikiMode,
 }) => {
     useEffect(() => {
+        if (!isOpen) return;
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && isOpen) onCancel();
+            if (e.key === 'Escape') onCancel();
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
@@ -30,86 +31,101 @@ export const WipeRealmModal: React.FC<WipeRealmModalProps> = ({
 
     if (!isOpen) return null;
 
+    const entityCount = (realm.entities || []).length;
     const isRoyal = theme === 'royal-codex';
 
-    const modalBg = isRoyal
-        ? 'bg-[#181410] border-[#c8a96e]/40 text-[#f5ebd7]'
-        : isWikiMode
-        ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]'
-        : 'bg-slate-900 border-slate-700 text-slate-100';
+    const bgClass = isWikiMode
+        ? 'bg-[#f5f0e8] border-[#b91c1c] text-[#1a1a1a]'
+        : isRoyal
+        ? 'bg-[#2a0a0f] border-[#70121e] text-[#fff8e7]'
+        : 'bg-slate-900 border-red-500/60 text-white';
 
-    const modalElement = (
-        <div 
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-            onClick={onCancel}
+    const titleClass = isWikiMode
+        ? 'text-[#b91c1c]'
+        : isRoyal
+        ? 'text-[#ff6b6b]'
+        : 'text-red-400';
+
+    const subtextClass = isWikiMode
+        ? 'text-[#5a3a2a]'
+        : isRoyal
+        ? 'text-[#ffcdd2]'
+        : 'text-slate-300';
+
+    const confirmBtnClass = isWikiMode
+        ? 'bg-[#b91c1c] hover:bg-[#991b1b] text-white'
+        : isRoyal
+        ? 'bg-[#70121e] hover:bg-[#8b1a28] text-[#fff8e7]'
+        : 'bg-red-600 hover:bg-red-700 text-white';
+
+    const cancelBtnClass = isWikiMode
+        ? 'bg-[#e8e0d0] hover:bg-[#d8cfc0] text-[#3d2a1a] border border-[#c8b89a]'
+        : isRoyal
+        ? 'bg-[#3d1a20] hover:bg-[#4a2030] text-[#fff8e7] border border-[#70121e]/40'
+        : 'bg-slate-700 hover:bg-slate-600 text-slate-200 border border-slate-600';
+
+    return createPortal(
+        <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}
+            onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
         >
-            <div 
-                className={`w-full max-w-md p-6 sm:p-8 rounded-3xl border shadow-2xl space-y-6 ${modalBg} relative max-h-[90vh] overflow-y-auto`}
-                onClick={(e) => e.stopPropagation()}
-            >
-                {/* Header */}
-                <div className="flex items-start justify-between border-b pb-4 border-current/10">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2.5 rounded-2xl bg-rose-500/10 text-rose-500 shrink-0">
-                            <Skull size={24} />
-                        </div>
-                        <div>
-                            <h2 className="text-lg font-serif font-black uppercase tracking-tight text-rose-400">
-                                Oblivion Protocol
-                            </h2>
-                            <p className="text-[11px] opacity-60 font-serif italic truncate max-w-[240px]">
-                                Purge Active Realm Cache
-                            </p>
-                        </div>
+            <div className={`relative w-full max-w-md rounded-2xl border-2 p-8 shadow-2xl mx-4 ${bgClass}`}>
+                {/* Close button */}
+                <button
+                    onClick={onCancel}
+                    className="absolute top-4 right-4 opacity-50 hover:opacity-100 transition-opacity"
+                >
+                    <X size={18} />
+                </button>
+
+                {/* Icon */}
+                <div className="flex justify-center mb-4">
+                    <div className="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center">
+                        <Skull size={28} className={titleClass} />
                     </div>
-                    <button
-                        type="button"
-                        onClick={onCancel}
-                        className="opacity-50 hover:opacity-100 transition-opacity p-1.5 rounded-xl hover:bg-white/5"
-                    >
-                        <X size={18} />
-                    </button>
                 </div>
 
-                {/* Body Content */}
-                <div className="space-y-4">
-                    <p className="text-sm font-medium leading-relaxed">
-                        Are you absolutely certain you want to purge all records from <span className="font-bold underline decoration-rose-500/50">{realm.name}</span>?
-                    </p>
-                    <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-xs space-y-1.5 text-rose-300">
-                        <p className="font-bold flex items-center gap-1.5">
-                            <AlertTriangle size={13} /> Irreversible Purge
-                        </p>
-                        <p className="opacity-80">
-                            This will permanently reset all <strong className="text-white">{realm.entities?.length || 0} entities</strong>, <strong className="text-white">{realm.trash?.length || 0} trash records</strong>, and cartography leylines in <strong className="text-white">"{realm.name}"</strong>.
-                        </p>
-                        <p className="opacity-60 text-[10px] pt-1">
-                            Note: Other realms in your multiverse and the active realm's settings will remain preserved.
+                {/* Title */}
+                <h2 className={`text-center text-xl font-black uppercase tracking-widest mb-1 ${titleClass}`}>
+                    Oblivion Protocol
+                </h2>
+                <p className={`text-center text-sm mb-6 ${subtextClass}`}>
+                    You are about to erase all entities from{' '}
+                    <span className="font-bold">{realm.name}</span>
+                </p>
+
+                {/* Warning box */}
+                <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 mb-6 flex gap-3 items-start">
+                    <AlertTriangle size={18} className={`${titleClass} mt-0.5 shrink-0`} />
+                    <div className={`text-sm ${subtextClass}`}>
+                        <p className="font-semibold mb-1">This action cannot be undone.</p>
+                        <p>
+                            <span className="font-bold">{entityCount} {entityCount === 1 ? 'entity' : 'entities'}</span>{' '}
+                            and all associated relationships, drafts, and open tabs will be permanently obliterated.
+                            The realm itself and its lore settings will remain.
                         </p>
                     </div>
                 </div>
 
-                {/* Footer Buttons */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-current/10">
+                {/* Actions */}
+                <div className="flex gap-3">
                     <button
-                        type="button"
                         onClick={onCancel}
-                        className="px-4 py-2 rounded-xl text-xs font-bold uppercase opacity-70 hover:opacity-100 hover:bg-white/5 transition-all"
+                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${cancelBtnClass}`}
                     >
-                        Cancel
+                        Stand Down
                     </button>
                     <button
-                        type="button"
                         onClick={onConfirm}
-                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-rose-600 text-white hover:bg-rose-700 shadow-lg shadow-rose-600/30 transition-all"
+                        className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 ${confirmBtnClass}`}
                     >
-                        <Skull size={14} />
-                        <span>Purge Active Realm</span>
+                        <Skull size={15} />
+                        Execute Protocol
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
-
-    return typeof document !== 'undefined' ? createPortal(modalElement, document.body) : modalElement;
 };

@@ -76,6 +76,7 @@ budget_tokens: 1000
   - **Capabilities** (`src-tauri/capabilities/default.json`): Full `fs:*`, `dialog:allow-open/save`, `shell:allow-open` permission set using correct Tauri v2 identifiers. Scoped to `appdata`, `download`, and `document` directories.
   - **PATH injection npm scripts**: `tauri:dev` and `tauri:build` scripts self-inject `~/.cargo/bin` into PATH at runtime so they work regardless of whether the terminal was opened before or after Rust was installed.
   - **Desktop app confirmed working**: App launches with native chrome, displays all UI and data correctly in Tauri WebView (WebView2 on Windows).
+  - **CAS + Project Vault (Phase 2)** (`tauriAssetVault.ts`, `assetStore.ts`, `lib.rs`): Two-tier asset storage. L1 = IndexedDB (always); L2 = disk vault at `$APPDATA/.../assets/<hash>.<ext>`. Every `saveAsset()` write-throughs to disk. `resolveAssetUrl()` resolves via `convertFileSrc()` on desktop for zero-copy WebView2 streaming. Lazy `promoteAssetToDisk()` promotes IDB-only blobs on first render. Both tiers mirrored on delete and prune. Custom Rust command `get_app_data_dir` registered via `tauri::generate_handler!` without adding `tauri-plugin-path`.
 - **Initial Architecture** — Full entity type system (20 types), Zustand persist store, editor/viewer split per entity type
 - **Roleplay Theme V1** — `royal-codex` theme with parchment textures, quill pen overlay, woodgrain bg
 - **Multi-Theme system** — `sovereign` (dark), `wiki` (light), `royal-codex` (fantasy parchment)
@@ -94,11 +95,9 @@ budget_tokens: 1000
 **Goal:** _Phase P4 continued: Tauri integration polish & native features_
 
 ### Key known gaps / potential next features
-1. **`convertFileSrc()` for portraits/maps** — Images stored as IndexedDB blobs need to be exposed via Tauri's `asset://` protocol using `convertFileSrc()` in `NexusImage.tsx` so they render correctly in the desktop app (they currently only work in the browser)
-2. **Native file save dialog** — Wire `tauri-plugin-dialog` `save()` into `downloadFileToDevice()` in `nexusArchive.ts` for proper native save-as dialogs when exporting `.nexus` files on desktop
-3. **World Phase Visual Legibility Tuning** — Ensure heavy filters (`ruin`) don't degrade form readability
-4. **`git push` pending** — branch is multiple commits ahead of origin
-5. **App icon** — Replace placeholder icons in `src-tauri/icons/` with Nexus Chronicle branded artwork
+1. **App icon** — Replace placeholder icons in `src-tauri/icons/` with Nexus Chronicle branded artwork
+2. **World Phase Visual Legibility Tuning** — Ensure heavy filters (`ruin`) don't degrade form readability
+3. **`git push` pending** — branch is multiple commits ahead of origin
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)

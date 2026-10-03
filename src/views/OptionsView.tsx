@@ -11,8 +11,10 @@ import { useWorldStore } from '../store/useWorldStore';
 import { NewRealmModal } from '../components/ui/NewRealmModal';
 import { NexusBeamModal } from '../components/ui/NexusBeamModal';
 import { DeleteRealmModal } from '../components/ui/DeleteRealmModal';
+import { WipeRealmModal } from '../components/ui/WipeRealmModal';
 import { exportNexusArchiveFile, unpackNexusArchive, downloadFileToDevice } from '../utils/nexusArchive';
 import { isDesktopApp, openFileNative } from '../utils/nativeFileBridge';
+import { pruneOrphanAssets, extractActiveAssetUris } from '../utils/assetStore';
 
 interface OptionsViewProps {
     world: WorldData;
@@ -63,6 +65,30 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
         handleHealRelations();
         setHealDone(true);
         setTimeout(() => setHealDone(false), 3000);
+    };
+
+    const [isPruning, setIsPruning] = useState(false);
+    const [pruneNotice, setPruneNotice] = useState<string | null>(null);
+
+    const handlePruneMedia = async () => {
+        setIsPruning(true);
+        setPruneNotice(null);
+        try {
+            const activeUris = extractActiveAssetUris(worlds);
+            const { deletedCount, bytesReclaimed } = await pruneOrphanAssets(activeUris);
+            const mb = (bytesReclaimed / (1024 * 1024)).toFixed(1);
+            if (deletedCount === 0) {
+                setPruneNotice('✓ Vault clean (0 orphans)');
+            } else {
+                setPruneNotice(`✓ Pruned ${deletedCount} files (${mb} MB reclaimed)`);
+            }
+            setTimeout(() => setPruneNotice(null), 4000);
+        } catch (err: any) {
+            setPruneNotice(`Prune failed: ${err?.message || 'Error'}`);
+            setTimeout(() => setPruneNotice(null), 4000);
+        } finally {
+            setIsPruning(false);
+        }
     };
 
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);
@@ -613,6 +639,28 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                             >
                                 <Heart size={12} />
                                 {healDone ? '✓ Relations Healed!' : 'HEAL RELATIONS'}
+                            </button>
+                        </div>
+
+                        {/* Prune Unused Media (CAS Garbage Collection) */}
+                        <div className="p-6 rounded-2xl bg-purple-500/5 border border-purple-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div>
+                                <p className="text-xs font-bold text-purple-200">Prune Unused Media (Vault Garbage Collection)</p>
+                                <p className="text-[10px] text-purple-200/50 max-w-md">
+                                    Audits the IndexedDB binary asset vault against all entities, maps, and lore notes. Safely purges orphaned images no longer referenced in any campaign.
+                                </p>
+                            </div>
+                            <button
+                                onClick={handlePruneMedia}
+                                disabled={isPruning}
+                                className={`px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 ${
+                                    pruneNotice
+                                        ? 'bg-purple-600 text-white border-purple-400'
+                                        : 'bg-purple-900/40 hover:bg-purple-700 text-purple-200 border-purple-500/30 disabled:opacity-40'
+                                }`}
+                            >
+                                <Sparkles size={12} />
+                                {pruneNotice || (isPruning ? 'Auditing Vault…' : 'PRUNE UNUSED MEDIA')}
                             </button>
                         </div>
                     </section>
