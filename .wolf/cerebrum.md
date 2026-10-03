@@ -14,6 +14,13 @@ budget_tokens: 2000
 - **Tone:** Fantasy/lore-flavored UI copy (e.g. "Chronos Timeline", "The Grand Voyager", "Forgotten Depth"); maintain this in new UI text.
 - **Theme richness:** Design is intentionally rich and layered — do not simplify or flatten UI; maintain glassmorphism, serif fonts, and high contrast.
 - **No backend:** The user explicitly wants a purely client-side app; all data is in localStorage via Zustand persist. Do NOT propose adding a server, database, or API.
+- **Target platform (Executable):** The app will be packaged using **Tauri v2** as a standalone executable targeting Windows, macOS, Linux, and Android. Keep filesystem architectures and asset managers aligned with native local storage.
+- **Tauri v2 Pre-Commit Mitigations & Security Standards:**
+  1. *Styling & Rich Text:* Test WebKit/Safari engine differences early (backdrop-filter, glassmorphism, flex layout).
+  2. *Tauri v2 Decoupled Scope Syntax (`capabilities/*.json`):* Never pass bare scope strings (e.g. `"fs:scope-appdata-recursive"`) directly in `permissions`. In Tauri v2, scopes are structured objects mapped to specific permissions or configured with explicit `allow` paths (e.g. `{"identifier": "fs:default", "allow": [{"path": "$APPDATA/**"}, {"path": "$DOCUMENT/**"}]}`).
+  3. *Asset Protocol Scope (`tauri.conf.json` & `convertFileSrc`):* In webviews, local filesystem paths (`C:\...` or `/data/...`) in `<img>` tags are blocked. Must bridge via Tauri's `convertFileSrc()` to the `asset://` protocol, AND explicitly whitelist allowed filesystem directories in `tauri.conf.json` under `app.security.assetProtocol.scope` (e.g. `["$APPDATA/**", "$DOCUMENT/**"]`).
+  4. *Mobile Debugging:* Use Chrome Remote Inspector (`chrome://inspect`) for Android and Safari Web Inspector for macOS/iOS.
+  5. *Native Extensions:* Encapsulate any custom OS/native file routines in `src-tauri/src/lib.rs` commands.
 - **TailwindCSS inline classes:** All styling is done via inline Tailwind classes. There is no separate CSS file for component styles. Do not create `*.module.css` or non-index CSS files.
 
 ## Key Learnings
