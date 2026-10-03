@@ -36,6 +36,14 @@ tools/test-mcp-runner.mjs
 .memory.json
 
 # --------------------------------------------------
+# Stale TS error log artifacts
+# --------------------------------------------------
+ts_errors.log
+tsc_errors.log
+ts_errors_utf8.log
+tsc_errors_utf8.log
+
+# --------------------------------------------------
 # Rust & Tauri v2 Build Outputs
 # --------------------------------------------------
 src-tauri/target/

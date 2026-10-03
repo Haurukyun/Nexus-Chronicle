@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { 
     Search, Plus, Trash2, BarChart3, History, GitMerge, 
     Footprints, Globe, Settings, BookMarked, Compass, 
@@ -59,6 +59,10 @@ function getSafeParentId(entity: WorldEntity, allEntities: WorldEntity[]): strin
     return parent.id;
 }
 
+// Synchronous drag tracking to prevent React state batching race conditions on initial drag frame
+let activeDraggedId: string | null = null;
+let activeDraggedType: EntityType | null = null;
+
 const EntityItem: React.FC<{
     entity: WorldEntity;
     depth: number;
@@ -77,25 +81,29 @@ const EntityItem: React.FC<{
 }) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null);
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const dragCounter = useRef(0);
 
     // Bulletproof child lookup: Only includes entities whose safe parent is this entity
     const children = allEntities.filter(e => getSafeParentId(e, allEntities) === entity.id);
     const hasChildren = children.length > 0;
     const isActive = activeTabId === entity.id;
     const isRoyal = theme === 'royal-codex';
-    const isBeingDragged = draggedEntityId === entity.id;
+    const currentDraggedId = draggedEntityId || activeDraggedId;
+    const isBeingDragged = currentDraggedId === entity.id;
 
     // Target is invalid if it's the dragged entity itself, a descendant, or a DIFFERENT entity type
     const isInvalidTarget = useMemo(() => {
-        if (!draggedEntityId || draggedEntityId === entity.id) return true;
-        const draggedEntity = allEntities.find(e => e.id === draggedEntityId);
+        const activeId = draggedEntityId || activeDraggedId;
+        if (!activeId || activeId === entity.id) return true;
+        const draggedEntity = allEntities.find(e => e.id === activeId);
         // STRICT TYPE MATCH: Cannot drag or reparent across different categories/types!
         if (!draggedEntity || draggedEntity.type !== entity.type) return true;
 
-        const visited = new Set<string>([draggedEntityId]);
+        const visited = new Set<string>([activeId]);
         let cur = allEntities.find(e => e.id === entity.id);
         while (cur && cur.parentId) {
-            if (visited.has(cur.id) || cur.parentId === draggedEntityId) return true;
+            if (visited.has(cur.id) || cur.parentId === activeId) return true;
             visited.add(cur.id);
             cur = allEntities.find(e => e.id === cur.parentId);
         }
@@ -121,16 +129,16 @@ const EntityItem: React.FC<{
     let dropIndicatorClass = '';
     if (dropPosition === 'before') {
         dropIndicatorClass = isRoyal 
-            ? 'border-t-2 border-[#d4af37] shadow-[0_-2px_8px_rgba(212,175,55,0.7)]'
+            ? 'shadow-[inset_0_2px_0_0_#d4af37]'
             : isWikiMode
-            ? 'border-t-2 border-[#b91c1c] shadow-[0_-2px_8px_rgba(185,28,28,0.5)]'
-            : 'border-t-2 border-yellow-400 shadow-[0_-2px_8px_rgba(250,204,21,0.6)]';
+            ? 'shadow-[inset_0_2px_0_0_#b91c1c]'
+            : 'shadow-[inset_0_2px_0_0_#facc15]';
     } else if (dropPosition === 'after') {
         dropIndicatorClass = isRoyal 
-            ? 'border-b-2 border-[#d4af37] shadow-[0_2px_8px_rgba(212,175,55,0.7)]'
+            ? 'shadow-[inset_0_-2px_0_0_#d4af37]'
             : isWikiMode
-            ? 'border-b-2 border-[#b91c1c] shadow-[0_2px_8px_rgba(185,28,28,0.5)]'
-            : 'border-b-2 border-yellow-400 shadow-[0_2px_8px_rgba(250,204,21,0.6)]';
+            ? 'shadow-[inset_0_-2px_0_0_#b91c1c]'
+            : 'shadow-[inset_0_-2px_0_0_#facc15]';
     } else if (dropPosition === 'inside') {
         dropIndicatorClass = isRoyal 
             ? 'ring-2 ring-[#d4af37] bg-[#3d2315] shadow-inner'
@@ -147,14 +155,53 @@ const EntityItem: React.FC<{
                     e.stopPropagation();
                     e.dataTransfer.setData('text/plain', entity.id);
                     e.dataTransfer.effectAllowed = 'move';
+                    activeDraggedId = entity.id;
+                    activeDraggedType = entity.type;
+                    dragCounter.current = 0;
                     setDraggedEntityId(entity.id);
                 }}
                 onDragEnd={() => {
+                    activeDraggedId = null;
+                    activeDraggedType = null;
+                    dragCounter.current = 0;
                     setDraggedEntityId(null);
                     setDropPosition(null);
                 }}
+                onDragEnter={(e) => {
+                    const activeId = draggedEntityId || activeDraggedId;
+                    if (activeId === entity.id) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.dataTransfer.dropEffect = 'move';
+                        return;
+                    }
+                    if (isInvalidTarget) {
+                        if (activeId) {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'none';
+                        }
+                        return;
+                    }
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.dataTransfer.dropEffect = 'move';
+                    dragCounter.current += 1;
+                }}
                 onDragOver={(e) => {
-                    if (isInvalidTarget) return;
+                    const activeId = draggedEntityId || activeDraggedId;
+                    if (activeId === entity.id) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.dataTransfer.dropEffect = 'move';
+                        return;
+                    }
+                    if (isInvalidTarget) {
+                        if (activeId) {
+                            e.preventDefault();
+                            e.dataTransfer.dropEffect = 'none';
+                        }
+                        return;
+                    }
                     e.preventDefault();
                     e.stopPropagation();
                     e.dataTransfer.dropEffect = 'move';
@@ -163,72 +210,104 @@ const EntityItem: React.FC<{
                     const offsetY = e.clientY - rect.top;
                     const height = rect.height;
 
+                    let newPos: 'before' | 'after' | 'inside';
                     if (offsetY < height * 0.25) {
-                        setDropPosition('before');
+                        newPos = 'before';
                     } else if (offsetY > height * 0.75) {
-                        setDropPosition('after');
+                        newPos = 'after';
                     } else {
-                        setDropPosition('inside');
+                        newPos = 'inside';
+                    }
+
+                    if (newPos !== dropPosition) {
+                        setDropPosition(newPos);
                     }
                 }}
-                onDragLeave={() => {
-                    setDropPosition(null);
+                onDragLeave={(e) => {
+                    e.stopPropagation();
+                    dragCounter.current -= 1;
+                    if (dragCounter.current <= 0) {
+                        dragCounter.current = 0;
+                        setDropPosition(null);
+                    }
                 }}
                 onDrop={(e) => {
-                    if (isInvalidTarget || !draggedEntityId || !dropPosition) return;
+                    dragCounter.current = 0;
+                    const finalDraggedId = draggedEntityId || activeDraggedId;
+                    activeDraggedId = null;
+                    activeDraggedType = null;
+                    if (isInvalidTarget || !finalDraggedId || !dropPosition) return;
                     e.preventDefault();
                     e.stopPropagation();
-                    onReorderAndReparent(draggedEntityId, entity.id, dropPosition);
+                    onReorderAndReparent(finalDraggedId, entity.id, dropPosition);
                     setIsExpanded(true);
                     setDropPosition(null);
                     setDraggedEntityId(null);
                 }}
-                className={`flex items-center group/item transition-all rounded-lg overflow-hidden relative cursor-grab active:cursor-grabbing ${
-                    isBeingDragged ? 'opacity-30 scale-[0.98]' : ''
+                className={`flex items-center group/item rounded-lg overflow-hidden relative cursor-grab active:cursor-grabbing select-none ${
+                    draggedEntityId ? '' : 'transition-all'
+                } ${
+                    isBeingDragged ? 'opacity-40' : ''
                 } ${dropIndicatorClass} ${
                     isActive ? activeStyle : hoverStyle
                 } ${entity.minorSwitch ? 'italic opacity-50' : ''}`}
                 style={customStyle}
                 title={`Drag to reparent or reorder: "${entity.name}"`}
             >
-                <GripVertical size={11} className="opacity-0 group-hover/item:opacity-40 hover:opacity-80 transition-opacity shrink-0 -ml-1 mr-0.5 cursor-grab" />
+                <div className={`flex items-center flex-1 min-w-0 select-none ${currentDraggedId ? 'pointer-events-none' : ''}`}>
+                    <GripVertical size={11} className="opacity-0 group-hover/item:opacity-40 hover:opacity-80 transition-opacity shrink-0 -ml-1 mr-0.5 cursor-grab pointer-events-none" />
 
-                {hasChildren ? (
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
-                        className="p-1 opacity-40 hover:opacity-100 transition-opacity"
+                    {hasChildren ? (
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+                            className={`p-1 opacity-40 hover:opacity-100 transition-opacity ${currentDraggedId ? 'pointer-events-none' : ''}`}
+                        >
+                            {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                        </button>
+                    ) : (
+                        <div className="w-4" />
+                    )}
+                    
+                    <button
+                        onClick={() => handleOpenEntity(entity.id)}
+                        className="flex-1 text-left py-2 text-xs truncate flex items-center justify-between gap-2 pr-2"
                     >
-                        {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                        <span className="truncate flex items-center gap-1.5">
+                            {entity.name}
+                            {entity.finishedSwitch && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" title="Finished" />}
+                            {entity.deadSwitch && <span className="text-[8px] opacity-40">💀</span>}
+                            {entity.categorySwitch && <span className="text-[8px] opacity-40 font-bold px-1 rounded bg-slate-500/20">CAT</span>}
+                        </span>
+                        {dropPosition === 'inside' && (
+                            <span className={`text-[8px] font-bold px-1 rounded uppercase tracking-wider pointer-events-none select-none shrink-0 ${
+                                isRoyal ? 'bg-[#d4af37] text-black' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
+                            }`}>↳ Nest</span>
+                        )}
+                        {isRoyal && isActive && (
+                            <span className="text-[#c8a96e] text-[9px] font-mono shrink-0 drop-shadow pointer-events-none">▶</span>
+                        )}
                     </button>
-                ) : (
-                    <div className="w-4" />
-                )}
-                
-                <button
-                    onClick={() => handleOpenEntity(entity.id)}
-                    className="flex-1 text-left py-2 text-xs truncate flex items-center justify-between gap-2 pr-2"
-                >
-                    <span className="truncate flex items-center gap-1.5">
-                        {entity.name}
-                        {entity.finishedSwitch && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" title="Finished" />}
-                        {entity.deadSwitch && <span className="text-[8px] opacity-40">💀</span>}
-                        {entity.categorySwitch && <span className="text-[8px] opacity-40 font-bold px-1 rounded bg-slate-500/20">CAT</span>}
-                    </span>
-                    {dropPosition === 'inside' && (
-                        <span className={`text-[8px] font-bold px-1 rounded uppercase tracking-wider ${
-                            isRoyal ? 'bg-[#d4af37] text-black' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
-                        }`}>↳ Nest</span>
-                    )}
-                    {isRoyal && isActive && (
-                        <span className="text-[#c8a96e] text-[9px] font-mono shrink-0 drop-shadow">▶</span>
-                    )}
-                </button>
+                </div>
 
                 <button 
-                    onClick={(e) => { e.stopPropagation(); handleDeleteToTrash(entity); }}
-                    className="p-2 opacity-0 group-hover/item:opacity-40 hover:opacity-100 hover:text-red-500 transition-all"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirmDelete) {
+                            handleDeleteToTrash(entity);
+                            setConfirmDelete(false);
+                        } else {
+                            setConfirmDelete(true);
+                        }
+                    }}
+                    onBlur={() => setConfirmDelete(false)}
+                    className={`p-2 transition-all ${currentDraggedId ? 'pointer-events-none' : ''} ${
+                        confirmDelete
+                            ? 'opacity-100 text-rose-400 bg-rose-500/20 rounded'
+                            : 'opacity-0 group-hover/item:opacity-40 hover:opacity-100 hover:text-red-500'
+                    }`}
+                    title={confirmDelete ? 'Click again to confirm' : 'Send to Forgotten Depth'}
                 >
-                    <Trash2 size={12} />
+                    {confirmDelete ? <span className="text-[9px] font-black uppercase tracking-wider px-1">Sure?</span> : <Trash2 size={12} />}
                 </button>
             </div>
 
@@ -340,6 +419,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }
     }, [world.entities]);
 
+    // Global dragover/dragend listener to guarantee continuous dropEffect = 'move'
+    // without initial frame cursor flicker across the window
+    React.useEffect(() => {
+        const handleDragOver = (e: DragEvent) => {
+            if (activeDraggedId) {
+                e.preventDefault();
+                if (e.dataTransfer) {
+                    e.dataTransfer.dropEffect = 'move';
+                }
+            }
+        };
+        const handleDragEnd = () => {
+            activeDraggedId = null;
+            activeDraggedType = null;
+            setDraggedEntityId(null);
+            setHeaderDropType(null);
+        };
+        window.addEventListener('dragover', handleDragOver);
+        window.addEventListener('dragend', handleDragEnd);
+        window.addEventListener('drop', handleDragEnd);
+        return () => {
+            window.removeEventListener('dragover', handleDragOver);
+            window.removeEventListener('dragend', handleDragEnd);
+            window.removeEventListener('drop', handleDragEnd);
+        };
+    }, []);
+
     const isSearching = searchQuery.length > 0;
 
     const navBtnStyle = (viewId: string, activeColor: string) => {
@@ -353,7 +459,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
     };
 
     return (
-        <aside className={`w-56 border-r ${borderColor} flex flex-col ${sidebarBg} backdrop-blur-md z-20`}>
+        <aside 
+            onDragOver={(e) => {
+                if (draggedEntityId || activeDraggedId) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                }
+            }}
+            onDragEnter={(e) => {
+                if (draggedEntityId || activeDraggedId) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                }
+            }}
+            className={`w-56 border-r ${borderColor} flex flex-col ${sidebarBg} backdrop-blur-md z-20 select-none`}
+        >
             {/* Ornamental Gold Filigree Corners for Left Spine */}
             {isRoyal && (
                 <>
@@ -386,7 +506,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             {/* Entity Nav */}
-            <nav className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+            <nav 
+                onDragOver={(e) => {
+                    if (draggedEntityId || activeDraggedId) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                    }
+                }}
+                onDragEnter={(e) => {
+                    if (draggedEntityId || activeDraggedId) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                    }
+                }}
+                className="flex-1 overflow-y-auto p-3 custom-scrollbar select-none"
+            >
                 {HIERARCHY_CONFIG.map(group => (
                     <div key={group.id} className="mb-5">
                         <button
@@ -405,7 +539,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     <div key={type} className="space-y-0.5 group/type">
                                         <div 
                                             onDragOver={(e) => {
-                                                if (!draggedEntityId || !draggedEntity || draggedEntity.type !== type) return;
+                                                const activeId = draggedEntityId || activeDraggedId;
+                                                const activeType = draggedEntity?.type || activeDraggedType;
+                                                if (!activeId || activeType !== type) return;
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setHeaderDropType(type);
+                                            }}
+                                            onDragEnter={(e) => {
+                                                const activeId = draggedEntityId || activeDraggedId;
+                                                const activeType = draggedEntity?.type || activeDraggedType;
+                                                if (!activeId || activeType !== type) return;
                                                 e.preventDefault();
                                                 e.stopPropagation();
                                                 setHeaderDropType(type);
@@ -414,10 +558,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                 if (headerDropType === type) setHeaderDropType(null);
                                             }}
                                             onDrop={(e) => {
-                                                if (!draggedEntityId || !draggedEntity || draggedEntity.type !== type) return;
+                                                const activeId = draggedEntityId || activeDraggedId;
+                                                const activeType = draggedEntity?.type || activeDraggedType;
+                                                if (!activeId || activeType !== type) return;
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                reorderAndReparentEntity(draggedEntityId, null, 'inside', type);
+                                                activeDraggedId = null;
+                                                activeDraggedType = null;
+                                                reorderAndReparentEntity(activeId, null, 'inside', type);
                                                 setHeaderDropType(null);
                                                 setDraggedEntityId(null);
                                             }}
@@ -447,7 +595,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                 </button>
                                             )}
                                         </div>
-                                        <div className="space-y-px">
+                                        <div 
+                                            onDragOver={(e) => {
+                                                const activeType = draggedEntity?.type || activeDraggedType;
+                                                if (activeType === type) {
+                                                    e.preventDefault();
+                                                    e.dataTransfer.dropEffect = 'move';
+                                                }
+                                            }}
+                                            onDragEnter={(e) => {
+                                                const activeType = draggedEntity?.type || activeDraggedType;
+                                                if (activeType === type) {
+                                                    e.preventDefault();
+                                                    e.dataTransfer.dropEffect = 'move';
+                                                }
+                                            }}
+                                            className="space-y-px"
+                                        >
                                             {filteredEntities
                                                 .filter(e => e.type === type && (isSearching || getSafeParentId(e, world.entities) === null))
                                                 .map(entity => (

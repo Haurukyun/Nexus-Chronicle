@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Scroll, Trash2, Save, Lock, Unlock } from 'lucide-react';
 import { WorldEntity } from '../../types';
 import { NexusImage } from '../ui/NexusImage';
@@ -9,6 +9,25 @@ interface HeaderProps {
     onDelete: () => void;
     onToggleLock: () => void;
 }
+
+/** Two-click delete confirm. First click shows "Sure?", second confirms, blur cancels. */
+const ConfirmDeleteButton: React.FC<{ onConfirm: () => void; className: string; iconSize: number }> = ({
+    onConfirm, className, iconSize
+}) => {
+    const [pending, setPending] = useState(false);
+    return (
+        <button
+            onClick={() => { if (pending) { onConfirm(); setPending(false); } else { setPending(true); } }}
+            onBlur={() => setPending(false)}
+            className={`${className} ${pending ? 'ring-2 ring-rose-500/60' : ''} transition-all`}
+            title={pending ? 'Click again to confirm deletion' : 'Send to Forgotten Depth'}
+        >
+            {pending
+                ? <span className="text-[9px] font-black uppercase tracking-wider px-1 text-rose-400">Sure?</span>
+                : <Trash2 size={iconSize} />}
+        </button>
+    );
+};
 
 export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => (
     <header className="border-b border-slate-800/80 pb-8 mb-8">
@@ -35,7 +54,7 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                         </button>
                     </>
                 )}
-                <button onClick={onDelete} className="p-4 text-rose-500 hover:bg-rose-500/10 rounded-full transition-all" title="Send to Forgotten Depth"><Trash2 size={24} /></button>
+                <ConfirmDeleteButton onConfirm={onDelete} className="p-4 text-rose-500 hover:bg-rose-500/10 rounded-full" iconSize={24} />
             </div>
         </div>
     </header>
@@ -64,7 +83,7 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
                     </button>
                 </>
             )}
-            <button onClick={onDelete} className="p-2 hover:bg-rose-500/10 rounded text-rose-700" title="Trash"><Trash2 size={20} /></button>
+            <ConfirmDeleteButton onConfirm={onDelete} className="p-2 hover:bg-rose-500/10 rounded text-rose-700" iconSize={20} />
         </div>
     </header>
 );
@@ -97,11 +116,8 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                     </button>
                 </>
             )}
-            <button onClick={onDelete} className="p-2 text-[#70121e] hover:bg-[#70121e]/10 rounded-full transition-all" title="Trash">
-                <Trash2 size={18} />
-            </button>
+            <ConfirmDeleteButton onConfirm={onDelete} className="p-2 text-[#70121e] hover:bg-[#70121e]/10 rounded-full" iconSize={18} />
         </div>
     </header>
 );
-
 
