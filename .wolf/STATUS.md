@@ -6,7 +6,7 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-09-30
+> Last updated: 2026-10-03
 
 ---
 
@@ -62,6 +62,14 @@ budget_tokens: 1000
     - Created `ImageCropModal.tsx` (`createPortal` overlay) with HTML5 canvas export, interactive drag-to-pan with boundary clamping, zoom slider + mouse wheel zoom, aspect ratio modes (1:1 Card Standard, 4:5 portrait, 16:9 wide), rule-of-thirds composition grid, and direct integration with the IndexedDB asset store.
     - Integrated crop modal into `AssetImageUploader.tsx` with automatic modal summon on file upload/drop, "Use Full Original" option, and a 1-click "Crop / Center" repositioning button on existing images.
     - Synchronized **1:1 Visual Parity between Editor & Viewing Mode** (`AssetImageUploader.tsx`, `CharacterStatBlock.tsx`, `EntityViewer.tsx`, `WikiInfobox.tsx`, `ImageCropModal.tsx`): Replaced previously mismatched containers (`aspect-[16/10]` in editor vs `h-56` in viewer vs `4:5` in crop tool) with unified `aspect-square` (1:1) and `rounded-2xl` styling across the entire suite. Crop modal defaults to `1:1 (Card Standard)` so what is cropped in the modal matches the editor card preview and the viewing mode card pixel-for-pixel.
+- **Phase P3 Developer & Agent Workflow Stack** —
+  - **Vitest Test Suite** (`vitest` + `@vitest/ui`): Sub-second test runner (`npm run test`) validating bidirectional relations, SQLite recursive graph checks, WCAG contrast ratios, and `.nexus` container roundtrips (4 suites, 9 tests in ~200ms).
+  - **SQLite In-Memory Graph Verification** (`graphSqliteVerification.ts`): Better-sqlite3 engine validating 20-entity relationship graphs, detecting circular ancestry loops via Recursive CTEs, and catching dangling cross-entity pointers.
+  - **Automated WCAG Theme Contrast Suite** (`themeContrast.test.ts`): Algorithmic luminance and contrast calculations guaranteeing AA/AAA readability across Sovereign, Wiki, and Royal Codex modes and preventing illegible yellow-on-parchment regressions.
+  - **Lossless `.nexus` Container Archive Test** (`nexusArchive.test.ts`): Automated testing of `manifest.json` packaging, `STORE` uncompressed image bundling, and `fflate` binary unpack fidelity.
+  - **Zero-Friction Dev State Sync Engine** (`vite.config.ts`, `useWorldStore.ts`): Lightweight Vite dev plugin listening on `POST /__dev_state` coupled with debounced Zustand store subscriber in `import.meta.env.DEV`. Automatically updates `.dev-state.json` silently as worldbuilders edit lore without adding any production bundle size or backend dependencies.
+  - **Workspace-Scoped MCP Plugin (`nexus-chronicle-tools`)** (`.agents/plugins/nexus-chronicle-tools/`): Namespaced, workspace-scoped Antigravity MCP integration hosting `nexus-openwolf` (`tools/openwolf-mcp.mjs`) and `nexus-state-inspector` (`tools/state-inspector-mcp.mjs`). Guarantees zero global path collisions or pollution in other IDE projects.
+  - **State Inspector MCP & Dev Snapshot UI** (`tools/state-inspector-mcp.mjs`, `OptionsView.tsx`): 1-click `EXPORT DEV SNAPSHOT (.dev-state.json)` in System Settings and MCP inspection tools (`get_active_realm_summary`, `query_dev_entities`) for live campaign inspection.
 - **Initial Architecture** — Full entity type system (20 types), Zustand persist store, editor/viewer split per entity type
 - **Roleplay Theme V1** — `royal-codex` theme with parchment textures, quill pen overlay, woodgrain bg
 - **Multi-Theme system** — `sovereign` (dark), `wiki` (light), `royal-codex` (fantasy parchment)

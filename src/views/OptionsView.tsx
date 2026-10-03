@@ -584,6 +584,42 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                         </div>
                     </section>
 
+                    {/* Developer & Agent Diagnostics */}
+                    <section className="pt-8 border-t border-slate-800/40 space-y-6">
+                        <div className="flex items-center gap-3">
+                            <Zap size={14} className="text-yellow-400" />
+                            <h3 className="text-xs font-black uppercase tracking-widest text-yellow-400">Developer & Agent Diagnostics</h3>
+                        </div>
+                        <div className="p-6 rounded-2xl bg-yellow-500/5 border border-yellow-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div>
+                                <p className="text-xs font-bold text-yellow-200">Export Live Agent Dev Snapshot</p>
+                                <p className="text-[10px] text-yellow-200/50 max-w-md">
+                                    Downloads or updates a local developer snapshot for AI agent tools and the State Inspector MCP server to inspect active campaign status, entity breakdown, and relations.
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    const stateData = {
+                                        timestamp: new Date().toISOString(),
+                                        world,
+                                        activeWorldId,
+                                        theme,
+                                    };
+                                    const blob = new Blob([JSON.stringify(stateData, null, 2)], { type: 'application/json' });
+                                    const a = document.createElement('a');
+                                    a.href = URL.createObjectURL(blob);
+                                    a.download = '.dev-state.json';
+                                    a.click();
+                                    URL.revokeObjectURL(a.href);
+                                }}
+                                className="px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 bg-yellow-400/20 hover:bg-yellow-400/30 text-yellow-200 border-yellow-400/40"
+                            >
+                                <Download size={12} />
+                                EXPORT DEV SNAPSHOT (.dev-state.json)
+                            </button>
+                        </div>
+                    </section>
+
                     {/* Oblivion Protocol */}
                     <section className="pt-8 border-t border-slate-800/40 space-y-6">
                         <div className="flex items-center justify-between">

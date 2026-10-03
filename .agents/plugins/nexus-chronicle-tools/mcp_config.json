@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "nexus-openwolf": {
+      "command": "node",
+      "args": ["tools/openwolf-mcp.mjs"],
+      "env": {
+        "NEXUS_PROJECT_DIR": "F:\\App Making\\- Lab -\\Nexus-Chronicle"
+      }
+    },
+    "nexus-state-inspector": {
+      "command": "node",
+      "args": ["tools/state-inspector-mcp.mjs"],
+      "env": {
+        "NEXUS_PROJECT_DIR": "F:\\App Making\\- Lab -\\Nexus-Chronicle"
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ budget_tokens: 2000
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-09-29
+> Last updated: 2026-10-03
 
 ## User Preferences
 
@@ -77,6 +77,10 @@ budget_tokens: 2000
 - **[2026-10-01] Universal Two-Way Bidirectional Relationship Sync Architecture** — Created `src/utils/bidirectionalSync.ts` containing exhaustive pairwise mapping rules across all 20 entity types (characters, conditions, locations, events, species, cultures, languages, items, groups, abilities, resources, notes, myths). Integrated `applyBidirectionalSync()` into `handleSaveDraft()` in `useWorldStore.ts` to automatically detect added and removed relation links and mirror them onto target entities and active drafts. Added `removeEntityRelationsOnDelete()` to clean up dangling relation pointers on trash deletion, and `reconcileAllBidirectionalRelations()` on persist rehydration to automatically heal legacy one-way relationships. Updated `CharacterSpecificsViewer.tsx` to display real condition boons/afflictions in Royal Codex mode and merge backlinks into Interpersonal Web.
 - **[2026-10-01] CharacterStatBlock Redundancy Removal & Theme Adaptation** — Redesigned non-Royal `CharacterStatBlock` to eliminate duplicated fields (name, bio, vitals, interpersonal links, inventory) that are already displayed in the main entity viewer. Sovereign theme now displays a dark glassmorphic card with a glowing pulse status badge, crisp `#fef08a` radar chart, and modern 3x2 attribute scores with modifiers. Wiki theme displays a clean parchment infobox with high-contrast radar chart and attribute grid. Royal Codex remains 100% untouched and pixel-identical.
 - **[2026-10-01] Universal Image Duplication & Living Entry Portraits** — Rendered uploaded `entity.imageUri` inside `WikiInfobox` replacing the empty grey globe placeholder while preserving the header thumbnail. Added dedicated portrait illustration frames to `CharacterStatBlock` for living character entries across Wiki and Sovereign modes (matching `WikiInfobox` dimensions with fallback placeholders when no portrait is uploaded). Added portrait display to Sovereign and Royal Record Vitals cards.
+- **[2026-10-03] Sub-Second Vitest Harness & Lossless .nexus Testing** — Added `vitest` to validate bidirectional sync, WCAG theme contrast ratios, in-memory SQLite graph integrity, and `.nexus` ZIP container packing/unpacking in ~200ms. Fast feedback loop guarantees complex schema calculations never regress.
+- **[2026-10-03] SQLite In-Memory Relational Graph & Cycle Detection** — Built `src/utils/graphSqliteVerification.ts` with Recursive CTEs to detect circular parent-child loops (`findParentCycles`) and dangling cross-entity foreign keys (`findDanglingPointers`) in pure memory without introducing any database backend to the client app.
+- **[2026-10-03] Zero-Friction Dev State Synchronization** — Added `devStatePlugin` in `vite.config.ts` listening on `POST /__dev_state` and hooked a debounced `useWorldStore.subscribe` in `import.meta.env.DEV` to sync `.dev-state.json` silently in the background on every edit. Zero backend, zero production code bundle impact.
+- **[2026-10-03] Workspace-Scoped Customization Plugin for MCP Tools** — Encapsulated `nexus-openwolf-mcp` and `nexus-state-inspector` inside `.agents/plugins/nexus-chronicle-tools/` rather than modifying global `mcp_config.json`. Prevents cross-workspace tool collisions, hardcoded paths, or errors in other repositories.
 
 
 

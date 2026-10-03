@@ -1452,3 +1452,30 @@ export const useWorldStore = create<WorldStore>()(
         }
     )
 );
+
+// Auto-sync dev snapshot during local development without any production overhead
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+    let syncTimer: any = null;
+    useWorldStore.subscribe((state) => {
+        if (syncTimer) clearTimeout(syncTimer);
+        syncTimer = setTimeout(() => {
+            try {
+                const payload = JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    world: state.world,
+                    activeWorldId: state.activeWorldId,
+                    theme: state.theme,
+                    activeTabId: state.activeTabId,
+                }, null, 2);
+                fetch('/__dev_state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload
+                }).catch(() => { /* silent dev sync */ });
+            } catch {
+                /* ignore */
+            }
+        }, 1000);
+    });
+}
+

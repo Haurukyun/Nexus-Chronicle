@@ -136,5 +136,9 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node \"F:/App Making/- Lab -/Nexus-Chronicle/.wolf/hooks/visibility-statusline.js\""
   }
 }
