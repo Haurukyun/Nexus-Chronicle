@@ -45,7 +45,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, onNavigate 
         ? ['#70121e', '#c8a96e', '#3d5a80', '#2d6a4f', '#6d3b1e']
         : (layoutMode === 'wiki') 
         ? ['#b91c1c', '#7a200d', '#1e40af', '#166534', '#854d0e'] 
-        : ['#fef08a', '#fbbf24', '#38bdf8', '#4ade80', '#fb7185'];
+        : ['#fef08a', '#fbbf24', '#2dd4bf', '#4ade80', '#fb7185'];
 
     const accent = (themeId === 'royal-codex') ? 'text-[#70121e]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-[#fef08a]';
     const bgCard = (themeId === 'royal-codex') ? 'bg-[#f5ead0] border-[#c8a96e]/40' : (layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';

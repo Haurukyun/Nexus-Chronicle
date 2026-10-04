@@ -35,7 +35,7 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; sub: string; icon: React.FC
         label: 'Grand Voyager',
         sub: 'Tropical High Seas & Teak Timber',
         icon: Compass,
-        badgeColor: 'bg-sky-500/20 text-sky-400 border-sky-500/40'
+        badgeColor: 'bg-teal-600/20 text-sky-400 border-teal-600/40'
     }
 ];
 
@@ -67,7 +67,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
                         : theme === 'wiki'
                         ? 'bg-[#f5e6d3] text-[#b91c1c] border-[#d4c8af] hover:bg-[#ead9c1]'
                         : theme === 'grand-voyager'
-                        ? 'bg-[#0a2033] text-[#38bdf8] border-[#1d4866] hover:bg-[#0e2c45] shadow-sky-950/40'
+                        ? 'bg-[#0a2033] text-[#2dd4bf] border-[#1d4866] hover:bg-[#0e2c45] shadow-teal-950/40'
                         : 'bg-slate-900/80 text-yellow-400 border-slate-700 hover:bg-slate-800'
                 }`}
                 title="Switch Application Theme"
@@ -107,7 +107,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
                                             : theme === 'wiki' 
                                             ? 'bg-[#b91c1c] text-white' 
                                             : theme === 'grand-voyager'
-                                            ? 'bg-gradient-to-r from-[#0284c7] to-[#0d9488] text-white shadow-lg shadow-sky-950/40'
+                                            ? 'bg-gradient-to-r from-[#0d9488] to-[#0d9488] text-white shadow-lg shadow-teal-950/40'
                                             : 'bg-yellow-500/20 text-yellow-300')
                                         : 'hover:bg-current/5'
                                 }`}

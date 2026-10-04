@@ -27,7 +27,7 @@ export const ExpandedImageModal = ({ imageUri, entityName, onClose, theme: propT
 
     const accentClass =
         theme === 'grand-voyager'
-            ? 'border-[#38bdf8]/60 text-[#38bdf8]'
+            ? 'border-[#2dd4bf]/60 text-[#2dd4bf]'
             : theme === 'royal-codex'
             ? 'border-[#c8a96e] text-[#e6c687]'
             : theme === 'wiki'
@@ -45,7 +45,7 @@ export const ExpandedImageModal = ({ imageUri, entityName, onClose, theme: propT
 
     const closeBtn =
         theme === 'grand-voyager'
-            ? 'bg-[#0284c7]/20 hover:bg-[#0284c7]/40 border-[#38bdf8]/40 text-[#38bdf8]'
+            ? 'bg-[#0d9488]/20 hover:bg-[#0d9488]/40 border-[#2dd4bf]/40 text-[#2dd4bf]'
             : theme === 'royal-codex'
             ? 'bg-[#c8a96e]/10 hover:bg-[#c8a96e]/30 border-[#c8a96e]/40 text-[#e6c687]'
             : theme === 'wiki'

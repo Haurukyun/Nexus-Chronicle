@@ -67,7 +67,7 @@ const EDGE_COLORS: Record<EdgeKind, string> = {
   member:   '#fb923c',
   related:  '#94a3b8',
   event:    '#c084fc',
-  location: '#38bdf8',
+  location: '#2dd4bf',
 };
 
 const EDGE_LABELS: Record<EdgeKind, string> = {

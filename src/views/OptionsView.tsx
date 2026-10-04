@@ -503,7 +503,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     }}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'grand-voyager'
-                                            ? 'bg-[#0284c7]/20 text-[#38bdf8] border-[#38bdf8]/70 shadow-lg shadow-sky-950/40'
+                                            ? 'bg-[#0d9488]/20 text-[#2dd4bf] border-[#2dd4bf]/70 shadow-lg shadow-teal-950/40'
                                             : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
                                     }`}
                                 >

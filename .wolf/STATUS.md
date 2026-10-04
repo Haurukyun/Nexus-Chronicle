@@ -6,7 +6,7 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-10-03 (04:04)
+> Last updated: 2026-10-04 (05:27)
 
 ---
 
@@ -96,15 +96,18 @@ budget_tokens: 1000
 
 ### Completed this session
 - **ThemeDefinition.layoutMode** — Added `LayoutMode = 'studio' | 'wiki' | 'manuscript'` type to `src/theme/types.ts` and `layoutMode` field to `ThemeDefinition` interface
-- **Theme Registry** — Each theme now declares its layout mode: `sovereign → 'studio'`, `wiki → 'wiki'`, `royal-codex → 'manuscript'`
-- **useTheme() hook** — Now exposes `layoutMode: LayoutMode` directly. Components read `layoutMode` for structure, `t.*` for visuals
-- **App.tsx shell** — All structural geometry (`appBg`, `pageBg`, `headerBg`, `tabActive/Inactive`, book framing) now reads from `t.layout.*` and `t.button.*` tokens — zero raw `theme === 'royal-codex'` layout guards remain in App.tsx
+- **Theme Registry** — Each theme now declares its layout mode: `sovereign → 'studio'`, `wiki → 'wiki'`, `royal-codex → 'manuscript'`, `grand-voyager → 'studio'`
+- **useTheme() hook** — Now exposes `layoutMode: LayoutMode` and `themeId: ThemeMode` directly. Components read `layoutMode` for structure, `t.*` for visuals, `themeId` for per-theme identity
+- **App.tsx shell** — All structural geometry reads from `t.layout.*` and `t.button.*` tokens — zero raw `theme === 'royal-codex'` layout guards remain in App.tsx
+- **Full `isWikiMode` / `isRoyal` / `isSovereign` / `isVoyager` deprecation** — Entire codebase migrated from legacy boolean flags to canonical `useTheme()`. Every affected file (EditorGroup, LocationSpecifics, LocationSpecificsViewer, LinksDisplay, ImageCropModal, FormToggle, Sidebar, ExpandedImageModal, ThemeSwitcher, DashboardView, NexusGraphView, OptionsView) now reads `themeId` / `layoutMode` directly.
+- **Grand Voyager theme full redesign** — Complete palette overhaul: dark jungle-canopy app bg (`#090d08`), dark mahogany timber sidebar (`#180c04`), tropical jungle-green header (`#0c1a0e`), teal-jade accent (`#2dd4bf`), warm parchment text (`#f0dca8`), brass-doubloon primary buttons. Removed cold blue/navy palette entirely.
+- **TropicalSceneBackground** (`src/components/ui/TropicalSceneBackground.tsx`) — Pure SVG/CSS procedural tropical cove scene: golden-hour sky gradient, sun with rotating rays and outer glow, soft blurred clouds, distant headland silhouettes, 3-layer animated ocean waves with foam crests, glittering sun-path reflection on water, sandy beach with ripple lines, distant ship, bird silhouettes, and glassmorphism overlay. No trees (removed at user request). Injected in `App.tsx` as `absolute inset-0` behind main content when `themeId === 'grand-voyager'`.
 
 ### Key known gaps / potential next features
-1. **System views still use isWikiMode prop** — `WorldMap`, `TimelineView`, `NexusTreeView`, `OptionsView`, `JourneyView`, `DashboardView`, `TrashView` still receive `isWikiMode` as a prop and compute `isRoyal` internally. These can be migrated to call `useTheme()` directly as a follow-up. The architecture is ready.
-2. **Pirate Cove theme** — Next theme to add; just needs a new entry in `themeRegistry.ts` with `layoutMode: 'studio'` (or 'wiki' for a day-time variant)
-3. **App icon** — Replace placeholder icons in `src-tauri/icons/` with Nexus Chronicle branded artwork
-4. **`git push` pending** — branch is multiple commits ahead of origin
+1. **Grand Voyager card/panel transparency** — Cards (`t.card.base`, `t.card.panel`) use dark timber backgrounds. Consider making them semi-transparent glassmorphic panels so the tropical scene bleeds through (`bg-[#140a02]/60 backdrop-blur-sm`) for even more immersion.
+2. **App icon** — Replace placeholder icons in `src-tauri/icons/` with Nexus Chronicle branded artwork
+3. **`git push` pending** — branch is multiple commits ahead of origin
+4. **System views theme usage** — Some system views may still have residual legacy `isWikiMode` prop references or computed booleans; audit if issues appear
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
@@ -131,7 +134,7 @@ budget_tokens: 1000
 - **Entity flow:** Sidebar → `handleOpenEntity(id)` → tabs in `App.tsx` → `EntityViewer` (view) or `EntityEditor` (edit)
 - **Editor specifics:** `src/components/editor/specifics/` — one file per EntityType, registered in `EntitySpecificsRegistry.tsx`
 - **Viewer specifics:** `src/components/viewer/specifics/` — one file per EntityType, registered in `EntitySpecificsViewerRegistry.tsx`
-- **Themes:** `ThemeMode` = `'sovereign' | 'wiki' | 'royal-codex'`; theme in Zustand store; `isWikiMode` is a derived boolean flag
+- **Themes:** `ThemeMode` = `'sovereign' | 'wiki' | 'royal-codex' | 'grand-voyager'`; theme in Zustand store; `useTheme()` hook exposes `{ t, themeId, layoutMode }`. All legacy boolean flags (`isWikiMode`, `isRoyal`, etc.) removed.
 - **Views:** Dashboard, Timeline, NexusTree, Journey, WorldMap, Trash, Options — all system tabs, never closed
 - **Patterns:**
   - All entity-specific fields use `paired*` prefix convention for cross-entity link arrays

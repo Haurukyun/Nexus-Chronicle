@@ -184,62 +184,67 @@ export const royalCodexTheme: ThemeDefinition = {
 export const grandVoyagerTheme: ThemeDefinition = {
   id: 'grand-voyager',
   name: 'Grand Voyager',
-  description: 'Tropical High Seas & Teak Timber — sun-drenched lagoon turquoise, weathered galleon oak & nautical brass',
+  description: 'Sun-Drenched Treasure Cove — crystal turquoise lagoon, warm golden sand, brass doubloons & tropical noon',
   layoutMode: 'studio',
   typography: {
     fontFamily: 'font-sans',
-    heading: 'font-serif font-black uppercase tracking-tight',
-    body: 'font-sans text-slate-100',
-    subtext: 'font-serif italic text-xs text-[#38bdf8]/80',
-    quote: 'font-serif italic text-[#f6d365]',
+    heading: 'font-serif font-black uppercase tracking-wide',
+    body: 'font-sans text-[#2a1808]',
+    subtext: 'font-serif italic text-xs text-[#6a4820]/80',
+    quote: 'font-serif italic text-[#7a4e14]',
     mono: 'font-mono text-xs',
   },
   layout: {
-    appBg: 'bg-gradient-to-br from-[#041421] via-[#082236] to-[#020b12] text-slate-100',
-    pageBg: 'bg-gradient-to-b from-[#061926]/40 via-[#071d2e]/30 to-[#020c14]/80',
-    sidebarBg: 'bg-[#140e0a]/95 border-r-2 border-[#3d2617]/80 shadow-[5px_0_25px_rgba(0,0,0,0.85)] backdrop-blur-md',
-    sidebarBorder: 'border-[#422919]/70',
-    headerBg: 'bg-[#071927]/90 backdrop-blur-md border-b border-[#1b3d54]/70',
+    appBg: 'bg-[#0c1408]',
+    // Transparent — the CSS scene IS the background
+    pageBg: 'bg-transparent',
+    // Dark mahogany ship-timber sidebar — contrasts beautifully with bright scene
+    sidebarBg: 'bg-[#1a1005]/96 border-r border-[#6b3d18]/60 shadow-[5px_0_40px_rgba(0,0,0,0.9)] backdrop-blur-md',
+    sidebarBorder: 'border-[#5c3010]/50',
+    // Warm sandy amber header — semi-transparent, floats above the scene
+    headerBg: 'bg-[#d4a838]/80 backdrop-blur-md border-b border-[#c09028]/70',
   },
   colors: {
-    textHeading: 'text-[#f0f9ff]', // Crisp ocean sunlight white
-    textBody: 'text-[#cbd5e1]',
-    textMuted: 'text-[#7096b0]',
-    textAccent: 'text-[#38bdf8]', // Tropical turquoise / seafoam
-    accentHex: '#0ea5e9',
-    accentBg: 'bg-[#0ea5e9]',
-    borderDefault: 'border-[#1b3d54]/70',
-    borderAccent: 'border-[#38bdf8]/80',
-    divider: 'bg-[#1b3d54]/50',
+    textHeading: 'text-[#1e0e04]',        // Near-black warm brown — max contrast on cream cards
+    textBody: 'text-[#2e1a08]',            // Dark warm brown — readable on light surfaces
+    textMuted: 'text-[#7a5030]',           // Medium amber-brown
+    textAccent: 'text-[#006878]',          // Deep tropical teal — readable on cream
+    accentHex: '#007888',
+    accentBg: 'bg-[#007888]',
+    borderDefault: 'border-[#c8a040]/55',
+    borderAccent: 'border-[#009ab0]/60',
+    divider: 'bg-[#c8a040]/45',
   },
   card: {
-    base: 'bg-[#0a2033]/70 border border-[#1d4766]/70 rounded-2xl shadow-xl backdrop-blur-md text-slate-100 hover:border-[#38bdf8]/50 transition-all',
-    panel: 'bg-[#0c253b]/95 border border-[#2b5d80]/80 rounded-2xl shadow-2xl backdrop-blur-lg text-slate-100',
-    highlight: 'bg-[#0284c7]/15 border border-[#38bdf8]/70 ring-1 ring-[#38bdf8]/50 shadow-[0_0_25px_rgba(14,165,233,0.3)]',
-    ornateType: 'clean-border',
+    // Warm cream parchment card — semi-transparent enough to hint at scene below
+    base: 'bg-[#fdf4dc]/88 border border-[#d4aa45]/55 rounded-2xl shadow-lg backdrop-blur-sm text-[#2e1a08] hover:border-[#009ab0]/55 transition-all',
+    panel: 'bg-[#fef6e4]/94 border border-[#c8a040]/65 rounded-2xl shadow-xl backdrop-blur-md text-[#1e0e04]',
+    // Teal water highlight
+    highlight: 'bg-[#00a0b0]/12 border border-[#00c0d0]/60 ring-1 ring-[#20d0e0]/40 shadow-[0_0_30px_rgba(0,160,176,0.2)]',
+    ornateType: 'none',
   },
   button: {
-    // Warm doubloon gold primary with rich dark navy text
-    primary: 'bg-gradient-to-r from-[#d4af37] via-[#f59e0b] to-[#eab308] text-[#051420] font-serif font-black uppercase tracking-wider hover:from-[#c5a028] hover:to-[#d97706] shadow-lg shadow-amber-500/25 active:scale-95 transition-all border border-[#fef08a]/60',
-    // Polished galleon teak wood with brass border
-    secondary: 'bg-[#1c130d]/90 text-[#f5ebd7] font-serif font-bold uppercase tracking-wider hover:bg-[#2b1c13] border border-[#5c3e27] shadow-md active:scale-95 transition-all',
-    // Ocean turquoise accent button
-    accent: 'bg-[#0284c7]/20 text-[#38bdf8] border border-[#0284c7]/50 hover:bg-[#0284c7]/35 active:scale-95 transition-all',
-    danger: 'bg-red-500/20 text-rose-300 border border-red-500/40 hover:bg-red-500/30 active:scale-95 transition-all',
-    ghost: 'text-[#7fa5be] hover:text-[#38bdf8] hover:bg-[#0284c7]/10 rounded-xl transition-all',
-    toggleActive: 'bg-gradient-to-r from-[#0284c7] to-[#0d9488] text-white shadow-md font-bold',
-    toggleInactive: 'opacity-50 hover:opacity-100 text-[#7fa5be]',
-    tabActive: 'bg-[#0284c7] text-white border-b-2 border-[#38bdf8] shadow-md shadow-sky-500/20 font-bold',
-    tabInactive: 'bg-[#061826]/70 border-[#1b3d54]/50 text-[#7fa5be] hover:text-slate-100 hover:bg-[#0a2336]',
+    // Brass doubloon gold — the centrepiece treasure
+    primary: 'bg-gradient-to-r from-[#b07820] via-[#cc9018] to-[#b87c18] text-[#1a0800] font-serif font-black uppercase tracking-wider hover:from-[#c08828] hover:to-[#dca020] shadow-lg shadow-amber-600/45 active:scale-95 transition-all border border-[#e8b840]/60',
+    // Warm parchment secondary
+    secondary: 'bg-[#f0dca0]/85 text-[#2e1a08] font-serif font-bold uppercase tracking-wider hover:bg-[#f8e8b0] border border-[#c8a040]/60 shadow-sm active:scale-95 transition-all',
+    // Tropical lagoon teal accent
+    accent: 'bg-[#007888]/18 text-[#005868] border border-[#009ab0]/50 hover:bg-[#007888]/30 active:scale-95 transition-all',
+    danger: 'bg-red-100/90 text-red-800 border border-red-300 hover:bg-red-200 active:scale-95 transition-all',
+    ghost: 'text-[#7a5030] hover:text-[#005868] hover:bg-[#007888]/10 rounded-xl transition-all',
+    toggleActive: 'bg-gradient-to-r from-[#006070] to-[#007888] text-white shadow-md font-bold',
+    toggleInactive: 'opacity-60 hover:opacity-100 text-[#7a5030]',
+    tabActive: 'bg-[#c89020] text-[#1a0800] border-b-2 border-[#e8b840] shadow-md font-black',
+    tabInactive: 'bg-[#fdf0c0]/75 border-[#c8a040]/45 text-[#7a5030] hover:text-[#2e1a08] hover:bg-[#fef6d0]/90',
   },
   input: {
-    base: 'bg-[#061724]/80 border border-[#1b3d54] text-slate-100 placeholder-[#4c738c] rounded-xl outline-none transition-all',
-    focus: 'focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/50',
-    selectDropdown: 'bg-[#091f30] border border-[#234d6b] text-slate-100 shadow-2xl',
+    base: 'bg-[#fef8e8]/95 border border-[#c8a040]/60 text-[#1e0e04] placeholder-[#9a7040] rounded-xl outline-none transition-all shadow-inner',
+    focus: 'focus:border-[#009ab0] focus:ring-1 focus:ring-[#00b0c8]/45',
+    selectDropdown: 'bg-[#fef4dc] border border-[#c8a040] text-[#1e0e04] shadow-2xl',
   },
   badge: {
-    primary: 'bg-[#0284c7] text-white font-bold uppercase tracking-wider border border-[#38bdf8]/40 shadow-sm',
-    subtle: 'bg-[#0284c7]/15 text-[#38bdf8] border border-[#0284c7]/30 font-bold',
+    primary: 'bg-[#006878] text-white font-bold uppercase tracking-wider border border-[#00a0b0]/40 shadow-sm',
+    subtle: 'bg-[#007888]/15 text-[#005868] border border-[#007888]/30 font-bold',
   },
 };
 

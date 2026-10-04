@@ -19,6 +19,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { ThemeSwitcher } from './components/ui/ThemeSwitcher';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { KeybindsModal } from './components/ui/KeybindsModal';
+import { TropicalSceneBackground } from './components/ui/TropicalSceneBackground';
 
 
 const App = () => {
@@ -34,8 +35,9 @@ const App = () => {
         handleSaveDraft, handleToggleEdit, handleDeleteToTrash
     } = useWorldStore();
 
-    const { t, layoutMode } = useTheme();
+    const { t, layoutMode, themeId } = useTheme();
     const isManuscript = layoutMode === 'manuscript';
+    const isGrandVoyager = themeId === 'grand-voyager';
 
     useEffect(() => {
         const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey'];
@@ -187,7 +189,10 @@ const App = () => {
                 />
 
                 {/* Main Content Area */}
-                <main className={`flex-1 flex flex-col relative ${t.layout.pageBg} overflow-y-auto`}>
+                <main className={`flex-1 flex flex-col relative overflow-y-auto ${isGrandVoyager ? 'bg-transparent' : t.layout.pageBg}`}>
+
+                    {/* Grand Voyager tropical scene background */}
+                    {isGrandVoyager && <TropicalSceneBackground />}
                     
                     {/* Top Header & Tabs Bar */}
                     <div className={`flex items-center justify-between p-3 border-b ${t.layout.headerBg} backdrop-blur-md sticky top-0 z-10 gap-4`}>

@@ -114,7 +114,7 @@ const EntityItem: React.FC<{
     };
 
     const activeStyle = (themeId === 'grand-voyager')
-        ? 'bg-gradient-to-r from-[#0d344d] to-[#082030] text-[#38bdf8] border-l-4 border-[#0ea5e9] shadow-lg shadow-sky-950/40 font-bold'
+        ? 'bg-gradient-to-r from-[#1f0e04] to-[#2a1408] text-[#2dd4bf] border-l-4 border-[#14b8a6] shadow-lg shadow-teal-950/40 font-bold'
         : (themeId === 'royal-codex')
         ? 'bg-gradient-to-r from-[#382315] via-[#2d180d] to-[#24130a] text-[#fff8e7] border-y border-[#c8a96e]/70 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] font-serif font-bold text-xs'
         : (layoutMode === 'wiki')
@@ -122,7 +122,7 @@ const EntityItem: React.FC<{
         : 'bg-slate-800 text-[#fef08a] border-l-4 border-yellow-500 shadow-xl shadow-yellow-500/5';
 
     const hoverStyle = (themeId === 'grand-voyager')
-        ? 'hover:bg-[#0284c7]/15 text-slate-300 hover:text-[#e0f2fe]'
+        ? 'hover:bg-[#2a1408]/60 text-[#9a8060] hover:text-[#f0dca8]'
         : (themeId === 'royal-codex')
         ? 'hover:bg-[#2a150a]/60 text-[#c8a96e]/90 hover:text-[#fff8e7] font-serif text-xs font-semibold'
         : 'hover:bg-white/5 opacity-70 hover:opacity-100';
@@ -130,7 +130,7 @@ const EntityItem: React.FC<{
     let dropIndicatorClass = '';
     if (dropPosition === 'before') {
         dropIndicatorClass = (themeId === 'grand-voyager')
-            ? 'shadow-[inset_0_2px_0_0_#38bdf8]'
+            ? 'shadow-[inset_0_2px_0_0_#2dd4bf]'
             : (themeId === 'royal-codex') 
             ? 'shadow-[inset_0_2px_0_0_#d4af37]'
             : (layoutMode === 'wiki')
@@ -138,7 +138,7 @@ const EntityItem: React.FC<{
             : 'shadow-[inset_0_2px_0_0_#facc15]';
     } else if (dropPosition === 'after') {
         dropIndicatorClass = (themeId === 'grand-voyager')
-            ? 'shadow-[inset_0_-2px_0_0_#38bdf8]'
+            ? 'shadow-[inset_0_-2px_0_0_#2dd4bf]'
             : (themeId === 'royal-codex') 
             ? 'shadow-[inset_0_-2px_0_0_#d4af37]'
             : (layoutMode === 'wiki')
@@ -146,7 +146,7 @@ const EntityItem: React.FC<{
             : 'shadow-[inset_0_-2px_0_0_#facc15]';
     } else if (dropPosition === 'inside') {
         dropIndicatorClass = (themeId === 'grand-voyager')
-            ? 'ring-2 ring-[#38bdf8] bg-[#0369a1]/25 shadow-inner'
+            ? 'ring-2 ring-[#2dd4bf] bg-[#0f766e]/25 shadow-inner'
             : (themeId === 'royal-codex') 
             ? 'ring-2 ring-[#d4af37] bg-[#3d2315] shadow-inner'
             : (layoutMode === 'wiki')
@@ -287,11 +287,11 @@ const EntityItem: React.FC<{
                         </span>
                         {dropPosition === 'inside' && (
                             <span className={`text-[8px] font-bold px-1 rounded uppercase tracking-wider pointer-events-none select-none shrink-0 ${
-                                (themeId === 'grand-voyager') ? 'bg-[#0284c7] text-white shadow-sm' : (themeId === 'royal-codex') ? 'bg-[#d4af37] text-black' : (layoutMode === 'wiki') ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
+                                (themeId === 'grand-voyager') ? 'bg-[#0d9488] text-white shadow-sm' : (themeId === 'royal-codex') ? 'bg-[#d4af37] text-black' : (layoutMode === 'wiki') ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
                             }`}>↳ Nest</span>
                         )}
                         {(themeId === 'grand-voyager') && isActive && (
-                            <span className="text-[#38bdf8] text-[9px] font-mono shrink-0 drop-shadow pointer-events-none">⚓</span>
+                            <span className="text-[#2dd4bf] text-[9px] font-mono shrink-0 drop-shadow pointer-events-none">⚓</span>
                         )}
                         {(themeId === 'royal-codex') && isActive && (
                             <span className="text-[#c8a96e] text-[9px] font-mono shrink-0 drop-shadow pointer-events-none">▶</span>
@@ -366,13 +366,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }, [world.entities, draggedEntityId]);
 
     const sidebarBg = (themeId === 'grand-voyager')
-        ? 'bg-[#120d09]/95 border-r-2 border-[#3d2617]/80 shadow-[5px_0_20px_rgba(0,0,0,0.85)] relative'
+        ? 'bg-[#180c04]/97 border-r-2 border-[#6b3d18]/50 shadow-[5px_0_40px_rgba(0,0,0,0.95)] relative'
         : (themeId === 'royal-codex')
         ? 'bg-[#181410] border-r-2 border-[#110e0b] shadow-[5px_0_15px_rgba(0,0,0,0.8)] relative'
         : (layoutMode === 'wiki') ? 'bg-[#fdf6e3]' : 'bg-[#0f172a]/80';
 
     const accentText = (themeId === 'grand-voyager')
-        ? 'text-[#38bdf8]'
+        ? 'text-[#2dd4bf]'
         : (themeId === 'royal-codex')
         ? 'text-[#d4af37]'
         : (layoutMode === 'wiki') ? 'text-[#854d0e]' : 'text-[#fef08a]';
@@ -462,8 +462,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         const isActive = activeTabId === viewId;
         if ((themeId === 'grand-voyager')) {
             return isActive
-                ? 'bg-gradient-to-r from-[#0d344d] to-[#082030] text-[#38bdf8] border border-[#0ea5e9]/50 shadow-md shadow-sky-950/40 font-bold'
-                : 'text-amber-100/70 hover:text-[#38bdf8] hover:bg-[#0284c7]/10';
+                ? 'bg-gradient-to-r from-[#0d344d] to-[#082030] text-[#2dd4bf] border border-[#14b8a6]/50 shadow-md shadow-teal-950/40 font-bold'
+                : 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-[#0d9488]/10';
         }
         if ((themeId === 'royal-codex')) {
             return isActive
@@ -503,7 +503,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className={`p-3.5 border-b ${borderColor} relative z-10 space-y-3`}>
                 <RealmSwitcher onOpenOptions={() => setActiveTabId('options')} />
                 <div className="relative group">
-                    <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${(themeId === 'grand-voyager') ? 'text-[#38bdf8]/60' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50' : 'text-slate-500 group-focus-within:text-yellow-500'}`} size={13} />
+                    <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${(themeId === 'grand-voyager') ? 'text-[#2dd4bf]/60' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50' : 'text-slate-500 group-focus-within:text-yellow-500'}`} size={13} />
                     <input
                         id="sidebar-search-input"
                         placeholder="type:location tag:urban... (Ctrl+K)"
@@ -511,7 +511,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={`w-full border rounded-xl py-2 pl-9 pr-3 text-xs focus:ring-1 outline-none transition-all ${
                             (themeId === 'grand-voyager')
-                                ? 'bg-[#0b0805]/80 border-[#3d2617] text-[#e0f2fe] placeholder-amber-200/30 focus:ring-[#0ea5e9]/50'
+                                ? 'bg-[#0b0805]/80 border-[#3d2617] text-[#e0f2fe] placeholder-amber-200/30 focus:ring-[#14b8a6]/50'
                                 : (themeId === 'royal-codex')
                                 ? 'bg-[#0f0905] border-[#c8a96e]/20 text-[#f0ddb0] placeholder-[#c8a96e]/30 focus:ring-[#c8a96e]/40'
                                 : (layoutMode === 'wiki') ? 'bg-white/50 border-none focus:ring-yellow-500/50'
@@ -588,7 +588,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                             className={`flex items-center justify-between px-2 py-0.5 rounded transition-all ${
                                                 headerDropType === type
                                                     ? ((themeId === 'grand-voyager')
-                                                        ? 'bg-[#0369a1]/25 ring-1 ring-[#38bdf8] text-[#38bdf8]'
+                                                        ? 'bg-[#0f766e]/25 ring-1 ring-[#2dd4bf] text-[#2dd4bf]'
                                                         : (themeId === 'royal-codex') 
                                                         ? 'bg-[#3b2315] ring-1 ring-[#d4af37] text-[#fef08a]' 
                                                         : (layoutMode === 'wiki') ? 'bg-[#b91c1c]/10 ring-1 ring-[#b91c1c] text-[#b91c1c]' 
@@ -596,7 +596,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                     : ''
                                             }`}
                                         >
-                                            <span className={`text-[9px] font-bold uppercase ${(themeId === 'grand-voyager') ? 'text-[#38bdf8]/60' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/40' : 'text-slate-500/60'}`}>
+                                            <span className={`text-[9px] font-bold uppercase ${(themeId === 'grand-voyager') ? 'text-[#2dd4bf]/60' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/40' : 'text-slate-500/60'}`}>
                                                 {TYPE_LABELS[type]}
                                                 {headerDropType === type && (
                                                     <span className="ml-1.5 text-[8px] font-normal lowercase tracking-normal text-yellow-400 font-mono">↳ root</span>
@@ -605,7 +605,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                             {!world.entities.find(e => e.categorySwitch && e.type === type) && (
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); handleCreate(type, undefined, true); }}
-                                                    className={`opacity-30 hover:opacity-100 p-1 hover:bg-white/10 rounded-md transition-all cursor-pointer ${(themeId === 'grand-voyager') ? 'text-[#38bdf8]' : (themeId === 'royal-codex') ? 'text-[#c8a96e]' : 'text-slate-500'}`}
+                                                    className={`opacity-30 hover:opacity-100 p-1 hover:bg-white/10 rounded-md transition-all cursor-pointer ${(themeId === 'grand-voyager') ? 'text-[#2dd4bf]' : (themeId === 'royal-codex') ? 'text-[#c8a96e]' : 'text-slate-500'}`}
                                                     title={`Add ${TYPE_LABELS[type]}`}
                                                 >
                                                     <Plus size={12} />
@@ -662,7 +662,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button onClick={() => setActiveTabId('journey')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('journey', 'bg-orange-500 text-white shadow-lg shadow-orange-500/20')}`}><Footprints size={14} /> Grand Journey</button>
                 <button onClick={() => setActiveTabId('map')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('map', 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20')}`}><Globe size={14} /> Atlas View</button>
                 <button onClick={() => setActiveTabId('trash')} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTabId === 'trash' ? 'text-red-400' : (themeId === 'grand-voyager') ? 'text-amber-100/50 hover:text-red-400' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50 hover:text-red-400' : 'text-slate-500 hover:text-red-400'}`}><Trash2 size={13} /> Forgotten Depth</button>
-                <button onClick={() => setActiveTabId('options')} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTabId === 'options' ? accentText : (themeId === 'grand-voyager') ? 'text-amber-100/50 hover:text-[#38bdf8]' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50 hover:text-[#d4af37]' : 'text-slate-500 hover:text-slate-300'}`}><Settings size={13} /> System Archive</button>
+                <button onClick={() => setActiveTabId('options')} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTabId === 'options' ? accentText : (themeId === 'grand-voyager') ? 'text-amber-100/50 hover:text-[#2dd4bf]' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50 hover:text-[#d4af37]' : 'text-slate-500 hover:text-slate-300'}`}><Settings size={13} /> System Archive</button>
             </div>
         </aside>
     );
