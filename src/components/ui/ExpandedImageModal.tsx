@@ -1,7 +1,8 @@
-﻿import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ZoomIn } from 'lucide-react';
 import { NexusImage } from './NexusImage';
+import { useTheme } from '../../theme';
 
 interface ExpandedImageModalProps {
     imageUri: string;
@@ -10,7 +11,9 @@ interface ExpandedImageModalProps {
     theme?: 'royal-codex' | 'wiki' | 'sovereign';
 }
 
-export const ExpandedImageModal = ({ imageUri, entityName, onClose, theme }: ExpandedImageModalProps) => {
+export const ExpandedImageModal = ({ imageUri, entityName, onClose, theme: propTheme }: ExpandedImageModalProps) => {
+    const { themeId } = useTheme();
+    const theme = propTheme || themeId;
     const handleKey = useCallback((e: KeyboardEvent) => {
         if (e.key === 'Escape') onClose();
     }, [onClose]);

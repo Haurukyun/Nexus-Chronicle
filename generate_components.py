@@ -103,22 +103,26 @@ import {{ FormInput, SmartSelect, FormToggle }} from '../../ui';
 import {{ EditorGroup }} from '../EditorGroup';
 {group_role_import}
 import {{ {', '.join(sorted(list(import_icons)))} }} from 'lucide-react';
+import {{ useTheme }} from '../../../theme';
 
 interface Props {{
     entity: {name};
     allEntities: WorldEntity[];
     onUpdate: (data: Partial<{name}>) => void;
     onCreateNew: (type: EntityType, search: string, open: boolean) => string | void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
 }}
 
-export const {name}Specifics: React.FC<Props> = ({{ entity, allEntities, onUpdate, onCreateNew, isWikiMode }}) => {{
+export const {name}Specifics: React.FC<Props> = ({{ entity, allEntities, onUpdate, onCreateNew, isWikiMode: propWiki }}) => {{
+    const {{ isWikiMode: themeWiki }} = useTheme();
+    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
+
     return (
         <>
 """
         for cat, cat_fields in grouped_fields.items():
             icon = ICONS.get(cat, 'FileText')
-            component_content += f"""            <EditorGroup title="{cat}" icon={{{icon}}} isWikiMode={{isWikiMode}}>
+            component_content += f"""            <EditorGroup title="{cat}" icon={{{icon}}}>
 """
             for f in cat_fields:
                 is_textarea = 'description' in f['name'].lower() or 'history' in f['name'].lower() or 'traits' in f['name'].lower() or 'features' in f['name'].lower() or 'notes' in f['name'].lower() or 'traditions' in f['name'].lower()
@@ -145,7 +149,7 @@ export const {name}Specifics: React.FC<Props> = ({{ entity, allEntities, onUpdat
                     elif 'condition' in label_lower or 'affliction' in label_lower or 'boon' in label_lower: target_type = 'condition'
                     elif 'resource' in label_lower or 'material' in label_lower: target_type = 'resource'
                     
-                    component_content += f"""                <SmartSelect label="{f['label']}" ids={{entity.{f['name']} || []}} type="{target_type}" all={{allEntities}} isWikiMode={{isWikiMode}} onChange={{(ids) => onUpdate({{ ...entity, {f['name']}: ids }})}} onCreate={{onCreateNew}} />
+                    component_content += f"""                <SmartSelect label="{f['label']}" ids={{entity.{f['name']} || []}} type="{target_type}" all={{allEntities}} onChange={{(ids) => onUpdate({{ ...entity, {f['name']}: ids }})}} onCreate={{onCreateNew}} />
 """
                 elif is_textarea:
                     component_content += f"""                <div className="lg:col-span-3">
@@ -154,10 +158,10 @@ export const {name}Specifics: React.FC<Props> = ({{ entity, allEntities, onUpdat
                 </div>
 """
                 elif 'boolean' in f['type']:
-                    component_content += f"""                <FormToggle label="{f['label']}" checked={{entity.{f['name']} || false}} onChange={{(v) => onUpdate({{ ...entity, {f['name']}: v }})}} isWikiMode={{isWikiMode}} />
+                    component_content += f"""                <FormToggle label="{f['label']}" checked={{entity.{f['name']} || false}} onChange={{(v) => onUpdate({{ ...entity, {f['name']}: v }})}} />
 """
                 else:
-                    component_content += f"""                <FormInput label="{f['label']}" value={{entity.{f['name']} || ""}} onChange={{(v: string) => onUpdate({{ ...entity, {f['name']}: v }})}} isWikiMode={{isWikiMode}} />
+                    component_content += f"""                <FormInput label="{f['label']}" value={{entity.{f['name']} || ""}} onChange={{(v: string) => onUpdate({{ ...entity, {f['name']}: v }})}} />
 """
             component_content += "            </EditorGroup>\n"
         

@@ -13,7 +13,7 @@ interface RegistryProps {
     allEntities: WorldEntity[];
     onUpdate: (data: any) => void;
     onCreateNew: (type: EntityType, search: string, open: boolean) => string | void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
 }
 
 export const EntitySpecificsRegistry: React.FC<RegistryProps> = ({ entity, allEntities, onUpdate, onCreateNew, isWikiMode }) => {

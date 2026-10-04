@@ -6,7 +6,7 @@ interface RegistryProps {
     entity: WorldEntity;
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
     backlinks: any;
 }
 

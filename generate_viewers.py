@@ -71,16 +71,20 @@ def generate_viewer_components():
         component_content = f"""import React from 'react';
 import {{ {name}, WorldEntity }} from '../../../types';
 import {{ FieldRow, LinksDisplay }} from '../../ui';
+import {{ useTheme }} from '../../../theme';
 
 interface Props {{
     entity: {name};
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
     backlinks?: any;
 }}
 
-export const {name}SpecificsViewer: React.FC<Props> = ({{ entity, allEntities, onNavigate, isWikiMode, backlinks }}) => {{
+export const {name}SpecificsViewer: React.FC<Props> = ({{ entity, allEntities, onNavigate, isWikiMode: propWiki, backlinks }}) => {{
+    const {{ isWikiMode: themeWiki, isRoyal }} = useTheme();
+    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
+
     return (
         <div className="space-y-8">
 """
@@ -107,11 +111,11 @@ export const {name}SpecificsViewer: React.FC<Props> = ({{ entity, allEntities, o
                     for f in other_fields:
                         if 'string[]' in f['type']:
                             component_content += f"""                    <div className="col-span-full mt-2">
-                        <LinksDisplay label="{f['label']}" ids={{entity.{f['name']} || []}} all={{allEntities}} onNav={{onNavigate}} isWikiMode={{isWikiMode}} />
+                        <LinksDisplay label="{f['label']}" ids={{entity.{f['name']} || []}} all={{allEntities}} onNav={{onNavigate}} />
                     </div>
 """
                         else:
-                            component_content += f"""                    <FieldRow label="{f['label']}" value={{entity.{f['name']}}} isWikiMode={{isWikiMode}} />
+                            component_content += f"""                    <FieldRow label="{f['label']}" value={{entity.{f['name']}}} />
 """
                     component_content += "                </div>\n            </div>\n"
             else:
@@ -123,13 +127,13 @@ export const {name}SpecificsViewer: React.FC<Props> = ({{ entity, allEntities, o
                 link_fields = [f for f in cat_fields if 'string[]' in f['type']]
                 
                 for f in string_fields:
-                    component_content += f"""                    <FieldRow label="{f['label']}" value={{entity.{f['name']}}} isWikiMode={{isWikiMode}} />
+                    component_content += f"""                    <FieldRow label="{f['label']}" value={{entity.{f['name']}}} />
 """
                 if link_fields:
                     component_content += f"""                    <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
 """
                     for f in link_fields:
-                        component_content += f"""                        <LinksDisplay label="{f['label']}" ids={{entity.{f['name']} || []}} all={{allEntities}} onNav={{onNavigate}} isWikiMode={{isWikiMode}} />
+                        component_content += f"""                        <LinksDisplay label="{f['label']}" ids={{entity.{f['name']} || []}} all={{allEntities}} onNav={{onNavigate}} />
 """
                     component_content += "                    </div>\n"
                 

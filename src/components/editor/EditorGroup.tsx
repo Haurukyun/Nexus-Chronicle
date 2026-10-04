@@ -1,6 +1,6 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 
 interface EditorGroupProps {
     title: string;
@@ -9,10 +9,9 @@ interface EditorGroupProps {
     isWikiMode?: boolean;
 }
 
-export const EditorGroup = ({ title, icon: Icon, children, isWikiMode }: EditorGroupProps) => {
-    const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
-    const isWiki = theme === 'wiki' || isWikiMode;
+export const EditorGroup = ({ title, icon: Icon, children, isWikiMode: propWiki }: EditorGroupProps) => {
+    const { isWikiMode: themeWiki, isRoyal } = useTheme();
+    const isWiki = propWiki !== undefined ? propWiki : themeWiki;
 
     const firstChar = title.charAt(0).toUpperCase();
 

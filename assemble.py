@@ -83,7 +83,7 @@ export interface EntityEditorProps {{
     onCancel: () => void;
     onUpdate: (data: any) => void;
     onCreateNew: (type: EntityType, search: string, open: boolean) => string | void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
 }}
 
 export interface EntityViewerProps {{
@@ -93,7 +93,7 @@ export interface EntityViewerProps {{
     onDelete: () => void;
     onNavigate: (id: string) => void;
     onFocusMap: () => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
 }}
 
 export interface LinksDisplayProps {{
@@ -101,7 +101,7 @@ export interface LinksDisplayProps {{
     ids: string[];
     all: WorldEntity[];
     onNav: (id: string) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
     wikiStyle?: 'tag' | 'inline';
 }}
 
@@ -111,14 +111,16 @@ export interface FormInputProps {{
     onChange: (val: string) => void;
     placeholder?: string;
     type?: string;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
+    gridSpan?: number;
 }}
 
 export interface FormToggleProps {{
     label: string;
     checked: boolean;
     onChange: (val: boolean) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
+    gridSpan?: number;
 }}
 
 export interface SmartSelectProps {{
@@ -128,34 +130,36 @@ export interface SmartSelectProps {{
     all: WorldEntity[];
     onChange: (ids: string[]) => void;
     onCreate: (type: EntityType, search: string, open: boolean) => string | void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
     disabled?: boolean;
+    gridSpan?: number;
+    excludeIds?: string[];
 }}
 
 export interface FieldRowProps {{
     label: string;
     value?: string | string[];
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
 }}
 
 export interface TrashViewProps {{
     trash: WorldEntity[];
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
 }}
 
 export interface OptionsViewProps {{
     world: WorldData;
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
-    isWikiMode: boolean;
-    setIsWikiMode: (mode: boolean) => void;
+    isWikiMode?: boolean;
+    setIsWikiMode?: (mode: boolean) => void;
 }}
 
 export interface WorldMapProps {{
     world: WorldData;
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
 }}
 """
 
