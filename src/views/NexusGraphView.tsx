@@ -19,6 +19,7 @@ import {
 import { WorldData, WorldEntity, EntityType } from '../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../constants';
 import { useWorldStore } from '../store/useWorldStore';
+import { useTheme } from '../theme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -290,15 +291,15 @@ function tickForces(
 
 interface Props {
   world: WorldData;
-  isWikiMode: boolean;
+  isWikiMode?: boolean;
   onNavigate: (id: string) => void;
 }
 
 type ActiveFilters = Set<string>; // category ids
 
-export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode, onNavigate }) => {
-  const theme = useWorldStore((s) => s.theme);
-  const isRoyal = theme === 'royal-codex';
+export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, onNavigate }) => {
+  const { isWikiMode: themeWiki, isRoyal } = useTheme();
+  const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const nodesRef = useRef<GraphNode[]>([]);

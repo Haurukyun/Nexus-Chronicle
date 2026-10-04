@@ -7,6 +7,7 @@ import {
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
 import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 import { RealmSwitcher } from './RealmSwitcher';
 
 interface SidebarProps {
@@ -20,8 +21,8 @@ interface SidebarProps {
     handleOpenEntity: (id: string) => void;
     handleCreate: (type: EntityType, name?: string, shouldOpen?: boolean) => string;
     handleDeleteToTrash: (entity: WorldEntity) => void;
-    isWikiMode: boolean;
-    setIsWikiMode: (mode: boolean) => void;
+    isWikiMode?: boolean;
+    setIsWikiMode?: (mode: boolean) => void;
     theme?: ThemeMode;
     setTheme?: (theme: ThemeMode) => void;
 }
@@ -70,15 +71,18 @@ const EntityItem: React.FC<{
     activeTabId: string;
     handleOpenEntity: (id: string) => void;
     handleDeleteToTrash: (entity: WorldEntity) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
     theme?: ThemeMode;
     draggedEntityId: string | null;
     setDraggedEntityId: (id: string | null) => void;
     onReorderAndReparent: (draggedId: string, targetId: string | null, position: 'before' | 'after' | 'inside', targetType?: EntityType) => void;
 }> = ({ 
     entity, depth, allEntities, activeTabId, handleOpenEntity, handleDeleteToTrash, 
-    isWikiMode, theme, draggedEntityId, setDraggedEntityId, onReorderAndReparent 
+    isWikiMode: propWiki, theme: propTheme, draggedEntityId, setDraggedEntityId, onReorderAndReparent 
 }) => {
+    const { isWikiMode: themeWiki, isRoyal: themeRoyal } = useTheme();
+    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
+    const isRoyal = propTheme ? propTheme === 'royal-codex' : themeRoyal;
     const [isExpanded, setIsExpanded] = useState(true);
     const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null);
     const [confirmDelete, setConfirmDelete] = useState(false);
@@ -88,7 +92,6 @@ const EntityItem: React.FC<{
     const children = allEntities.filter(e => getSafeParentId(e, allEntities) === entity.id);
     const hasChildren = children.length > 0;
     const isActive = activeTabId === entity.id;
-    const isRoyal = theme === 'royal-codex';
     const currentDraggedId = draggedEntityId || activeDraggedId;
     const isBeingDragged = currentDraggedId === entity.id;
 
@@ -323,8 +326,6 @@ const EntityItem: React.FC<{
                             activeTabId={activeTabId}
                             handleOpenEntity={handleOpenEntity}
                             handleDeleteToTrash={handleDeleteToTrash}
-                            isWikiMode={isWikiMode}
-                            theme={theme}
                             draggedEntityId={draggedEntityId}
                             setDraggedEntityId={setDraggedEntityId}
                             onReorderAndReparent={onReorderAndReparent}
@@ -347,12 +348,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
     handleOpenEntity,
     handleCreate,
     handleDeleteToTrash,
-    isWikiMode,
-    setIsWikiMode,
-    theme,
-    setTheme,
+    isWikiMode: propWiki,
+    setIsWikiMode: _propSetWiki,
+    theme: propTheme,
+    setTheme: _propSetTheme,
 }) => {
-    const isRoyal = theme === 'royal-codex';
+    const themeContext = useTheme();
+    const isWikiMode = propWiki !== undefined ? propWiki : themeContext.isWikiMode;
+    const theme = propTheme || themeContext.theme;
+    const isRoyal = themeContext.isRoyal;
     const [draggedEntityId, setDraggedEntityId] = useState<string | null>(null);
     const [headerDropType, setHeaderDropType] = useState<EntityType | null>(null);
     const reorderAndReparentEntity = useWorldStore(state => state.reorderAndReparentEntity);
@@ -486,7 +490,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             {/* Header with Realm Switcher */}
             <div className={`p-3.5 border-b ${borderColor} relative z-10 space-y-3`}>
-                <RealmSwitcher theme={theme || 'sovereign'} isWikiMode={isWikiMode} onOpenOptions={() => setActiveTabId('options')} />
+                <RealmSwitcher onOpenOptions={() => setActiveTabId('options')} />
                 <div className="relative group">
                     <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${isRoyal ? 'text-[#c8a96e]/50' : 'text-slate-500 group-focus-within:text-yellow-500'}`} size={13} />
                     <input
@@ -623,8 +627,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                         activeTabId={activeTabId}
                                                         handleOpenEntity={handleOpenEntity}
                                                         handleDeleteToTrash={handleDeleteToTrash}
-                                                        isWikiMode={isWikiMode}
-                                                        theme={theme}
                                                         draggedEntityId={draggedEntityId}
                                                         setDraggedEntityId={setDraggedEntityId}
                                                         onReorderAndReparent={reorderAndReparentEntity}

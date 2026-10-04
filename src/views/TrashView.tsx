@@ -8,7 +8,6 @@ import { ThemeCard } from '../components/ui';
 interface TrashViewProps {
     trash: WorldEntity[];
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
-    isWikiMode: boolean;
 }
 
 export const TrashView = ({ trash, setWorld }: TrashViewProps) => {

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ZoomIn, ZoomOut, Check, Move, Sparkles, RefreshCw, Square, RectangleVertical, RectangleHorizontal } from 'lucide-react';
 import { resolveAssetUrl } from '../../utils/assetStore';
+import { useTheme } from '../../theme';
 
 interface ImageCropModalProps {
     isOpen: boolean;
@@ -20,8 +21,10 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
     onApplyCrop,
     onClose,
     onKeepOriginal,
-    isWikiMode = false
+    isWikiMode: propWiki
 }) => {
+    const { isWikiMode: themeWiki } = useTheme();
+    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
     const [resolvedUrl, setResolvedUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isSaving, setIsSaving] = useState<boolean>(false);

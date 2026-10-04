@@ -5,12 +5,13 @@ import {
 } from 'lucide-react';
 import { WorldData, ThemeMode, WorldPhase } from '../../types';
 import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 import { NewRealmModal } from '../ui/NewRealmModal';
 import { DeleteRealmModal } from '../ui/DeleteRealmModal';
 
 interface RealmSwitcherProps {
-    theme: ThemeMode;
-    isWikiMode: boolean;
+    theme?: ThemeMode;
+    isWikiMode?: boolean;
     onOpenOptions?: () => void;
 }
 
@@ -31,8 +32,8 @@ const PHASE_LABELS: Record<WorldPhase, string> = {
 };
 
 export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
-    theme,
-    isWikiMode,
+    theme: propTheme,
+    isWikiMode: propWiki,
     onOpenOptions
 }) => {
     const {
@@ -53,7 +54,10 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
     const [realmToDelete, setRealmToDelete] = useState<WorldData | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const isRoyal = theme === 'royal-codex';
+    const themeContext = useTheme();
+    const theme = propTheme || themeContext.theme;
+    const isWikiMode = propWiki !== undefined ? propWiki : themeContext.isWikiMode;
+    const isRoyal = themeContext.isRoyal;
 
     // Click outside to dismiss
     useEffect(() => {

@@ -3,6 +3,7 @@ import { Upload, Link2, X, Sparkles, HardDrive, Crop } from 'lucide-react';
 import { saveAsset } from '../../utils/assetStore';
 import { NexusImage } from './NexusImage';
 import { ImageCropModal } from './ImageCropModal';
+import { useTheme } from '../../theme';
 
 interface AssetImageUploaderProps {
     label: string;
@@ -16,9 +17,11 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
     label,
     value = '',
     onChange,
-    isWikiMode = false,
+    isWikiMode: propWiki,
     helperText = 'Stored uncompressed in local IndexedDB asset vault.'
 }) => {
+    const { isWikiMode: themeWiki } = useTheme();
+    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
     const [mode, setMode] = useState<'upload' | 'url'>('upload');
     const [urlInput, setUrlInput] = useState(value && !value.startsWith('asset://') ? value : '');
     const [isSaving, setIsSaving] = useState(false);

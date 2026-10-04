@@ -2,17 +2,15 @@ import React, { useMemo, useState } from 'react';
 import { Network, GitBranch, GitMerge, ChevronDown, ChevronRight, Share2, Layers } from 'lucide-react';
 import { WorldData, WorldEntity, Character } from '../types';
 import { NexusGraphView } from './NexusGraphView';
-import { useWorldStore } from '../store/useWorldStore';
+import { useTheme } from '../theme';
 
 interface NexusTreeViewProps {
     world: WorldData;
-    isWikiMode: boolean;
     onNavigate: (id: string) => void;
 }
 
-export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode, onNavigate }) => {
-    const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
+export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, onNavigate }) => {
+    const { isWikiMode, isRoyal } = useTheme();
     const [viewMode, setViewMode] = useState<'graph' | 'tree'>('graph');
 
     const lineageData = useMemo(() => {
@@ -147,7 +145,7 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, isWikiMode,
             {/* View Body */}
             {viewMode === 'graph' ? (
                 <div className="flex-1 w-full h-full relative overflow-hidden">
-                    <NexusGraphView world={world} isWikiMode={isWikiMode} onNavigate={onNavigate} />
+                    <NexusGraphView world={world} onNavigate={onNavigate} />
                 </div>
             ) : (
                 <div className="flex-1 p-12 overflow-auto custom-scrollbar space-y-12">

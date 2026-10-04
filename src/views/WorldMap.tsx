@@ -3,19 +3,19 @@ import { createPortal } from 'react-dom';
 import { MapPin, Globe, Link2, Trash2, X, Plus, Sparkles, Shield, Swords, Compass, Search, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { WorldData, WorldEntity, MapConnection } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
+import { useTheme } from '../theme';
 
 interface WorldMapProps {
     world: WorldData;
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
 }
 
 type AnchorMode = 'existing' | 'new';
 
-export const WorldMap = ({ world, setWorld, onNavigate, isWikiMode }: WorldMapProps) => {
+export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
     const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
+    const { isWikiMode, isRoyal } = useTheme();
     const [editMode, setEditMode] = useState<'marker' | 'link'>('marker');
     const [linkSource, setLinkSource] = useState<string | null>(null);
 

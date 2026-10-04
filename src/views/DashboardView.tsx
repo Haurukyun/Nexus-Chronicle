@@ -2,17 +2,15 @@ import React, { useMemo } from 'react';
 import { BarChart3, Users, Map, Clock, PieChart, Activity, Fingerprint } from 'lucide-react';
 import { WorldData, WorldEntity } from '../types';
 import { TYPE_LABELS } from '../constants';
-import { useWorldStore } from '../store/useWorldStore';
+import { useTheme } from '../theme';
 
 interface DashboardViewProps {
     world: WorldData;
-    isWikiMode: boolean;
     onNavigate: (id: string) => void;
 }
 
-export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode, onNavigate }) => {
-    const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
+export const DashboardView: React.FC<DashboardViewProps> = ({ world, onNavigate }) => {
+    const { isWikiMode, isRoyal } = useTheme();
     const stats = useMemo(() => {
         const counts: Record<string, number> = {};
         world.entities.forEach(e => {

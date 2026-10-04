@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LucideIcon } from 'lucide-react';
 import { FormInputProps } from '../../types';
-import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 
-export const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode, disabled, options, icon: Icon, gridSpan = 12 }: FormInputProps & { options?: string[], disabled?: boolean, icon?: LucideIcon }) => {
+export const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode: _ignored, disabled, options, icon: Icon, gridSpan = 12 }: FormInputProps & { options?: string[], disabled?: boolean, icon?: LucideIcon }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
-    const isWiki = theme === 'wiki' || isWikiMode;
+    const { isWikiMode, isRoyal } = useTheme();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -28,7 +26,7 @@ export const FormInput = ({ label, value, onChange, placeholder, type = "text", 
         iconStyle = 'text-[#70121e]';
         labelStyle = 'text-[#451a03] font-serif font-bold';
         dropdownStyle = 'bg-[#f7f0e1] border-[#c8a96e]';
-    } else if (isWiki) {
+    } else if (isWikiMode) {
         inputStyle = 'bg-white border-[#d4c8af] text-slate-800 focus:ring-red-500';
         iconStyle = 'text-[#b91c1c]/60';
         labelStyle = 'text-slate-500';
@@ -57,7 +55,7 @@ export const FormInput = ({ label, value, onChange, placeholder, type = "text", 
                             <button
                                 key={opt}
                                 onClick={() => { onChange(opt); setIsOpen(false); }}
-                                className={`w-full text-left px-3 py-2 text-xs transition-colors ${isRoyal ? 'text-[#2b1810] hover:bg-[#881337] hover:text-white' : isWiki ? 'text-slate-700 hover:bg-black/5' : 'text-slate-400 hover:bg-slate-800'}`}
+                                className={`w-full text-left px-3 py-2 text-xs transition-colors ${isRoyal ? 'text-[#2b1810] hover:bg-[#881337] hover:text-white' : isWikiMode ? 'text-slate-700 hover:bg-black/5' : 'text-slate-400 hover:bg-slate-800'}`}
                             >
                                 {opt}
                             </button>

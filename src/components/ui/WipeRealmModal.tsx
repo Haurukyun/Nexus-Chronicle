@@ -1,15 +1,15 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { AlertTriangle, Skull, X } from 'lucide-react';
 import { WorldData, ThemeMode } from '../../types';
+import { useTheme } from '../../theme';
 
 interface WipeRealmModalProps {
     isOpen: boolean;
     realm: WorldData;
     onConfirm: () => void;
     onCancel: () => void;
-    theme: ThemeMode;
-    isWikiMode: boolean;
+    theme?: ThemeMode;
 }
 
 export const WipeRealmModal: React.FC<WipeRealmModalProps> = ({
@@ -17,9 +17,8 @@ export const WipeRealmModal: React.FC<WipeRealmModalProps> = ({
     realm,
     onConfirm,
     onCancel,
-    theme,
-    isWikiMode,
 }) => {
+    const { isWikiMode, isRoyal } = useTheme();
     useEffect(() => {
         if (!isOpen) return;
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -32,7 +31,6 @@ export const WipeRealmModal: React.FC<WipeRealmModalProps> = ({
     if (!isOpen) return null;
 
     const entityCount = (realm.entities || []).length;
-    const isRoyal = theme === 'royal-codex';
 
     const bgClass = isWikiMode
         ? 'bg-[#f5f0e8] border-[#b91c1c] text-[#1a1a1a]'

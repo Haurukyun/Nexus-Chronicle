@@ -6,23 +6,22 @@ import {
 } from 'lucide-react';
 import { ThemeMode, WorldData } from '../../types';
 import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 import { NexusBeamSender, NexusBeamReceiver, BeamProgress } from '../../utils/nexusBeam';
 import { exportNexusArchiveFile, unpackNexusArchive } from '../../utils/nexusArchive';
 
 interface NexusBeamModalProps {
     isOpen: boolean;
     onClose: () => void;
-    theme: ThemeMode;
-    isWikiMode: boolean;
+    theme?: ThemeMode;
 }
 
 export const NexusBeamModal: React.FC<NexusBeamModalProps> = ({
     isOpen,
     onClose,
-    theme,
-    isWikiMode
 }) => {
     const { world, importWorldData, activeWorldId } = useWorldStore();
+    const { isWikiMode, isRoyal } = useTheme();
     const [mode, setMode] = useState<'send' | 'receive' | 'file'>('send');
     const [senderToken, setSenderToken] = useState('');
     const [receiverAnswerInput, setReceiverAnswerInput] = useState('');
@@ -36,7 +35,6 @@ export const NexusBeamModal: React.FC<NexusBeamModalProps> = ({
     const receiverRef = useRef<NexusBeamReceiver | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const isRoyal = theme === 'royal-codex';
 
     const accent = isRoyal
         ? 'text-[#d4af37]'

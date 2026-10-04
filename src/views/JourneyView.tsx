@@ -8,10 +8,10 @@ import {
 } from 'lucide-react';
 import { WorldData, Location } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
+import { useTheme } from '../theme';
 
 interface JourneyViewProps {
     world: WorldData;
-    isWikiMode: boolean;
     onNavigate: (id: string) => void;
 }
 
@@ -34,7 +34,7 @@ const TERRAIN_MODIFIERS: Record<TerrainType, { factor: number; label: string; ic
     chasm:     { factor: 2.4, label: 'Planar Rift / Desolate Badlands', icon: Flame, danger: 'Treacherous (Monsters & Magic)' }
 };
 
-export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onNavigate }) => {
+export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) => {
     const [startId, setStartId] = useState<string>('');
     const [endId, setEndId] = useState<string>('');
     const [travelMethod, setTravelMethod] = useState<TravelMethod>('foot');
@@ -45,7 +45,6 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
     const [isManualOverride, setIsManualOverride] = useState<boolean>(false);
     const [manualDistanceInput, setManualDistanceInput] = useState<string>('');
 
-    const theme = useWorldStore(state => state.theme);
     const setWorld = useWorldStore(state => state.setWorld);
     const handleOpenEntity = useWorldStore(state => state.handleOpenEntity);
     const handleToggleEdit = useWorldStore(state => state.handleToggleEdit);
@@ -54,7 +53,7 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, isWikiMode, onN
     const [quickPinTarget, setQuickPinTarget] = useState<Location | null>(null);
     const [quickPinCoords, setQuickPinCoords] = useState<{ x: number; y: number } | null>(null);
 
-    const isRoyal = theme === 'royal-codex';
+    const { isWikiMode, isRoyal } = useTheme();
     const mapImage = world.mapImage;
 
     const handleOpenInEditor = (id: string) => {

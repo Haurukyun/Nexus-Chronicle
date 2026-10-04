@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../../theme';
 
 interface RadarChartProps {
     stats: {
@@ -10,10 +11,11 @@ interface RadarChartProps {
         charisma?: string;
     };
     compareStats?: any;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
 }
 
-export const RadarChart = ({ stats, compareStats, isWikiMode }: RadarChartProps) => {
+export const RadarChart = ({ stats, compareStats }: RadarChartProps) => {
+    const { isWikiMode } = useTheme();
     const parseStat = (val: string | undefined) => {
         if (!val) return 10;
         const match = val.match(/\d+/);

@@ -12,8 +12,11 @@ import { GroupRoleGroup } from './GroupRoleGroup';
 import { FormInput, FormToggle, SmartSelect, MarkdownEditor } from '../ui';
 import { EntityEditorProps, Location } from '../../types';
 import { EntitySpecificsRegistry } from './specifics/EntitySpecificsRegistry';
+import { useTheme } from '../../theme';
 
-export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWikiMode, onUpdate }: EntityEditorProps) => {
+export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWikiMode: propWiki, onUpdate }: EntityEditorProps) => {
+    const { isWikiMode: themeWiki } = useTheme();
+    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
     const isLocation = entity.type === 'location';
     const loc = entity as Location;
 

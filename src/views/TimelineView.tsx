@@ -1,17 +1,15 @@
 import React, { useMemo } from 'react';
 import { Calendar, History, ArrowLeft, ArrowRight } from 'lucide-react';
 import { WorldData, WorldEntity, Character, Event } from '../types';
-import { useWorldStore } from '../store/useWorldStore';
+import { useTheme } from '../theme';
 
 interface TimelineViewProps {
     world: WorldData;
-    isWikiMode: boolean;
     onNavigate: (id: string) => void;
 }
 
-export const TimelineView: React.FC<TimelineViewProps> = ({ world, isWikiMode, onNavigate }) => {
-    const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
+export const TimelineView: React.FC<TimelineViewProps> = ({ world, onNavigate }) => {
+    const { isWikiMode, isRoyal } = useTheme();
     const timelineData = useMemo(() => {
         const events: any[] = [];
         const extractYear = (dateStr: string | undefined) => {

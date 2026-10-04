@@ -3,13 +3,13 @@ import { createPortal } from 'react-dom';
 import { X, Sparkles, Globe, Compass, Check, BookOpen, AlertCircle } from 'lucide-react';
 import { WorldPhase, ThemeMode } from '../../types';
 import { DEFAULT_REALM_MAP } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 
 interface NewRealmModalProps {
     isOpen: boolean;
     onClose: () => void;
     onCreate: (name: string, description: string, mapImage: string, phase: WorldPhase) => void;
-    theme: ThemeMode;
-    isWikiMode: boolean;
+    theme?: ThemeMode;
 }
 
 const MAP_PRESETS = [
@@ -51,9 +51,8 @@ export const NewRealmModal: React.FC<NewRealmModalProps> = ({
     isOpen,
     onClose,
     onCreate,
-    theme,
-    isWikiMode
 }) => {
+    const { isWikiMode, isRoyal } = useTheme();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [selectedPhase, setSelectedPhase] = useState<WorldPhase>('golden');
@@ -63,7 +62,6 @@ export const NewRealmModal: React.FC<NewRealmModalProps> = ({
 
     if (!isOpen) return null;
 
-    const isRoyal = theme === 'royal-codex';
 
     const modalBg = isRoyal
         ? 'bg-[#181410] border-[#c8a96e]/40 text-[#f5ebd7]'

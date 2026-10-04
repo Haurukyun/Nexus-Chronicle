@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
 import { WorldData, ThemeMode } from '../../types';
+import { useTheme } from '../../theme';
 
 interface DeleteRealmModalProps {
     realm: WorldData | null;
     canDelete: boolean;
     onConfirm: () => void;
     onCancel: () => void;
-    theme: ThemeMode;
-    isWikiMode: boolean;
+    theme?: ThemeMode;
 }
 
 export const DeleteRealmModal: React.FC<DeleteRealmModalProps> = ({
@@ -17,9 +17,8 @@ export const DeleteRealmModal: React.FC<DeleteRealmModalProps> = ({
     canDelete,
     onConfirm,
     onCancel,
-    theme,
-    isWikiMode
 }) => {
+    const { isWikiMode, isRoyal } = useTheme();
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onCancel();
@@ -30,7 +29,6 @@ export const DeleteRealmModal: React.FC<DeleteRealmModalProps> = ({
 
     if (!realm) return null;
 
-    const isRoyal = theme === 'royal-codex';
 
     const modalBg = isRoyal
         ? 'bg-[#181410] border-[#c8a96e]/40 text-[#f5ebd7]'

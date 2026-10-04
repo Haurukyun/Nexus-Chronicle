@@ -2,13 +2,14 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Eye, PenLine, Bold, Italic, Heading1, Heading2, List, Link2 } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { WorldEntity } from '../../types';
+import { useTheme } from '../../theme';
 
 interface MarkdownEditorProps {
     value: string;
     onChange: (v: string) => void;
     allEntities: WorldEntity[];
     onNavigate?: (id: string) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
     placeholder?: string;
     minHeight?: string;
     label?: string;
@@ -25,11 +26,11 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     onChange,
     allEntities,
     onNavigate,
-    isWikiMode,
     placeholder = 'Write your lore here... Use [[Entity Name]] to link entities, **bold**, *italic*, # Heading',
     minHeight = 'h-72',
     label,
 }) => {
+    const { isWikiMode } = useTheme();
     const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('split');
 
     // Wikilink autocomplete state

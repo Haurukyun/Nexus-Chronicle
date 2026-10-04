@@ -2,12 +2,13 @@ import React, { useMemo } from 'react';
 import { marked, Renderer } from 'marked';
 import DOMPurify from 'dompurify';
 import { WorldEntity } from '../../types';
+import { useTheme } from '../../theme';
 
 interface MarkdownRendererProps {
     content: string;
     allEntities: WorldEntity[];
     onNavigate?: (id: string) => void;
-    isWikiMode: boolean;
+    isWikiMode?: boolean;
     /** Extra class names on the outer wrapper */
     className?: string;
 }
@@ -49,9 +50,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     content,
     allEntities,
     onNavigate,
-    isWikiMode,
     className = '',
 }) => {
+    const { isWikiMode } = useTheme();
     const nameMap = useMemo(() => buildNameMap(allEntities), [allEntities]);
 
     const html = useMemo(() => {

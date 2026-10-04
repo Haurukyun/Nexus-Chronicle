@@ -1,11 +1,9 @@
 import React from 'react';
 import { FieldRowProps } from '../../types';
-import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 
-export const FieldRow = ({ label, value, isWikiMode }: FieldRowProps) => {
-    const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
-    const isWiki = theme === 'wiki' || isWikiMode;
+export const FieldRow = ({ label, value, isWikiMode: _ignored }: FieldRowProps) => {
+    const { isWikiMode, isRoyal } = useTheme();
 
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
 
@@ -17,7 +15,7 @@ export const FieldRow = ({ label, value, isWikiMode }: FieldRowProps) => {
         labelStyle = 'text-[#451a03] font-serif font-bold';
         valueStyle = 'text-[#2b1810] font-sans font-medium';
         borderStyle = 'border-[#c8a96e]/20';
-    } else if (isWiki) {
+    } else if (isWikiMode) {
         labelStyle = 'text-[#854d0e]';
         valueStyle = 'text-[#1a1a1a]';
         borderStyle = 'border-[#d4c8af]/40';

@@ -26,7 +26,6 @@ const App = () => {
         world, setWorld,
         openTabIds, activeTabId, setActiveTabId,
         theme, setTheme,
-        isWikiMode, setIsWikiMode,
         drafts, setDrafts,
         editingTabIds, setEditingTabIds,
         searchQuery, setSearchQuery,
@@ -185,10 +184,6 @@ const App = () => {
                     handleOpenEntity={handleOpenEntity}
                     handleCreate={handleCreate}
                     handleDeleteToTrash={handleDeleteToTrash}
-                    isWikiMode={isWikiMode}
-                    setIsWikiMode={setIsWikiMode}
-                    theme={theme}
-                    setTheme={setTheme}
                 />
 
                 {/* Main Content Area */}
@@ -240,13 +235,13 @@ const App = () => {
 
                 {/* Body Content */}
                 <div className="flex-1 p-4 md:p-6">
-                    {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} isWikiMode={isWikiMode} />}
-                    {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} isWikiMode={isWikiMode} />}
-                    {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} isWikiMode={isWikiMode} setIsWikiMode={setIsWikiMode} />}
-                    {activeTabId === 'dashboard' && <DashboardView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'timeline' && <TimelineView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'nexus' && <NexusTreeView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'journey' && <JourneyView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
+                    {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
+                    {activeTabId === 'dashboard' && <DashboardView world={world} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'timeline' && <TimelineView world={world} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'nexus' && <NexusTreeView world={world} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'journey' && <JourneyView world={world} onNavigate={handleOpenEntity} />}
 
                     {activeEntity && (
                         isManuscript ? (
@@ -274,7 +269,6 @@ const App = () => {
                                                 onSave={() => handleSaveDraft(activeTabId as string)}
                                                 onCancel={() => handleToggleEdit(activeTabId as string)}
                                                 onCreateNew={handleCreate}
-                                                isWikiMode={isWikiMode}
                                             />
                                         ) : (
                                             <EntityViewer
@@ -284,7 +278,6 @@ const App = () => {
                                                 onDelete={() => handleDeleteToTrash(activeEntity)}
                                                 onNavigate={handleOpenEntity}
                                                 onFocusMap={() => setActiveTabId('map')}
-                                                isWikiMode={isWikiMode}
                                             />
                                         )}
                                     </ErrorBoundary>
@@ -317,7 +310,6 @@ const App = () => {
                                             onSave={() => handleSaveDraft(activeTabId as string)}
                                             onCancel={() => handleToggleEdit(activeTabId as string)}
                                             onCreateNew={handleCreate}
-                                            isWikiMode={isWikiMode}
                                         />
                                     ) : (
                                         <EntityViewer
@@ -327,7 +319,6 @@ const App = () => {
                                             onDelete={() => handleDeleteToTrash(activeEntity)}
                                             onNavigate={handleOpenEntity}
                                             onFocusMap={() => setActiveTabId('map')}
-                                            isWikiMode={isWikiMode}
                                         />
                                     )}
                                 </ErrorBoundary>
@@ -342,8 +333,6 @@ const App = () => {
             <KeybindsModal 
                 isOpen={showKeybindsModal} 
                 onClose={() => setShowKeybindsModal(false)} 
-                theme={theme} 
-                isWikiMode={isWikiMode} 
             />
         </div>
     );

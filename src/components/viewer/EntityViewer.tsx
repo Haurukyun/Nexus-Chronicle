@@ -10,16 +10,16 @@ import { getCategorizedBacklinks } from '../../utils/backlinkUtils';
 import { EntitySpecificsViewerRegistry } from './specifics/EntitySpecificsViewerRegistry';
 import { ViewerSectionCard } from './ViewerSectionCard';
 import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 
-export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap, isWikiMode }: EntityViewerProps) => {
+export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap, isWikiMode: propWiki }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
     const isLoc = entity.type === 'location';
     const char = entity as Character;
     const loc = entity as Location;
-    const theme = useWorldStore(state => state.theme);
+    const { isWikiMode: themeWiki, isRoyal, theme } = useTheme();
+    const isWiki = propWiki !== undefined ? propWiki : themeWiki;
     const updateEntityLock = useWorldStore(state => state.updateEntityLock);
-    const isRoyal = theme === 'royal-codex';
-    const isWiki = theme === 'wiki' || isWikiMode;
 
     const handleToggleLock = () => {
         updateEntityLock(entity.id, !entity.isReadOnly);

@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Keyboard, Sparkles, MoveVertical, Save, Edit3, Search, FolderTree, ArrowDownRight, Compass } from 'lucide-react';
 import { ThemeMode } from '../../types';
+import { useTheme } from '../../theme';
 
 interface KeybindsModalProps {
     isOpen: boolean;
@@ -24,12 +25,9 @@ interface KeybindCategory {
 export const KeybindsModal: React.FC<KeybindsModalProps> = ({
     isOpen,
     onClose,
-    theme,
-    isWikiMode
 }) => {
+    const { isWikiMode, isRoyal } = useTheme();
     if (!isOpen) return null;
-
-    const isRoyal = theme === 'royal-codex';
 
     const categories: KeybindCategory[] = [
         {

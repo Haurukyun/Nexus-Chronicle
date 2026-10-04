@@ -8,6 +8,7 @@ import { WorldData, EntityType, WorldPhase } from '../types';
 import { TYPE_LABELS } from '../constants';
 import { FormInput } from '../components/ui';
 import { useWorldStore } from '../store/useWorldStore';
+import { useTheme } from '../theme';
 import { NewRealmModal } from '../components/ui/NewRealmModal';
 import { NexusBeamModal } from '../components/ui/NexusBeamModal';
 import { DeleteRealmModal } from '../components/ui/DeleteRealmModal';
@@ -19,8 +20,6 @@ import { pruneOrphanAssets, extractActiveAssetUris } from '../utils/assetStore';
 interface OptionsViewProps {
     world: WorldData;
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
-    isWikiMode: boolean;
-    setIsWikiMode: (mode: boolean) => void;
 }
 
 const PHASE_COLORS: Record<WorldPhase, string> = {
@@ -39,7 +38,7 @@ const PHASE_NAMES: Record<WorldPhase, string> = {
     ruin: 'Forsaken Ruin'
 };
 
-export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: OptionsViewProps) => {
+export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
     const {
         worlds,
         activeWorldId,
@@ -60,6 +59,7 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
         handleHealRelations
     } = useWorldStore();
 
+    const { isWikiMode, isRoyal, t } = useTheme();
     const [healDone, setHealDone] = useState(false);
     const handleHeal = () => {
         handleHealRelations();
@@ -104,15 +104,8 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
     const nexusImportRef = useRef<HTMLInputElement>(null);
     const jsonImportRef = useRef<HTMLInputElement>(null);
 
-    const isRoyal = theme === 'royal-codex';
-
-    const accent = isRoyal
-        ? 'text-[#70121e]'
-        : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-
-    const bgCard = isRoyal
-        ? 'bg-[#181410] border-[#c8a96e]/30'
-        : isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800';
+    const accent = t.colors.textAccent;
+    const bgCard = `${t.card.base}`;
 
     const stats = useMemo(() => {
         const total = world.entities.length;
@@ -728,7 +721,6 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                     createWorld(name, desc, mapImage, phase);
                 }}
                 theme={theme}
-                isWikiMode={isWikiMode}
             />
 
             {/* NexusBeam P2P Transfer Modal */}
@@ -751,7 +743,6 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                 }}
                 onCancel={() => setRealmToDelete(null)}
                 theme={theme}
-                isWikiMode={isWikiMode}
             />
 
             {/* Oblivion Protocol Wipe Active Realm Modal */}
@@ -774,7 +765,6 @@ export const OptionsView = ({ world, setWorld, isWikiMode, setIsWikiMode }: Opti
                 }}
                 onCancel={() => setIsWipeModalOpen(false)}
                 theme={theme}
-                isWikiMode={isWikiMode}
             />
 
             <footer className="text-center opacity-20 hover:opacity-100 transition-opacity duration-1000">

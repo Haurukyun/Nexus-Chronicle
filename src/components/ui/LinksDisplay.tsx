@@ -1,11 +1,10 @@
 import React from 'react';
 import { LinksDisplayProps } from '../../types';
-import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 
-export const LinksDisplay = ({ label, ids, all, onNav, isWikiMode, wikiStyle = 'tag' }: LinksDisplayProps) => {
-    const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
-    const isWiki = theme === 'wiki' || isWikiMode;
+export const LinksDisplay = ({ label, ids, all, onNav, isWikiMode: _propWiki, wikiStyle = 'tag' }: LinksDisplayProps) => {
+    const { isWikiMode, isRoyal } = useTheme();
+    const isWiki = isWikiMode || Boolean(_propWiki);
 
     if (!ids || ids.length === 0) return null;
 
