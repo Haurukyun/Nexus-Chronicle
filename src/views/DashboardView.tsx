@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { BarChart3, Users, Map, Clock, PieChart, Activity, Fingerprint, Sparkles } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { BarChart3, Users, Map, Clock, PieChart, Activity, Fingerprint } from 'lucide-react';
 import { WorldData, WorldEntity } from '../types';
 import { TYPE_LABELS } from '../constants';
 import { useWorldStore } from '../store/useWorldStore';
@@ -11,7 +11,6 @@ interface DashboardViewProps {
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode, onNavigate }) => {
-    const setWorldPhase = useWorldStore(state => (state as any).setWorldPhase);
     const theme = useWorldStore(state => state.theme);
     const isRoyal = theme === 'royal-codex';
     const stats = useMemo(() => {
@@ -42,29 +41,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
         return { counts, topInterconnected };
     }, [world.entities]);
 
-    const [seed, setSeed] = useState(1);
-    const rerollInsights = () => setSeed(s => s + 1);
 
-    const insights = useMemo(() => {
-        const entCount = world.entities.length;
-        if (entCount < 2) return ["Your chronicle is just beginning. Plant more seeds of lore to see the patterns emerge."];
-        
-        // Deterministic selection based on seed
-        const idx1 = Math.abs(seed * 7 + 13) % entCount;
-        const idx2 = Math.abs(seed * 19 + 29) % entCount;
-        const randomEnt1 = world.entities[idx1] || world.entities[0];
-        const randomEnt2 = world.entities[idx2 !== idx1 ? idx2 : (idx2 + 1) % entCount] || world.entities[1] || world.entities[0];
-        const locations = world.entities.filter(e => e.type === 'location');
-        const locIdx = locations.length > 0 ? Math.abs(seed * 31 + 7) % locations.length : 0;
-        const randomLoc = locations.length > 0 ? locations[locIdx] : null;
-
-        return [
-            `Balance Report: Your world is ${Math.round((stats.counts.character || 0) / (entCount || 1) * 100)}% populated by characters. ${stats.counts.location ? 'The geography is expanding steadily.' : 'Perhaps it needs more physical anchors (Locations)?'}`,
-            `Creative Spark: How does ${randomEnt1.name} feel about the presence of ${randomEnt2.name}${randomLoc ? ` at ${randomLoc.name}` : ''}?`,
-            `Continuity Check: ${stats.topInterconnected[0]?.name || 'Your primary figure'} currently holds the most threads. If they were to disappear, who would inherit their influence?`,
-            `The Void: ${world.trash.length} memories have been cast into the Forgotten Depth. Is there a secret link between one of them and ${randomEnt1.name}?`
-        ];
-    }, [world.entities, world.trash.length, stats.counts, stats.topInterconnected, seed]);
 
     const colors = isRoyal
         ? ['#70121e', '#c8a96e', '#3d5a80', '#2d6a4f', '#6d3b1e']
@@ -163,62 +140,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, isWikiMode,
                 </div>
             </div>
 
-            <div className={`p-12 rounded-[4rem] border ${bgCard} shadow-2xl relative overflow-hidden`}>
-                <div className="absolute top-0 right-0 p-8 opacity-5">
-                    <BarChart3 size={200} />
-                </div>
-                <div className="relative z-10 space-y-6">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <h3 className="text-2xl font-serif font-bold uppercase tracking-[0.2em]">The Ledger's Insight</h3>
-                        <button 
-                            onClick={rerollInsights}
-                            className={`px-5 py-2.5 rounded-2xl border text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${
-                                isRoyal
-                                    ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border-[#c8a96e] shadow-md'
-                                    : isWikiMode 
-                                    ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] border-[#b91c1c]' 
-                                    : 'bg-[#fef08a] text-black hover:bg-yellow-400 border-[#fef08a] shadow-lg shadow-yellow-500/20'
-                            }`}
-                        >
-                            <Sparkles size={14} /> Consult the Oracle
-                        </button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm italic opacity-60 leading-relaxed max-w-3xl">
-                        {insights.map((insight, i) => <p key={i}>"{insight}"</p>)}
-                    </div>
-                </div>
-            </div>
 
-            <div className={`p-10 rounded-[3rem] border ${bgCard} shadow-2xl space-y-8`}>
-                <div className="flex items-end justify-between">
-                    <div>
-                        <h3 className="text-xl font-serif font-bold flex items-center gap-3 uppercase tracking-widest leading-none">Aura of the Soul</h3>
-                        <p className="opacity-40 text-[9px] uppercase tracking-widest mt-2 ml-1">Current World Phase: {world.worldPhase || 'Sovereign'}</p>
-                    </div>
-                </div>
-                
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                    {['creation', 'golden', 'shadow', 'eclipse', 'ruin'].map((phase: any) => (
-                        <button 
-                            key={phase}
-                            onClick={() => setWorldPhase(phase)}
-                            className={`p-5 rounded-3xl border transition-all text-left space-y-2 group ${world.worldPhase === phase 
-                                ? (isRoyal ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : isWikiMode ? 'bg-[#b91c1c] text-white border-[#b91c1c]' : 'bg-[#fef08a] text-black border-[#fef08a]') 
-                                : isRoyal ? 'hover:bg-[#d9c9a3]/30 opacity-60 border-[#c8a96e]/20' : 'hover:bg-white/5 opacity-60'
-                            }`}
-                        >
-                            <span className="block text-[10px] font-black uppercase tracking-tighter">{phase}</span>
-                            <span className="block text-[8px] opacity-60 group-hover:opacity-100 italic">
-                                {phase === 'creation' && 'The First Spark'}
-                                {phase === 'golden' && 'Radiant Peace'}
-                                {phase === 'shadow' && 'Whispers in Dark'}
-                                {phase === 'eclipse' && 'Cosmic Paradox'}
-                                {phase === 'ruin' && 'Final Echoes'}
-                            </span>
-                        </button>
-                    ))}
-                </div>
-            </div>
         </div>
     );
 };

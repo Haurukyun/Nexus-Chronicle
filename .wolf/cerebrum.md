@@ -6,7 +6,7 @@ budget_tokens: 2000
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-10-03
+> Last updated: 2026-10-04
 
 ## User Preferences
 
@@ -73,6 +73,8 @@ budget_tokens: 2000
 - **[2026-10-03]** In Tauri v2 on Windows (WebView2), native HTML5 drag and drop shows a "stop" (🚫) cursor unless `"dragDropEnabled": false` is explicitly set in [`tauri.conf.json`](file:///F:/App%20Making/-%20Lab%20-/Nexus-Chronicle/src-tauri/tauri.conf.json) under `app.windows[0]`. By default, Tauri enables its own OS-level file drop handlers which replace WebView2's native drag-and-drop implementation and block web drag events.
 - **[2026-10-03]** `tauri-plugin-path` is NOT in this project's Cargo.toml. Do NOT call `plugin:path|app_data_dir`. Instead use the custom Rust command `get_app_data_dir` registered in `lib.rs` via `tauri::generate_handler!`. It uses `app.path().app_data_dir()` which is always available from the Tauri Manager trait without any extra plugin.
 - **[2026-10-03]** `convertFileSrc` from `@tauri-apps/api/core` is the ONLY correct way to make local disk files render in WebView2 `<img>` tags. Raw `file://` paths are blocked by the WebView's security policy. `convertFileSrc` converts an absolute OS path → `asset://localhost/<path>` which Tauri's `assetProtocol` whitelist allows.
+- **[2026-10-04]** **NO LLM / AI features — ever.** Nexus Chronicle is a purely offline, client-side app. Do NOT add, propose, or scaffold any LLM calls, AI inference, AI summarization, AI-generated text, "oracle" / "insight" generators, or any feature that requires an AI API key or network AI backend. If a feature idea sounds like it leverages AI, reject it outright.
+- **[2026-10-04]** **NO generative AI assets or art — ever.** Do NOT include, propose, or reference AI-generated images, AI-generated textures, AI-generated icons, or any asset produced by generative AI models anywhere in the codebase, UI, or documentation. All visual assets must be hand-crafted, licensed stock, or procedural (pure CSS/SVG/code).
 
 
 ## Decision Log
