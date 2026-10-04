@@ -2,10 +2,19 @@ import { ThemeMode } from '../types';
 
 export type OrnateDecorationType = 'royal-filigree' | 'clean-border' | 'tech-corners' | 'none';
 
+/** Controls which structural layout the app renders.
+ *  - 'studio'     — Dark dashboard / glassmorphic (Sovereign Scribe default)
+ *  - 'wiki'       — Light 2-column encyclopedia reader layout
+ *  - 'manuscript' — Illuminated book frame with wood-grain outer shell (Royal Codex)
+ */
+export type LayoutMode = 'studio' | 'wiki' | 'manuscript';
+
 export interface ThemeDefinition {
   id: ThemeMode | string;
   name: string;
   description: string;
+  /** Drives structural geometry decisions (sidebar width, reader vs. studio shell, book framing). */
+  layoutMode: LayoutMode;
   
   // Typography
   typography: {

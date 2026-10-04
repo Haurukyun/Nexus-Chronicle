@@ -4,6 +4,7 @@ import {
     BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints, Keyboard
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
+import { useTheme } from './theme';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from './constants';
 import { WorldMap } from './views/WorldMap';
 import { TrashView } from './views/TrashView';
@@ -33,6 +34,9 @@ const App = () => {
         handleOpenEntity, handleCloseTab, handleCreate,
         handleSaveDraft, handleToggleEdit, handleDeleteToTrash
     } = useWorldStore();
+
+    const { t, layoutMode } = useTheme();
+    const isManuscript = layoutMode === 'manuscript';
 
     useEffect(() => {
         const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey'];
@@ -144,8 +148,9 @@ const App = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [activeTabId, editingTabIds, handleSaveDraft, handleToggleEdit, setActiveTabId, showKeybindsModal]);
 
-    const bgClass = theme === 'royal-codex' ? 'bg-[#3b2b20] bg-[url("https://www.transparenttextures.com/patterns/wood-pattern.png")] bg-blend-multiply shadow-[inset_0_0_150px_rgba(0,0,0,0.8)]' : isWikiMode ? 'bg-[#fdfcf0]' : 'bg-[#070b14]';
-    const textColor = theme === 'royal-codex' ? 'text-[#2b1810]' : isWikiMode ? 'text-[#1a1a1a]' : 'text-slate-300';
+    // App shell geometry tokens — derived from layoutMode (structure) + theme tokens (material)
+    const bgClass = t.layout.appBg;
+    const textColor = t.colors.textBody;
 
     const auraStyles = useMemo(() => {
         const phase = world.worldPhase || 'golden';
@@ -162,13 +167,13 @@ const App = () => {
     return (
         <div 
             style={{ filter: auraStyles.filter }}
-            className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${theme === 'royal-codex' ? 'p-4 md:p-8 lg:p-12 items-center justify-center' : ''}`}>
+            className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${isManuscript ? 'p-4 md:p-8 lg:p-12 items-center justify-center' : ''}`}>
             
             {auraStyles.bg !== 'none' && (
                 <div className="absolute inset-0 pointer-events-none opacity-10 z-0" style={{ background: auraStyles.bg }} />
             )}
 
-            <div className={`flex w-full h-full ${theme === 'royal-codex' ? 'max-w-[1500px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
+            <div className={`flex w-full h-full ${isManuscript ? 'max-w-[1500px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
                 <Sidebar 
                     world={world}
                     searchQuery={searchQuery}
@@ -187,16 +192,10 @@ const App = () => {
                 />
 
                 {/* Main Content Area */}
-                <main className={`flex-1 flex flex-col relative ${theme === 'royal-codex' ? 'bg-[#eee2cb]' : 'bg-gradient-to-br from-transparent to-black/30'} overflow-y-auto`}>
+                <main className={`flex-1 flex flex-col relative ${t.layout.pageBg} overflow-y-auto`}>
                     
                     {/* Top Header & Tabs Bar */}
-                    <div className={`flex items-center justify-between p-3 border-b ${
-                        theme === 'royal-codex' 
-                            ? 'border-[#c8a96e]/50 bg-[#3d2719] text-[#fef08a] shadow-xl z-20' 
-                            : isWikiMode 
-                            ? 'border-[#d4c8af] bg-[#f5e6d3]/30 text-[#1a1a1a]' 
-                            : 'border-slate-800/40 bg-black/20 text-slate-300'
-                    } backdrop-blur-md sticky top-0 z-10 gap-4`}>
+                    <div className={`flex items-center justify-between p-3 border-b ${t.layout.headerBg} backdrop-blur-md sticky top-0 z-10 gap-4`}>
                         <div className="flex items-center gap-2 overflow-x-auto flex-1">
                             {openTabIds.map(id => {
                                 const e = world.entities.find(ent => ent.id === id);
@@ -204,14 +203,9 @@ const App = () => {
                                 const isEditing = editingTabIds.includes(id);
                                 const isActive = activeTabId === id;
 
-                                let tabStyle = 'bg-slate-900/40 border-slate-800 text-slate-500 hover:text-slate-200';
+                                let tabStyle = t.button.tabInactive;
                                 if (isActive) {
-                                    if (theme === 'royal-codex') tabStyle = 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] shadow-lg font-serif font-bold';
-                                    else if (isWikiMode) tabStyle = 'bg-[#b91c1c] text-white border-[#b91c1c] shadow-md';
-                                    else tabStyle = 'bg-[#fef08a] text-black border-[#fef08a] shadow-md';
-                                } else {
-                                    if (theme === 'royal-codex') tabStyle = 'bg-[#4a2e1d] border border-[#c8a96e]/30 text-[#c8a96e] hover:bg-[#523522]';
-                                    else if (isWikiMode) tabStyle = 'bg-white border-[#d4c8af] text-slate-600 hover:bg-slate-100';
+                                    tabStyle = t.button.tabActive;
                                 }
 
                                 return (
@@ -235,13 +229,7 @@ const App = () => {
                             <button
                                 onClick={() => setShowKeybindsModal(true)}
                                 title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${
-                                    theme === 'royal-codex'
-                                        ? 'bg-[#2a170d] text-[#c8a96e] border-[#c8a96e]/30 hover:bg-[#382113] hover:text-[#fff8e7]'
-                                        : isWikiMode
-                                        ? 'bg-white border-[#d4c8af] text-slate-700 hover:bg-slate-100 hover:text-black shadow-sm'
-                                        : 'bg-slate-900/60 border-slate-700/60 text-slate-400 hover:text-yellow-400 hover:bg-slate-800'
-                                }`}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${t.button.secondary}`}
                             >
                                 <Keyboard size={13} />
                                 <span className="hidden sm:inline">Keybinds</span>
@@ -261,7 +249,7 @@ const App = () => {
                     {activeTabId === 'journey' && <JourneyView world={world} isWikiMode={isWikiMode} onNavigate={handleOpenEntity} />}
 
                     {activeEntity && (
-                        theme === 'royal-codex' ? (
+                        isManuscript ? (
 
                                 <div className="p-3 md:p-6 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full">
                                     {/* Stacked Parchment Page Layers Behind Book */}

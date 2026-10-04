@@ -5,6 +5,7 @@ export const sovereignTheme: ThemeDefinition = {
   id: 'sovereign',
   name: 'Sovereign Scribe',
   description: 'Dark Obsidian & Warm Gold — sleek modern high fantasy with glassmorphism',
+  layoutMode: 'studio',
   typography: {
     fontFamily: 'font-sans',
     heading: 'font-sans font-black uppercase tracking-tight',
@@ -63,6 +64,7 @@ export const wikiTheme: ThemeDefinition = {
   id: 'wiki',
   name: 'Wiki Mode',
   description: 'Classic Parchment & Burgundy — scholarly encyclopedia aesthetics',
+  layoutMode: 'wiki',
   typography: {
     fontFamily: 'font-serif',
     heading: 'font-serif font-black uppercase tracking-tight',
@@ -121,6 +123,7 @@ export const royalCodexTheme: ThemeDefinition = {
   id: 'royal-codex',
   name: 'Royal Codex',
   description: 'Illuminated Manuscript & Crimson Gold — fantasy parchment with ornate filigree & warm ivory highlights',
+  layoutMode: 'manuscript',
   typography: {
     fontFamily: 'font-serif',
     heading: 'font-serif font-black uppercase tracking-tight',

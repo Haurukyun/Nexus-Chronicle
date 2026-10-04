@@ -92,12 +92,19 @@ budget_tokens: 1000
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P4 continued: Tauri integration polish & native features_
+**Goal:** _Phase P5: Layout / Theme Decoupling — In Progress_
+
+### Completed this session
+- **ThemeDefinition.layoutMode** — Added `LayoutMode = 'studio' | 'wiki' | 'manuscript'` type to `src/theme/types.ts` and `layoutMode` field to `ThemeDefinition` interface
+- **Theme Registry** — Each theme now declares its layout mode: `sovereign → 'studio'`, `wiki → 'wiki'`, `royal-codex → 'manuscript'`
+- **useTheme() hook** — Now exposes `layoutMode: LayoutMode` directly. Components read `layoutMode` for structure, `t.*` for visuals
+- **App.tsx shell** — All structural geometry (`appBg`, `pageBg`, `headerBg`, `tabActive/Inactive`, book framing) now reads from `t.layout.*` and `t.button.*` tokens — zero raw `theme === 'royal-codex'` layout guards remain in App.tsx
 
 ### Key known gaps / potential next features
-1. **App icon** — Replace placeholder icons in `src-tauri/icons/` with Nexus Chronicle branded artwork
-2. **World Phase Visual Legibility Tuning** — Ensure heavy filters (`ruin`) don't degrade form readability
-3. **`git push` pending** — branch is multiple commits ahead of origin
+1. **System views still use isWikiMode prop** — `WorldMap`, `TimelineView`, `NexusTreeView`, `OptionsView`, `JourneyView`, `DashboardView`, `TrashView` still receive `isWikiMode` as a prop and compute `isRoyal` internally. These can be migrated to call `useTheme()` directly as a follow-up. The architecture is ready.
+2. **Pirate Cove theme** — Next theme to add; just needs a new entry in `themeRegistry.ts` with `layoutMode: 'studio'` (or 'wiki' for a day-time variant)
+3. **App icon** — Replace placeholder icons in `src-tauri/icons/` with Nexus Chronicle branded artwork
+4. **`git push` pending** — branch is multiple commits ahead of origin
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
