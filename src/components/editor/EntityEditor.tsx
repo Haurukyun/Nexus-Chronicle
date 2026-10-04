@@ -14,9 +14,9 @@ import { EntityEditorProps, Location } from '../../types';
 import { EntitySpecificsRegistry } from './specifics/EntitySpecificsRegistry';
 import { useTheme } from '../../theme';
 
-export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, isWikiMode: propWiki, onUpdate }: EntityEditorProps) => {
-    const { isWikiMode: themeWiki } = useTheme();
-    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
+export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, onUpdate }: EntityEditorProps) => {
+    const { themeId, layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     const isLocation = entity.type === 'location';
     const loc = entity as Location;
 
@@ -37,15 +37,15 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
         >
             <header className="flex justify-between items-end border-b border-slate-500/20 pb-8">
                 <div>
-                    <h2 className={`text-5xl font-serif font-black uppercase tracking-tighter ${isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'}`}>The Sovereign Scribe</h2>
+                    <h2 className={`text-5xl font-serif font-black uppercase tracking-tighter ${false ? 'text-[#b91c1c]' : 'text-[#fef08a]'}`}>The Sovereign Scribe</h2>
                     <p className="opacity-50 text-xs italic">Inscribing the essence of: <span className="font-bold underline">{entity.name}</span></p>
                 </div>
                 <div className="flex gap-4 items-center">
-                    <FormToggle label={entity.isReadOnly ? "LOCKED" : "Lock Entry"} checked={entity.isReadOnly} onChange={(v: boolean) => onUpdate({ ...entity, isReadOnly: v })} isWikiMode={isWikiMode} />
+                    <FormToggle label={entity.isReadOnly ? "LOCKED" : "Lock Entry"} checked={entity.isReadOnly} onChange={(v: boolean) => onUpdate({ ...entity, isReadOnly: v })} />
                     <button 
                         onClick={onSave} 
                         title="Commit to Chronicle (Ctrl+Enter or Ctrl+S)"
-                        className={`px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest ${isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black'} hover:scale-105 transition-all shadow-2xl active:scale-95 flex items-center gap-2`}
+                        className={`px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest ${false ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black'} hover:scale-105 transition-all shadow-2xl active:scale-95 flex items-center gap-2`}
                     >
                         <span>Commit to Chronicle</span>
                         <kbd className="opacity-60 text-[9px] font-mono tracking-normal px-1.5 py-0.5 rounded bg-black/20">Ctrl+↵</kbd>
@@ -63,86 +63,83 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
 
             <fieldset disabled={entity.isReadOnly} className="space-y-12">
                 {/* 1. MANDATORY DOCUMENT SETTINGS (UNIVERSAL) */}
-                <EditorGroup title="Document settings" icon={Settings} isWikiMode={isWikiMode}>
-                    <FormInput label="Name" icon={Scale} value={entity.name} onChange={(v: string) => onUpdate({ ...entity, name: v })} isWikiMode={isWikiMode} gridSpan={6} />
+                <EditorGroup title="Document settings" icon={Settings}>
+                    <FormInput label="Name" icon={Scale} value={entity.name} onChange={(v: string) => onUpdate({ ...entity, name: v })} gridSpan={6} />
                     <SmartSelect 
                         label="Belongs under" 
                         icon={FolderTree} 
                         ids={entity.parentId ? [entity.parentId] : []} 
                         type={entity.type} 
                         all={allEntities} 
-                        isWikiMode={isWikiMode} 
                         onChange={(ids) => onUpdate({ ...entity, parentId: ids[0] || null })} 
                         onCreate={onCreateNew} 
                         gridSpan={6}
                         excludeIds={[entity.id]}
                     />
                     
-                    <FormInput label="Text color" icon={Type} value={entity.textColor} type="color" onChange={(v: string) => onUpdate({ ...entity, textColor: v })} isWikiMode={isWikiMode} gridSpan={3} />
-                    <FormInput label="Background color" icon={PaintBucket} value={entity.backgroundColor} type="color" onChange={(v: string) => onUpdate({ ...entity, backgroundColor: v })} isWikiMode={isWikiMode} gridSpan={3} />
-                    <FormToggle label="Is finished" icon={CheckSquare} checked={entity.isFinished} onChange={(v: boolean) => onUpdate({ ...entity, isFinished: v })} isWikiMode={isWikiMode} gridSpan={3} />
-                    <FormInput label="Order number" icon={Hash} value={entity.orderNumber || ""} onChange={(v: string) => onUpdate({ ...entity, orderNumber: v })} isWikiMode={isWikiMode} gridSpan={3} />
+                    <FormInput label="Text color" icon={Type} value={entity.textColor} type="color" onChange={(v: string) => onUpdate({ ...entity, textColor: v })} gridSpan={3} />
+                    <FormInput label="Background color" icon={PaintBucket} value={entity.backgroundColor} type="color" onChange={(v: string) => onUpdate({ ...entity, backgroundColor: v })} gridSpan={3} />
+                    <FormToggle label="Is finished" icon={CheckSquare} checked={entity.isFinished} onChange={(v: boolean) => onUpdate({ ...entity, isFinished: v })} gridSpan={3} />
+                    <FormInput label="Order number" icon={Hash} value={entity.orderNumber || ""} onChange={(v: string) => onUpdate({ ...entity, orderNumber: v })} gridSpan={3} />
 
                     <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-500/5">
-                        <FormToggle label="Is a minor document" icon={Search} checked={entity.isMinorDocument} onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v })} isWikiMode={isWikiMode} />
-                        <FormToggle label="Is Dead/Gone/Destroyed" icon={Skull} checked={entity.isDead} onChange={(v: boolean) => onUpdate({ ...entity, isDead: v })} isWikiMode={isWikiMode} />
-                        <FormToggle label="Is a category" icon={Box} checked={entity.isCategory} onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v })} isWikiMode={isWikiMode} />
+                        <FormToggle label="Is a minor document" icon={Search} checked={entity.isMinorDocument} onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v })} />
+                        <FormToggle label="Is Dead/Gone/Destroyed" icon={Skull} checked={entity.isDead} onChange={(v: boolean) => onUpdate({ ...entity, isDead: v })} />
+                        <FormToggle label="Is a category" icon={Box} checked={entity.isCategory} onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v })} />
                     </div>
 
-                    <FormInput label="Tags" icon={Tag} value={entity.tags?.join(', ')} placeholder="Fantasy, Hero, Royal..." onChange={(v: string) => onUpdate({ ...entity, tags: v.split(',').map(s => s.trim()) })} isWikiMode={isWikiMode} gridSpan={12} />
+                    <FormInput label="Tags" icon={Tag} value={entity.tags?.join(', ')} placeholder="Fantasy, Hero, Royal..." onChange={(v: string) => onUpdate({ ...entity, tags: v.split(',').map(s => s.trim()) })} gridSpan={12} />
 
-                    <FormInput label="Document Template" icon={FileText} value={entity.documentTemplate || "None"} options={['None', 'Protagonist', 'Antagonist', 'NPC', 'Legendary', 'Deity']} onChange={(v: string) => onUpdate({ ...entity, documentTemplate: v })} isWikiMode={isWikiMode} gridSpan={4} />
-                    <FormInput label="Extra HTML classes" icon={Code} value={entity.extraHtmlClasses || ""} onChange={(v: string) => onUpdate({ ...entity, extraHtmlClasses: v })} isWikiMode={isWikiMode} gridSpan={8} />
-                    <FormInput label="Other Names & Epithets" icon={UserCircle} value={entity.otherNamesAndEpithets || ""} onChange={(v: string) => onUpdate({ ...entity, otherNamesAndEpithets: v })} isWikiMode={isWikiMode} gridSpan={12} />
+                    <FormInput label="Document Template" icon={FileText} value={entity.documentTemplate || "None"} options={['None', 'Protagonist', 'Antagonist', 'NPC', 'Legendary', 'Deity']} onChange={(v: string) => onUpdate({ ...entity, documentTemplate: v })} gridSpan={4} />
+                    <FormInput label="Extra HTML classes" icon={Code} value={entity.extraHtmlClasses || ""} onChange={(v: string) => onUpdate({ ...entity, extraHtmlClasses: v })} gridSpan={8} />
+                    <FormInput label="Other Names & Epithets" icon={UserCircle} value={entity.otherNamesAndEpithets || ""} onChange={(v: string) => onUpdate({ ...entity, otherNamesAndEpithets: v })} gridSpan={12} />
                 </EditorGroup>
 
                 {/* 2. PORTRAIT & IMAGERY (UNIVERSAL) */}
-                <EditorGroup title="Portrait & Imagery" icon={ImageIcon} isWikiMode={isWikiMode}>
+                <EditorGroup title="Portrait & Imagery" icon={ImageIcon}>
                     <div className="col-span-12 max-w-2xl mx-auto w-full py-2">
                         <AssetImageUploader
                             label="Portrait / Illustration"
                             value={entity.imageUri || ''}
                             onChange={(uri) => onUpdate({ ...entity, imageUri: uri })}
-                            isWikiMode={isWikiMode}
                             helperText="Upload a high-resolution portrait from your device or paste a web URL. Stored uncompressed in the local IndexedDB asset vault — preserved inside .nexus archives."
                         />
                     </div>
                 </EditorGroup>
 
                 {/* 3. DESCRIPTION & HISTORY (UNIVERSAL) */}
-                <EditorGroup title="Description & History" icon={BookOpen} isWikiMode={isWikiMode}>
+                <EditorGroup title="Description & History" icon={BookOpen}>
                     <div className="col-span-12 w-full">
                         <MarkdownEditor
                             value={entity.description || ''}
                             onChange={(v) => onUpdate({ ...entity, description: v })}
                             allEntities={allEntities}
-                            isWikiMode={isWikiMode}
                             placeholder="The echoes of history begin here... Use **bold**, *italic*, # Heading, and [[Entity Name]] to link."
                             minHeight="h-80"
                         />
                     </div>
                 </EditorGroup>
 
-                <EntitySpecificsRegistry entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} isWikiMode={isWikiMode} />
+                <EntitySpecificsRegistry entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
 
                 {/* 4. UNIVERSAL CONNECTIONS */}
-                <EditorGroup title="World & Details" icon={Scroll} isWikiMode={isWikiMode}>
+                <EditorGroup title="World & Details" icon={Scroll}>
                     <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
-                        <SmartSelect label="Lore Notes" icon={BookOpen} ids={entity.loreNoteIds} type="note" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, loreNoteIds: ids })} onCreate={onCreateNew} />
-                        <SmartSelect label="Myths & Legends" icon={Scroll} ids={entity.mythIds} type="myth" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, mythIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Lore Notes" icon={BookOpen} ids={entity.loreNoteIds} type="note" all={allEntities} onChange={(ids) => onUpdate({ ...entity, loreNoteIds: ids })} onCreate={onCreateNew} />
+                        <SmartSelect label="Myths & Legends" icon={Scroll} ids={entity.mythIds} type="myth" all={allEntities} onChange={(ids) => onUpdate({ ...entity, mythIds: ids })} onCreate={onCreateNew} />
                     </div>
                     
-                    <SmartSelect label="Connected to Events" icon={Calendar} ids={entity.eventIds} type="event" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, eventIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    <SmartSelect label="Connected to Skills/Spells/Other" icon={Zap} ids={entity.detailSkillIds} type="ability" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, detailSkillIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    <SmartSelect label="Connected to Items" icon={Pencil} ids={entity.detailItemIds} type="item" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, detailItemIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                    <SmartSelect label="Connected to Events" icon={Calendar} ids={entity.eventIds} type="event" all={allEntities} onChange={(ids) => onUpdate({ ...entity, eventIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                    <SmartSelect label="Connected to Skills/Spells/Other" icon={Zap} ids={entity.detailSkillIds} type="ability" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailSkillIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                    <SmartSelect label="Connected to Items" icon={Pencil} ids={entity.detailItemIds} type="item" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailItemIds: ids })} onCreate={onCreateNew} gridSpan={4} />
                     
-                    <SmartSelect label="Affected by Boons" icon={Sun} ids={entity.detailConditionIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    <SmartSelect label="Affected by Afflictions" icon={Moon} ids={entity.detailConditionIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    <SmartSelect label="Affected by Other conditions" icon={Sun} ids={entity.detailResourceIds} type="condition" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...entity, detailResourceIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                    <SmartSelect label="Affected by Boons" icon={Sun} ids={entity.detailConditionIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                    <SmartSelect label="Affected by Afflictions" icon={Moon} ids={entity.detailConditionIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                    <SmartSelect label="Affected by Other conditions" icon={Sun} ids={entity.detailResourceIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailResourceIds: ids })} onCreate={onCreateNew} gridSpan={4} />
                 </EditorGroup>
 
                 {/* 5. SECRETS (UNIVERSAL) */}
-                <EditorGroup title="Secrets/Spoilers/DM notes" icon={Ghost} isWikiMode={isWikiMode}>
+                <EditorGroup title="Secrets/Spoilers/DM notes" icon={Ghost}>
                     <div className="col-span-12 space-y-1.5">
                         <label className="text-[10px] font-black uppercase tracking-widest opacity-60 block">
                             Private Ruminations
@@ -151,7 +148,6 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                             value={entity.privateNotes || ''}
                             onChange={(v) => onUpdate({ ...entity, privateNotes: v })}
                             allEntities={allEntities}
-                            isWikiMode={isWikiMode}
                             placeholder="Private ruminations only visible in the scroll of creation..."
                             minHeight="h-48"
                         />

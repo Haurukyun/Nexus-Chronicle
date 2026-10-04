@@ -8,11 +8,10 @@ interface Props {
     entity: Character;
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
     backlinks?: any;
 }
 
-export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {
+export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, backlinks }) => {
     const theme = useWorldStore(state => state.theme);
     const isRoyal = theme === 'royal-codex';
 
@@ -68,21 +67,21 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
-                        <FieldRow label="Titles" value={entity.titles} isWikiMode={isWikiMode} />
-                        <FieldRow label="Sex" value={entity.sex} isWikiMode={isWikiMode} />
-                        <FieldRow label="Age" value={entity.age} isWikiMode={isWikiMode} />
-                        <FieldRow label="Height" value={entity.height} isWikiMode={isWikiMode} />
-                        <FieldRow label="Weight" value={entity.weight} isWikiMode={isWikiMode} />
-                        <FieldRow label="Ethnicity" value={entity.ethnicity} isWikiMode={isWikiMode} />
-                        <FieldRow label="Combat Rating" value={entity.powerLevel} isWikiMode={isWikiMode} />
-                        <FieldRow label="Birth" value={entity.birthDate} isWikiMode={isWikiMode} />
-                        <FieldRow label="Death" value={entity.deathDate} isWikiMode={isWikiMode} />
+                        <FieldRow label="Titles" value={entity.titles} />
+                        <FieldRow label="Sex" value={entity.sex} />
+                        <FieldRow label="Age" value={entity.age} />
+                        <FieldRow label="Height" value={entity.height} />
+                        <FieldRow label="Weight" value={entity.weight} />
+                        <FieldRow label="Ethnicity" value={entity.ethnicity} />
+                        <FieldRow label="Combat Rating" value={entity.powerLevel} />
+                        <FieldRow label="Birth" value={entity.birthDate} />
+                        <FieldRow label="Death" value={entity.deathDate} />
                         <div className="col-span-full mt-2 space-y-3 border-t border-current/10 pt-3">
-                            <LinksDisplay label="Species/Races" ids={entity.pairedRace || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Occupation/Class" ids={entity.pairedProfession || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Place of Residence" ids={entity.pairedCurrentLocationNew || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Place of Origin" ids={entity.pairedOriginLocationNew || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Place of Demise" ids={entity.pairedDemiseLocationNew || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Species/Races" ids={entity.pairedRace || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Occupation/Class" ids={entity.pairedProfession || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Place of Residence" ids={entity.pairedCurrentLocationNew || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Place of Origin" ids={entity.pairedOriginLocationNew || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Place of Demise" ids={entity.pairedDemiseLocationNew || []} all={allEntities} onNav={onNavigate} />
                         </div>
                     </div>
                 )}
@@ -123,34 +122,34 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                             </div>
                         </div>
                         <div className="space-y-3 border-t border-[#c8a96e]/30 pt-4">
-                            <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} />
                         </div>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
-                        <FieldRow label="Stats/Attributes (Legacy Text)" value={entity.statsList} isWikiMode={isWikiMode} />
-                        <FieldRow label="Equipment/Owned Items" value={entity.possessedItems} isWikiMode={isWikiMode} />
-                        <FieldRow label="Wealth/Owned Currencies" value={entity.possessedCurrencies} isWikiMode={isWikiMode} />
-                        <FieldRow label="Known Skills/Abilities" value={entity.knownSkills} isWikiMode={isWikiMode} />
-                        <FieldRow label="Known Spells" value={entity.knownSpells} isWikiMode={isWikiMode} />
-                        <FieldRow label="Known Languages" value={entity.knownLanguage} isWikiMode={isWikiMode} />
-                        <FieldRow label="Known Magical Teachings" value={entity.knownMagic} isWikiMode={isWikiMode} />
-                        <FieldRow label="Known Technologies" value={entity.knownTech} isWikiMode={isWikiMode} />
+                        <FieldRow label="Stats/Attributes (Legacy Text)" value={entity.statsList} />
+                        <FieldRow label="Equipment/Owned Items" value={entity.possessedItems} />
+                        <FieldRow label="Wealth/Owned Currencies" value={entity.possessedCurrencies} />
+                        <FieldRow label="Known Skills/Abilities" value={entity.knownSkills} />
+                        <FieldRow label="Known Spells" value={entity.knownSpells} />
+                        <FieldRow label="Known Languages" value={entity.knownLanguage} />
+                        <FieldRow label="Known Magical Teachings" value={entity.knownMagic} />
+                        <FieldRow label="Known Technologies" value={entity.knownTech} />
                         
                         <div className="col-span-full mt-2 space-y-3 border-t border-current/10 pt-3">
-                            <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                            <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                            <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} />
                         </div>
                     </div>
                 )}
@@ -159,24 +158,24 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
 
             <ViewerSectionCard title="Interpersonal Web">
                 <div className="space-y-3">
-                    <LinksDisplay label="Parents" ids={[...new Set([...(entity.parentsOfCharacter || []), ...(backlinks?.parents || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Children" ids={[...new Set([...(entity.childOfCharacter || []), ...(backlinks?.children || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Relatives" ids={[...new Set([...(entity.relativesOfCharacter || []), ...(backlinks?.relatives || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Friends" ids={[...new Set([...(entity.allyResCharacter || []), ...(backlinks?.friends || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Enemies" ids={[...new Set([...(entity.enemydResCharacter || []), ...(backlinks?.enemies || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Complicated" ids={[...new Set([...(entity.complicatedResCharacter || []), ...(backlinks?.complicated || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
+                    <LinksDisplay label="Parents" ids={[...new Set([...(entity.parentsOfCharacter || []), ...(backlinks?.parents || [])])]} all={allEntities} onNav={onNavigate} />
+                    <LinksDisplay label="Children" ids={[...new Set([...(entity.childOfCharacter || []), ...(backlinks?.children || [])])]} all={allEntities} onNav={onNavigate} />
+                    <LinksDisplay label="Relatives" ids={[...new Set([...(entity.relativesOfCharacter || []), ...(backlinks?.relatives || [])])]} all={allEntities} onNav={onNavigate} />
+                    <LinksDisplay label="Friends" ids={[...new Set([...(entity.allyResCharacter || []), ...(backlinks?.friends || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                    <LinksDisplay label="Enemies" ids={[...new Set([...(entity.enemydResCharacter || []), ...(backlinks?.enemies || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                    <LinksDisplay label="Complicated" ids={[...new Set([...(entity.complicatedResCharacter || []), ...(backlinks?.complicated || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
                 </div>
             </ViewerSectionCard>
             
             <ViewerSectionCard title="Affiliations & Connections">
                 <div className="space-y-3">
-                    <LinksDisplay label="Ideologies/Political Groups" ids={[...(entity.leadingPoliticalLeaders || []), ...(entity.pairedConnectionPolGroup || []), ...(entity.pairedBelongingPolGroup || []), ...(entity.pairedAllyPolGroup || []), ...(entity.pairedEnemyPolGroup || [])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Organizations" ids={[...(entity.leadingOtherLeaders || []), ...(entity.pairedConnectionOtherGroups || []), ...(entity.pairedBelongingOtherGroups || []), ...(entity.pairedAllyOtherGroups || []), ...(entity.pairedEnemyOtherGroups || [])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Teachings/Religious Groups" ids={[...(entity.leadingReligiousLeaders || []), ...(entity.pairedConnectionRelGroup || []), ...(entity.pairedBelongingRelGroup || []), ...(entity.pairedAllyRelGroup || []), ...(entity.pairedEnemyRelGroup || [])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Magical Groups" ids={[...(entity.leadingMagicalLeaders || []), ...(entity.pairedConnectionMagicGroup || []), ...(entity.pairedBelongingMagicGroup || []), ...(entity.pairedAllyMagicGroup || []), ...(entity.pairedEnemyMagicGroup || [])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Technological Groups" ids={[...(entity.leadingTechLeaders || []), ...(entity.pairedConnectionTechGroup || []), ...(entity.pairedBelongingTechGroup || []), ...(entity.pairedAllyTechGroup || []), ...(entity.pairedEnemyTechGroup || [])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                    <LinksDisplay label="Took part in Events" ids={entity.pairedEvent || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                    <LinksDisplay label="Connected Cultures/Art" ids={entity.relatedCultures || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                    <LinksDisplay label="Ideologies/Political Groups" ids={[...(entity.leadingPoliticalLeaders || []), ...(entity.pairedConnectionPolGroup || []), ...(entity.pairedBelongingPolGroup || []), ...(entity.pairedAllyPolGroup || []), ...(entity.pairedEnemyPolGroup || [])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                    <LinksDisplay label="Organizations" ids={[...(entity.leadingOtherLeaders || []), ...(entity.pairedConnectionOtherGroups || []), ...(entity.pairedBelongingOtherGroups || []), ...(entity.pairedAllyOtherGroups || []), ...(entity.pairedEnemyOtherGroups || [])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                    <LinksDisplay label="Teachings/Religious Groups" ids={[...(entity.leadingReligiousLeaders || []), ...(entity.pairedConnectionRelGroup || []), ...(entity.pairedBelongingRelGroup || []), ...(entity.pairedAllyRelGroup || []), ...(entity.pairedEnemyRelGroup || [])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                    <LinksDisplay label="Magical Groups" ids={[...(entity.leadingMagicalLeaders || []), ...(entity.pairedConnectionMagicGroup || []), ...(entity.pairedBelongingMagicGroup || []), ...(entity.pairedAllyMagicGroup || []), ...(entity.pairedEnemyMagicGroup || [])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                    <LinksDisplay label="Technological Groups" ids={[...(entity.leadingTechLeaders || []), ...(entity.pairedConnectionTechGroup || []), ...(entity.pairedBelongingTechGroup || []), ...(entity.pairedAllyTechGroup || []), ...(entity.pairedEnemyTechGroup || [])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                    <LinksDisplay label="Took part in Events" ids={entity.pairedEvent || []} all={allEntities} onNav={onNavigate} />
+                    <LinksDisplay label="Connected Cultures/Art" ids={entity.relatedCultures || []} all={allEntities} onNav={onNavigate} />
                 </div>
             </ViewerSectionCard>
         </div>

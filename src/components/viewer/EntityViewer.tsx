@@ -12,13 +12,13 @@ import { ViewerSectionCard } from './ViewerSectionCard';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 
-export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap, isWikiMode: propWiki }: EntityViewerProps) => {
+export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
     const isLoc = entity.type === 'location';
     const char = entity as Character;
     const loc = entity as Location;
-    const { isWikiMode: themeWiki, isRoyal, theme } = useTheme();
-    const isWiki = propWiki !== undefined ? propWiki : themeWiki;
+    const { layoutMode, themeId } = useTheme();
+    const isWiki = layoutMode === 'wiki';
     const updateEntityLock = useWorldStore(state => state.updateEntityLock);
 
     const handleToggleLock = () => {
@@ -34,10 +34,10 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const royalTabs = ['Overview', 'Biography', 'Relations', 'Inventory'];
 
     const MainView = () => (
-        <div className={`flex ${isWiki || isRoyal ? 'flex-row gap-8' : 'flex-col lg:flex-row gap-12'}`}>
+        <div className={`flex ${isWiki || (themeId === 'royal-codex') ? 'flex-row gap-8' : 'flex-col lg:flex-row gap-12'}`}>
             <div className="flex-1 min-w-0 space-y-6">
                 {/* Royal Codex Tab Bar */}
-                {isRoyal && (
+                {(themeId === 'royal-codex') && (
                     <div className="flex border-b-0 gap-1 mb-4">
                         {royalTabs.map(tab => (
                             <button
@@ -57,7 +57,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 )}
 
                 {/* Biography / Overview Section */}
-                {(!isRoyal || activeTab === 'overview' || activeTab === 'biography') && (
+                {(!(themeId === 'royal-codex') || activeTab === 'overview' || activeTab === 'biography') && (
                     <ViewerSectionCard title={isChar ? 'Biography' : 'Overview'} badgeText={(entity as any).isFinished || entity.finishedSwitch ? 'Finished' : undefined}>
                         <div className="flex flex-col sm:flex-row items-start gap-4">
                             {entity.description?.trim() ? (
@@ -65,11 +65,10 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                     content={entity.description}
                                     allEntities={allEntities}
                                     onNavigate={onNavigate}
-                                    isWikiMode={isWiki}
                                     className="flex-1 min-w-0"
                                 />
                             ) : (
-                                <p className={`flex-1 text-base leading-relaxed opacity-40 italic ${isRoyal ? 'font-serif text-[#2b1810]' : isWiki ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'}`}>
+                                <p className={`flex-1 text-base leading-relaxed opacity-40 italic ${(themeId === 'royal-codex') ? 'font-serif text-[#2b1810]' : isWiki ? 'text-[#2d2d2d] font-serif' : 'text-slate-300 font-light'}`}>
                                     No description provided yet.
                                 </p>
                             )}
@@ -79,32 +78,31 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
 
                 {/* Specifics Sections */}
-                {(!isRoyal || activeTab === 'overview') && (
+                {(!(themeId === 'royal-codex') || activeTab === 'overview') && (
                     <div className="space-y-6">
-                        <EntitySpecificsViewerRegistry entity={entity} allEntities={allEntities} onNavigate={onNavigate} isWikiMode={isWikiMode} backlinks={backlinks} />
+                        <EntitySpecificsViewerRegistry entity={entity} allEntities={allEntities} onNavigate={onNavigate} backlinks={backlinks} />
                     </div>
                 )}
 
-                {entity.spoilerNotes && (!isRoyal || activeTab === 'overview') && (
+                {entity.spoilerNotes && (!(themeId === 'royal-codex') || activeTab === 'overview') && (
                     <ViewerSectionCard title="Secrets / DM Notes">
                         <MarkdownRenderer
                             content={entity.spoilerNotes}
                             allEntities={allEntities}
                             onNavigate={onNavigate}
-                            isWikiMode={isWiki}
                         />
                     </ViewerSectionCard>
                 )}
 
-                {(!isRoyal || activeTab === 'relations') && (
+                {(!(themeId === 'royal-codex') || activeTab === 'relations') && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <LinksDisplay label="Lore Connections" ids={[...new Set([...(entity.loreNoteIds || []), ...backlinks.lore, ...backlinks.referencedIn])]} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
-                        <LinksDisplay label="Mythic Roots" ids={[...new Set([...(entity.mythIds || []), ...backlinks.myths])]} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
-                        <LinksDisplay label="Event Ties" ids={[...new Set([...(entity.eventIds || []), ...backlinks.events])]} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
+                        <LinksDisplay label="Lore Connections" ids={[...new Set([...(entity.loreNoteIds || []), ...backlinks.lore, ...backlinks.referencedIn])]} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Mythic Roots" ids={[...new Set([...(entity.mythIds || []), ...backlinks.myths])]} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Event Ties" ids={[...new Set([...(entity.eventIds || []), ...backlinks.events])]} all={allEntities} onNav={onNavigate} />
                         {isChar && (
                             <>
-                                <LinksDisplay label="Allies" ids={backlinks.allies} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
-                                <LinksDisplay label="Enemies/Rivals" ids={backlinks.enemies} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
+                                <LinksDisplay label="Allies" ids={backlinks.allies} all={allEntities} onNav={onNavigate} />
+                                <LinksDisplay label="Enemies/Rivals" ids={backlinks.enemies} all={allEntities} onNav={onNavigate} />
                                 <LinksDisplay 
                                     label="Known Affiliations" 
                                     ids={
@@ -114,19 +112,18 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                     } 
                                     all={allEntities} 
                                     onNav={onNavigate} 
-                                    isWikiMode={isWiki} 
                                     wikiStyle="tag" 
                                 />
                             </>
                         )}
                         {entity.type === 'item' && (
-                            <LinksDisplay label="Current Owners/Users" ids={backlinks.referencedIn} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
+                            <LinksDisplay label="Current Owners/Users" ids={backlinks.referencedIn} all={allEntities} onNav={onNavigate} />
                         )}
                         {(entity.type === 'species' || entity.type === 'organization' || entity.type === 'political' || entity.type === 'religious' || entity.type === 'magic' || entity.type === 'science') && (
-                            <LinksDisplay label="Prominent Members" ids={backlinks.members} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
+                            <LinksDisplay label="Prominent Members" ids={backlinks.members} all={allEntities} onNav={onNavigate} />
                         )}
                         {(entity.type === 'ability' || entity.type === 'science' || entity.type === 'tech') && (
-                            <LinksDisplay label="Known Practitioners" ids={backlinks.practitioners} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} />
+                            <LinksDisplay label="Known Practitioners" ids={backlinks.practitioners} all={allEntities} onNav={onNavigate} />
                         )}
                     </div>
                 )}
@@ -138,7 +135,6 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                             content={entity.privateNotes}
                             allEntities={allEntities}
                             onNavigate={onNavigate}
-                            isWikiMode={isWiki}
                         />
                     </div>
                 )}
@@ -146,7 +142,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
             {/* Right Column Stat Block / Infobox */}
             <aside className="lg:w-72 shrink-0 space-y-6">
-                {isRoyal ? (
+                {(themeId === 'royal-codex') ? (
                     <>
                         {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
                         {!isChar && (
@@ -186,10 +182,10 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                             <div className="p-4 bg-[#fcf5e9] border border-[#d4c8af]/60 rounded-sm">
                                 <h4 className="text-[10px] font-black text-[#854d0e] uppercase border-b border-[#d4c8af] pb-1 mb-3">Geographic Vitals</h4>
                                 <div className="space-y-3">
-                                    <FieldRow label="Type" value={loc.locationType} isWikiMode={true} />
-                                    <FieldRow label="Demographics" value={loc.population} isWikiMode={true} />
-                                    <FieldRow label="Manifested" value={loc.creationTime || (loc as any).dateOfCreation} isWikiMode={true} />
-                                    <LinksDisplay label="Local Languages" ids={loc.pairedLanguages || (loc as any).localLanguageIds || []} all={allEntities} onNav={onNavigate} isWikiMode={isWiki} wikiStyle="inline" />
+                                    <FieldRow label="Type" value={loc.locationType} />
+                                    <FieldRow label="Demographics" value={loc.population} />
+                                    <FieldRow label="Manifested" value={loc.creationTime || (loc as any).dateOfCreation} />
+                                    <LinksDisplay label="Local Languages" ids={loc.pairedLanguages || (loc as any).localLanguageIds || []} all={allEntities} onNav={onNavigate} wikiStyle="inline" />
                                 </div>
                             </div>
                         )}
@@ -206,11 +202,11 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                             <div>
                                 <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
                                 <div className="space-y-6">
-                                    <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} isWikiMode={false} />
-                                    <FieldRow label="Template" value={entity.docTemplate?.join(', ') || (entity as any).documentTemplate || "Generic"} isWikiMode={false} />
-                                    <FieldRow label="Order" value={entity.order || (entity as any).orderNumber} isWikiMode={false} />
-                                    <FieldRow label="Status" value={(entity as any).status || (entity.deadSwitch ? 'Lost' : 'Active')} isWikiMode={false} />
-                                    <FieldRow label="Hierarchy" value={allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId))?.name} isWikiMode={false} />
+                                    <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} />
+                                    <FieldRow label="Template" value={entity.docTemplate?.join(', ') || (entity as any).documentTemplate || "Generic"} />
+                                    <FieldRow label="Order" value={entity.order || (entity as any).orderNumber} />
+                                    <FieldRow label="Status" value={(entity as any).status || (entity.deadSwitch ? 'Lost' : 'Active')} />
+                                    <FieldRow label="Hierarchy" value={allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId))?.name} />
                                 </div>
                             </div>
                         </div>
@@ -222,7 +218,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
     return (
         <article className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            {isRoyal ? (
+            {(themeId === 'royal-codex') ? (
                 <RoyalHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
             ) : isWiki ? (
                 <WikiHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />

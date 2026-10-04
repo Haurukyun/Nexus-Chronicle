@@ -17,11 +17,10 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
     label,
     value = '',
     onChange,
-    isWikiMode: propWiki,
     helperText = 'Stored uncompressed in local IndexedDB asset vault.'
 }) => {
-    const { isWikiMode: themeWiki } = useTheme();
-    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
+    const { layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     const [mode, setMode] = useState<'upload' | 'url'>('upload');
     const [urlInput, setUrlInput] = useState(value && !value.startsWith('asset://') ? value : '');
     const [isSaving, setIsSaving] = useState(false);
@@ -286,7 +285,6 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                     onApplyCrop={handleApplyCrop}
                     onClose={cleanupCrop}
                     onKeepOriginal={pendingFile ? handleKeepOriginal : undefined}
-                    isWikiMode={isWikiMode}
                 />
             )}
         </div>

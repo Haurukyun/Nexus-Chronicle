@@ -2,8 +2,8 @@ import React from 'react';
 import { FieldRowProps } from '../../types';
 import { useTheme } from '../../theme';
 
-export const FieldRow = ({ label, value, isWikiMode: _ignored }: FieldRowProps) => {
-    const { isWikiMode, isRoyal } = useTheme();
+export const FieldRow = ({ label, value }: FieldRowProps) => {
+    const { themeId, layoutMode } = useTheme();
 
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
 
@@ -11,11 +11,11 @@ export const FieldRow = ({ label, value, isWikiMode: _ignored }: FieldRowProps) 
     let valueStyle = 'text-slate-300';
     let borderStyle = 'border-slate-500/10';
 
-    if (isRoyal) {
+    if ((themeId === 'royal-codex')) {
         labelStyle = 'text-[#451a03] font-serif font-bold';
         valueStyle = 'text-[#2b1810] font-sans font-medium';
         borderStyle = 'border-[#c8a96e]/20';
-    } else if (isWikiMode) {
+    } else if (layoutMode === 'wiki') {
         labelStyle = 'text-[#854d0e]';
         valueStyle = 'text-[#1a1a1a]';
         borderStyle = 'border-[#d4c8af]/40';

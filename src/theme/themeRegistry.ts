@@ -181,11 +181,74 @@ export const royalCodexTheme: ThemeDefinition = {
   },
 };
 
+export const grandVoyagerTheme: ThemeDefinition = {
+  id: 'grand-voyager',
+  name: 'Grand Voyager',
+  description: 'Tropical High Seas & Teak Timber — sun-drenched lagoon turquoise, weathered galleon oak & nautical brass',
+  layoutMode: 'studio',
+  typography: {
+    fontFamily: 'font-sans',
+    heading: 'font-serif font-black uppercase tracking-tight',
+    body: 'font-sans text-slate-100',
+    subtext: 'font-serif italic text-xs text-[#38bdf8]/80',
+    quote: 'font-serif italic text-[#f6d365]',
+    mono: 'font-mono text-xs',
+  },
+  layout: {
+    appBg: 'bg-gradient-to-br from-[#041421] via-[#082236] to-[#020b12] text-slate-100',
+    pageBg: 'bg-gradient-to-b from-[#061926]/40 via-[#071d2e]/30 to-[#020c14]/80',
+    sidebarBg: 'bg-[#140e0a]/95 border-r-2 border-[#3d2617]/80 shadow-[5px_0_25px_rgba(0,0,0,0.85)] backdrop-blur-md',
+    sidebarBorder: 'border-[#422919]/70',
+    headerBg: 'bg-[#071927]/90 backdrop-blur-md border-b border-[#1b3d54]/70',
+  },
+  colors: {
+    textHeading: 'text-[#f0f9ff]', // Crisp ocean sunlight white
+    textBody: 'text-[#cbd5e1]',
+    textMuted: 'text-[#7096b0]',
+    textAccent: 'text-[#38bdf8]', // Tropical turquoise / seafoam
+    accentHex: '#0ea5e9',
+    accentBg: 'bg-[#0ea5e9]',
+    borderDefault: 'border-[#1b3d54]/70',
+    borderAccent: 'border-[#38bdf8]/80',
+    divider: 'bg-[#1b3d54]/50',
+  },
+  card: {
+    base: 'bg-[#0a2033]/70 border border-[#1d4766]/70 rounded-2xl shadow-xl backdrop-blur-md text-slate-100 hover:border-[#38bdf8]/50 transition-all',
+    panel: 'bg-[#0c253b]/95 border border-[#2b5d80]/80 rounded-2xl shadow-2xl backdrop-blur-lg text-slate-100',
+    highlight: 'bg-[#0284c7]/15 border border-[#38bdf8]/70 ring-1 ring-[#38bdf8]/50 shadow-[0_0_25px_rgba(14,165,233,0.3)]',
+    ornateType: 'clean-border',
+  },
+  button: {
+    // Warm doubloon gold primary with rich dark navy text
+    primary: 'bg-gradient-to-r from-[#d4af37] via-[#f59e0b] to-[#eab308] text-[#051420] font-serif font-black uppercase tracking-wider hover:from-[#c5a028] hover:to-[#d97706] shadow-lg shadow-amber-500/25 active:scale-95 transition-all border border-[#fef08a]/60',
+    // Polished galleon teak wood with brass border
+    secondary: 'bg-[#1c130d]/90 text-[#f5ebd7] font-serif font-bold uppercase tracking-wider hover:bg-[#2b1c13] border border-[#5c3e27] shadow-md active:scale-95 transition-all',
+    // Ocean turquoise accent button
+    accent: 'bg-[#0284c7]/20 text-[#38bdf8] border border-[#0284c7]/50 hover:bg-[#0284c7]/35 active:scale-95 transition-all',
+    danger: 'bg-red-500/20 text-rose-300 border border-red-500/40 hover:bg-red-500/30 active:scale-95 transition-all',
+    ghost: 'text-[#7fa5be] hover:text-[#38bdf8] hover:bg-[#0284c7]/10 rounded-xl transition-all',
+    toggleActive: 'bg-gradient-to-r from-[#0284c7] to-[#0d9488] text-white shadow-md font-bold',
+    toggleInactive: 'opacity-50 hover:opacity-100 text-[#7fa5be]',
+    tabActive: 'bg-[#0284c7] text-white border-b-2 border-[#38bdf8] shadow-md shadow-sky-500/20 font-bold',
+    tabInactive: 'bg-[#061826]/70 border-[#1b3d54]/50 text-[#7fa5be] hover:text-slate-100 hover:bg-[#0a2336]',
+  },
+  input: {
+    base: 'bg-[#061724]/80 border border-[#1b3d54] text-slate-100 placeholder-[#4c738c] rounded-xl outline-none transition-all',
+    focus: 'focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/50',
+    selectDropdown: 'bg-[#091f30] border border-[#234d6b] text-slate-100 shadow-2xl',
+  },
+  badge: {
+    primary: 'bg-[#0284c7] text-white font-bold uppercase tracking-wider border border-[#38bdf8]/40 shadow-sm',
+    subtle: 'bg-[#0284c7]/15 text-[#38bdf8] border border-[#0284c7]/30 font-bold',
+  },
+};
+
 // Global Themes Map — Easily add or register new themes anytime!
 export const THEME_REGISTRY: Record<string, ThemeDefinition> = {
   'sovereign': sovereignTheme,
   'wiki': wikiTheme,
   'royal-codex': royalCodexTheme,
+  'grand-voyager': grandVoyagerTheme,
 };
 
 /**

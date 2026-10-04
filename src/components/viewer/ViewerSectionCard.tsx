@@ -9,12 +9,12 @@ interface ViewerSectionCardProps {
 
 export const ViewerSectionCard: React.FC<ViewerSectionCardProps> = ({ title, children, badgeText }) => {
     const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
+    const themeId = theme;
     const isWiki = theme === 'wiki';
 
     const firstChar = title.charAt(0).toUpperCase();
 
-    if (isRoyal) {
+    if ((themeId === 'royal-codex')) {
         return (
             <div className="bg-[#fcf5e9] rounded-md p-5 shadow-sm mb-6 text-[#2b1810] relative">
                 {/* Double Gold Border Effect */}

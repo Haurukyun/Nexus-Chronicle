@@ -9,7 +9,7 @@ interface TimelineViewProps {
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ world, onNavigate }) => {
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
     const timelineData = useMemo(() => {
         const events: any[] = [];
         const extractYear = (dateStr: string | undefined) => {
@@ -64,14 +64,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ world, onNavigate })
         };
     }, [world.entities]);
 
-    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const accentBg = isRoyal ? '#70121e' : isWikiMode ? '#b91c1c' : '#fef08a';
-    const trackColor = isRoyal ? 'bg-[#c8a96e]/40' : isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-800';
+    const accent = (themeId === 'royal-codex') ? 'text-[#70121e]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const accentBg = (themeId === 'royal-codex') ? '#70121e' : (layoutMode === 'wiki') ? '#b91c1c' : '#fef08a';
+    const trackColor = (themeId === 'royal-codex') ? 'bg-[#c8a96e]/40' : (layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-800';
 
     return (
         <div className="p-12 h-full flex flex-col space-y-12">
             <header className="space-y-4">
-                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>Chronos Timeline</h1>
+                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${(themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-white'}`}>Chronos Timeline</h1>
                 <p className="opacity-50 text-sm tracking-[0.3em] uppercase ml-2 italic">The Flow of Historical Paradoxes</p>
             </header>
 
@@ -110,10 +110,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ world, onNavigate })
                                 >
                                     {e.type === 'event' ? (
                                         <div onClick={() => onNavigate(e.id)} className="flex flex-col items-center -translate-x-1/2 cursor-pointer">
-                                            <div className={`w-4 h-4 rounded-full border-2 shadow-lg group-hover:scale-150 transition-transform`} style={{ backgroundColor: accentBg, borderColor: isRoyal ? '#c8a96e' : isWikiMode ? 'white' : 'black' }} />
+                                            <div className={`w-4 h-4 rounded-full border-2 shadow-lg group-hover:scale-150 transition-transform`} style={{ backgroundColor: accentBg, borderColor: (themeId === 'royal-codex') ? '#c8a96e' : (layoutMode === 'wiki') ? 'white' : 'black' }} />
                                             <div className={`mt-4 px-3 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest whitespace-nowrap shadow-2xl ${
-                                                isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]'
-                                                : isWikiMode ? 'bg-white border-[#b91c1c]' 
+                                                (themeId === 'royal-codex') ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]'
+                                                : (layoutMode === 'wiki') ? 'bg-white border-[#b91c1c]' 
                                                 : 'bg-slate-900 border-[#fef08a]'
                                             }`}>
                                                 {e.name} ({e.start})

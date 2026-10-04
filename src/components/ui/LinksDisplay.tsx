@@ -2,13 +2,14 @@ import React from 'react';
 import { LinksDisplayProps } from '../../types';
 import { useTheme } from '../../theme';
 
-export const LinksDisplay = ({ label, ids, all, onNav, isWikiMode: _propWiki, wikiStyle = 'tag' }: LinksDisplayProps) => {
-    const { isWikiMode, isRoyal } = useTheme();
-    const isWiki = isWikiMode || Boolean(_propWiki);
+export const LinksDisplay = ({ label, ids, all, onNav, wikiStyle = 'tag' }: LinksDisplayProps) => {
+    const { themeId, layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
 
     if (!ids || ids.length === 0) return null;
 
-    if ((isWiki || isRoyal) && wikiStyle === 'inline') {
+    if ((isWikiMode || isRoyal) && wikiStyle === 'inline') {
         return (
             <div className="text-sm leading-tight my-1">
                 <span className={`font-bold ${isRoyal ? 'text-[#451a03]' : 'text-[#7a200d]'}`}>{label}</span>{' '}
@@ -36,7 +37,7 @@ export const LinksDisplay = ({ label, ids, all, onNav, isWikiMode: _propWiki, wi
     if (isRoyal) {
         labelStyle = 'text-[#451a03] font-serif font-bold';
         btnStyle = 'border-[#c8a96e]/60 bg-[#ede2cc] text-[#70121e] font-bold hover:bg-[#70121e] hover:text-[#fff8e7] shadow-sm';
-    } else if (isWiki) {
+    } else if (isWikiMode) {
         labelStyle = 'text-[#854d0e]';
         btnStyle = 'border-[#d4c8af] bg-white text-[#b91c1c] hover:bg-[#b91c1c] hover:text-white';
     }

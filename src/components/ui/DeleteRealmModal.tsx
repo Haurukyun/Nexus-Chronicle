@@ -18,7 +18,7 @@ export const DeleteRealmModal: React.FC<DeleteRealmModalProps> = ({
     onConfirm,
     onCancel,
 }) => {
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onCancel();
@@ -30,10 +30,9 @@ export const DeleteRealmModal: React.FC<DeleteRealmModalProps> = ({
     if (!realm) return null;
 
 
-    const modalBg = isRoyal
+    const modalBg = (themeId === 'royal-codex')
         ? 'bg-[#181410] border-[#c8a96e]/40 text-[#f5ebd7]'
-        : isWikiMode
-        ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]'
+        : (layoutMode === 'wiki') ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]'
         : 'bg-slate-900 border-slate-700 text-slate-100';
 
     const modalElement = (

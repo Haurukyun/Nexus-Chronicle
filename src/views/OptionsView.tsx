@@ -59,7 +59,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
         handleHealRelations
     } = useWorldStore();
 
-    const { isWikiMode, isRoyal, t } = useTheme();
+    const { t, layoutMode, themeId } = useTheme();
     const [healDone, setHealDone] = useState(false);
     const handleHeal = () => {
         handleHealRelations();
@@ -246,9 +246,9 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                 <button
                     onClick={() => setIsNewModalOpen(true)}
                     className={`px-5 py-3 rounded-2xl flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all ${
-                        isRoyal
+                        (themeId === 'royal-codex')
                             ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border border-[#c8a96e] shadow-md'
-                            : isWikiMode
+                            : (layoutMode === 'wiki')
                             ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
                             : 'bg-[#fef08a] text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20'
                     }`}
@@ -301,9 +301,9 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 key={w.id}
                                 className={`p-5 rounded-2xl border flex flex-col justify-between gap-4 transition-all relative ${
                                     isCurrent
-                                        ? isRoyal
+                                        ? (themeId === 'royal-codex')
                                             ? 'bg-[#70121e]/15 border-[#70121e] ring-1 ring-[#70121e]'
-                                            : isWikiMode
+                                            : (layoutMode === 'wiki')
                                             ? 'bg-[#b91c1c]/10 border-[#b91c1c] ring-1 ring-[#b91c1c]'
                                             : 'bg-yellow-400/10 border-yellow-400/50 ring-1 ring-yellow-400/50 shadow-lg'
                                         : 'bg-black/20 border-white/5 hover:border-white/20'
@@ -334,7 +334,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
 
                                         {isCurrent ? (
                                             <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full ${
-                                                isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
+                                                (themeId === 'royal-codex') ? 'bg-[#70121e] text-[#fff8e7]' : (layoutMode === 'wiki') ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black'
                                             }`}>
                                                 Active Realm
                                             </span>
@@ -456,16 +456,14 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                         <h3 className="text-xs font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
                             <Palette size={14} /> Active Realm Identity & Theme
                         </h3>
-                        <FormInput label="Active Realm Name" value={world.name} onChange={(v: string) => setWorld({ ...world, name: v })} isWikiMode={isWikiMode} />
-                        <FormInput label="Global Atlas Image (URL)" value={world.mapImage || ''} onChange={(v: string) => setWorld({ ...world, mapImage: v })} isWikiMode={isWikiMode} />
+                        <FormInput label="Active Realm Name" value={world.name} onChange={(v: string) => setWorld({ ...world, name: v })} />
+                        <FormInput label="Global Atlas Image (URL)" value={world.mapImage || ''} onChange={(v: string) => setWorld({ ...world, mapImage: v })} />
                         
                         <div className="space-y-3 pt-2">
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Visual Codex Theme</span>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <button
-                                    onClick={() => {
-                                        setIsWikiMode(false);
-                                        setTheme('sovereign');
+                                    onClick={() => {                                        setTheme('sovereign');
                                     }}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'sovereign'
@@ -477,9 +475,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <div className="text-[9px] opacity-60 mt-1">Dark Obsidian & Warm Gold</div>
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        setIsWikiMode(true);
-                                        setTheme('wiki');
+                                    onClick={() => {                                        setTheme('wiki');
                                     }}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'wiki'
@@ -491,8 +487,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <div className="text-[9px] opacity-60 mt-1">Classic Parchment & Red</div>
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        setTheme('royal-codex');
+                                    onClick={() => {                                        setTheme('royal-codex');
                                     }}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'royal-codex'
@@ -502,6 +497,18 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 >
                                     <div className="text-xs font-bold flex items-center gap-2">👑 Royal Codex</div>
                                     <div className="text-[9px] opacity-60 mt-1">Illuminated Parchment & Gold</div>
+                                </button>
+                                <button
+                                    onClick={() => {                                        setTheme('grand-voyager');
+                                    }}
+                                    className={`p-4 rounded-xl border text-left transition-all ${
+                                        theme === 'grand-voyager'
+                                            ? 'bg-[#0284c7]/20 text-[#38bdf8] border-[#38bdf8]/70 shadow-lg shadow-sky-950/40'
+                                            : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
+                                    }`}
+                                >
+                                    <div className="text-xs font-bold flex items-center gap-2">🧭 Grand Voyager</div>
+                                    <div className="text-[9px] opacity-60 mt-1">Tropical Seas & Teak Timber</div>
                                 </button>
                             </div>
                         </div>
@@ -728,7 +735,6 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                 isOpen={isBeamModalOpen}
                 onClose={() => setIsBeamModalOpen(false)}
                 theme={theme}
-                isWikiMode={isWikiMode}
             />
 
             {/* Dissolve Realm Confirmation Modal */}

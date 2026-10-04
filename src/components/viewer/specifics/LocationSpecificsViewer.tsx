@@ -9,12 +9,12 @@ interface Props {
     entity: Location;
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
     backlinks?: any;
 }
 
-export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntities, onNavigate, isWikiMode, backlinks }) => {
-    const { t } = useTheme();
+export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntities, onNavigate, backlinks }) => {
+    const { t, layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     return (
         <div className="space-y-8">
             {!isWikiMode && (
@@ -23,20 +23,19 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                         <Compass size={14} /> Geographic Intelligence & Atlas Anchor
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                        <FieldRow label="Type" value={loc.locationType} isWikiMode={false} />
-                        <FieldRow label="Population" value={loc.population} isWikiMode={false} />
-                        <FieldRow label="Size" value={loc.size} isWikiMode={false} />
-                        <FieldRow label="Founded" value={loc.dateOfCreation} isWikiMode={false} />
-                        <FieldRow label="Ended" value={loc.dateOfEnd} isWikiMode={false} />
+                        <FieldRow label="Type" value={loc.locationType} />
+                        <FieldRow label="Population" value={loc.population} />
+                        <FieldRow label="Size" value={loc.size} />
+                        <FieldRow label="Founded" value={loc.dateOfCreation} />
+                        <FieldRow label="Ended" value={loc.dateOfEnd} />
                         <FieldRow 
                             label="Atlas Anchor" 
                             value={loc.coordinates ? `X: ${loc.coordinates.x}%, Y: ${loc.coordinates.y}%` : "Unanchored"} 
-                            isWikiMode={false} 
                         />
                         <div className="col-span-2 mt-4 space-y-4">
-                            <FieldRow label="Unusual Layout/Features" value={loc.unusualFeatures} isWikiMode={false} />
-                            <LinksDisplay label="Preceding Geography" ids={loc.precedingLocationIds || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
-                            <LinksDisplay label="Succeeding Geography" ids={loc.succeedingLocationIds || []} all={allEntities} onNav={onNavigate} isWikiMode={false} />
+                            <FieldRow label="Unusual Layout/Features" value={loc.unusualFeatures} />
+                            <LinksDisplay label="Preceding Geography" ids={loc.precedingLocationIds || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Succeeding Geography" ids={loc.succeedingLocationIds || []} all={allEntities} onNav={onNavigate} />
                         </div>
                     </div>
 
@@ -77,18 +76,18 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <LinksDisplay label="Characters Born Here" ids={loc.originatedCharacterIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Current Residents" ids={[...new Set([...(loc.livingCharacterIds || []), ...(backlinks?.residents || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Historical Figures (Lost Here)" ids={[...new Set([...(loc.deceasedCharacterIds || []), ...(backlinks?.passedHere || [])])]} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Neighbouring Lands" ids={loc.neighbouringLocationIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Internal Points of Interest" ids={backlinks?.containedIn || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Governing Authorities" ids={Object.values(loc.governingGroupConnections || {}).flatMap((g: any) => g.connectedTo || [])} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} wikiStyle="tag" />
-                <LinksDisplay label="Local Languages" ids={loc.localLanguageIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Local Currencies" ids={loc.localCurrencyIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Local Cultures/Art" ids={loc.localCultureIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Common Occupations/Classes" ids={loc.commonOccupationIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Local Resources/Materials" ids={loc.localResourceIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                <LinksDisplay label="Local Species/Races/Flora/Fauna" ids={loc.localSpeciesIds} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                <LinksDisplay label="Characters Born Here" ids={loc.originatedCharacterIds} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Current Residents" ids={[...new Set([...(loc.livingCharacterIds || []), ...(backlinks?.residents || [])])]} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Historical Figures (Lost Here)" ids={[...new Set([...(loc.deceasedCharacterIds || []), ...(backlinks?.passedHere || [])])]} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Neighbouring Lands" ids={loc.neighbouringLocationIds} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Internal Points of Interest" ids={backlinks?.containedIn || []} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Governing Authorities" ids={Object.values(loc.governingGroupConnections || {}).flatMap((g: any) => g.connectedTo || [])} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                <LinksDisplay label="Local Languages" ids={loc.localLanguageIds} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Local Currencies" ids={loc.localCurrencyIds} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Local Cultures/Art" ids={loc.localCultureIds} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Common Occupations/Classes" ids={loc.commonOccupationIds} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Local Resources/Materials" ids={loc.localResourceIds} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Local Species/Races/Flora/Fauna" ids={loc.localSpeciesIds} all={allEntities} onNav={onNavigate} />
             </div>
         </div>
     );

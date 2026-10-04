@@ -7,7 +7,6 @@ interface KeybindsModalProps {
     isOpen: boolean;
     onClose: () => void;
     theme?: ThemeMode;
-    isWikiMode?: boolean;
 }
 
 interface KeybindItem {
@@ -26,7 +25,7 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
     isOpen,
     onClose,
 }) => {
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
     if (!isOpen) return null;
 
     const categories: KeybindCategory[] = [
@@ -137,28 +136,24 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
     ];
 
     // Theme styles
-    const modalBg = isRoyal
+    const modalBg = (themeId === 'royal-codex')
         ? 'bg-[#1e130c] border-2 border-[#c8a96e]/70 text-[#f7efe0] shadow-[0_25px_70px_rgba(0,0,0,0.9)]'
-        : isWikiMode
-        ? 'bg-[#fdfcf5] border border-[#d4c8af] text-[#1a1a1a] shadow-2xl'
+        : (layoutMode === 'wiki') ? 'bg-[#fdfcf5] border border-[#d4c8af] text-[#1a1a1a] shadow-2xl'
         : 'bg-[#0f172a]/95 border border-slate-700/80 text-slate-100 shadow-2xl';
 
-    const headerBg = isRoyal
+    const headerBg = (themeId === 'royal-codex')
         ? 'border-b border-[#c8a96e]/40 bg-[#29170e]'
-        : isWikiMode
-        ? 'border-b border-[#e2d5c3] bg-[#f7efe0]'
+        : (layoutMode === 'wiki') ? 'border-b border-[#e2d5c3] bg-[#f7efe0]'
         : 'border-b border-slate-800 bg-slate-900/60';
 
-    const kbdClass = isRoyal
+    const kbdClass = (themeId === 'royal-codex')
         ? 'bg-[#3b2315] border border-[#c8a96e]/60 text-[#fff8e7] shadow-[0_2px_0_rgba(200,169,110,0.4)]'
-        : isWikiMode
-        ? 'bg-white border border-[#d4c8af] text-[#b91c1c] shadow-[0_1.5px_0_rgba(185,28,28,0.25)]'
+        : (layoutMode === 'wiki') ? 'bg-white border border-[#d4c8af] text-[#b91c1c] shadow-[0_1.5px_0_rgba(185,28,28,0.25)]'
         : 'bg-slate-800 border border-slate-600 text-yellow-400 shadow-[0_1.5px_0_rgba(234,179,8,0.3)]';
 
-    const accentTitle = isRoyal
+    const accentTitle = (themeId === 'royal-codex')
         ? 'text-[#fff8e7] font-serif'
-        : isWikiMode
-        ? 'text-[#b91c1c] font-serif'
+        : (layoutMode === 'wiki') ? 'text-[#b91c1c] font-serif'
         : 'text-[#fef08a] font-sans';
 
     return (
@@ -173,7 +168,7 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
                 {/* Header */}
                 <div className={`flex items-center justify-between px-6 py-4 ${headerBg}`}>
                     <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-xl ${isRoyal ? 'bg-[#3b2315] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-yellow-500/10 text-yellow-400'}`}>
+                        <div className={`p-2 rounded-xl ${(themeId === 'royal-codex') ? 'bg-[#3b2315] text-[#fff8e7]' : (layoutMode === 'wiki') ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-yellow-500/10 text-yellow-400'}`}>
                             <Keyboard size={20} />
                         </div>
                         <div>
@@ -185,7 +180,7 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
                     </div>
                     <button
                         onClick={onClose}
-                        className={`p-1.5 rounded-lg transition-colors ${isRoyal ? 'text-[#c8a96e] hover:bg-[#382113]' : isWikiMode ? 'text-slate-600 hover:bg-slate-200' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+                        className={`p-1.5 rounded-lg transition-colors ${(themeId === 'royal-codex') ? 'text-[#c8a96e] hover:bg-[#382113]' : (layoutMode === 'wiki') ? 'text-slate-600 hover:bg-slate-200' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
                         title="Close (Esc)"
                     >
                         <X size={18} />
@@ -197,15 +192,14 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
                     {categories.map((cat, idx) => (
                         <div key={idx} className="space-y-3">
                             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest opacity-75">
-                                <cat.icon size={14} className={isRoyal ? 'text-[#c8a96e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-yellow-400'} />
+                                <cat.icon size={14} className={(themeId === 'royal-codex') ? 'text-[#c8a96e]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-yellow-400'} />
                                 <span>{cat.title}</span>
                             </div>
 
                             <div className={`rounded-xl border overflow-hidden divide-y ${
-                                isRoyal
+                                (themeId === 'royal-codex')
                                     ? 'border-[#c8a96e]/30 divide-[#c8a96e]/20 bg-[#25160e]/60'
-                                    : isWikiMode
-                                    ? 'border-[#e2d5c3] divide-[#e2d5c3] bg-white'
+                                    : (layoutMode === 'wiki') ? 'border-[#e2d5c3] divide-[#e2d5c3] bg-white'
                                     : 'border-slate-800 divide-slate-800 bg-slate-900/40'
                             }`}>
                                 {cat.items.map((item, itemIdx) => (
@@ -242,10 +236,9 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
                     <button
                         onClick={onClose}
                         className={`px-4 py-1.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${
-                            isRoyal
+                            (themeId === 'royal-codex')
                                 ? 'bg-[#c8a96e] text-black hover:bg-[#dfc488]'
-                                : isWikiMode
-                                ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
+                                : (layoutMode === 'wiki') ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
                                 : 'bg-yellow-400 text-black hover:bg-yellow-300'
                         }`}
                     >

@@ -17,10 +17,10 @@ interface WikiInfoboxProps {
 export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: WikiInfoboxProps) => {
     const isChar = entity.type === 'character';
     const theme = useWorldStore(state => state.theme);
-    const isRoyal = theme === 'royal-codex';
+    const themeId = theme;
     const [expandedImg, setExpandedImg] = useState<string | null>(null);
 
-    if (isRoyal) {
+    if ((themeId === 'royal-codex')) {
         return (
             <>
                 <aside className="lg:w-80 shrink-0 space-y-6">
@@ -148,8 +148,8 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
             <div className="p-4 bg-white/50 border border-[#d4c8af] rounded space-y-4">
                 <h4 className="text-[10px] font-black text-[#854d0e] uppercase border-b border-[#d4c8af] pb-1">Relations</h4>
                 <div className="space-y-4">
-                    <LinksDisplay label="Locations" ids={(entity as any).locationIds} all={allEntities} onNav={onNavigate} isWikiMode={true} />
-                    <LinksDisplay label="Members" ids={(entity as any).memberOf} all={allEntities} onNav={onNavigate} isWikiMode={true} />
+                    <LinksDisplay label="Locations" ids={(entity as any).locationIds} all={allEntities} onNav={onNavigate} />
+                    <LinksDisplay label="Members" ids={(entity as any).memberOf} all={allEntities} onNav={onNavigate} />
                 </div>
             </div>
         </aside>

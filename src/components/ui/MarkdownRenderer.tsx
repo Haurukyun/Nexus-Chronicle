@@ -52,7 +52,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     onNavigate,
     className = '',
 }) => {
-    const { isWikiMode } = useTheme();
+    const { layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     const nameMap = useMemo(() => buildNameMap(allEntities), [allEntities]);
 
     const html = useMemo(() => {

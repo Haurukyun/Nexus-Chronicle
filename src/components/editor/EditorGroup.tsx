@@ -6,12 +6,12 @@ interface EditorGroupProps {
     title: string;
     icon: LucideIcon;
     children: React.ReactNode;
-    isWikiMode?: boolean;
 }
 
-export const EditorGroup = ({ title, icon: Icon, children, isWikiMode: propWiki }: EditorGroupProps) => {
-    const { isWikiMode: themeWiki, isRoyal } = useTheme();
-    const isWiki = propWiki !== undefined ? propWiki : themeWiki;
+export const EditorGroup = ({ title, icon: Icon, children }: EditorGroupProps) => {
+    const { themeId, layoutMode } = useTheme();
+    const isWiki = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
 
     const firstChar = title.charAt(0).toUpperCase();
 

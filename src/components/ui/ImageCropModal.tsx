@@ -21,10 +21,9 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
     onApplyCrop,
     onClose,
     onKeepOriginal,
-    isWikiMode: propWiki
 }) => {
-    const { isWikiMode: themeWiki } = useTheme();
-    const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
+    const { layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     const [resolvedUrl, setResolvedUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isSaving, setIsSaving] = useState<boolean>(false);

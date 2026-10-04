@@ -53,7 +53,7 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
     const [quickPinTarget, setQuickPinTarget] = useState<Location | null>(null);
     const [quickPinCoords, setQuickPinCoords] = useState<{ x: number; y: number } | null>(null);
 
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
     const mapImage = world.mapImage;
 
     const handleOpenInEditor = (id: string) => {
@@ -123,16 +123,16 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
         };
     }, [effectiveBaseLeagues, terrain, travelMethod, partySize]);
 
-    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const bgCard = isRoyal
+    const accent = (themeId === 'royal-codex') ? 'text-[#70121e]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = (themeId === 'royal-codex')
         ? 'bg-[#181410] border-[#c8a96e]/30 shadow-2xl'
-        : isWikiMode 
+        : (layoutMode === 'wiki') 
         ? 'bg-[#fdf6e3] border-[#d4c8af] shadow-md' 
         : 'bg-slate-900/50 border-slate-800 shadow-2xl';
 
-    const inputBg = isRoyal
+    const inputBg = (themeId === 'royal-codex')
         ? 'bg-[#0f0905] border-[#c8a96e]/30 text-[#f0ddb0]'
-        : isWikiMode
+        : (layoutMode === 'wiki')
         ? 'bg-white border-[#d4c8af] text-slate-900'
         : 'bg-black/30 border-slate-700 text-white';
 
@@ -145,7 +145,7 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                     <span className="text-[11px] font-black uppercase tracking-[0.4em] opacity-50">Logistics & Expedition Planner</span>
                 </div>
                 <h1 className={`text-5xl lg:text-7xl font-serif font-black uppercase tracking-tighter ${
-                    isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'
+                    (themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-white'
                 }`}>
                     The Grand Voyager
                 </h1>
@@ -419,12 +419,12 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                                         onClick={() => setTravelMethod(m)}
                                         className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between h-20 ${
                                             isSelected 
-                                                ? (isRoyal
+                                                ? ((themeId === 'royal-codex')
                                                     ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e] shadow-md'
-                                                    : isWikiMode 
+                                                    : (layoutMode === 'wiki') 
                                                     ? 'bg-[#b91c1c] text-white border-transparent shadow-md' 
                                                     : 'bg-[#fef08a] text-black border-transparent shadow-lg shadow-yellow-500/20') 
-                                                : isRoyal ? 'hover:bg-[#d9c9a3]/20 opacity-60 border-[#c8a96e]/20' : 'hover:bg-white/5 opacity-60 border-slate-500/20'
+                                                : (themeId === 'royal-codex') ? 'hover:bg-[#d9c9a3]/20 opacity-60 border-[#c8a96e]/20' : 'hover:bg-white/5 opacity-60 border-slate-500/20'
                                         }`}
                                     >
                                         <Icon size={18} />
@@ -668,9 +668,9 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
             {quickPinTarget && createPortal(
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <div className={`w-full max-w-2xl p-6 rounded-3xl border shadow-2xl space-y-5 ${
-                        isRoyal
+                        (themeId === 'royal-codex')
                             ? 'bg-[#181410] border-[#c8a96e]/50 text-[#f0ddb0]'
-                            : isWikiMode
+                            : (layoutMode === 'wiki')
                             ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]'
                             : 'bg-slate-900 border-slate-700 text-slate-100'
                     }`}>
@@ -804,9 +804,9 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                                 }}
                                 disabled={!quickPinCoords}
                                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                                    isRoyal
+                                    (themeId === 'royal-codex')
                                         ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] disabled:opacity-40 border border-[#c8a96e] shadow-md'
-                                        : isWikiMode
+                                        : (layoutMode === 'wiki')
                                         ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] disabled:opacity-40'
                                         : 'bg-[#fef08a] text-black hover:bg-yellow-400 disabled:opacity-40 shadow-lg shadow-yellow-500/20'
                                 }`}

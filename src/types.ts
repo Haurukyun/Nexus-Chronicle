@@ -7,7 +7,7 @@ export type EntityType =
   | 'ability' | 'item' | 'occupation' | 'condition' | 'resource' | 'currency';
 
 export type WorldPhase = 'creation' | 'golden' | 'shadow' | 'eclipse' | 'ruin';
-export type ThemeMode = 'sovereign' | 'wiki' | 'royal-codex';
+export type ThemeMode = 'sovereign' | 'wiki' | 'royal-codex' | 'grand-voyager';
 
 
 export interface MapConnection {
@@ -911,8 +911,8 @@ export interface EntityEditorProps {
     onCancel: () => void;
     onUpdate: (data: any) => void;
     onCreateNew: (type: EntityType, search: string, open: boolean) => string | void;
-    isWikiMode?: boolean;
 }
+
 
 export interface EntityViewerProps {
     entity: WorldEntity;
@@ -921,7 +921,6 @@ export interface EntityViewerProps {
     onDelete: () => void;
     onNavigate: (id: string) => void;
     onFocusMap: () => void;
-    isWikiMode?: boolean;
 }
 
 export interface LinksDisplayProps {
@@ -929,7 +928,6 @@ export interface LinksDisplayProps {
     ids: string[];
     all: WorldEntity[];
     onNav: (id: string) => void;
-    isWikiMode?: boolean;
     wikiStyle?: 'tag' | 'inline';
 }
 
@@ -939,7 +937,6 @@ export interface FormInputProps {
     onChange: (val: string) => void;
     placeholder?: string;
     type?: string;
-    isWikiMode?: boolean;
     gridSpan?: number;
 }
 
@@ -947,7 +944,6 @@ export interface FormToggleProps {
     label: string;
     checked: boolean;
     onChange: (val: boolean) => void;
-    isWikiMode?: boolean;
     gridSpan?: number;
 }
 
@@ -958,7 +954,6 @@ export interface SmartSelectProps {
     all: WorldEntity[];
     onChange: (ids: string[]) => void;
     onCreate: (type: EntityType, search: string, open: boolean) => string | void;
-    isWikiMode?: boolean;
     disabled?: boolean;
     gridSpan?: number;
     /** IDs to exclude from the selectable options (e.g., prevent self-reference) */
@@ -968,25 +963,20 @@ export interface SmartSelectProps {
 export interface FieldRowProps {
     label: string;
     value?: string | string[];
-    isWikiMode?: boolean;
 }
 
 export interface TrashViewProps {
     trash: WorldEntity[];
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
-    isWikiMode?: boolean;
 }
 
 export interface OptionsViewProps {
     world: WorldData;
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
-    isWikiMode?: boolean;
-    setIsWikiMode?: (mode: boolean) => void;
 }
 
 export interface WorldMapProps {
     world: WorldData;
     setWorld: (update: WorldData | ((prev: WorldData) => WorldData)) => void;
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
 }

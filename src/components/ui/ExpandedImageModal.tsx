@@ -4,11 +4,13 @@ import { X, ZoomIn } from 'lucide-react';
 import { NexusImage } from './NexusImage';
 import { useTheme } from '../../theme';
 
+import { ThemeMode } from '../../types';
+
 interface ExpandedImageModalProps {
     imageUri: string;
     entityName?: string;
     onClose: () => void;
-    theme?: 'royal-codex' | 'wiki' | 'sovereign';
+    theme?: ThemeMode;
 }
 
 export const ExpandedImageModal = ({ imageUri, entityName, onClose, theme: propTheme }: ExpandedImageModalProps) => {
@@ -24,21 +26,27 @@ export const ExpandedImageModal = ({ imageUri, entityName, onClose, theme: propT
     }, [handleKey]);
 
     const accentClass =
-        theme === 'royal-codex'
+        theme === 'grand-voyager'
+            ? 'border-[#38bdf8]/60 text-[#38bdf8]'
+            : theme === 'royal-codex'
             ? 'border-[#c8a96e] text-[#e6c687]'
             : theme === 'wiki'
             ? 'border-amber-700/60 text-amber-800'
             : 'border-slate-600/60 text-slate-300';
 
     const headerBg =
-        theme === 'royal-codex'
+        theme === 'grand-voyager'
+            ? 'bg-[#071927]/95'
+            : theme === 'royal-codex'
             ? 'bg-[#1b0207]/95'
             : theme === 'wiki'
             ? 'bg-amber-50/95'
             : 'bg-slate-950/95';
 
     const closeBtn =
-        theme === 'royal-codex'
+        theme === 'grand-voyager'
+            ? 'bg-[#0284c7]/20 hover:bg-[#0284c7]/40 border-[#38bdf8]/40 text-[#38bdf8]'
+            : theme === 'royal-codex'
             ? 'bg-[#c8a96e]/10 hover:bg-[#c8a96e]/30 border-[#c8a96e]/40 text-[#e6c687]'
             : theme === 'wiki'
             ? 'bg-amber-800/10 hover:bg-amber-800/20 border-amber-700/40 text-amber-800'

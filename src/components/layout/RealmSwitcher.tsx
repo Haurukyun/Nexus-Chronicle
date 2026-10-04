@@ -33,7 +33,6 @@ const PHASE_LABELS: Record<WorldPhase, string> = {
 
 export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
     theme: propTheme,
-    isWikiMode: propWiki,
     onOpenOptions
 }) => {
     const {
@@ -54,10 +53,10 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
     const [realmToDelete, setRealmToDelete] = useState<WorldData | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const themeContext = useTheme();
-    const theme = propTheme || themeContext.theme;
-    const isWikiMode = propWiki !== undefined ? propWiki : themeContext.isWikiMode;
-    const isRoyal = themeContext.isRoyal;
+    const { themeId, layoutMode } = useTheme();
+    const theme = propTheme || themeId;
+    const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
 
     // Click outside to dismiss
     useEffect(() => {
@@ -346,8 +345,7 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
                 onCreate={(name, desc, mapImage, phase) => {
                     createWorld(name, desc, mapImage, phase);
                 }}
-                theme={theme}
-                isWikiMode={isWikiMode}
+                theme={theme as any}
             />
 
             {/* Dissolve Realm Confirmation Modal */}
@@ -361,8 +359,7 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
                     }
                 }}
                 onCancel={() => setRealmToDelete(null)}
-                theme={theme}
-                isWikiMode={isWikiMode}
+                theme={theme as any}
             />
         </div>
     );

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Palette, Check, Moon, BookMarked, Crown } from 'lucide-react';
+import { Palette, Check, Moon, BookMarked, Crown, Compass } from 'lucide-react';
 import { ThemeMode } from '../../types';
 
 interface ThemeSwitcherProps {
@@ -29,6 +29,13 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; sub: string; icon: React.FC
         sub: 'Illuminated Manuscript & Crimson Gold',
         icon: Crown,
         badgeColor: 'bg-amber-500/20 text-amber-800 border-amber-500/40'
+    },
+    {
+        id: 'grand-voyager',
+        label: 'Grand Voyager',
+        sub: 'Tropical High Seas & Teak Timber',
+        icon: Compass,
+        badgeColor: 'bg-sky-500/20 text-sky-400 border-sky-500/40'
     }
 ];
 
@@ -59,6 +66,8 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
                         ? 'bg-[#f3ebd9] text-[#881337] border-[#d97706]/40 hover:bg-[#ebdcb9]'
                         : theme === 'wiki'
                         ? 'bg-[#f5e6d3] text-[#b91c1c] border-[#d4c8af] hover:bg-[#ead9c1]'
+                        : theme === 'grand-voyager'
+                        ? 'bg-[#0a2033] text-[#38bdf8] border-[#1d4866] hover:bg-[#0e2c45] shadow-sky-950/40'
                         : 'bg-slate-900/80 text-yellow-400 border-slate-700 hover:bg-slate-800'
                 }`}
                 title="Switch Application Theme"
@@ -74,6 +83,8 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
                         ? 'bg-[#faf6ee] border-[#d97706]/40 text-[#451a03]'
                         : theme === 'wiki'
                         ? 'bg-[#fdfcf0] border-[#d4c8af] text-[#1a1a1a]'
+                        : theme === 'grand-voyager'
+                        ? 'bg-[#081e2e]/95 border-[#1d4766] text-slate-100 backdrop-blur-xl'
                         : 'bg-slate-900 border-slate-700 text-slate-200'
                 }`}>
                     <div className="px-3 py-2 text-[10px] font-black uppercase tracking-widest opacity-50 border-b border-current/10 mb-1">
@@ -91,7 +102,13 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
                                 }}
                                 className={`w-full text-left flex items-center justify-between p-2.5 rounded-xl transition-all ${
                                     isSelected
-                                        ? (theme === 'royal-codex' ? 'bg-[#881337] text-white shadow-md' : theme === 'wiki' ? 'bg-[#b91c1c] text-white' : 'bg-yellow-500/20 text-yellow-300')
+                                        ? (theme === 'royal-codex' 
+                                            ? 'bg-[#881337] text-white shadow-md' 
+                                            : theme === 'wiki' 
+                                            ? 'bg-[#b91c1c] text-white' 
+                                            : theme === 'grand-voyager'
+                                            ? 'bg-gradient-to-r from-[#0284c7] to-[#0d9488] text-white shadow-lg shadow-sky-950/40'
+                                            : 'bg-yellow-500/20 text-yellow-300')
                                         : 'hover:bg-current/5'
                                 }`}
                             >

@@ -18,7 +18,9 @@ export const WipeRealmModal: React.FC<WipeRealmModalProps> = ({
     onConfirm,
     onCancel,
 }) => {
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
     useEffect(() => {
         if (!isOpen) return;
         const handleKeyDown = (e: KeyboardEvent) => {

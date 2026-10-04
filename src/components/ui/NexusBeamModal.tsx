@@ -21,7 +21,9 @@ export const NexusBeamModal: React.FC<NexusBeamModalProps> = ({
     onClose,
 }) => {
     const { world, importWorldData, activeWorldId } = useWorldStore();
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
     const [mode, setMode] = useState<'send' | 'receive' | 'file'>('send');
     const [senderToken, setSenderToken] = useState('');
     const [receiverAnswerInput, setReceiverAnswerInput] = useState('');

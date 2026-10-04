@@ -5,22 +5,24 @@ import { GroupRoleGroup } from '../GroupRoleGroup';
 import { FormInput, SmartSelect } from '../../ui';
 import { Info, MapPin, Calendar, Hourglass, Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe, Gem, Tent, UserCircle, User, Leaf, Globe, Compass, Crosshair, Trash2, Navigation } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
+import { useTheme } from '../../../theme';
 
 interface Props {
     entity: Location;
     allEntities: WorldEntity[];
     onUpdate: (data: Location) => void;
     onCreateNew: (type: EntityType, search: string, open: boolean) => string | void;
-    isWikiMode: boolean;
 }
 
-export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, onUpdate, onCreateNew, isWikiMode }) => {
+export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, onUpdate, onCreateNew }) => {
     const mapImage = useWorldStore(state => state.world.mapImage);
+    const { layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
 
     return (
         <>
             {/* Atlas Anchor & Coordinate Picker (P2 #10) */}
-            <EditorGroup title="Atlas Anchor & Map Coordinates" icon={Compass} isWikiMode={isWikiMode}>
+            <EditorGroup title="Atlas Anchor & Map Coordinates" icon={Compass}>
                 <div className="col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl bg-black/10 border border-white/5">
                     <div>
                         <div className="flex items-center gap-2">
@@ -180,12 +182,12 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                 </div>
             </EditorGroup>
 
-            <EditorGroup title="Basic information" icon={Info} isWikiMode={isWikiMode}>
-                <SmartSelect label="Succeeding Locations" icon={MapPin} ids={loc.succeedingLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, succeedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Preceding Locations" icon={MapPin} ids={loc.precedingLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, precedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+            <EditorGroup title="Basic information" icon={Info}>
+                <SmartSelect label="Succeeding Locations" icon={MapPin} ids={loc.succeedingLocationIds || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...loc, succeedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Preceding Locations" icon={MapPin} ids={loc.precedingLocationIds || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...loc, precedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 
-                <FormInput label="Date of creation" icon={Calendar} value={loc.dateOfCreation || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfCreation: v })} isWikiMode={isWikiMode} gridSpan={6} />
-                <FormInput label="Date of end" icon={Hourglass} value={loc.dateOfEnd || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfEnd: v })} isWikiMode={isWikiMode} gridSpan={6} />
+                <FormInput label="Date of creation" icon={Calendar} value={loc.dateOfCreation || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfCreation: v })} gridSpan={6} />
+                <FormInput label="Date of end" icon={Hourglass} value={loc.dateOfEnd || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfEnd: v })} gridSpan={6} />
                 
                 <div className="col-span-12">
                     <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 flex items-center gap-2">
@@ -194,21 +196,21 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={loc.unusualFeatures || ""} onChange={e => onUpdate({ ...loc, unusualFeatures: e.target.value })} />
                 </div>
 
-                <FormInput label="Location type" icon={Anchor} value={loc.locationType || ""} options={['Settlement', 'Dungeon', 'Empire', 'Wilderness', 'Holy Ground', 'Ruins', 'Planar Overlay']} onChange={(v: string) => onUpdate({ ...loc, locationType: v })} isWikiMode={isWikiMode} gridSpan={4} />
-                <FormInput label="Population" icon={Users} value={loc.population || ""} onChange={(v: string) => onUpdate({ ...loc, population: v })} isWikiMode={isWikiMode} gridSpan={4} />
-                <FormInput label="Size" icon={Maximize} value={loc.size || ""} onChange={(v: string) => onUpdate({ ...loc, size: v })} isWikiMode={isWikiMode} gridSpan={4} />
+                <FormInput label="Location type" icon={Anchor} value={loc.locationType || ""} options={['Settlement', 'Dungeon', 'Empire', 'Wilderness', 'Holy Ground', 'Ruins', 'Planar Overlay']} onChange={(v: string) => onUpdate({ ...loc, locationType: v })} gridSpan={4} />
+                <FormInput label="Population" icon={Users} value={loc.population || ""} onChange={(v: string) => onUpdate({ ...loc, population: v })} gridSpan={4} />
+                <FormInput label="Size" icon={Maximize} value={loc.size || ""} onChange={(v: string) => onUpdate({ ...loc, size: v })} gridSpan={4} />
                 
-                <SmartSelect label="Local Languages" icon={MessageSquare} ids={loc.localLanguageIds || []} type="language" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localLanguageIds: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Local Currencies" icon={Coins} ids={loc.localCurrencyIds || []} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localCurrencyIds: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Local Cultures" icon={Home} ids={loc.localCultureIds || []} type="culture" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localCultureIds: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Common Occupations" icon={Pickaxe} ids={loc.commonOccupationIds || []} type="occupation" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, commonOccupationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Local Resources" icon={Gem} ids={loc.localResourceIds || []} type="resource" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localResourceIds: ids })} onCreate={onCreateNew} gridSpan={12} />
+                <SmartSelect label="Local Languages" icon={MessageSquare} ids={loc.localLanguageIds || []} type="language" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localLanguageIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Local Currencies" icon={Coins} ids={loc.localCurrencyIds || []} type="resource" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localCurrencyIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Local Cultures" icon={Home} ids={loc.localCultureIds || []} type="culture" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localCultureIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Common Occupations" icon={Pickaxe} ids={loc.commonOccupationIds || []} type="occupation" all={allEntities} onChange={(ids) => onUpdate({ ...loc, commonOccupationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Local Resources" icon={Gem} ids={loc.localResourceIds || []} type="resource" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localResourceIds: ids })} onCreate={onCreateNew} gridSpan={12} />
                 
-                <SmartSelect label="Neighbouring Locations" icon={MapPin} ids={loc.neighbouringLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, neighbouringLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Other connected Locations" icon={MapPin} ids={loc.otherConnectedLocationIds || []} type="location" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, otherConnectedLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Neighbouring Locations" icon={MapPin} ids={loc.neighbouringLocationIds || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...loc, neighbouringLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Other connected Locations" icon={MapPin} ids={loc.otherConnectedLocationIds || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...loc, otherConnectedLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
             </EditorGroup>
 
-            <EditorGroup title="Traditions & Customs" icon={Tent} isWikiMode={isWikiMode}>
+            <EditorGroup title="Traditions & Customs" icon={Tent}>
                 <div className="lg:col-span-3 space-y-2">
                     <div className={`w-full p-4 rounded-xl border border-dashed text-[10px] font-bold uppercase opacity-40 text-center ${isWikiMode ? 'border-black/20' : 'border-white/20'}`}>
                         📜 Local Customs, Rituals & Cultural Nuances
@@ -219,36 +221,36 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                 </div>
             </EditorGroup>
 
-            <EditorGroup title="Resident information" icon={UserCircle} isWikiMode={isWikiMode}>
-                <SmartSelect label="Originated from" icon={User} ids={loc.originatedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, originatedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                <SmartSelect label="Currently living" icon={User} ids={loc.livingCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, livingCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                <SmartSelect label="Deceased here" icon={User} ids={loc.deceasedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, deceasedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                <SmartSelect label="Other connections" icon={User} ids={loc.connectedCharacterIds || []} type="character" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, connectedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Local Species/Flora/Fauna" icon={Leaf} ids={loc.localSpeciesIds || []} type="species" all={allEntities} isWikiMode={isWikiMode} onChange={(ids) => onUpdate({ ...loc, localSpeciesIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+            <EditorGroup title="Resident information" icon={UserCircle}>
+                <SmartSelect label="Originated from" icon={User} ids={loc.originatedCharacterIds || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...loc, originatedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                <SmartSelect label="Currently living" icon={User} ids={loc.livingCharacterIds || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...loc, livingCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                <SmartSelect label="Deceased here" icon={User} ids={loc.deceasedCharacterIds || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...loc, deceasedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                <SmartSelect label="Other connections" icon={User} ids={loc.connectedCharacterIds || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...loc, connectedCharacterIds: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Local Species/Flora/Fauna" icon={Leaf} ids={loc.localSpeciesIds || []} type="species" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localSpeciesIds: ids })} onCreate={onCreateNew} gridSpan={6} />
             </EditorGroup>
 
-            <EditorGroup title="Governance Connections" icon={Anchor} isWikiMode={isWikiMode}>
+            <EditorGroup title="Governance Connections" icon={Anchor}>
                 <div className="lg:col-span-3 border-b border-slate-500/10 pb-4 mb-4">
                     <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em]">Governing Authorities</h3>
                     <p className="text-[9px] opacity-40 italic">Groups that wield primary power over this territory</p>
                 </div>
-                <GroupRoleGroup label="Governing Ideologies/Political groups" roleKey="political" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} isCustomGoverning />
-                <GroupRoleGroup label="Governing Organizations/Other groups" roleKey="organization" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} isCustomGoverning />
-                <GroupRoleGroup label="Governing Teachings/Religious groups" roleKey="religious" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} isCustomGoverning />
-                <GroupRoleGroup label="Governing Schools of Magic/Magical groups" roleKey="magic" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} isCustomGoverning />
-                <GroupRoleGroup label="Governing Sciences/Technological groups" roleKey="science" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} isCustomGoverning />
+                <GroupRoleGroup label="Governing Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} isCustomGoverning />
+                <GroupRoleGroup label="Governing Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} isCustomGoverning />
+                <GroupRoleGroup label="Governing Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} isCustomGoverning />
+                <GroupRoleGroup label="Governing Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} isCustomGoverning />
+                <GroupRoleGroup label="Governing Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} isCustomGoverning />
             </EditorGroup>
 
-            <EditorGroup title="Influential Connections" icon={Globe} isWikiMode={isWikiMode}>
+            <EditorGroup title="Influential Connections" icon={Globe}>
                 <div className="lg:col-span-3 border-b border-slate-500/10 pb-4 mb-4">
                     <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em]">Connected Entities</h3>
                     <p className="text-[9px] opacity-40 italic">Groups with significant influence but no formal authority</p>
                 </div>
-                <GroupRoleGroup label="Connected Ideologies/Political groups" roleKey="political" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} />
-                <GroupRoleGroup label="Connected Organizations/Other groups" roleKey="organization" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} />
-                <GroupRoleGroup label="Connected Teachings/Religious groups" roleKey="religious" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} />
-                <GroupRoleGroup label="Connected Schools of Magic/Magical groups" roleKey="magic" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} />
-                <GroupRoleGroup label="Connected Sciences/Technological groups" roleKey="science" isWikiMode={isWikiMode} entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} />
+                <GroupRoleGroup label="Connected Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} />
+                <GroupRoleGroup label="Connected Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} />
+                <GroupRoleGroup label="Connected Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} />
+                <GroupRoleGroup label="Connected Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} />
+                <GroupRoleGroup label="Connected Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} />
             </EditorGroup>
         </>
     );

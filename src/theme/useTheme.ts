@@ -3,35 +3,32 @@ import { getTheme } from './themeRegistry';
 import { ThemeDefinition, LayoutMode } from './types';
 
 export interface UseThemeResult {
+  /** The raw theme identifier string, e.g. 'wiki', 'royal-codex', 'sovereign', 'grand-voyager'. */
   themeId: string;
+  /** Full theme token contract — use `t.*` for all visual/color/typography decisions. */
   t: ThemeDefinition;
   /** Structural geometry mode — use for layout decisions (sidebar width, reader vs. studio shell, book framing).
    *  'studio' = dark glassmorphic dashboard  |  'wiki' = light encyclopedia reader  |  'manuscript' = illuminated book frame */
   layoutMode: LayoutMode;
-  /** @deprecated Prefer `layoutMode === 'wiki'` for layout decisions; keep for visual material checks. */
-  isWikiMode: boolean;
-  isRoyal: boolean;
-  isSovereign: boolean;
 }
 
 /**
  * Universal theme hook for components.
- * Returns active theme contract `t`, the structural `layoutMode`, and convenient boolean flags.
- * 
- * Layout decisions → use `layoutMode`
- * Visual material decisions (colors, glassmorphism) → use `t.*` tokens
+ *
+ * Usage:
+ *   const { themeId, t, layoutMode } = useTheme();
+ *
+ *   Layout/shell decisions  → layoutMode === 'wiki' | 'manuscript' | 'studio'
+ *   Per-theme identity      → themeId === 'royal-codex' | 'sovereign' | 'wiki' | 'grand-voyager'
+ *   Visual tokens           → t.colors.textAccent, t.card.base, t.button.primary, etc.
  */
 export function useTheme(): UseThemeResult {
-  const theme = useWorldStore((s) => s.theme);
-  const isWikiModeStore = useWorldStore((s) => s.isWikiMode);
-  const t = getTheme(theme);
+  const themeId = useWorldStore((s) => s.theme);
+  const t = getTheme(themeId);
 
   return {
-    themeId: theme,
+    themeId,
     t,
     layoutMode: t.layoutMode,
-    isWikiMode: theme === 'wiki' || isWikiModeStore,
-    isRoyal: theme === 'royal-codex',
-    isSovereign: theme === 'sovereign',
   };
 }

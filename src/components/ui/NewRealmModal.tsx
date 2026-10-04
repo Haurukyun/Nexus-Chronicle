@@ -52,7 +52,9 @@ export const NewRealmModal: React.FC<NewRealmModalProps> = ({
     onClose,
     onCreate,
 }) => {
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [selectedPhase, setSelectedPhase] = useState<WorldPhase>('golden');

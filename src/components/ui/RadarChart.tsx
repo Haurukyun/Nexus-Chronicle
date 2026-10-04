@@ -15,7 +15,8 @@ interface RadarChartProps {
 }
 
 export const RadarChart = ({ stats, compareStats }: RadarChartProps) => {
-    const { isWikiMode } = useTheme();
+    const { layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     const parseStat = (val: string | undefined) => {
         if (!val) return 10;
         const match = val.match(/\d+/);

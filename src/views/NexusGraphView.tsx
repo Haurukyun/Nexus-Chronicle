@@ -291,15 +291,13 @@ function tickForces(
 
 interface Props {
   world: WorldData;
-  isWikiMode?: boolean;
   onNavigate: (id: string) => void;
 }
 
 type ActiveFilters = Set<string>; // category ids
 
-export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, onNavigate }) => {
-  const { isWikiMode: themeWiki, isRoyal } = useTheme();
-  const isWikiMode = propWiki !== undefined ? propWiki : themeWiki;
+export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
+  const { themeId, layoutMode } = useTheme();
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const nodesRef = useRef<GraphNode[]>([]);
@@ -497,13 +495,13 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, o
   const nodes = nodesRef.current;
   const edgeList = edgesRef.current;
 
-  const wikiText = isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#3d2b1f]' : 'text-white';
-  const wikiPanel = isRoyal
+  const wikiText = (themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#3d2b1f]' : 'text-white';
+  const wikiPanel = (themeId === 'royal-codex')
     ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#3d0a10]'
-    : isWikiMode
+    : (layoutMode === 'wiki')
     ? 'bg-[#f5f0e8] border-[#d4c8af] text-[#3d2b1f]'
     : 'bg-slate-900/90 border-slate-700/60 text-white';
-  const accentColor = isRoyal ? '#70121e' : isWikiMode ? '#b91c1c' : '#fef08a';
+  const accentColor = (themeId === 'royal-codex') ? '#70121e' : (layoutMode === 'wiki') ? '#b91c1c' : '#fef08a';
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
@@ -648,7 +646,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, o
                     dominantBaseline="central"
                     fontSize={11}
                     fontWeight="900"
-                    fill={isWikiMode ? '#1e1b18' : '#fff'}
+                    fill={(layoutMode === 'wiki') ? '#1e1b18' : '#fff'}
                     fillOpacity={0.85}
                     style={{ pointerEvents: 'none', fontFamily: 'sans-serif', letterSpacing: '0.05em' }}
                   >
@@ -661,12 +659,12 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, o
                     textAnchor="middle"
                     fontSize={10}
                     fontWeight={isSelected || isHovered ? '700' : '500'}
-                    fill={isWikiMode ? '#3d2b1f' : '#e2e8f0'}
+                    fill={(layoutMode === 'wiki') ? '#3d2b1f' : '#e2e8f0'}
                     fillOpacity={isSelected || isHovered ? 1 : 0.75}
                     style={{
                       pointerEvents: 'none',
                       fontFamily: 'sans-serif',
-                      textShadow: isWikiMode ? 'none' : '0 1px 4px rgba(0,0,0,0.8)',
+                      textShadow: (layoutMode === 'wiki') ? 'none' : '0 1px 4px rgba(0,0,0,0.8)',
                     }}
                   >
                     {node.name.length > 16 ? node.name.slice(0, 14) + '…' : node.name}
@@ -708,7 +706,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, o
       {/* ── Top-left: title ─────────────────────────────────────────────────── */}
       <div className="absolute top-4 left-4 pointer-events-none">
         <h1
-          className={`text-5xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}
+          className={`text-5xl font-serif font-black uppercase tracking-tighter ${(themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-white'}`}
         >
           The Nexus
         </h1>
@@ -727,7 +725,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, o
         {/* Filter panel toggle */}
         <button
           onClick={() => setFilterOpen((o) => !o)}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all ${wikiPanel} ${filterOpen ? (isRoyal ? 'ring-2 ring-[#70121e]' : isWikiMode ? 'ring-2 ring-[#b91c1c]' : 'ring-2 ring-yellow-400/50') : ''}`}
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all ${wikiPanel} ${filterOpen ? ((themeId === 'royal-codex') ? 'ring-2 ring-[#70121e]' : (layoutMode === 'wiki') ? 'ring-2 ring-[#b91c1c]' : 'ring-2 ring-yellow-400/50') : ''}`}
         >
           <Filter size={13} />
           Filters
@@ -741,7 +739,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, o
           >
             <ZoomIn size={14} />
           </button>
-          <div className={`h-px ${isRoyal ? 'bg-[#c8a96e]/50' : isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
+          <div className={`h-px ${(themeId === 'royal-codex') ? 'bg-[#c8a96e]/50' : (layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
           <button
             className="p-2 hover:bg-white/10 transition-colors"
             onClick={() => setZoom((z) => Math.max(0.15, z * 0.8))}
@@ -822,7 +820,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, o
             })}
           </div>
 
-          <div className={`h-px ${isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
+          <div className={`h-px ${(layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
 
           <p className="text-[10px] uppercase tracking-widest font-black opacity-60">
             Connection Types
@@ -875,7 +873,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, isWikiMode: propWiki, o
               {cat.label}
             </div>
           ))}
-          <div className={`h-px mt-1 ${isWikiMode ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
+          <div className={`h-px mt-1 ${(layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
           {(Object.keys(EDGE_COLORS) as EdgeKind[]).map((kind) => (
             <div key={kind} className="flex items-center gap-2 text-[10px]">
               <span

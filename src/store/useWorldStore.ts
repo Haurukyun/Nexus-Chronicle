@@ -47,8 +47,6 @@ interface WorldStore {
 
     theme: ThemeMode;
     setTheme: (theme: ThemeMode) => void;
-    isWikiMode: boolean;
-    setIsWikiMode: (mode: boolean) => void;
 
 
     drafts: Record<string, WorldEntity>;
@@ -115,9 +113,7 @@ export const useWorldStore = create<WorldStore>()(
             setActiveTabId: (id) => set({ activeTabId: id }),
 
             theme: 'sovereign',
-            setTheme: (theme) => set({ theme, isWikiMode: theme === 'wiki' }),
-            isWikiMode: false,
-            setIsWikiMode: (mode) => set({ isWikiMode: mode, theme: mode ? 'wiki' : 'sovereign' }),
+            setTheme: (theme) => set({ theme }),
 
 
             drafts: {},
@@ -1399,8 +1395,7 @@ export const useWorldStore = create<WorldStore>()(
                 worlds: state.worlds,
                 activeWorldId: state.activeWorldId,
                 world: state.world,
-                theme: state.theme,
-                isWikiMode: state.isWikiMode
+                theme: state.theme
             }),
             onRehydrateStorage: () => (state) => {
                 if (!state) return;

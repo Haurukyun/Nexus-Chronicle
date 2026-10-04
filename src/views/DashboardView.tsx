@@ -10,7 +10,7 @@ interface DashboardViewProps {
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ world, onNavigate }) => {
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
     const stats = useMemo(() => {
         const counts: Record<string, number> = {};
         world.entities.forEach(e => {
@@ -41,14 +41,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, onNavigate 
 
 
 
-    const colors = isRoyal
+    const colors = (themeId === 'royal-codex')
         ? ['#70121e', '#c8a96e', '#3d5a80', '#2d6a4f', '#6d3b1e']
-        : isWikiMode 
+        : (layoutMode === 'wiki') 
         ? ['#b91c1c', '#7a200d', '#1e40af', '#166534', '#854d0e'] 
         : ['#fef08a', '#fbbf24', '#38bdf8', '#4ade80', '#fb7185'];
 
-    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const bgCard = isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/40' : isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
+    const accent = (themeId === 'royal-codex') ? 'text-[#70121e]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = (themeId === 'royal-codex') ? 'bg-[#f5ead0] border-[#c8a96e]/40' : (layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
 
     const renderPieChart = () => {
         let offset = 0;
@@ -82,7 +82,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, onNavigate 
     return (
         <div className="p-12 max-w-7xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <header className="space-y-2">
-                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>The Architect's Ledger</h1>
+                <h1 className={`text-7xl font-serif font-black uppercase tracking-tighter ${(themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-white'}`}>The Architect's Ledger</h1>
                 <p className="opacity-50 text-sm tracking-[0.3em] uppercase ml-2 italic">World Analytics & Historical Balance</p>
             </header>
 
@@ -124,12 +124,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ world, onNavigate 
                     <div className="space-y-4">
                         {stats.topInterconnected.length > 0 ? stats.topInterconnected.map((e, i) => (
                             <div key={e.id} onClick={() => onNavigate(e.id)}
-                                className={`flex items-center justify-between p-4 rounded-3xl border ${isRoyal ? 'bg-[#ede0c4]/50 border-[#c8a96e]/20' : isWikiMode ? 'bg-[#fdfcf0]/50 border-black/5' : 'bg-white/5 border-white/5'} hover:border-yellow-500/50 cursor-pointer transition-all hover:scale-[1.02]`}>
+                                className={`flex items-center justify-between p-4 rounded-3xl border ${(themeId === 'royal-codex') ? 'bg-[#ede0c4]/50 border-[#c8a96e]/20' : (layoutMode === 'wiki') ? 'bg-[#fdfcf0]/50 border-black/5' : 'bg-white/5 border-white/5'} hover:border-yellow-500/50 cursor-pointer transition-all hover:scale-[1.02]`}>
                                 <div className="flex items-center gap-4">
                                     <span className="text-xl font-serif font-black opacity-20 italic">#{i+1}</span>
                                     <span className="text-xs font-black uppercase tracking-widest">{e.name}</span>
                                 </div>
-                                <div className={`px-4 py-1 rounded-full text-[9px] font-black uppercase ${isRoyal ? 'bg-[#70121e]/10 text-[#70121e]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/10 text-[#fef08a]'}`}>
+                                <div className={`px-4 py-1 rounded-full text-[9px] font-black uppercase ${(themeId === 'royal-codex') ? 'bg-[#70121e]/10 text-[#70121e]' : (layoutMode === 'wiki') ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/10 text-[#fef08a]'}`}>
                                     {(e.parentIds?.length || 0) + (e.childrenIds?.length || 0) + (e.friendIds?.length || 0) + (e.enemyIds?.length || 0)} Ties
                                 </div>
                             </div>

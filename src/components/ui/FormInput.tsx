@@ -3,10 +3,12 @@ import { LucideIcon } from 'lucide-react';
 import { FormInputProps } from '../../types';
 import { useTheme } from '../../theme';
 
-export const FormInput = ({ label, value, onChange, placeholder, type = "text", isWikiMode: _ignored, disabled, options, icon: Icon, gridSpan = 12 }: FormInputProps & { options?: string[], disabled?: boolean, icon?: LucideIcon }) => {
+export const FormInput = ({ label, value, onChange, placeholder, type = "text", disabled, options, icon: Icon, gridSpan = 12 }: FormInputProps & { options?: string[], disabled?: boolean, icon?: LucideIcon }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

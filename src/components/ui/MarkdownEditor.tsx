@@ -30,7 +30,8 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     minHeight = 'h-72',
     label,
 }) => {
-    const { isWikiMode } = useTheme();
+    const { layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('split');
 
     // Wikilink autocomplete state
@@ -244,7 +245,6 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                                 content={value}
                                 allEntities={allEntities}
                                 onNavigate={onNavigate}
-                                isWikiMode={isWikiMode}
                             />
                         ) : (
                             <p className="text-xs italic opacity-30">Preview will appear here...</p>

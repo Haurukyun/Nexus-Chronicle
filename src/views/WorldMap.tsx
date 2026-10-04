@@ -15,7 +15,7 @@ type AnchorMode = 'existing' | 'new';
 
 export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
     const theme = useWorldStore(state => state.theme);
-    const { isWikiMode, isRoyal } = useTheme();
+    const { themeId, layoutMode } = useTheme();
     const [editMode, setEditMode] = useState<'marker' | 'link'>('marker');
     const [linkSource, setLinkSource] = useState<string | null>(null);
 
@@ -179,11 +179,11 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
         pendingConnection ? world.entities.find(e => e.id === pendingConnection.targetId) : null
     , [pendingConnection, world.entities]);
 
-    const accent = isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const bgCard = isRoyal ? 'bg-[#f5ead0]' : isWikiMode ? 'bg-[#f5e6d3]' : 'bg-slate-900';
-    const inputCls = isRoyal
+    const accent = (themeId === 'royal-codex') ? 'text-[#70121e]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = (themeId === 'royal-codex') ? 'bg-[#f5ead0]' : (layoutMode === 'wiki') ? 'bg-[#f5e6d3]' : 'bg-slate-900';
+    const inputCls = (themeId === 'royal-codex')
         ? 'bg-[#fcf5e9] border-[#c8a96e]/50 text-[#2b1810] placeholder:text-[#a08a70] focus:ring-2 focus:ring-[#70121e] focus:border-[#70121e]'
-        : isWikiMode
+        : (layoutMode === 'wiki')
         ? 'bg-white border-[#d4c8af] text-[#2b1810] placeholder:text-[#b0a090] focus:ring-2 focus:ring-[#b91c1c] focus:border-[#b91c1c]'
         : 'bg-slate-800/80 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#fef08a]';
 
@@ -191,29 +191,29 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
         <div className="w-full h-full flex flex-col animate-in fade-in duration-1000 p-12 space-y-8 relative">
             <div className="flex items-end justify-between">
                 <div>
-                    <h2 className={`text-8xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-white'}`}>{world.name} Atlas</h2>
+                    <h2 className={`text-8xl font-serif font-black uppercase tracking-tighter ${(themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-white'}`}>{world.name} Atlas</h2>
                     <p className="opacity-40 text-xs tracking-[0.4em] uppercase ml-2 italic">Strategic Overlays &amp; Ley-Line Cartography</p>
                 </div>
                 
-                <div className={`flex p-2 rounded-3xl border ${isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/40' : isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-900 border-slate-800'} shadow-xl`}>
+                <div className={`flex p-2 rounded-3xl border ${(themeId === 'royal-codex') ? 'bg-[#f5ead0] border-[#c8a96e]/40' : (layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-900 border-slate-800'} shadow-xl`}>
                     <button 
                         onClick={() => { setEditMode('marker'); setLinkSource(null); }}
-                        className={`px-6 py-3 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase transition-all ${editMode === 'marker' ? (isRoyal ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-md' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black shadow-lg shadow-yellow-500/20') : 'hover:bg-white/5 opacity-70'}`}>
+                        className={`px-6 py-3 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase transition-all ${editMode === 'marker' ? ((themeId === 'royal-codex') ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-md' : (layoutMode === 'wiki') ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black shadow-lg shadow-yellow-500/20') : 'hover:bg-white/5 opacity-70'}`}>
                         <Globe size={14} /> Anchors
                     </button>
                     <button 
                         onClick={() => setEditMode('link')}
-                        className={`px-6 py-3 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase transition-all ${editMode === 'link' ? (isRoyal ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-md' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-blue-500 text-white shadow-lg shadow-blue-500/20') : 'hover:bg-white/5 opacity-70'}`}>
+                        className={`px-6 py-3 rounded-2xl flex items-center gap-2 text-[10px] font-black uppercase transition-all ${editMode === 'link' ? ((themeId === 'royal-codex') ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-md' : (layoutMode === 'wiki') ? 'bg-[#b91c1c] text-white' : 'bg-blue-500 text-white shadow-lg shadow-blue-500/20') : 'hover:bg-white/5 opacity-70'}`}>
                         <Link2 size={14} /> {linkSource ? 'Select Target Pin...' : 'Ley-Lines'}
                     </button>
                 </div>
             </div>
 
             <div 
-                className={`flex-1 ${bgCard} rounded-[5rem] border-[16px] ${isRoyal ? 'border-[#c8a96e]/40' : isWikiMode ? 'border-[#d4c8af]' : 'border-slate-800/40'} shadow-2xl relative overflow-hidden group ${editMode === 'marker' ? 'cursor-crosshair' : 'cursor-default'}`} 
+                className={`flex-1 ${bgCard} rounded-[5rem] border-[16px] ${(themeId === 'royal-codex') ? 'border-[#c8a96e]/40' : (layoutMode === 'wiki') ? 'border-[#d4c8af]' : 'border-slate-800/40'} shadow-2xl relative overflow-hidden group ${editMode === 'marker' ? 'cursor-crosshair' : 'cursor-default'}`} 
                 onClick={handleMapClick}
             >
-                <img src={world.mapImage} className={`w-full h-full object-cover opacity-50 ${isWikiMode ? 'sepia-[.8]' : 'sepia-[.4]'} transition-transform duration-[120s] group-hover:scale-110`} alt="World Map" />
+                <img src={world.mapImage} className={`w-full h-full object-cover opacity-50 ${(layoutMode === 'wiki') ? 'sepia-[.8]' : 'sepia-[.4]'} transition-transform duration-[120s] group-hover:scale-110`} alt="World Map" />
                 
                 {/* SVG Layer for Connections */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -258,9 +258,9 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                         className={`absolute -translate-x-1/2 -translate-y-1/2 group/marker z-10 transition-all ${linkSource === loc.id ? 'scale-150 brightness-150 animate-bounce' : ''}`}
                         onClick={(e) => handleMarkerClick(loc.id, e)}>
                         <div className="relative cursor-pointer">
-                            <MapPin className={`${linkSource === loc.id ? 'text-blue-400' : accent} drop-shadow-lg group-hover/marker:scale-150 transition-transform duration-300`} size={32} strokeWidth={2.5} fill={isRoyal ? "#70121e22" : isWikiMode ? "#b91c1c22" : "#fef08a44"} />
-                            <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 p-1 opacity-0 group-hover/marker:opacity-100 transition-all ${isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]' : isWikiMode ? 'bg-[#fdfcf0] border-[#b91c1c]' : 'bg-slate-950 border-[#fef08a]'} border-2 px-5 py-2 rounded-2xl whitespace-nowrap shadow-2xl pointer-events-none`}>
-                                <span className={`text-sm font-black ${isRoyal ? 'text-[#3d0a10]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'} uppercase tracking-widest`}>{loc.name}</span>
+                            <MapPin className={`${linkSource === loc.id ? 'text-blue-400' : accent} drop-shadow-lg group-hover/marker:scale-150 transition-transform duration-300`} size={32} strokeWidth={2.5} fill={(themeId === 'royal-codex') ? "#70121e22" : (layoutMode === 'wiki') ? "#b91c1c22" : "#fef08a44"} />
+                            <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 p-1 opacity-0 group-hover/marker:opacity-100 transition-all ${(themeId === 'royal-codex') ? 'bg-[#f5ead0] border-[#c8a96e]' : (layoutMode === 'wiki') ? 'bg-[#fdfcf0] border-[#b91c1c]' : 'bg-slate-950 border-[#fef08a]'} border-2 px-5 py-2 rounded-2xl whitespace-nowrap shadow-2xl pointer-events-none`}>
+                                <span className={`text-sm font-black ${(themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-[#fef08a]'} uppercase tracking-widest`}>{loc.name}</span>
                             </div>
                         </div>
                     </div>
@@ -272,7 +272,7 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
                     <form
                         onSubmit={handleConfirmAnchor}
-                        className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]' : isWikiMode ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}
+                        className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${(themeId === 'royal-codex') ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]' : (layoutMode === 'wiki') ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between border-b pb-4 border-current/10">
@@ -289,13 +289,13 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                         </div>
 
                         {/* Mode tabs */}
-                        <div className={`flex rounded-2xl p-1 border ${isRoyal ? 'bg-[#e8dbbf] border-[#c8a96e]/40' : isWikiMode ? 'bg-[#f0e8d8] border-[#d4c8af]' : 'bg-black/30 border-slate-700/50'}`}>
+                        <div className={`flex rounded-2xl p-1 border ${(themeId === 'royal-codex') ? 'bg-[#e8dbbf] border-[#c8a96e]/40' : (layoutMode === 'wiki') ? 'bg-[#f0e8d8] border-[#d4c8af]' : 'bg-black/30 border-slate-700/50'}`}>
                             <button
                                 type="button"
                                 onClick={() => { setAnchorMode('existing'); setDuplicateError(''); setReplaceConfirm(false); }}
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${
                                     anchorMode === 'existing'
-                                        ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm' : isWikiMode ? 'bg-[#b91c1c] text-white shadow' : 'bg-[#fef08a] text-black shadow-lg'
+                                        ? (themeId === 'royal-codex') ? 'bg-[#70121e] text-[#fff8e7] shadow-sm' : (layoutMode === 'wiki') ? 'bg-[#b91c1c] text-white shadow' : 'bg-[#fef08a] text-black shadow-lg'
                                         : 'opacity-50 hover:opacity-80'
                                 }`}
                             >
@@ -306,7 +306,7 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                                 onClick={() => { setAnchorMode('new'); setDuplicateError(''); setReplaceConfirm(false); }}
                                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${
                                     anchorMode === 'new'
-                                        ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm' : isWikiMode ? 'bg-[#b91c1c] text-white shadow' : 'bg-[#fef08a] text-black shadow-lg'
+                                        ? (themeId === 'royal-codex') ? 'bg-[#70121e] text-[#fff8e7] shadow-sm' : (layoutMode === 'wiki') ? 'bg-[#b91c1c] text-white shadow' : 'bg-[#fef08a] text-black shadow-lg'
                                         : 'opacity-50 hover:opacity-80'
                                 }`}
                             >
@@ -336,7 +336,7 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                                         </div>
 
                                         {/* Scrollable list */}
-                                        <div className={`max-h-52 overflow-y-auto rounded-xl border divide-y ${isWikiMode ? 'border-[#d4c8af] divide-[#d4c8af]' : 'border-slate-700 divide-slate-700/60'}`}>
+                                        <div className={`max-h-52 overflow-y-auto rounded-xl border divide-y ${(layoutMode === 'wiki') ? 'border-[#d4c8af] divide-[#d4c8af]' : 'border-slate-700 divide-slate-700/60'}`}>
                                             {filteredLocations.length === 0 ? (
                                                 <div className="p-4 text-center text-xs opacity-40 italic">No matches found</div>
                                             ) : filteredLocations.map(loc => {
@@ -349,17 +349,17 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                                                         onClick={() => { setSelectedExistingId(loc.id); setReplaceConfirm(false); }}
                                                         className={`w-full flex items-center justify-between px-4 py-3 text-left transition-all text-xs ${
                                                             isSelected
-                                                                ? isWikiMode ? 'bg-[#b91c1c]/10' : 'bg-yellow-400/10'
-                                                                : isWikiMode ? 'hover:bg-[#b91c1c]/5' : 'hover:bg-white/5'
+                                                                ? (layoutMode === 'wiki') ? 'bg-[#b91c1c]/10' : 'bg-yellow-400/10'
+                                                                : (layoutMode === 'wiki') ? 'hover:bg-[#b91c1c]/5' : 'hover:bg-white/5'
                                                         }`}
                                                     >
-                                                        <span className={`font-bold ${isSelected ? (isWikiMode ? 'text-[#b91c1c]' : 'text-yellow-300') : ''}`}>
+                                                        <span className={`font-bold ${isSelected ? ((layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-yellow-300') : ''}`}>
                                                             {loc.name}
                                                         </span>
                                                         <span className={`text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full ${
                                                             hasCoords
                                                                 ? 'bg-amber-500/20 text-amber-400'
-                                                                : isWikiMode ? 'bg-slate-200 text-slate-500' : 'bg-slate-700 text-slate-400'
+                                                                : (layoutMode === 'wiki') ? 'bg-slate-200 text-slate-500' : 'bg-slate-700 text-slate-400'
                                                         }`}>
                                                             {hasCoords ? 'Anchored' : 'Unanchored'}
                                                         </span>
@@ -455,9 +455,9 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                                         : !markerNameInput.trim()
                                 }
                                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                                    isRoyal
+                                    (themeId === 'royal-codex')
                                         ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] disabled:opacity-40 border border-[#c8a96e] shadow-md'
-                                        : isWikiMode
+                                        : (layoutMode === 'wiki')
                                         ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b] disabled:opacity-40'
                                         : 'bg-[#fef08a] text-black hover:bg-yellow-400 disabled:opacity-40 shadow-lg shadow-yellow-500/20'
                                 }`}
@@ -476,7 +476,7 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
             {/* ===== Modal: New Ley-Line Connection ===== */}
             {pendingConnection && createPortal(
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]' : isWikiMode ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}>
+                    <div className={`w-full max-w-lg p-8 rounded-3xl border shadow-2xl space-y-6 ${(themeId === 'royal-codex') ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#2b1810]' : (layoutMode === 'wiki') ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-[#c8a96e]/50 text-slate-100'}`}>
                         <div className="flex items-center justify-between border-b pb-4 border-slate-700/50">
                             <div className="flex items-center gap-3">
                                 <Link2 size={22} className={accent} />
@@ -511,9 +511,9 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                                         onClick={() => setSelectedConnectionType(option.id as any)}
                                         className={`p-4 rounded-2xl border text-left flex flex-col gap-2 transition-all ${
                                             selectedConnectionType === option.id
-                                                ? isRoyal
+                                                ? (themeId === 'royal-codex')
                                                     ? 'bg-[#70121e]/15 border-[#70121e] ring-1 ring-[#70121e]'
-                                                    : isWikiMode 
+                                                    : (layoutMode === 'wiki') 
                                                     ? 'bg-[#b91c1c]/10 border-[#b91c1c] ring-1 ring-[#b91c1c]'
                                                     : 'bg-slate-800 border-[#fef08a] ring-1 ring-[#fef08a]'
                                                 : 'border-current/10 hover:border-current/30 opacity-60 hover:opacity-100'
@@ -541,9 +541,9 @@ export const WorldMap = ({ world, setWorld, onNavigate }: WorldMapProps) => {
                                 type="button"
                                 onClick={handleConfirmConnection}
                                 className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                                    isRoyal
+                                    (themeId === 'royal-codex')
                                         ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border border-[#c8a96e] shadow-md'
-                                        : isWikiMode 
+                                        : (layoutMode === 'wiki') 
                                         ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]' 
                                         : 'bg-blue-500 text-white hover:bg-blue-400 shadow-lg shadow-blue-500/20'
                                 }`}

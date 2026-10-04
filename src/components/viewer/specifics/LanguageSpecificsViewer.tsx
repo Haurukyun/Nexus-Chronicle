@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Language, WorldEntity } from '../../../types';
 import { FieldRow, LinksDisplay } from '../../ui';
 import { useTheme } from '../../../theme';
@@ -7,36 +7,35 @@ interface Props {
     entity: Language;
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
     backlinks?: any;
 }
 
-export const LanguageSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {
+export const LanguageSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, backlinks }) => {
     const { t } = useTheme();
     return (
         <div className="space-y-8">
             <div className={`${t.card.base} p-8 rounded-2xl`}>
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Vital Records</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                    <FieldRow label="Estimated speaker count" value={entity.speakerCount} isWikiMode={isWikiMode} />
-                    <FieldRow label="Traditions & Customs connected to the language" value={entity.traditions} isWikiMode={isWikiMode} />
+                    <FieldRow label="Estimated speaker count" value={entity.speakerCount} />
+                    <FieldRow label="Traditions & Customs connected to the language" value={entity.traditions} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Language family" ids={entity.languageFamily || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Predecessor Languages" ids={entity.predecessorLanguages || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Evolved into Languages" ids={entity.followingLanguages || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Language family" ids={entity.languageFamily || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Predecessor Languages" ids={entity.predecessorLanguages || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Evolved into Languages" ids={entity.followingLanguages || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>
             <div className={`${t.card.base} p-8 rounded-2xl`}>
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Connections</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                    <FieldRow label="History & Contemporary situation" value={entity.description} isWikiMode={isWikiMode} />
+                    <FieldRow label="History & Contemporary situation" value={entity.description} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Connected to Lore notes/Other notes" ids={entity.pairedConnectedNotes || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Spoken by Occupations/Classes" ids={entity.pairedConnectedProfessions || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected to Characters" ids={entity.pairedCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected to Locations" ids={entity.pairedLocations || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected to Species/Races/Flora/Fauna" ids={entity.usedByRaces || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Connected to Lore notes/Other notes" ids={entity.pairedConnectedNotes || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Spoken by Occupations/Classes" ids={entity.pairedConnectedProfessions || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected to Characters" ids={entity.pairedCharacter || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected to Locations" ids={entity.pairedLocations || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected to Species/Races/Flora/Fauna" ids={entity.usedByRaces || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>
@@ -44,11 +43,11 @@ export const LanguageSpecificsViewer: React.FC<Props> = ({ entity, allEntities, 
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Governance</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Spoken in Ideologies/Political groups" ids={entity.usedInPoliticalGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Used by Organizations/Other groups" ids={entity.usedInOtherGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Spoken in Teachings/Religious groups" ids={entity.usedInReligiousGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Spoken in Magical groups" ids={entity.usedInMagicalGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Spoken in Science/Technology groups" ids={entity.usedInTechGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Spoken in Ideologies/Political groups" ids={entity.usedInPoliticalGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Used by Organizations/Other groups" ids={entity.usedInOtherGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Spoken in Teachings/Religious groups" ids={entity.usedInReligiousGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Spoken in Magical groups" ids={entity.usedInMagicalGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Spoken in Science/Technology groups" ids={entity.usedInTechGroups || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>

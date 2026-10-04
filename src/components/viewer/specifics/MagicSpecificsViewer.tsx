@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Magic, WorldEntity } from '../../../types';
 import { FieldRow, LinksDisplay } from '../../ui';
 import { useTheme } from '../../../theme';
@@ -7,41 +7,40 @@ interface Props {
     entity: Magic;
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
-    isWikiMode: boolean;
     backlinks?: any;
 }
 
-export const MagicSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, isWikiMode, backlinks }) => {
+export const MagicSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onNavigate, backlinks }) => {
     const { t } = useTheme();
     return (
         <div className="space-y-8">
             <div className={`${t.card.base} p-8 rounded-2xl`}>
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Governance</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                    <FieldRow label="Leading Figures" value={entity.leaders} isWikiMode={isWikiMode} />
-                    <FieldRow label="General schools of magic" value={entity.formMagic} isWikiMode={isWikiMode} />
+                    <FieldRow label="Leading Figures" value={entity.leaders} />
+                    <FieldRow label="General schools of magic" value={entity.formMagic} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Magic/Spell Users" ids={entity.pairedCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Succeeding Schools of Magic/Magical groups" ids={entity.succedingMagicGroup || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Preceding Schools of Magic/Magical groups" ids={entity.preceedingMagicGroup || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Headquarters" ids={entity.headquarters || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Related Schools of Magic" ids={entity.pairedSpells || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Ruled/Influenced Locations" ids={entity.governLocations || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected Political groups" ids={entity.pairedConnectedPolGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Allied Political groups" ids={entity.pairedAllyPolGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Enemy Political groups" ids={entity.pairedEnemyPolGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected Organizations/Other groups" ids={entity.pairedConnectedOtherGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Allied Organizations/Other groups" ids={entity.pairedAllyOtherGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Enemy Organizations/Other groups" ids={entity.pairedEnemyOtherGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected Teachings/Religious groups" ids={entity.pairedConnectedReligiousGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Allied Teachings/Religious groups" ids={entity.pairedAllyReligiousGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Enemy Teachings/Religious groups" ids={entity.pairedEnemyReligiousGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected Schools of Magic/Magical groups" ids={entity.pairedConnectedMagicalGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Allied Schools of Magic/Magical groups" ids={entity.pairedAllyMagicalGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Enemy Schools of Magic/Magical groups" ids={entity.pairedEnemyMagicalGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected Sciences/Technological groups" ids={entity.pairedConnectedTechGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Allied Sciences/Technological groups" ids={entity.pairedAllyTechGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Enemy Sciences/Technological groups" ids={entity.pairedEnemyTechGroups || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Magic/Spell Users" ids={entity.pairedCharacter || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Succeeding Schools of Magic/Magical groups" ids={entity.succedingMagicGroup || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Preceding Schools of Magic/Magical groups" ids={entity.preceedingMagicGroup || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Headquarters" ids={entity.headquarters || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Related Schools of Magic" ids={entity.pairedSpells || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Ruled/Influenced Locations" ids={entity.governLocations || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected Political groups" ids={entity.pairedConnectedPolGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Allied Political groups" ids={entity.pairedAllyPolGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Enemy Political groups" ids={entity.pairedEnemyPolGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected Organizations/Other groups" ids={entity.pairedConnectedOtherGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Allied Organizations/Other groups" ids={entity.pairedAllyOtherGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Enemy Organizations/Other groups" ids={entity.pairedEnemyOtherGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected Teachings/Religious groups" ids={entity.pairedConnectedReligiousGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Allied Teachings/Religious groups" ids={entity.pairedAllyReligiousGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Enemy Teachings/Religious groups" ids={entity.pairedEnemyReligiousGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected Schools of Magic/Magical groups" ids={entity.pairedConnectedMagicalGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Allied Schools of Magic/Magical groups" ids={entity.pairedAllyMagicalGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Enemy Schools of Magic/Magical groups" ids={entity.pairedEnemyMagicalGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected Sciences/Technological groups" ids={entity.pairedConnectedTechGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Allied Sciences/Technological groups" ids={entity.pairedAllyTechGroups || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Enemy Sciences/Technological groups" ids={entity.pairedEnemyTechGroups || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>
@@ -49,41 +48,41 @@ export const MagicSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onN
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Inventory & Resources</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Important items" ids={entity.pairedItems || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Important Resources/Materials" ids={entity.pairedConnectedResources || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected to Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Important items" ids={entity.pairedItems || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Important Resources/Materials" ids={entity.pairedConnectedResources || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected to Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>
             <div className={`${t.card.base} p-8 rounded-2xl`}>
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Vital Records</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                    <FieldRow label="Date of creation" value={entity.creationTime} isWikiMode={isWikiMode} />
-                    <FieldRow label="Date of end" value={entity.endTIme} isWikiMode={isWikiMode} />
-                    <FieldRow label="Type" value={entity.typeMagic} isWikiMode={isWikiMode} />
+                    <FieldRow label="Date of creation" value={entity.creationTime} />
+                    <FieldRow label="Date of end" value={entity.endTIme} />
+                    <FieldRow label="Type" value={entity.typeMagic} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Common Languages" ids={entity.localLanguages || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected to Myths, legends and stories" ids={entity.pairedConnectedMyths || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Common Languages" ids={entity.localLanguages || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected to Myths, legends and stories" ids={entity.pairedConnectedMyths || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>
             <div className={`${t.card.base} p-8 rounded-2xl`}>
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Connections</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                    <FieldRow label="Name for members/followers" value={entity.followerName} isWikiMode={isWikiMode} />
-                    <FieldRow label="Member/User count" value={entity.users} isWikiMode={isWikiMode} />
-                    <FieldRow label="Follower/Subject count" value={entity.followers} isWikiMode={isWikiMode} />
-                    <FieldRow label="Description & History" value={entity.description} isWikiMode={isWikiMode} />
+                    <FieldRow label="Name for members/followers" value={entity.followerName} />
+                    <FieldRow label="Member/User count" value={entity.users} />
+                    <FieldRow label="Follower/Subject count" value={entity.followers} />
+                    <FieldRow label="Description & History" value={entity.description} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Leading Figures" ids={entity.leadingCharacters || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected to Afflictions/Boons/Conditions" ids={entity.pairedConditions || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Common Species/Races/Flora/Fauna" ids={entity.connectedRaces || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected to Lore notes/Other notes" ids={entity.pairedConnectedNotes || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected Locations" ids={entity.connectedLocations || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected Events" ids={entity.connectedEvents || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected Characters" ids={entity.pairedConnectionCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Prominent Members" ids={entity.pairedBelongingCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Connected to Occupations/Classes" ids={entity.pairedConnectedProfessions || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Leading Figures" ids={entity.leadingCharacters || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected to Afflictions/Boons/Conditions" ids={entity.pairedConditions || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Common Species/Races/Flora/Fauna" ids={entity.connectedRaces || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected to Lore notes/Other notes" ids={entity.pairedConnectedNotes || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected Locations" ids={entity.connectedLocations || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected Events" ids={entity.connectedEvents || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected Characters" ids={entity.pairedConnectionCharacter || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Prominent Members" ids={entity.pairedBelongingCharacter || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Connected to Occupations/Classes" ids={entity.pairedConnectedProfessions || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>
@@ -91,7 +90,7 @@ export const MagicSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onN
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Stats & Knowledge</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Connected to Skills/Spells/Other" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Connected to Skills/Spells/Other" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>
@@ -105,7 +104,7 @@ export const MagicSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onN
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Traditions & Customs</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-2">
-                        <LinksDisplay label="Connected to Cultures/Art" ids={entity.pairedConnectedCultures || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Connected to Cultures/Art" ids={entity.pairedConnectedCultures || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>
@@ -113,8 +112,8 @@ export const MagicSpecificsViewer: React.FC<Props> = ({ entity, allEntities, onN
                 <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent}`}>Interpersonal Web</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
-                        <LinksDisplay label="Prominent Allies" ids={entity.pairedAllyCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
-                        <LinksDisplay label="Prominent Enemies" ids={entity.pairedEnemyCharacter || []} all={allEntities} onNav={onNavigate} isWikiMode={isWikiMode} />
+                        <LinksDisplay label="Prominent Allies" ids={entity.pairedAllyCharacter || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Prominent Enemies" ids={entity.pairedEnemyCharacter || []} all={allEntities} onNav={onNavigate} />
                     </div>
                 </div>
             </div>

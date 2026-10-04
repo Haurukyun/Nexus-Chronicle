@@ -64,7 +64,7 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
 
                 {/* Radar Chart */}
                 <div className="py-1 flex items-center justify-center">
-                    <RadarChart stats={stats} isWikiMode={false} />
+                    <RadarChart stats={stats} />
                 </div>
 
                 {/* Attribute Score Header */}
@@ -167,7 +167,7 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
 
                 {/* Radar Chart */}
                 <div className="py-2 flex items-center justify-center bg-[#fdfcf0]/70 border-b border-[#d4c8af]">
-                    <RadarChart stats={stats} isWikiMode={true} />
+                    <RadarChart stats={stats} />
                 </div>
 
                 {/* Attributes Grid */}
@@ -309,7 +309,7 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
 
             {/* Radar Chart */}
             <div className="py-1 flex items-center justify-center relative">
-                <RadarChart stats={stats} isWikiMode={false} />
+                <RadarChart stats={stats} />
             </div>
 
             {/* Core Attributes Grid */}

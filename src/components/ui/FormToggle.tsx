@@ -3,8 +3,9 @@ import { LucideIcon } from 'lucide-react';
 import { FormToggleProps } from '../../types';
 import { useTheme } from '../../theme';
 
-export const FormToggle = ({ label, checked, onChange, isWikiMode: _ignored, disabled, icon: Icon, gridSpan = 12 }: FormToggleProps & { disabled?: boolean, icon?: LucideIcon }) => {
-    const { isWikiMode } = useTheme();
+export const FormToggle = ({ label, checked, onChange, disabled, icon: Icon, gridSpan = 12 }: FormToggleProps & { disabled?: boolean, icon?: LucideIcon }) => {
+    const { layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     return (
         <div 
             className={`flex items-center justify-between p-2 rounded-lg hover:bg-black/5 transition-all ${disabled ? 'opacity-50 pointer-events-none' : ''}`}

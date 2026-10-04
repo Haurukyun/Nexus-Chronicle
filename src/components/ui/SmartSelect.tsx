@@ -3,11 +3,12 @@ import { X, Plus, Check, LucideIcon } from 'lucide-react';
 import { SmartSelectProps } from '../../types';
 import { useTheme } from '../../theme';
 
-export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({ label, ids = [], type, all, onChange, onCreate, isWikiMode: _ignored, disabled, icon: Icon, gridSpan = 12, excludeIds = [] }) => {
+export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({ label, ids = [], type, all, onChange, onCreate, disabled, icon: Icon, gridSpan = 12, excludeIds = [] }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const { isWikiMode } = useTheme();
+    const { layoutMode } = useTheme();
+    const isWikiMode = layoutMode === 'wiki';
     const filtered = all.filter((e: any) => e.type === type && e.name.toLowerCase().includes(search.toLowerCase()) && !excludeIds.includes(e.id));
 
     useEffect(() => {
