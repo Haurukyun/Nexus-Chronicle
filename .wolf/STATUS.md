@@ -112,18 +112,23 @@ budget_tokens: 1000
   - **Single-Entry Lore Export** (`exportUtils.ts`, `ViewerHeaders.tsx`): Built single-entry Markdown (Obsidian frontmatter + sections) and styled HTML exports accessible via `ExportDropdown` in `CodexHeader`, `WikiHeader`, and `RoyalHeader`. Includes relational notes in exported markdown/html.
   - **Batch Lore Sharing** (`OptionsView.tsx`): Added a "Lore Sharing — Markdown & HTML Export" section in System Settings with EntityType filtering and 1-click batch download for Markdown or styled standalone HTML.
   - **Canonical Sidebar Advanced Search & Filtering** (`Sidebar.tsx`): Wired `filteredEntities` in `Sidebar.tsx` to canonical `documentModeUtils` helpers (`isEntityFinished`, `isEntityMinor`, `isEntityDeceased`, `isEntityCategory`, `getEntityAliases`). Supports `is:finished`, `is:minor`, `is:dead`/`is:deceased`/`is:fallen`, `is:alive`/`is:living`, `is:cat`/`is:folder`, `type:<type>`, `tag:<tag>`, aliases, and description tokens.
-  - **Unit Test Coverage** (`relationalNotesUtils.test.ts`): 6 dedicated unit tests validating composite key formatting, retrieval, and clean fallback. All 30 unit tests across 7 test suites pass in sub-second time.
+  - **Direct Fantasia Archive Project Migration Tool** (`fantasiaArchiveMigration.ts`, `entityDefaults.ts`, `OptionsView.tsx`):
+    - Full importer supporting project ZIP archives (unpacked via `fflate.unzipSync`), multi-file PouchDB replication dump streams (`.txt` NDJSON), and CouchDB/FA JSON exports.
+    - Exhaustive mapping across all 20 blueprints, group affiliations, relational context notes (`addedValues`), and document flags (`categorySwitch`, `deadSwitch`, `finishedSwitch`, `minorSwitch`).
+    - Automated circular parent detection and break, with instant bidirectional relationship reconciliation across all imported entities.
+    - System Settings UI in `OptionsView.tsx` with "Import as New Realm" and "Merge into Active Realm" options, with native desktop file dialog bridge.
+  - **Comprehensive Unit Test Coverage** (`fantasiaArchiveMigration.test.ts`, `relationalNotesUtils.test.ts`): 12 dedicated unit tests covering NDJSON streams, ZIP unpacking, group affiliations, circular loops, and bidirectional synchronization. All 36 tests across 8 test suites pass in sub-second time.
 
 ---
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P9: Codex Ergonomics & Timeline / Chronos Polish_
+**Goal:** _Phase P9: Chronos Timeline Overhaul & Custom Eras_
 
 ### Scope
-1. **Interactive Timeline / Chronos Polish**: Support custom era prefixes (e.g. "B.C.E.", "A.G.", "Year of the Sun"), visual milestone markers, and event grouping on the Chronos timeline ribbons.
+1. **Interactive Timeline / Chronos Polish**: Support custom fantasy era prefixes (e.g. "B.C.E.", "3rd Age", "Year of the Sun", epoch offsets), visual milestone markers, and event grouping on the Chronos timeline ribbons.
 2. **Custom Metadata / Freeform Key-Value Attributes**: Allow custom arbitrary key-value lore attributes on entities.
-3. **Fantasia Archive Direct Migration Utility**: Import tool to directly translate raw Fantasia Archive `.json` savefiles into Nexus Chronicle universe stores.
+3. **Interactive Nexus Graph Polish**: Edge relation filters, minor entity suppression, and hover card relational note previews.
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)

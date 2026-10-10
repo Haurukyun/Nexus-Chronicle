@@ -17,6 +17,8 @@ import { exportNexusArchiveFile, unpackNexusArchive, downloadFileToDevice } from
 import { isDesktopApp, openFileNative } from '../utils/nativeFileBridge';
 import { pruneOrphanAssets, extractActiveAssetUris } from '../utils/assetStore';
 import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../utils/exportUtils';
+import { importFantasiaArchiveProject, FaInputFile } from '../utils/fantasiaArchiveMigration';
+import { reconcileAllBidirectionalRelations } from '../utils/bidirectionalSync';
 
 interface OptionsViewProps {
     world: WorldData;
@@ -158,6 +160,10 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
     const [nexusExporting, setNexusExporting] = useState(false);
     const nexusImportRef = useRef<HTMLInputElement>(null);
     const jsonImportRef = useRef<HTMLInputElement>(null);
+    const [faNotice, setFaNotice] = useState<{ text: string; isError?: boolean } | null>(null);
+    const [faMigrating, setFaMigrating] = useState(false);
+    const faImportRef = useRef<HTMLInputElement>(null);
+    const faImportModeRef = useRef<'new' | 'merge'>('new');
 
     const accent = t.colors.textAccent;
     const bgCard = `${t.card.base}`;
@@ -272,6 +278,70 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
             processJsonText(event.target?.result as string);
         };
         reader.readAsText(file);
+        e.target.value = '';
+    };
+
+    const processFaFiles = async (fileList: FileList | File[], mode: 'new' | 'merge') => {
+        setFaMigrating(true);
+        setFaNotice(null);
+        try {
+            const inputFiles: FaInputFile[] = [];
+            for (let i = 0; i < fileList.length; i++) {
+                const file = fileList[i];
+                const buffer = await file.arrayBuffer();
+                inputFiles.push({
+                    name: file.name,
+                    content: new Uint8Array(buffer)
+                });
+            }
+
+            const result = importFantasiaArchiveProject(inputFiles);
+            if (!result.success || !result.world) {
+                setFaNotice({ text: result.message, isError: true });
+                return;
+            }
+
+            if (mode === 'merge') {
+                const existingIds = new Set(world.entities.map(e => e.id));
+                const newEntities = result.entities.filter(e => !existingIds.has(e.id));
+                const updatedEntities = [...world.entities, ...newEntities];
+                const reconciled = reconcileAllBidirectionalRelations(updatedEntities);
+                setWorld({ ...world, entities: reconciled });
+                setFaNotice({
+                    text: `✓ Merged ${newEntities.length} entries into "${world.name}" (${result.stats.relationshipsCount} relations linked).`
+                });
+            } else {
+                const importRes = importWorldData(result.world, 'new');
+                setFaNotice({
+                    text: `✓ ${result.message} (${result.stats.relationshipsCount} relations synchronized).`,
+                    isError: !importRes.success
+                });
+            }
+        } catch (err: any) {
+            setFaNotice({ text: `Migration failed: ${err?.message || 'Unknown error'}`, isError: true });
+        } finally {
+            setFaMigrating(false);
+        }
+    };
+
+    const handleFaClick = async (mode: 'new' | 'merge') => {
+        if (isDesktopApp()) {
+            const fileData = await openFileNative([
+                { name: 'Fantasia Archive (*.zip, *.json, *.txt)', extensions: ['zip', 'json', 'txt'] }
+            ]);
+            if (!fileData) return;
+            const file = new File([fileData.data], fileData.fileName, { type: 'application/octet-stream' });
+            await processFaFiles([file], mode);
+        } else {
+            faImportModeRef.current = mode;
+            faImportRef.current?.click();
+        }
+    };
+
+    const handleImportFaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        await processFaFiles(files, faImportModeRef.current);
         e.target.value = '';
     };
 
@@ -666,6 +736,63 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
 
                                 <p className="text-[9px] opacity-30 font-mono">
                                     NexusBeam transfers archives directly device-to-device via WebRTC — no cloud, no size limits, works globally via STUN relay.
+                                </p>
+                            </div>
+
+                            {/* Fantasia Archive Migration */}
+                            <div className="p-5 rounded-2xl bg-amber-950/20 border border-amber-500/25 space-y-4">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <Sparkles size={14} className="text-amber-400" />
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-amber-300">Fantasia Archive Migration (.zip / .txt / .json)</span>
+                                        </div>
+                                        <p className="text-[11px] opacity-50 font-serif italic mt-1">
+                                            Migrate existing projects directly from Fantasia Archive v1. Translates all 20 blueprints, group affiliations, relational context notes, and automatically establishes two-way bidirectional sync.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {faNotice && (
+                                    <div className={`p-3 rounded-xl border text-[10px] flex items-center justify-between gap-2 ${
+                                        faNotice.isError
+                                            ? 'bg-red-500/10 border-red-500/30 text-red-300'
+                                            : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                                    }`}>
+                                        <span>{faNotice.text}</span>
+                                        <button onClick={() => setFaNotice(null)} className="opacity-60 hover:opacity-100 font-bold">✕</button>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <button
+                                        onClick={() => handleFaClick('new')}
+                                        disabled={faMigrating}
+                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-100 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                                    >
+                                        <Upload size={13} /> {faMigrating ? 'Migrating Codex…' : 'Import as New Realm'}
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleFaClick('merge')}
+                                        disabled={faMigrating}
+                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-amber-500/20 hover:border-amber-400 hover:bg-amber-500/10 text-amber-200 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                                    >
+                                        <Layers size={13} /> {faMigrating ? 'Migrating…' : `Merge into "${world.name}"`}
+                                    </button>
+
+                                    <input
+                                        ref={faImportRef}
+                                        type="file"
+                                        multiple
+                                        className="hidden"
+                                        accept=".zip,.txt,.json"
+                                        onChange={handleImportFaChange}
+                                    />
+                                </div>
+
+                                <p className="text-[9px] opacity-35 font-mono">
+                                    Accepts a .zip export of a project folder, multiple .txt/.json database dumps selected together, or a single raw export file.
                                 </p>
                             </div>
                         </div>
