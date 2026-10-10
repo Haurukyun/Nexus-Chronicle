@@ -13,6 +13,7 @@ import { FormInput, FormToggle, SmartSelect, MarkdownEditor } from '../ui';
 import { EntityEditorProps, Location } from '../../types';
 import { EntitySpecificsRegistry } from './specifics/EntitySpecificsRegistry';
 import { useTheme } from '../../theme';
+import { isEntityCategory } from '../../utils/documentModeUtils';
 
 export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, onUpdate }: EntityEditorProps) => {
     const { themeId, layoutMode } = useTheme();
@@ -77,22 +78,69 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                         excludeIds={[entity.id]}
                     />
                     
-                    <FormInput label="Text color" icon={Type} value={entity.textColor} type="color" onChange={(v: string) => onUpdate({ ...entity, textColor: v })} gridSpan={3} />
-                    <FormInput label="Background color" icon={PaintBucket} value={entity.backgroundColor} type="color" onChange={(v: string) => onUpdate({ ...entity, backgroundColor: v })} gridSpan={3} />
-                    <FormToggle label="Is finished" icon={CheckSquare} checked={entity.isFinished} onChange={(v: boolean) => onUpdate({ ...entity, isFinished: v })} gridSpan={3} />
-                    <FormInput label="Order number" icon={Hash} value={entity.orderNumber || ""} onChange={(v: string) => onUpdate({ ...entity, orderNumber: v })} gridSpan={3} />
-
-                    <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-500/5">
-                        <FormToggle label="Is a minor document" icon={Search} checked={entity.isMinorDocument} onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v })} />
-                        <FormToggle label="Is Dead/Gone/Destroyed" icon={Skull} checked={entity.isDead} onChange={(v: boolean) => onUpdate({ ...entity, isDead: v })} />
-                        <FormToggle label="Is a category" icon={Box} checked={entity.isCategory} onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v })} />
+                    <div className="col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl border border-slate-500/10 bg-black/5">
+                        <FormToggle 
+                            label="Clean Codex (Finished)" 
+                            icon={CheckSquare} 
+                            checked={Boolean(entity.isFinished || entity.finishedSwitch)} 
+                            onChange={(v: boolean) => onUpdate({ ...entity, isFinished: v, finishedSwitch: v })} 
+                        />
+                        <FormToggle 
+                            label="Folder / Category" 
+                            icon={Box} 
+                            checked={Boolean(entity.isCategory || entity.categorySwitch)} 
+                            onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v, categorySwitch: v })} 
+                        />
+                        <FormToggle 
+                            label="Dead / Fallen / Ruined" 
+                            icon={Skull} 
+                            checked={Boolean(entity.isDead || entity.deadSwitch)} 
+                            onChange={(v: boolean) => onUpdate({ ...entity, isDead: v, deadSwitch: v })} 
+                        />
+                        <FormToggle 
+                            label="Minor Background Entry" 
+                            icon={Search} 
+                            checked={Boolean(entity.isMinorDocument || entity.minorSwitch)} 
+                            onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v, minorSwitch: v })} 
+                        />
                     </div>
 
-                    <FormInput label="Tags" icon={Tag} value={entity.tags?.join(', ')} placeholder="Fantasy, Hero, Royal..." onChange={(v: string) => onUpdate({ ...entity, tags: v.split(',').map(s => s.trim()) })} gridSpan={12} />
+                    <FormInput 
+                        label="Accent / Sigil color" 
+                        icon={PaintBucket} 
+                        value={entity.documentColor || entity.textColor || ""} 
+                        type="color" 
+                        onChange={(v: string) => onUpdate({ ...entity, documentColor: v, textColor: v })} 
+                        gridSpan={4} 
+                    />
+                    <FormInput 
+                        label="Archetype / Template" 
+                        icon={FileText} 
+                        value={entity.documentTemplate || (entity.docTemplate ? entity.docTemplate[0] : "None")} 
+                        options={['None', 'Protagonist', 'Antagonist', 'Major Ally', 'Major Rival', 'NPC', 'Legendary', 'Deity']} 
+                        onChange={(v: string) => onUpdate({ ...entity, documentTemplate: v, docTemplate: [v] })} 
+                        gridSpan={8} 
+                    />
 
-                    <FormInput label="Document Template" icon={FileText} value={entity.documentTemplate || "None"} options={['None', 'Protagonist', 'Antagonist', 'NPC', 'Legendary', 'Deity']} onChange={(v: string) => onUpdate({ ...entity, documentTemplate: v })} gridSpan={4} />
-                    <FormInput label="Extra HTML classes" icon={Code} value={entity.extraHtmlClasses || ""} onChange={(v: string) => onUpdate({ ...entity, extraHtmlClasses: v })} gridSpan={8} />
-                    <FormInput label="Other Names & Epithets" icon={UserCircle} value={entity.otherNamesAndEpithets || ""} onChange={(v: string) => onUpdate({ ...entity, otherNamesAndEpithets: v })} gridSpan={12} />
+                    <FormInput 
+                        label="Tags" 
+                        icon={Tag} 
+                        value={entity.tags?.join(', ') || ""} 
+                        placeholder="Fantasy, Hero, Royal, Arcane..." 
+                        onChange={(v: string) => onUpdate({ ...entity, tags: v.split(',').map(s => s.trim()).filter(Boolean) })} 
+                        gridSpan={6} 
+                    />
+                    <FormInput 
+                        label="Other Names & Epithets" 
+                        icon={UserCircle} 
+                        value={entity.otherNamesAndEpithets || (Array.isArray(entity.otherNames) ? entity.otherNames.join(', ') : "")} 
+                        placeholder="The Golden King, Lord of Cinders..." 
+                        onChange={(v: string) => {
+                            const arr = v.split(',').map(s => s.trim()).filter(Boolean);
+                            onUpdate({ ...entity, otherNamesAndEpithets: v, otherNames: arr });
+                        }} 
+                        gridSpan={6} 
+                    />
                 </EditorGroup>
 
                 {/* 2. PORTRAIT & IMAGERY (UNIVERSAL) */}
@@ -120,7 +168,17 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                     </div>
                 </EditorGroup>
 
-                <EntitySpecificsRegistry entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
+                {isEntityCategory(entity) ? (
+                    <div className="p-8 rounded-3xl border border-dashed border-teal-500/30 bg-teal-500/5 text-center space-y-2">
+                        <FolderTree className="w-10 h-10 text-teal-400 mx-auto opacity-70" />
+                        <h3 className="font-serif font-bold text-lg text-teal-300">Folder / Category Mode Active</h3>
+                        <p className="text-xs opacity-60 max-w-md mx-auto">
+                            This entry acts as an organizational folder for child records. Type-specific stat blocks and mechanical fields are suppressed to maintain a clean container view.
+                        </p>
+                    </div>
+                ) : (
+                    <EntitySpecificsRegistry entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
+                )}
 
                 {/* 4. UNIVERSAL CONNECTIONS */}
                 <EditorGroup title="World & Details" icon={Scroll}>

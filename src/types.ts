@@ -74,6 +74,17 @@ export interface BaseEntity {
   coordinates?: { x: number; y: number };
   spoilerNotes?: string; // Standardized spoiler field from blueprints
   imageUri?: string; // Portrait / illustration — asset:// vault URI or external web URL
+
+  // UI state & compatibility aliases
+  isFinished?: boolean;
+  isMinorDocument?: boolean;
+  isDead?: boolean;
+  isCategory?: boolean;
+  documentTemplate?: string;
+  extraHtmlClasses?: string;
+  otherNamesAndEpithets?: string;
+  textColor?: string;
+  backgroundColor?: string;
 }
 
 // --- GENERATED SPECIFIC INTERFACES ---

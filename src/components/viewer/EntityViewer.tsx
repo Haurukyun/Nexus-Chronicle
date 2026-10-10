@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Folder } from 'lucide-react';
 import { CodexHeader, WikiHeader, RoyalHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
@@ -11,6 +12,7 @@ import { EntitySpecificsViewerRegistry } from './specifics/EntitySpecificsViewer
 import { ViewerSectionCard } from './ViewerSectionCard';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
+import { isEntityDeceased, isEntityCategory, isEntityFinished } from '../../utils/documentModeUtils';
 
 export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
@@ -20,6 +22,11 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const { layoutMode, themeId } = useTheme();
     const isWiki = layoutMode === 'wiki';
     const updateEntityLock = useWorldStore(state => state.updateEntityLock);
+
+    const isDeceased = isEntityDeceased(entity);
+    const isCategory = isEntityCategory(entity);
+    const isFinished = isEntityFinished(entity);
+    const childEntities = useMemo(() => allEntities.filter(e => e.parentId === entity.id), [allEntities, entity.id]);
 
     const handleToggleLock = () => {
         updateEntityLock(entity.id, !entity.isReadOnly);
@@ -58,7 +65,10 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
                 {/* Biography / Overview Section */}
                 {(!(themeId === 'royal-codex') || activeTab === 'overview' || activeTab === 'biography') && (
-                    <ViewerSectionCard title={isChar ? 'Biography' : 'Overview'} badgeText={(entity as any).isFinished || entity.finishedSwitch ? 'Finished' : undefined}>
+                    <ViewerSectionCard 
+                        title={isCategory ? 'Category Overview' : (isChar ? 'Biography' : 'Overview')} 
+                        badgeText={isCategory ? 'Folder Container' : (isFinished ? 'Finished' : undefined)}
+                    >
                         <div className="flex flex-col sm:flex-row items-start gap-4">
                             {entity.description?.trim() ? (
                                 <MarkdownRenderer
@@ -77,11 +87,54 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 )}
 
 
-                {/* Specifics Sections */}
-                {(!(themeId === 'royal-codex') || activeTab === 'overview') && (
-                    <div className="space-y-6">
-                        <EntitySpecificsViewerRegistry entity={entity} allEntities={allEntities} onNavigate={onNavigate} backlinks={backlinks} />
-                    </div>
+                {/* Specifics Sections OR Category Directory */}
+                {isCategory ? (
+                    <ViewerSectionCard title="Folder Contents & Nested Entries" badgeText={`${childEntities.length} Entries`}>
+                        {childEntities.length === 0 ? (
+                            <p className={`text-sm opacity-50 italic py-4 ${(themeId === 'royal-codex') ? 'font-serif' : ''}`}>
+                                No child entries are currently filed under this folder container.
+                            </p>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                {childEntities.map(child => {
+                                    const isChildDeceased = isEntityDeceased(child);
+                                    const isChildCat = isEntityCategory(child);
+                                    return (
+                                        <button
+                                            key={child.id}
+                                            onClick={() => onNavigate(child.id)}
+                                            className={`p-3.5 rounded-xl border text-left flex items-start justify-between gap-3 transition-all hover:scale-[1.01] shadow-sm ${
+                                                isWiki
+                                                    ? 'bg-white border-[#d4c8af] hover:border-[#b91c1c]/50'
+                                                    : (themeId === 'royal-codex')
+                                                    ? 'bg-[#f7f0e1] border-[#c8a96e]/60 hover:border-[#70121e]'
+                                                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-600'
+                                            }`}
+                                        >
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center gap-1.5">
+                                                    {isChildCat && <Folder size={12} className="text-teal-400 shrink-0" />}
+                                                    <span className={`text-xs font-bold truncate ${isChildDeceased ? 'line-through opacity-80' : ''}`}>
+                                                        {child.name}
+                                                    </span>
+                                                    {isChildDeceased && <span className="text-[11px] font-serif text-rose-400 font-bold">†</span>}
+                                                </div>
+                                                <div className="text-[9px] uppercase tracking-widest opacity-50 mt-0.5">
+                                                    {TYPE_LABELS[child.type]}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </ViewerSectionCard>
+                ) : (
+                    (!(themeId === 'royal-codex') || activeTab === 'overview') && (
+                        <div className="space-y-6">
+                            <EntitySpecificsViewerRegistry entity={entity} allEntities={allEntities} onNavigate={onNavigate} backlinks={backlinks} />
+                        </div>
+                    )
                 )}
 
                 {entity.spoilerNotes && (!(themeId === 'royal-codex') || activeTab === 'overview') && (

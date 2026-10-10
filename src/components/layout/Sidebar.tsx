@@ -2,8 +2,9 @@ import React, { useMemo, useState, useRef } from 'react';
 import { 
     Search, Plus, Trash2, BarChart3, History, GitMerge, 
     Footprints, Globe, Settings, BookMarked, Compass, 
-    ChevronRight, ChevronDown, GripVertical
+    ChevronRight, ChevronDown, GripVertical, Folder
 } from 'lucide-react';
+import { isEntityDeceased, isEntityCategory, isEntityFinished, isEntityMinor } from '../../utils/documentModeUtils';
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
 import { useWorldStore } from '../../store/useWorldStore';
@@ -257,7 +258,7 @@ const EntityItem: React.FC<{
                     isBeingDragged ? 'opacity-40' : ''
                 } ${dropIndicatorClass} ${
                     isActive ? activeStyle : hoverStyle
-                } ${entity.minorSwitch ? 'italic opacity-50' : ''}`}
+                } ${isEntityMinor(entity) ? 'italic opacity-50' : ''} ${isEntityDeceased(entity) ? 'opacity-80' : ''}`}
                 style={customStyle}
                 title={`Drag to reparent or reorder: "${entity.name}"`}
             >
@@ -280,10 +281,11 @@ const EntityItem: React.FC<{
                         className="flex-1 text-left py-2 text-xs truncate flex items-center justify-between gap-2 pr-2"
                     >
                         <span className="truncate flex items-center gap-1.5">
-                            {entity.name}
-                            {entity.finishedSwitch && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" title="Finished" />}
-                            {entity.deadSwitch && <span className="text-[8px] opacity-40">💀</span>}
-                            {entity.categorySwitch && <span className="text-[8px] opacity-40 font-bold px-1 rounded bg-slate-500/20">CAT</span>}
+                            {isEntityCategory(entity) && <Folder size={11} className="text-teal-400 shrink-0 opacity-80" />}
+                            {entity.documentColor && <span className="w-1.5 h-1.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: entity.documentColor }} />}
+                            <span className={isEntityDeceased(entity) ? 'line-through opacity-85' : ''}>{entity.name}</span>
+                            {isEntityDeceased(entity) && <span className="text-[11px] font-serif text-rose-400 font-bold shrink-0 leading-none" title="Deceased / Fallen">†</span>}
+                            {isEntityFinished(entity) && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)] shrink-0" title="Finished" />}
                         </span>
                         {dropPosition === 'inside' && (
                             <span className={`text-[8px] font-bold px-1 rounded uppercase tracking-wider pointer-events-none select-none shrink-0 ${

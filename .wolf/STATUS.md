@@ -97,18 +97,25 @@ budget_tokens: 1000
   - **Deep Categorized Backlink Lineage**: Expanded `backlinkUtils.ts` with `predecessors`, `successors`, `prerequisites`, and `unlocks` tracking across locations, species evolution, language roots, cultures, group lineages, ability dependencies, and resource refining chains. Included magic/tech users in `practitioners`.
   - **Codex Relations Inspector**: Updated `EntityViewer.tsx` to render "Preceding Roots / Ancestors", "Succeeding Branches / Descendants", "Prerequisites / Components", and "Enables / Refines Into" links for any entity.
   - **Automated Test Validation**: Added unit test coverage in `bidirectionalSync.test.ts` validating magic user synchronization and political group historical succession.
+- **Phase P7 Document Modes & Codex Ergonomics** —
+  - **Unified Document State Utilities** (`src/utils/documentModeUtils.ts`): Implemented and tested canonical helpers `isEntityDeceased(e)`, `isEntityCategory(e)`, `isEntityFinished(e)`, `isEntityMinor(e)`, and `getEntityAliases(e)` to resolve field name divergence across Fantasia Archive v1 schema and Nexus Chronicle (`deadSwitch` / `deathDate` / `dateOfDeath` / `isDead`, `categorySwitch` / `isCategory`, `finishedSwitch` / `isFinished`, `minorSwitch` / `isMinorDocument`).
+  - **Standardized Document Settings Grid** (`EntityEditor.tsx`): Canonical 4-mode toggle grid in the Document Settings card. Bound `documentColor` / `textColor`, `tags`, and `otherNamesAndEpithets` / `otherNames`. Removed dead inputs for obsolete `extraHtmlClasses` and `orderNumber`.
+  - **Folder / Category Container Mode**: When `isEntityCategory(entity)` is enabled, `EntityEditor.tsx` suppresses the empty attribute specifics registry and renders an informative "Folder / Category Mode Active" banner. In `EntityViewer.tsx`, renders a "Folder Contents & Nested Entries" Directory card listing all children (`parentId === entity.id`) with type badges, deceased indicators, and 1-click navigation.
+  - **Deceased / Fallen Indicators**: Sidebar renders `†` dagger and line-through text styling for deceased characters/fallen kingdoms (`isEntityDeceased`). SmartSelect chips and dropdown options show `†` and folder icons. Viewer headers (`CodexHeader`, `WikiHeader`, `RoyalHeader`) render a `†` next to the name and a status badge pill.
+  - **Clean Codex Reader Mode (`finishedSwitch`)**: Sidebar renders an emerald dot for completed entries (`isEntityFinished`); viewer headers display a `● Completed` badge.
+  - **Minor Entry Ergonomics**: Sidebar dims and italicizes minor background entries (`isEntityMinor`). `SmartSelect.tsx` filters out minor entries by default with a `[+N Minor]` toggle button to reveal them on demand without search query clutter.
+  - **Comprehensive Test Suite**: Added `documentModeUtils.test.ts` (10 unit tests) covering state switches and alias deduplication. All 24 tests across 6 test suites pass in ~390ms.
 
 ---
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P7: Document Modes & Codex Ergonomics (Reader / Category / Deceased / Minor switches)_
+**Goal:** _Phase P8: Relational Context & Annotated Link Notes (Fantasia Archive Synergy Phase 3)_
 
 ### Scope
-1. **Reader / Clean Codex Mode (`finishedSwitch`)**: Global or per-viewer toggle hiding empty/unfilled attribute fields for a clean, distraction-free reading experience.
-2. **Category / Folder Container Mode (`categorySwitch`)**: Flags an entity as an organizational container, suppressing granular attributes while keeping hierarchy, description, and children visible.
-3. **Deceased / Fallen Indicator (`deadSwitch`)**: Leverage `isDeceased` logic across the sidebar tree, search selectors, and cards with a dignified `†` symbol and status treatment.
-4. **Minor Entry Exclusion (`minorSwitch`)**: Tag background NPCs or minor locations to prevent cluttering primary entity selectors while remaining searchable in the sidebar.
+1. **Annotated Link Details / Relational Notes**: In Fantasia Archive, relationships can have individual descriptive context (e.g. not just "Aurelius is connected to Marcus", but "Marcus betrayed Aurelius during the Siege of Sol"). Allow key relationships to carry optional brief context annotations or tags.
+2. **Batch Export / Import Ergonomics**: Per-category JSON/Markdown export, or single-entry markdown sharing.
+3. **Advanced Filter & Search Bar**: Search by tag, alias/epithet, alive/deceased status, or category in the sidebar search input.
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
@@ -119,8 +126,8 @@ budget_tokens: 1000
 - Markdown rendering: **marked** + **DOMPurify**
 
 ### Open decisions
-- Should `.wolf/` be committed to git? (currently untracked, `.wolf/.gitignore` excludes machine-state but not core files)
-- What is the next feature to build?
+- Should relationship annotations be stored inline in a relational map (e.g. `relationNotes: Record<string, string>`) on `BaseEntity`?
+- What is the user's preferred format for quick entry exports (plain markdown with frontmatter vs HTML)?
 
 
 ---
