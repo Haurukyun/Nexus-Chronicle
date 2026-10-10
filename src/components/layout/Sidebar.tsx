@@ -4,7 +4,7 @@ import {
     Footprints, Globe, Settings, BookMarked, Compass, 
     ChevronRight, ChevronDown, GripVertical, Folder
 } from 'lucide-react';
-import { isEntityDeceased, isEntityCategory, isEntityFinished, isEntityMinor } from '../../utils/documentModeUtils';
+import { isEntityDeceased, isEntityCategory, isEntityFinished, isEntityMinor, getEntityAliases } from '../../utils/documentModeUtils';
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
 import { useWorldStore } from '../../store/useWorldStore';
@@ -387,24 +387,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
     const filteredEntities = useMemo(() => {
         if (!searchQuery) return world.entities;
-        const tokens = searchQuery.toLowerCase().split(' ');
+        const tokens = searchQuery.toLowerCase().split(' ').filter(Boolean);
         return world.entities.filter(entity => {
+            const aliases = getEntityAliases(entity);
+            const isDead = isEntityDeceased(entity);
+            const isCat = isEntityCategory(entity);
+            const isFin = isEntityFinished(entity);
+            const isMin = isEntityMinor(entity);
+
             return tokens.every(token => {
-                if (token.startsWith('type:')) return entity.type.includes(token.split(':')[1]);
-                if (token.startsWith('tag:')) return entity.tags?.some(t => t.toLowerCase().includes(token.split(':')[1]));
+                if (token.startsWith('type:')) {
+                    const searchType = token.split(':')[1];
+                    return entity.type.toLowerCase().includes(searchType);
+                }
+                if (token.startsWith('tag:')) {
+                    const searchTag = token.split(':')[1];
+                    return entity.tags?.some(t => t.toLowerCase().includes(searchTag));
+                }
                 if (token.startsWith('temp:')) {
                     const searchTemp = token.split(':')[1];
                     const templates = Array.isArray(entity.docTemplate) ? entity.docTemplate : [entity.docTemplate];
                     return templates.some(t => t?.toLowerCase().includes(searchTemp));
                 }
-                if (token === 'is:finished') return entity.finishedSwitch;
-                if (token === 'is:minor') return entity.minorSwitch;
-                if (token === 'is:dead') return entity.deadSwitch;
-                if (token === 'is:cat' || token === 'is:category') return entity.categorySwitch;
+                if (token === 'is:finished' || token === 'is:completed') return isFin;
+                if (token === 'is:minor') return isMin;
+                if (token === 'is:dead' || token === 'is:deceased' || token === 'is:fallen') return isDead;
+                if (token === 'is:alive' || token === 'is:living') return !isDead;
+                if (token === 'is:cat' || token === 'is:category' || token === 'is:folder') return isCat;
                 return (
                     entity.name.toLowerCase().includes(token) ||
-                    entity.otherNames?.some(n => n.toLowerCase().includes(token)) ||
-                    entity.description?.toLowerCase().includes(token)
+                    aliases.some(n => n.toLowerCase().includes(token)) ||
+                    entity.description?.toLowerCase().includes(token) ||
+                    entity.tags?.some(t => t.toLowerCase().includes(token))
                 );
             });
         });

@@ -74,6 +74,9 @@ export interface BaseEntity {
   coordinates?: { x: number; y: number };
   spoilerNotes?: string; // Standardized spoiler field from blueprints
   imageUri?: string; // Portrait / illustration — asset:// vault URI or external web URL
+  
+  // Relational context & annotated link notes (stores `${field}:${targetId}`: note)
+  relationalNotes?: Record<string, string>;
 
   // UI state & compatibility aliases
   isFinished?: boolean;
@@ -934,12 +937,21 @@ export interface EntityViewerProps {
     onFocusMap: () => void;
 }
 
+export interface RelationalNoteEntry {
+    field: string;
+    targetId: string;
+    note: string;
+}
+
 export interface LinksDisplayProps {
     label: string;
     ids: string[];
     all: WorldEntity[];
     onNav: (id: string) => void;
     wikiStyle?: 'tag' | 'inline';
+    fieldKey?: string;
+    relationalNotes?: Record<string, string>;
+    allRelationalNotes?: Record<string, string>;
 }
 
 export interface FormInputProps {
@@ -969,6 +981,12 @@ export interface SmartSelectProps {
     gridSpan?: number;
     /** IDs to exclude from the selectable options (e.g., prevent self-reference) */
     excludeIds?: string[];
+    /** Field identifier for scoping relational notes (e.g. 'allyResCharacter') */
+    fieldKey?: string;
+    /** Current entity's relational notes map */
+    relationalNotes?: Record<string, string>;
+    /** Callback to update relational notes */
+    onRelationalNotesChange?: (notes: Record<string, string>) => void;
 }
 
 export interface FieldRowProps {

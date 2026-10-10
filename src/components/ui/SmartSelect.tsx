@@ -1,13 +1,31 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Plus, Check, LucideIcon, Folder, Eye, EyeOff } from 'lucide-react';
+import { X, Plus, Check, LucideIcon, Folder, Eye, EyeOff, FileText, Edit3, MessageSquare } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { SmartSelectProps } from '../../types';
 import { useTheme } from '../../theme';
 import { isEntityDeceased, isEntityCategory, isEntityMinor } from '../../utils/documentModeUtils';
+import { getRelationalNote, setRelationalNote, formatFieldLabel } from '../../utils/relationalNotesUtils';
 
-export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({ label, ids = [], type, all, onChange, onCreate, disabled, icon: Icon, gridSpan = 12, excludeIds = [] }) => {
+export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = ({
+    label,
+    ids = [],
+    type,
+    all,
+    onChange,
+    onCreate,
+    disabled,
+    icon: Icon,
+    gridSpan = 12,
+    excludeIds = [],
+    fieldKey,
+    relationalNotes,
+    onRelationalNotesChange,
+}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [showMinor, setShowMinor] = useState(false);
+    const [editingNoteTargetId, setEditingNoteTargetId] = useState<string | null>(null);
+    const [noteDraftText, setNoteDraftText] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { layoutMode } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
@@ -39,18 +57,54 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
     }, []);
 
     const toggleId = (id: string) => {
-        if (ids.includes(id)) onChange(ids.filter((i: string) => i !== id));
-        else onChange([...ids, id]);
+        if (ids.includes(id)) {
+            onChange(ids.filter((i: string) => i !== id));
+            // Non-destructively clean up only this specific field's relational note
+            if (fieldKey && onRelationalNotesChange && relationalNotes) {
+                const nextNotes = setRelationalNote(relationalNotes, fieldKey, id, '');
+                onRelationalNotesChange(nextNotes);
+            }
+        } else {
+            onChange([...ids, id]);
+        }
+    };
+
+    const handleOpenNoteModal = (targetId: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const currentNote = getRelationalNote(relationalNotes, fieldKey || 'general', targetId);
+        setNoteDraftText(currentNote);
+        setEditingNoteTargetId(targetId);
+    };
+
+    const handleSaveNote = () => {
+        if (!editingNoteTargetId) return;
+        if (onRelationalNotesChange) {
+            const nextNotes = setRelationalNote(
+                relationalNotes,
+                fieldKey || 'general',
+                editingNoteTargetId,
+                noteDraftText
+            );
+            onRelationalNotesChange(nextNotes);
+        }
+        setEditingNoteTargetId(null);
     };
 
     const bgInput = isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700';
     const tagClass = isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c] border-[#b91c1c]/30' : 'bg-[#fef08a]/10 text-[#fef08a] border-[#fef08a]/30';
+
+    const editingTarget = editingNoteTargetId ? all.find((e: any) => e.id === editingNoteTargetId) : null;
 
     return (
         <div className="space-y-1 relative" style={{ gridColumn: `span ${gridSpan}` }} ref={dropdownRef}>
             <div className="flex items-center gap-2 pl-1 mb-1">
                 {Icon && <Icon size={12} className={isWikiMode ? 'text-[#b91c1c]/60' : 'text-[#fef08a]/60'} />}
                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</label>
+                {fieldKey && (
+                    <span className="text-[9px] opacity-40 font-mono ml-auto">
+                        annotated
+                    </span>
+                )}
             </div>
             <div
                 onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -61,12 +115,31 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
                     const target = all.find((e: any) => e.id === id);
                     const isDeceased = isEntityDeceased(target);
                     const isCategory = isEntityCategory(target);
+                    const note = getRelationalNote(relationalNotes, fieldKey || 'general', id);
+                    const hasNote = Boolean(note && note.trim().length > 0);
+
                     return (
                         <span key={id} className={`${tagClass} px-2 py-0.5 rounded border flex items-center gap-1.5 group/tag`}>
                             {isCategory && <Folder size={10} className="opacity-70 shrink-0 text-teal-400" />}
                             <span>{target?.name || 'Unknown'}</span>
                             {isDeceased && <span className="font-serif text-[11px] text-rose-400 font-bold leading-none">†</span>}
-                            {!disabled && <X size={10} className="hover:text-black cursor-pointer shrink-0 ml-0.5" onClick={(e) => { e.stopPropagation(); toggleId(id); }} />}
+                            
+                            {/* Relational Context Note Trigger */}
+                            {onRelationalNotesChange && !disabled && (
+                                <button
+                                    type="button"
+                                    onClick={(e) => handleOpenNoteModal(id, e)}
+                                    title={hasNote ? `Context Note: "${note}"` : `Add relationship context note`}
+                                    className={`px-1 py-0.5 rounded transition-all flex items-center gap-0.5 ${hasNote ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40 font-mono text-[9px]' : 'opacity-30 hover:opacity-100 hover:text-white'}`}
+                                >
+                                    <FileText size={9} />
+                                    {hasNote && <span className="max-w-[70px] truncate">{note}</span>}
+                                </button>
+                            )}
+
+                            {!disabled && (
+                                <X size={10} className="hover:text-black cursor-pointer shrink-0 ml-0.5" onClick={(e) => { e.stopPropagation(); toggleId(id); }} />
+                            )}
                         </span>
                     );
                 })}
@@ -122,6 +195,83 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
                         })}
                     </div>
                 </div>
+            )}
+
+            {/* Field-Scoped Relational Context Note Modal (Portaled to document.body) */}
+            {editingNoteTargetId && editingTarget && createPortal(
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+                    <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-lg w-full p-6 shadow-2xl text-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-start justify-between gap-3 border-b border-slate-800 pb-3">
+                            <div>
+                                <div className="flex items-center gap-2 text-amber-400 text-[10px] uppercase font-black tracking-widest mb-1">
+                                    <MessageSquare size={13} />
+                                    <span>Relationship Context Note</span>
+                                </div>
+                                <h3 className="text-base font-black text-white">
+                                    {editingTarget.name}
+                                    <span className="text-xs font-normal text-slate-400 ml-2">
+                                        ({fieldKey ? formatFieldLabel(fieldKey) : label})
+                                    </span>
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setEditingNoteTargetId(null)}
+                                className="text-slate-400 hover:text-white p-1 rounded-lg"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                Relational Context & History
+                            </label>
+                            <p className="text-[11px] text-slate-400 italic">
+                                Add specific context explaining this connection (e.g. "Betrayed Aurelius during the Siege of Sol", "Mentored her swordsmanship in youth").
+                            </p>
+                            <textarea
+                                autoFocus
+                                rows={4}
+                                value={noteDraftText}
+                                onChange={(e) => setNoteDraftText(e.target.value)}
+                                placeholder="Enter context or historical annotation for this relationship..."
+                                className="w-full bg-slate-950/80 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-amber-400 transition-colors"
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2">
+                            {noteDraftText.trim() ? (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setNoteDraftText('');
+                                    }}
+                                    className="text-[11px] text-rose-400 hover:text-rose-300 font-bold"
+                                >
+                                    Clear Note
+                                </button>
+                            ) : <div />}
+
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingNoteTargetId(null)}
+                                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleSaveNote}
+                                    className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors shadow-lg shadow-amber-400/20"
+                                >
+                                    Save Annotation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>,
+                document.body
             )}
         </div>
     );

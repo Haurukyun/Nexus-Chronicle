@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Scroll, Trash2, Save, Lock, Unlock, Folder } from 'lucide-react';
+import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2 } from 'lucide-react';
 import { WorldEntity } from '../../types';
 import { isEntityCategory, isEntityDeceased, isEntityFinished } from '../../utils/documentModeUtils';
+import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../../utils/exportUtils';
+import { useWorldStore } from '../../store/useWorldStore';
+import { useTheme } from '../../theme';
 
 interface HeaderProps {
     entity: WorldEntity;
@@ -29,10 +32,68 @@ const ConfirmDeleteButton: React.FC<{ onConfirm: () => void; className: string; 
     );
 };
 
+/** Dropdown export menu for a single codex entry */
+const ExportDropdown: React.FC<{ entity: WorldEntity; allEntities: WorldEntity[]; theme: string; className?: string }> = ({
+    entity, allEntities, theme, className = ''
+}) => {
+    const [open, setOpen] = useState(false);
+
+    const handleExportMarkdown = async () => {
+        setOpen(false);
+        const md = generateEntityMarkdown(entity, allEntities);
+        const cleanName = entity.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        await downloadTextFile(md, `${cleanName}.md`, 'text/markdown');
+    };
+
+    const handleExportHtml = async () => {
+        setOpen(false);
+        const html = generateEntityHtml(entity, allEntities, theme);
+        const cleanName = entity.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        await downloadTextFile(html, `${cleanName}.html`, 'text/html');
+    };
+
+    return (
+        <div className={`relative ${className}`}>
+            <button
+                onClick={() => setOpen(!open)}
+                title="Export this entry"
+                className="flex items-center gap-1.5 p-2.5 rounded-xl border border-current/20 opacity-50 hover:opacity-100 transition-all"
+            >
+                <Download size={16} />
+            </button>
+            {open && (
+                <>
+                    <div className="fixed inset-0 z-[200]" onClick={() => setOpen(false)} />
+                    <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border bg-slate-900 border-slate-700 shadow-2xl z-[201] overflow-hidden">
+                        <div className="px-3 pt-2.5 pb-1 text-[9px] font-black uppercase tracking-widest text-slate-500">Export Entry</div>
+                        <button
+                            onClick={handleExportMarkdown}
+                            className="w-full text-left px-3 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors"
+                        >
+                            <FileText size={14} className="text-emerald-400" />
+                            Markdown (.md)
+                            <span className="text-[10px] text-slate-500 ml-auto">Obsidian</span>
+                        </button>
+                        <button
+                            onClick={handleExportHtml}
+                            className="w-full text-left px-3 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors border-t border-slate-800"
+                        >
+                            <FileCode2 size={14} className="text-sky-400" />
+                            HTML Document (.html)
+                            <span className="text-[10px] text-slate-500 ml-auto">Portable</span>
+                        </button>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+};
+
 export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => {
     const isCat = isEntityCategory(entity);
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
+    const allEntities = useWorldStore(s => s.world.entities);
 
     return (
         <header className="border-b border-slate-800/80 pb-8 mb-8">
@@ -61,9 +122,10 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                     {entity.otherNames && <p className="text-slate-500 text-2xl font-serif italic opacity-60">"{entity.otherNames}"</p>}
                 </div>
                 <div className="flex items-center gap-4 shrink-0">
+                    <ExportDropdown entity={entity} allEntities={allEntities} theme="sovereign" />
                     {entity.isReadOnly ? (
-                        <button 
-                            onClick={onToggleLock} 
+                        <button
+                            onClick={onToggleLock}
                             className="flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/60 px-6 py-4 rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-amber-500/30 hover:scale-105 transition-all shadow-lg active:scale-95"
                             title="Entry is locked against edits. Click to Unlock and edit."
                         >
@@ -88,6 +150,7 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
     const isCat = isEntityCategory(entity);
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
+    const allEntities = useWorldStore(s => s.world.entities);
 
     return (
         <header className="border-b-4 border-[#b91c1c] pb-2 flex justify-between items-end mb-10">
@@ -116,9 +179,15 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
                 {entity.otherNames && <p className="text-[#854d0e] text-lg font-serif italic mt-1">"{entity.otherNames}"</p>}
             </div>
             <div className="flex items-center gap-3 pb-2 shrink-0">
+                <ExportDropdown
+                    entity={entity}
+                    allEntities={allEntities}
+                    theme="wiki"
+                    className="text-[#b91c1c]"
+                />
                 {entity.isReadOnly ? (
-                    <button 
-                        onClick={onToggleLock} 
+                    <button
+                        onClick={onToggleLock}
                         className="flex items-center gap-1.5 px-4 py-2 bg-amber-100 border border-amber-400 text-amber-900 rounded font-serif text-xs font-bold hover:bg-amber-200 transition-all shadow-sm"
                         title="Entry is locked. Click to Unlock."
                     >
@@ -142,6 +211,7 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
     const isCat = isEntityCategory(entity);
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
+    const allEntities = useWorldStore(s => s.world.entities);
 
     return (
         <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex justify-between items-center mb-6">
@@ -169,9 +239,15 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                 {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1">"{entity.otherNames}"</p>}
             </div>
             <div className="flex items-center gap-3">
+                <ExportDropdown
+                    entity={entity}
+                    allEntities={allEntities}
+                    theme="royal-codex"
+                    className="text-[#70121e]"
+                />
                 {entity.isReadOnly ? (
-                    <button 
-                        onClick={onToggleLock} 
+                    <button
+                        onClick={onToggleLock}
                         className="flex items-center gap-2 bg-[#3f2210] text-[#fff8e7] border border-[#d4af37] px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#522d16] transition-all shadow-md"
                         title="Entry is locked. Click to Unlock and edit."
                     >
@@ -192,4 +268,3 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
         </header>
     );
 };
-

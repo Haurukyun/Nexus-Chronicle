@@ -175,6 +175,7 @@ export const useWorldStore = create<WorldStore>()(
                     detailItemIds: [],
                     detailConditionIds: [],
                     detailResourceIds: [],
+                    relationalNotes: {},
                                         ...(type === 'chapter' ? {
                         pairedConnectedNotes: [],
                         content: "",

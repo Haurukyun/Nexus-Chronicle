@@ -104,30 +104,39 @@ budget_tokens: 1000
   - **Deceased / Fallen Indicators**: Sidebar renders `†` dagger and line-through text styling for deceased characters/fallen kingdoms (`isEntityDeceased`). SmartSelect chips and dropdown options show `†` and folder icons. Viewer headers (`CodexHeader`, `WikiHeader`, `RoyalHeader`) render a `†` next to the name and a status badge pill.
   - **Clean Codex Reader Mode (`finishedSwitch`)**: Sidebar renders an emerald dot for completed entries (`isEntityFinished`); viewer headers display a `● Completed` badge.
   - **Minor Entry Ergonomics**: Sidebar dims and italicizes minor background entries (`isEntityMinor`). `SmartSelect.tsx` filters out minor entries by default with a `[+N Minor]` toggle button to reveal them on demand without search query clutter.
-  - **Comprehensive Test Suite**: Added `documentModeUtils.test.ts` (10 unit tests) covering state switches and alias deduplication. All 24 tests across 6 test suites pass in ~390ms.
+  - **Phase P8 Relational Context, Annotated Notes & Lore Export (Fantasia Archive Synergy Phase 3)** —
+  - **Relational Context & Annotated Link Notes** (`relationalNotesUtils.ts`, `types.ts`): Added `relationalNotes: Record<string, string>` to `BaseEntity` keyed by composite field identifier (`field:targetId`). Cleanly tracks specific relationship notes (e.g. "Marcus betrayed Aurelius during the Siege of Sol") per linked entity.
+  - **Contextual Note Editing in SmartSelect** (`SmartSelect.tsx`): Added a note annotation pencil toggle to linked entity chips in `SmartSelect`, allowing worldbuilders to inspect and edit context notes in an inline modal without leaving the field editor.
+  - **Relational Notes Viewer Display** (`LinksDisplay.tsx`, `CharacterSpecificsViewer.tsx`): Updated `LinksDisplay` to accept `relationalNotes` and render subtle, styled contextual quotes beneath linked entity chips across viewer tabs.
+  - **Automatic Deletion Cleanup** (`bidirectionalSync.ts`): Updated `removeEntityRelationsOnDelete` to purge orphaned relational notes from remaining entities when any referenced entity is deleted to trash.
+  - **Single-Entry Lore Export** (`exportUtils.ts`, `ViewerHeaders.tsx`): Built single-entry Markdown (Obsidian frontmatter + sections) and styled HTML exports accessible via `ExportDropdown` in `CodexHeader`, `WikiHeader`, and `RoyalHeader`. Includes relational notes in exported markdown/html.
+  - **Batch Lore Sharing** (`OptionsView.tsx`): Added a "Lore Sharing — Markdown & HTML Export" section in System Settings with EntityType filtering and 1-click batch download for Markdown or styled standalone HTML.
+  - **Canonical Sidebar Advanced Search & Filtering** (`Sidebar.tsx`): Wired `filteredEntities` in `Sidebar.tsx` to canonical `documentModeUtils` helpers (`isEntityFinished`, `isEntityMinor`, `isEntityDeceased`, `isEntityCategory`, `getEntityAliases`). Supports `is:finished`, `is:minor`, `is:dead`/`is:deceased`/`is:fallen`, `is:alive`/`is:living`, `is:cat`/`is:folder`, `type:<type>`, `tag:<tag>`, aliases, and description tokens.
+  - **Unit Test Coverage** (`relationalNotesUtils.test.ts`): 6 dedicated unit tests validating composite key formatting, retrieval, and clean fallback. All 30 unit tests across 7 test suites pass in sub-second time.
 
 ---
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P8: Relational Context & Annotated Link Notes (Fantasia Archive Synergy Phase 3)_
+**Goal:** _Phase P9: Codex Ergonomics & Timeline / Chronos Polish_
 
 ### Scope
-1. **Annotated Link Details / Relational Notes**: In Fantasia Archive, relationships can have individual descriptive context (e.g. not just "Aurelius is connected to Marcus", but "Marcus betrayed Aurelius during the Siege of Sol"). Allow key relationships to carry optional brief context annotations or tags.
-2. **Batch Export / Import Ergonomics**: Per-category JSON/Markdown export, or single-entry markdown sharing.
-3. **Advanced Filter & Search Bar**: Search by tag, alias/epithet, alive/deceased status, or category in the sidebar search input.
+1. **Interactive Timeline / Chronos Polish**: Support custom era prefixes (e.g. "B.C.E.", "A.G.", "Year of the Sun"), visual milestone markers, and event grouping on the Chronos timeline ribbons.
+2. **Custom Metadata / Freeform Key-Value Attributes**: Allow custom arbitrary key-value lore attributes on entities.
+3. **Fantasia Archive Direct Migration Utility**: Import tool to directly translate raw Fantasia Archive `.json` savefiles into Nexus Chronicle universe stores.
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
 - Styling: **TailwindCSS** (inline class strings)
 - Build tool: **Vite 6 + @vitejs/plugin-react**
 - React version: **19.2.3**
-- No database — all data lives in browser localStorage via Zustand persist
+- Relational notes storage: **`Record<string, string>` with composite keys (`field:targetId`) on `BaseEntity`**
+- Export formats: **Single-entry & Batch Markdown (Obsidian-ready) + Styled Standalone HTML**
+- No database — all data lives in browser/WebView localStorage via Zustand persist
 - Markdown rendering: **marked** + **DOMPurify**
 
 ### Open decisions
-- Should relationship annotations be stored inline in a relational map (e.g. `relationNotes: Record<string, string>`) on `BaseEntity`?
-- What is the user's preferred format for quick entry exports (plain markdown with frontmatter vs HTML)?
+- Chronos timeline calendar: support custom calendar leap years / month definitions or maintain string/numeric year parsing?
 
 
 ---

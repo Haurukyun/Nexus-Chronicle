@@ -1,4 +1,5 @@
 import { EntityType, WorldEntity } from '../types';
+import { removeRelationalNotesForTarget } from './relationalNotesUtils';
 
 export interface RelationPairDef {
     typeA: EntityType | '*';
@@ -580,6 +581,15 @@ export function removeEntityRelationsOnDelete(
                 changed = true;
             }
         });
+
+        // Clean up relational notes pointing to the deleted entity
+        if (e.relationalNotes) {
+            const cleanedNotes = removeRelationalNotesForTarget(e.relationalNotes, deletedId);
+            if (Object.keys(cleanedNotes).length !== Object.keys(e.relationalNotes).length) {
+                e.relationalNotes = cleanedNotes;
+                changed = true;
+            }
+        }
 
         if (changed) {
             e.lastModified = Date.now();

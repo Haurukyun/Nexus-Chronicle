@@ -158,12 +158,12 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
 
             <ViewerSectionCard title="Interpersonal Web">
                 <div className="space-y-3">
-                    <LinksDisplay label="Parents" ids={[...new Set([...(entity.parentsOfCharacter || []), ...(backlinks?.parents || [])])]} all={allEntities} onNav={onNavigate} />
-                    <LinksDisplay label="Children" ids={[...new Set([...(entity.childOfCharacter || []), ...(backlinks?.children || [])])]} all={allEntities} onNav={onNavigate} />
-                    <LinksDisplay label="Relatives" ids={[...new Set([...(entity.relativesOfCharacter || []), ...(backlinks?.relatives || [])])]} all={allEntities} onNav={onNavigate} />
-                    <LinksDisplay label="Friends" ids={[...new Set([...(entity.allyResCharacter || []), ...(backlinks?.friends || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
-                    <LinksDisplay label="Enemies" ids={[...new Set([...(entity.enemydResCharacter || []), ...(backlinks?.enemies || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
-                    <LinksDisplay label="Complicated" ids={[...new Set([...(entity.complicatedResCharacter || []), ...(backlinks?.complicated || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
+                    <LinksDisplay label="Parents" ids={[...new Set([...(entity.parentsOfCharacter || []), ...(backlinks?.parents || [])])]} all={allEntities} onNav={onNavigate} fieldKey="parentsOfCharacter" allRelationalNotes={entity.relationalNotes} />
+                    <LinksDisplay label="Children" ids={[...new Set([...(entity.childOfCharacter || []), ...(backlinks?.children || [])])]} all={allEntities} onNav={onNavigate} fieldKey="childOfCharacter" allRelationalNotes={entity.relationalNotes} />
+                    <LinksDisplay label="Relatives" ids={[...new Set([...(entity.relativesOfCharacter || []), ...(backlinks?.relatives || [])])]} all={allEntities} onNav={onNavigate} fieldKey="relativesOfCharacter" allRelationalNotes={entity.relationalNotes} />
+                    <LinksDisplay label="Friends" ids={[...new Set([...(entity.allyResCharacter || []), ...(backlinks?.friends || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" fieldKey="allyResCharacter" allRelationalNotes={entity.relationalNotes} />
+                    <LinksDisplay label="Enemies" ids={[...new Set([...(entity.enemydResCharacter || []), ...(backlinks?.enemies || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" fieldKey="enemydResCharacter" allRelationalNotes={entity.relationalNotes} />
+                    <LinksDisplay label="Complicated" ids={[...new Set([...(entity.complicatedResCharacter || []), ...(backlinks?.complicated || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" fieldKey="complicatedResCharacter" allRelationalNotes={entity.relationalNotes} />
                 </div>
             </ViewerSectionCard>
             

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef } from 'react';
 import {
     Palette, Skull, Globe, Layers, Plus, Copy,
     Download, Upload, Trash2, Edit2, Check, Sparkles, AlertTriangle, ArrowRight, BookOpen,
-    Radio, FileArchive, Zap, Heart
+    Radio, FileArchive, Zap, Heart, FileText, FileCode2, ChevronDown
 } from 'lucide-react';
 import { WorldData, EntityType, WorldPhase } from '../types';
 import { TYPE_LABELS } from '../constants';
@@ -16,6 +16,7 @@ import { WipeRealmModal } from '../components/ui/WipeRealmModal';
 import { exportNexusArchiveFile, unpackNexusArchive, downloadFileToDevice } from '../utils/nexusArchive';
 import { isDesktopApp, openFileNative } from '../utils/nativeFileBridge';
 import { pruneOrphanAssets, extractActiveAssetUris } from '../utils/assetStore';
+import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../utils/exportUtils';
 
 interface OptionsViewProps {
     world: WorldData;
@@ -65,6 +66,60 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
         handleHealRelations();
         setHealDone(true);
         setTimeout(() => setHealDone(false), 3000);
+    };
+
+    // Batch lore export state
+    const [batchExportType, setBatchExportType] = useState<EntityType | 'all'>('all');
+    const [batchExporting, setBatchExporting] = useState(false);
+    const [batchNotice, setBatchNotice] = useState<{ text: string; isError?: boolean } | null>(null);
+
+    const handleBatchExport = async (format: 'markdown' | 'html') => {
+        setBatchExporting(true);
+        setBatchNotice(null);
+        try {
+            const entities = batchExportType === 'all'
+                ? world.entities
+                : world.entities.filter(e => e.type === batchExportType);
+
+            if (entities.length === 0) {
+                setBatchNotice({ text: 'No entries found for the selected type.', isError: true });
+                setBatchExporting(false);
+                return;
+            }
+
+            // Build a concatenated multi-entry file
+            const parts: string[] = [];
+            const divider = format === 'markdown' ? '\n\n---\n\n' : '';
+
+            if (format === 'markdown') {
+                entities.forEach(e => parts.push(generateEntityMarkdown(e, world.entities)));
+                const combined = parts.join(divider);
+                const typeSuffix = batchExportType === 'all' ? 'all-entries' : batchExportType;
+                await downloadTextFile(combined, `nexus-lore-${typeSuffix}.md`, 'text/markdown');
+            } else {
+                // For HTML: wrap each entry's body in an <article> inside one document
+                const allHtmlBodies: string[] = [];
+                entities.forEach(e => {
+                    const fullHtml = generateEntityHtml(e, world.entities, themeId);
+                    // Extract just the container content between <body> tags
+                    const bodyMatch = fullHtml.match(/<div class="container">([\/\s\S]*?)<\/div>\s*<\/body>/);
+                    allHtmlBodies.push(`<article class="entry">${bodyMatch ? bodyMatch[0] : fullHtml}</article>`);
+                });
+                const typeSuffix = batchExportType === 'all' ? 'all-entries' : batchExportType;
+                const doc = `<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><title>${world.name} — Nexus Chronicle Lore Export</title>
+<style>body{font-family:system-ui,sans-serif;background:#0f172a;color:#f8fafc;padding:2rem 1rem;} .entry{max-width:860px;margin:0 auto 5rem;border-bottom:1px solid #334155;padding-bottom:3rem;}</style>
+</head><body>${allHtmlBodies.join('\n')}</body></html>`;
+                await downloadTextFile(doc, `nexus-lore-${typeSuffix}.html`, 'text/html');
+            }
+
+            setBatchNotice({ text: `✓ Exported ${entities.length} ${format === 'markdown' ? 'Markdown' : 'HTML'} entr${entities.length === 1 ? 'y' : 'ies'}.` });
+            setTimeout(() => setBatchNotice(null), 4000);
+        } catch (err: any) {
+            setBatchNotice({ text: `Export failed: ${err?.message || 'Unknown error'}`, isError: true });
+        } finally {
+            setBatchExporting(false);
+        }
     };
 
     const [isPruning, setIsPruning] = useState(false);
@@ -613,6 +668,58 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     NexusBeam transfers archives directly device-to-device via WebRTC — no cloud, no size limits, works globally via STUN relay.
                                 </p>
                             </div>
+                        </div>
+                    </section>
+
+                    {/* Lore Sharing — Batch Markdown / HTML Export */}
+                    <section className="pt-8 border-t border-slate-800/40 space-y-5">
+                        <div className="flex items-center gap-3">
+                            <FileText size={14} className="text-emerald-300" />
+                            <h3 className="text-xs font-black uppercase tracking-widest text-emerald-300">Lore Sharing — Markdown &amp; HTML Export</h3>
+                        </div>
+                        <p className="text-[11px] opacity-40 font-serif italic">
+                            Export codex entries as portable Markdown (Obsidian / Notion compatible) or standalone styled HTML. Relational context notes are included.
+                        </p>
+
+                        <div className="p-5 rounded-2xl bg-emerald-900/10 border border-emerald-500/20 space-y-4">
+                            <div className="flex flex-wrap items-center gap-3">
+                                <div className="relative">
+                                    <select
+                                        value={batchExportType}
+                                        onChange={e => setBatchExportType(e.target.value as EntityType | 'all')}
+                                        className="appearance-none pl-3 pr-8 py-2 rounded-xl bg-black/30 border border-emerald-500/25 text-xs font-bold text-emerald-100 outline-none cursor-pointer hover:border-emerald-400 transition-colors"
+                                    >
+                                        <option value="all">All Types</option>
+                                        {(Object.entries(TYPE_LABELS) as [EntityType, string][]).map(([type, label]) => (
+                                            <option key={type} value={type}>{label}</option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none text-emerald-300" />
+                                </div>
+                                <button
+                                    onClick={() => handleBatchExport('markdown')}
+                                    disabled={batchExporting}
+                                    className="py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-wider border border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-500/10 text-emerald-200 transition-all flex items-center gap-1.5 disabled:opacity-40"
+                                >
+                                    <FileText size={12} /> {batchExporting ? 'Exporting…' : 'Export as Markdown'}
+                                </button>
+                                <button
+                                    onClick={() => handleBatchExport('html')}
+                                    disabled={batchExporting}
+                                    className="py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-wider border border-sky-500/30 hover:border-sky-400 hover:bg-sky-500/10 text-sky-200 transition-all flex items-center gap-1.5 disabled:opacity-40"
+                                >
+                                    <FileCode2 size={12} /> {batchExporting ? 'Exporting…' : 'Export as HTML'}
+                                </button>
+                            </div>
+                            {batchNotice && (
+                                <div className={`text-[10px] px-3 py-2 rounded-lg border ${
+                                    batchNotice.isError
+                                        ? 'bg-red-500/10 border-red-500/30 text-red-300'
+                                        : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                                }`}>
+                                    {batchNotice.text}
+                                </div>
+                            )}
                         </div>
                     </section>
 
