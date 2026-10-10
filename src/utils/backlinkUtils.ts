@@ -25,6 +25,14 @@ export interface CategorizedBacklinks {
     practitioners: string[]; // Entries that listed target (Occupation/Skill) as theirs
     members: string[];       // Entries that listed target (Species/Group) as theirs
     
+    // Lineage & Succession
+    predecessors: string[]; // Entities that listed target as succeeding (ancestor/predecessor)
+    successors: string[];   // Entities that listed target as preceding (descendant/successor)
+    
+    // Dependencies & Crafting
+    prerequisites: string[]; // Required abilities/resources that target lists or needs
+    unlocks: string[];       // Entities that target enables or creates
+    
     containedIn: string[];   // Entities that listed target as a tag or "belongsUnder"
     referencedIn: string[];  // General fallback
 }
@@ -35,6 +43,7 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
         lore: [], myths: [], events: [], locations: [], cultures: [],
         residents: [], natives: [], passedHere: [], 
         practitioners: [], members: [],
+        predecessors: [], successors: [], prerequisites: [], unlocks: [],
         containedIn: [], referencedIn: []
     };
 
@@ -60,6 +69,28 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
 
         if (entity.parentId === targetId || entity.belongsUnderId === targetId || entity.parentDoc?.includes(targetId)) results.containedIn.push(entity.id);
 
+        // Lineage & Historical Succession
+        if (asAny.succedingLocations?.includes(targetId)) results.predecessors.push(entity.id);
+        if (asAny.preceedingLocations?.includes(targetId)) results.successors.push(entity.id);
+        if (asAny.evolvedIntoRaces?.includes(targetId)) results.predecessors.push(entity.id);
+        if (asAny.evolvedFromRaces?.includes(targetId)) results.successors.push(entity.id);
+        if (asAny.followingLanguages?.includes(targetId)) results.predecessors.push(entity.id);
+        if (asAny.predecessorLanguages?.includes(targetId)) results.successors.push(entity.id);
+        if (asAny.succedingCultures?.includes(targetId)) results.predecessors.push(entity.id);
+        if (asAny.preceedingCultures?.includes(targetId)) results.successors.push(entity.id);
+        if (asAny.succedingPolGroup?.includes(targetId) || asAny.succedingOtherGroup?.includes(targetId) || asAny.succedingRelGroup?.includes(targetId) || asAny.succedingMagicGroup?.includes(targetId) || asAny.succedingTechGroup?.includes(targetId)) {
+            results.predecessors.push(entity.id);
+        }
+        if (asAny.preceedingPolGroup?.includes(targetId) || asAny.preceedingOtherGroup?.includes(targetId) || asAny.preceedingRelGroup?.includes(targetId) || asAny.preceedingMagicGroup?.includes(targetId) || asAny.preceedingTechGroup?.includes(targetId)) {
+            results.successors.push(entity.id);
+        }
+
+        // Prerequisites & Crafting Chains
+        if (asAny.prerequisiteSkills?.includes(targetId)) results.unlocks.push(entity.id);
+        if (asAny.postrequisiteSkills?.includes(targetId)) results.prerequisites.push(entity.id);
+        if (asAny.madeFromResources?.includes(targetId)) results.unlocks.push(entity.id);
+        if (asAny.madeIntoResources?.includes(targetId)) results.prerequisites.push(entity.id);
+
         // Character specific
         if (entity.type === 'character') {
             const char = entity as Character;
@@ -80,6 +111,9 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
             
             const skills = char.pairedSkills || char.skillIds || char.spellIds || [];
             if (skills.includes(targetId)) results.practitioners.push(entity.id);
+
+            const magicTech = [...(char.pairedMagic || []), ...(char.pairedTech || [])];
+            if (magicTech.includes(targetId)) results.practitioners.push(entity.id);
 
             const items = char.pairedConnectedItems || char.equipmentIds || char.wealthIds || [];
             if (items.includes(targetId)) results.referencedIn.push(entity.id);

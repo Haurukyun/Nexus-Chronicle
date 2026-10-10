@@ -86,36 +86,37 @@ budget_tokens: 1000
 - **Nexus Tree View** — Character family/lineage tree with recursive depth rendering
 - **Journey View (P2 #10)** — Travel distance calculator with interactive Atlas coordinate pickers in Location editor (`LocationSpecifics.tsx`), trajectory projection mini-map in `JourneyView.tsx`, auto-calculated league distance from pin coordinates, manual override, terrain multipliers, party logistics (rations/camps)
 - **Backlink System** — `backlinkUtils.ts` performs deep cross-entity backlink scanning
-- **GitHub repo** — https://github.com/Haurukyun/Nexus-Chronicle (main branch)
+- **Phase P5 Layout / Theme Decoupling** —
+  - **ThemeDefinition.layoutMode**: Added `LayoutMode = 'studio' | 'wiki' | 'manuscript'` and wired theme registry (`sovereign -> studio`, `wiki -> wiki`, `royal-codex -> manuscript`, `grand-voyager -> studio`).
+  - **useTheme() Hook Standardization**: Exposes `layoutMode` and `themeId`. Fully removed legacy boolean flags (`isWikiMode`, `isRoyal`, `isSovereign`, `isVoyager`) across all views and components.
+  - **Grand Voyager Palette & Tropical Scene**: Dark jungle canopy (`#090d08`), timber sidebar (`#180c04`), teal-jade accent (`#2dd4bf`), warm text (`#f0dca8`), and procedural SVG `TropicalSceneBackground.tsx`.
+- **Phase P6 Core Linkage & Data Integrity (Fantasia Archive Synergy)** —
+  - **Character Specifics Entity Selectors**: Added first-class `SmartSelect` fields for `pairedMagic` (Schools of Magic / Teachings) and `pairedTech` (Sciences & Technologies) to `CharacterSpecifics.tsx`. Organized legacy freeform notes under a designated quick-scrawl card.
+  - **Character Group Affiliations Completion**: Added missing `GroupRoleGroup` UI panels for Magic Circles (`roleKey="magic"`) and Sciences/Academies (`roleKey="science"`), restoring full leadership, membership, alliance, and rivalry controls for characters.
+  - **Exhaustive Bidirectional Sync**: Added Character `pairedMagic` $\leftrightarrow$ Magic `pairedCharacter`, Character `pairedTech` $\leftrightarrow$ Tech `pairedCharacter`, and historical group successions across all 5 group types (`political`, `organization`, `religious`, `magic`, `tech`/`science`) to `bidirectionalSync.ts`.
+  - **Deep Categorized Backlink Lineage**: Expanded `backlinkUtils.ts` with `predecessors`, `successors`, `prerequisites`, and `unlocks` tracking across locations, species evolution, language roots, cultures, group lineages, ability dependencies, and resource refining chains. Included magic/tech users in `practitioners`.
+  - **Codex Relations Inspector**: Updated `EntityViewer.tsx` to render "Preceding Roots / Ancestors", "Succeeding Branches / Descendants", "Prerequisites / Components", and "Enables / Refines Into" links for any entity.
+  - **Automated Test Validation**: Added unit test coverage in `bidirectionalSync.test.ts` validating magic user synchronization and political group historical succession.
 
 ---
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P5: Layout / Theme Decoupling — In Progress_
+**Goal:** _Phase P7: Document Modes & Codex Ergonomics (Reader / Category / Deceased / Minor switches)_
 
-### Completed this session
-- **ThemeDefinition.layoutMode** — Added `LayoutMode = 'studio' | 'wiki' | 'manuscript'` type to `src/theme/types.ts` and `layoutMode` field to `ThemeDefinition` interface
-- **Theme Registry** — Each theme now declares its layout mode: `sovereign → 'studio'`, `wiki → 'wiki'`, `royal-codex → 'manuscript'`, `grand-voyager → 'studio'`
-- **useTheme() hook** — Now exposes `layoutMode: LayoutMode` and `themeId: ThemeMode` directly. Components read `layoutMode` for structure, `t.*` for visuals, `themeId` for per-theme identity
-- **App.tsx shell** — All structural geometry reads from `t.layout.*` and `t.button.*` tokens — zero raw `theme === 'royal-codex'` layout guards remain in App.tsx
-- **Full `isWikiMode` / `isRoyal` / `isSovereign` / `isVoyager` deprecation** — Entire codebase migrated from legacy boolean flags to canonical `useTheme()`. Every affected file (EditorGroup, LocationSpecifics, LocationSpecificsViewer, LinksDisplay, ImageCropModal, FormToggle, Sidebar, ExpandedImageModal, ThemeSwitcher, DashboardView, NexusGraphView, OptionsView) now reads `themeId` / `layoutMode` directly.
-- **Grand Voyager theme full redesign** — Complete palette overhaul: dark jungle-canopy app bg (`#090d08`), dark mahogany timber sidebar (`#180c04`), tropical jungle-green header (`#0c1a0e`), teal-jade accent (`#2dd4bf`), warm parchment text (`#f0dca8`), brass-doubloon primary buttons. Removed cold blue/navy palette entirely.
-- **TropicalSceneBackground** (`src/components/ui/TropicalSceneBackground.tsx`) — Pure SVG/CSS procedural tropical cove scene: golden-hour sky gradient, sun with rotating rays and outer glow, soft blurred clouds, distant headland silhouettes, 3-layer animated ocean waves with foam crests, glittering sun-path reflection on water, sandy beach with ripple lines, distant ship, bird silhouettes, and glassmorphism overlay. No trees (removed at user request). Injected in `App.tsx` as `absolute inset-0` behind main content when `themeId === 'grand-voyager'`.
-
-### Key known gaps / potential next features
-1. **Grand Voyager card/panel transparency** — Cards (`t.card.base`, `t.card.panel`) use dark timber backgrounds. Consider making them semi-transparent glassmorphic panels so the tropical scene bleeds through (`bg-[#140a02]/60 backdrop-blur-sm`) for even more immersion.
-2. **App icon** — Replace placeholder icons in `src-tauri/icons/` with Nexus Chronicle branded artwork
-3. **`git push` pending** — branch is multiple commits ahead of origin
-4. **System views theme usage** — Some system views may still have residual legacy `isWikiMode` prop references or computed booleans; audit if issues appear
+### Scope
+1. **Reader / Clean Codex Mode (`finishedSwitch`)**: Global or per-viewer toggle hiding empty/unfilled attribute fields for a clean, distraction-free reading experience.
+2. **Category / Folder Container Mode (`categorySwitch`)**: Flags an entity as an organizational container, suppressing granular attributes while keeping hierarchy, description, and children visible.
+3. **Deceased / Fallen Indicator (`deadSwitch`)**: Leverage `isDeceased` logic across the sidebar tree, search selectors, and cards with a dignified `†` symbol and status treatment.
+4. **Minor Entry Exclusion (`minorSwitch`)**: Tag background NPCs or minor locations to prevent cluttering primary entity selectors while remaining searchable in the sidebar.
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
-- Styling: **TailwindCSS** (inline class strings) — NOTE: no `tailwind.config.js` found; may be using CDN or Vite plugin
+- Styling: **TailwindCSS** (inline class strings)
 - Build tool: **Vite 6 + @vitejs/plugin-react**
 - React version: **19.2.3**
 - No database — all data lives in browser localStorage via Zustand persist
-- Markdown rendering: **marked** + **DOMPurify** (installed, no prose external lib needed)
+- Markdown rendering: **marked** + **DOMPurify**
 
 ### Open decisions
 - Should `.wolf/` be committed to git? (currently untracked, `.wolf/.gitignore` excludes machine-state but not core files)

@@ -1,0 +1,13 @@
+{
+  "extends": "@quasar/app/tsconfig-preset",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": false,
+    "suppressImplicitAnyIndexErrors": true
+  },
+  "include": [
+    "src"
+  ],
+}

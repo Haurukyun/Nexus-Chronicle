@@ -78,4 +78,52 @@ describe('bidirectionalSync', () => {
         expect(updatedCond).toBeDefined();
         expect(updatedCond.pairedCharactersNegative).not.toContain('char-1');
     });
+
+    it('synchronizes character pairedMagic with magic group pairedCharacter', () => {
+        const prevChar: any = {
+            id: 'char-merlin',
+            type: 'character',
+            name: 'Merlin',
+            pairedMagic: [],
+        };
+        const char: any = {
+            ...prevChar,
+            pairedMagic: ['magic-pyro'],
+        };
+        const magicGroup: any = {
+            id: 'magic-pyro',
+            type: 'magic',
+            name: 'Pyromancy Guild',
+            pairedCharacter: [],
+        };
+
+        const result = applyBidirectionalSync(char, prevChar, [prevChar, magicGroup]);
+        const updatedMagic = result.entities.find(e => e.id === 'magic-pyro') as any;
+        expect(updatedMagic).toBeDefined();
+        expect(updatedMagic.pairedCharacter).toContain('char-merlin');
+    });
+
+    it('synchronizes political group succeeding and preceding lineage', () => {
+        const prevPol: any = {
+            id: 'pol-old-empire',
+            type: 'political',
+            name: 'Old Empire',
+            succedingPolGroup: [],
+        };
+        const pol: any = {
+            ...prevPol,
+            succedingPolGroup: ['pol-new-republic'],
+        };
+        const republic: any = {
+            id: 'pol-new-republic',
+            type: 'political',
+            name: 'New Republic',
+            preceedingPolGroup: [],
+        };
+
+        const result = applyBidirectionalSync(pol, prevPol, [prevPol, republic]);
+        const updatedRep = result.entities.find(e => e.id === 'pol-new-republic') as any;
+        expect(updatedRep).toBeDefined();
+        expect(updatedRep.preceedingPolGroup).toContain('pol-old-empire');
+    });
 });

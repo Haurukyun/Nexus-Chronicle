@@ -122,8 +122,20 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                         {(entity.type === 'species' || entity.type === 'organization' || entity.type === 'political' || entity.type === 'religious' || entity.type === 'magic' || entity.type === 'science') && (
                             <LinksDisplay label="Prominent Members" ids={backlinks.members} all={allEntities} onNav={onNavigate} />
                         )}
-                        {(entity.type === 'ability' || entity.type === 'science' || entity.type === 'tech') && (
-                            <LinksDisplay label="Known Practitioners" ids={backlinks.practitioners} all={allEntities} onNav={onNavigate} />
+                        {(entity.type === 'ability' || entity.type === 'science' || entity.type === 'tech' || entity.type === 'magic') && (
+                            <LinksDisplay label="Known Practitioners / Users" ids={backlinks.practitioners} all={allEntities} onNav={onNavigate} />
+                        )}
+                        {backlinks.predecessors && backlinks.predecessors.length > 0 && (
+                            <LinksDisplay label="Preceding Roots / Ancestors" ids={backlinks.predecessors} all={allEntities} onNav={onNavigate} />
+                        )}
+                        {backlinks.successors && backlinks.successors.length > 0 && (
+                            <LinksDisplay label="Succeeding Branches / Descendants" ids={backlinks.successors} all={allEntities} onNav={onNavigate} />
+                        )}
+                        {backlinks.prerequisites && backlinks.prerequisites.length > 0 && (
+                            <LinksDisplay label="Prerequisites / Components" ids={backlinks.prerequisites} all={allEntities} onNav={onNavigate} />
+                        )}
+                        {backlinks.unlocks && backlinks.unlocks.length > 0 && (
+                            <LinksDisplay label="Enables / Refines Into" ids={backlinks.unlocks} all={allEntities} onNav={onNavigate} />
                         )}
                     </div>
                 )}

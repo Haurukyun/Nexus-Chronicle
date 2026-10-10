@@ -1,0 +1,1415 @@
+<template>
+  <q-page
+  class="documentDisplay"
+  :id="'document-'+currentData._id"
+  :class="{
+    'routeTransitionFinished': routeTransitionFinished,
+    'q-pb-xl q-pl-xl q-pr-xl': disableDocumentControlBar,
+    'q-pa-xl': !disableDocumentControlBar,
+    'hiddenFields': (hideEmptyFields || retrieveFieldValue(currentData, 'finishedSwitch')),
+    [extraClasses]: extraClasses
+    }"
+  v-if="bluePrintData"
+  >
+
+    <!-- Delele document dialog -->
+    <deleteDocumentCheckDialog
+      :dialog-trigger="deleteObjectDialogTrigger"
+      @trigger-dialog-close="deleteObjectDialogClose"
+    />
+
+    <div class="row justify-start q-col-gutter-x-xl">
+
+      <div
+       class="flex justify-end localControlRow"
+       v-if="disableDocumentControlBar"
+       >
+
+        <q-btn
+            icon="mdi-content-save-edit"
+            :color="(hasEdits) ? 'teal-14' : 'primary'"
+            :outline="isDarkMode"
+            class="q-mr-md"
+            @click="saveCurrentDocument(true)"
+            v-if="editMode"
+          >
+            <q-tooltip
+              :delay="500"
+              anchor="bottom left"
+              self="top middle"
+            >
+             Save document without exiting edit mode
+            </q-tooltip>
+
+          </q-btn>
+
+        <q-btn
+          :color="(hasEdits) ? 'teal-14' : 'primary'"
+          icon="mdi-content-save"
+          @click="saveCurrentDocument(false)"
+          :outline="isDarkMode"
+          class="q-mr-md"
+          v-if="editMode"
+        >
+          <q-tooltip
+            :delay="500"
+            anchor="bottom middle"
+            self="top middle"
+          >
+            Save current document
+          </q-tooltip>
+        </q-btn>
+
+        <q-btn
+          color="primary"
+          icon="mdi-file-document-edit"
+          @click="toggleEditMode"
+          :outline="isDarkMode"
+          class="q-mr-md"
+          v-if="!editMode"
+        >
+          <q-tooltip
+            :delay="500"
+            anchor="bottom middle"
+            self="top middle"
+          >
+            Edit current document
+          </q-tooltip>
+        </q-btn>
+
+         <q-btn
+            icon="mdi-file-search-outline"
+            color="primary"
+            class="q-mr-md"
+            :outline="isDarkMode"
+            @click="openThisDocumentInSidebar"
+            v-if="!currentData.isNew"
+          >
+            <q-tooltip
+              :delay="500"
+              max-width="500px"
+              anchor="bottom middle"
+              self="top middle"
+            >
+              Preview document in split-view mode
+            </q-tooltip>
+          </q-btn>
+
+        <q-btn
+          color="primary"
+          icon="mdi-file-tree"
+          @click="addNewUnderParent"
+          :outline="isDarkMode"
+          class="q-mr-md"
+          v-if="!currentData.isNew"
+        >
+          <q-tooltip
+            :delay="500"
+            anchor="bottom middle"
+            self="top middle"
+          >
+            Add a new document with the currently opened one as the parent
+          </q-tooltip>
+        </q-btn>
+
+        <q-btn
+          color="primary"
+          icon="mdi-content-copy"
+          @click="copyTargetDocument"
+          :outline="isDarkMode"
+          class="q-mr-md"
+          v-if="!currentData.isNew"
+        >
+          <q-tooltip
+            :delay="500"
+            anchor="bottom middle"
+            self="top middle"
+          >
+            Copy current document
+          </q-tooltip>
+        </q-btn>
+
+        <q-separator
+          vertical
+          inset
+          :color="(isDarkMode) ? 'accent' : 'black'"
+          class="q-mr-md"
+        />
+
+        <q-btn
+          :color="(hasEdits) ? 'secondary' : 'primary'"
+          icon="mdi-database-export-outline"
+          @click="triggerExport"
+          :outline="isDarkMode"
+          class="q-mr-md"
+          v-if="!currentData.isNew"
+        >
+          <q-tooltip
+            :delay="500"
+            anchor="bottom middle"
+            self="top middle"
+          >
+            Export current project
+            <span class="text-secondary" v-if="hasEdits">
+              <br>
+              <br>
+              Document has active edits.
+              <br>
+              These will not be exported.
+              <br>
+              Please save first.
+            </span>
+          </q-tooltip>
+        </q-btn>
+
+        <q-separator
+          vertical
+          inset
+          :color="(isDarkMode) ? 'accent' : 'black'"
+          class="q-mr-md"
+          />
+
+        <q-btn
+          color="secondary"
+          icon="mdi-text-box-remove-outline"
+          :outline="isDarkMode"
+          @click="deleteObjectAssignUID"
+          v-if="!currentData.isNew"
+        >
+          <q-tooltip
+            :delay="500"
+            anchor="bottom left"
+            self="top middle"
+          >
+            Delete current document
+          </q-tooltip>
+        </q-btn>
+      </div>
+
+      <div class="col-12 q-mt-xl justify-end" v-if="showDocumentID">
+        <q-input style="width: 375px;" readonly outlined label="Document ID" stack-label @click="copyID" ref="idCopy" v-model="currentData._id">
+        </q-input>
+      </div>
+
+      <div
+        v-for="field in bluePrintData.extraFields"
+        :key="`${field.id}`"
+        v-show="
+          (retrieveFieldType(currentData, field.id) !== 'break' || !hideDocumentTitles) &&
+          (
+            (hasValueFieldFilter(field) || editMode)
+            && (checkBreakSectionValues(field) || editMode)
+            && checkForLegacyFieldValue(currentData, field)
+            && checkDocumentTemplate(field.id)
+          )
+          "
+        :class="`
+          col-12
+          col-md-${determineSize_MD(field)}
+          col-lg-${determineSize_LG(field)}
+          col-xl-${determineSize_XL(field)}
+          q-mb-md
+          documentColumnWrapper
+          ${(determineLegacyField(currentData, field.id)) ? 'isLegacy' : ''}
+        `">
+
+          <Field_Break
+          class="inputWrapper break"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'break' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          />
+
+          <Field_Text
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'text' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_Number
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'number' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_Switch
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'switch' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_ColorPicker
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'colorPicker' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_List
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'list' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_SingleSelect
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'singleSelect' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_MultiSelect
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'multiSelect' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_SingleRelationship
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="(field.type === 'singleToNoneRelationship' || field.type === 'singleToSingleRelationship' || field.type === 'singleToManyRelationship') && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          :current-id="currentData._id"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_MultiRelationship
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="(field.type === 'manyToNoneRelationship' || field.type ===
+          'manyToSingleRelationship' || field.type === 'manyToManyRelationship') && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          :current-id="currentData._id"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_Wysiwyg
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'wysiwyg' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="(retrieveFieldValue(currentData, field.id)) ? retrieveFieldValue(currentData, field.id) : ''"
+          :isNew="currentData.isNew"
+          :fullScreenStatus="currentData.hasFullScreenEditMode"
+          :fullScreenScrollDistance="currentData.fullScreenScrollDistance"
+          :editMode="editMode"
+          :current-id="currentData._id"
+          @signal-input="reactToFieldUpdate($event, field)"
+          @signal-full-screen-status-change="reactToFullScreenStatusChange($event)"
+          />
+
+          <Field_Tags
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'tags' && categoryFieldFilter(field.id)"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+          <Field_DocumentTemplate
+          class="inputWrapper"
+          :class="'field-'+field.id+'-'+currentData._id"
+          v-if="field.type === 'documentTemplate'"
+          :inputDataBluePrint="field"
+          :inputDataValue="retrieveFieldValue(currentData, field.id)"
+          :isNew="currentData.isNew"
+          :editMode="editMode"
+          @signal-input="reactToFieldUpdate($event, field)"
+          />
+
+      </div>
+
+    </div>
+
+  </q-page>
+</template>
+
+<script lang="ts">
+import { Component, Watch } from "vue-property-decorator"
+
+import BaseClass from "src/BaseClass"
+
+import { I_Blueprint, I_ExtraFields } from "src/interfaces/I_Blueprint"
+import { extend } from "quasar"
+import { I_OpenedDocument, I_ShortenedDocument, I_HasFullScreenEditMode } from "src/interfaces/I_OpenedDocument"
+import { copyDocument } from "src/scripts/documentActions/copyDocument"
+
+import { saveDocument } from "src/scripts/databaseManager/documentManager"
+import deleteDocumentCheckDialog from "src/components/dialogs/DeleteDocumentCheck.vue"
+import { retrieveAllDocumentTemplatesFromDB } from "src/scripts/projectManagement/documentTemplates"
+
+import Field_Break from "src/components/fields/Field_Break.vue"
+import Field_Text from "src/components/fields/Field_Text.vue"
+import Field_Number from "src/components/fields/Field_Number.vue"
+import Field_Switch from "src/components/fields/Field_Switch.vue"
+import Field_ColorPicker from "src/components/fields/Field_ColorPicker.vue"
+import Field_List from "src/components/fields/Field_List.vue"
+import Field_SingleSelect from "src/components/fields/Field_SingleSelect.vue"
+import Field_MultiSelect from "src/components/fields/Field_MultiSelect.vue"
+import Field_SingleRelationship from "src/components/fields/Field_SingleRelationship.vue"
+import Field_MultiRelationship from "src/components/fields/Field_MultiRelationship.vue"
+import Field_Wysiwyg from "src/components/fields/Field_Wysiwyg.vue"
+import Field_Tags from "src/components/fields/Field_Tags.vue"
+import Field_DocumentTemplate from "src/components/fields/Field_DocumentTemplate.vue"
+
+import { updateLastOpenedDocuments } from "src/scripts/projectManagement/projectManagent"
+import { I_DocumentTemplate } from "src/interfaces/I_DocumentTemplate"
+
+@Component({
+  components: {
+    Field_Break,
+    Field_Text,
+    Field_Number,
+    Field_Switch,
+    Field_ColorPicker,
+    Field_List,
+    Field_SingleSelect,
+    Field_MultiSelect,
+    Field_SingleRelationship,
+    Field_MultiRelationship,
+    Field_Wysiwyg,
+    Field_Tags,
+    Field_DocumentTemplate,
+
+    deleteDocumentCheckDialog
+  }
+})
+
+export default class PageDocumentDisplay extends BaseClass {
+  /****************************************************************/
+  // LOCAL SETTINGS
+  /****************************************************************/
+
+  /**
+   * React to changes on the options store
+   */
+  @Watch("SGET_options", { immediate: true, deep: true })
+  onSettingsChange () {
+    const options = this.SGET_options
+    this.disableDocumentControlBar = options.disableDocumentControlBar
+    this.isDarkMode = options.darkMode
+    this.hideEmptyFields = options.hideEmptyFields
+    this.hideDocumentTitles = options.hideDocumentTitles
+    this.preventAutoScroll = options.preventAutoScroll
+    this.showDocumentID = options.showDocumentID
+  }
+
+  hideDocumentTitles = false
+
+  showDocumentID = false
+
+  /**
+  * Determines if the documents will recall their scroll distances and auto-scroll on switching ot not.
+  */
+  preventAutoScroll = false
+
+  /**
+   * Determines if the document control bar is show or hidden
+   */
+  disableDocumentControlBar = false
+
+  /**
+   * Determines if this should be showing in dark or light mode
+   */
+  isDarkMode = false
+
+  /**
+   * Determines if empty fields should be hidden
+   */
+  hideEmptyFields = false
+
+  /****************************************************************/
+  // BASIC DATA
+  /****************************************************************/
+
+  /**
+   * The current object type blueprint data
+   */
+  bluePrintData = false as unknown as I_Blueprint
+
+  /**
+   * Determines if the current document has active edits or not
+   */
+  hasEdits = false
+
+  /**
+   * Determines if the current document is in edit mode or not
+   */
+  editMode = false
+
+  /**
+   * Current raw data of the document
+   */
+  currentData = false as unknown as I_OpenedDocument
+
+  /**
+   * A direct dopy of "currentData" for the purposes of VUEX so they won't overlap via reference
+   */
+  localDataCopy = false as unknown as I_OpenedDocument
+
+  extraClasses = ""
+
+  /****************************************************************/
+  // DOCUMENT FUNCTIONALITY
+  /****************************************************************/
+
+  /**
+   * Watches on changes of the route in order to load proper blueprint and object data
+   */
+  @Watch("$route", { immediate: true, deep: true })
+  async onUrlChange () {
+    this.documentTemplateList = await retrieveAllDocumentTemplatesFromDB()
+    const doc = this.findRequestedOrActiveDocument() as I_OpenedDocument
+
+    window.scrollTo({ top: 0, behavior: "auto" })
+
+    this.reloadLocalContent()
+
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.routeTransitionFinished = true
+      }, 50)
+
+      setTimeout(() => {
+        const scrollTop = (doc.scrollDistance && !this.preventAutoScroll) ? doc.scrollDistance : 0
+
+        window.scrollTo({ top: scrollTop, behavior: "auto" })
+      }, 100)
+    })
+  }
+
+  created () {
+    window.addEventListener("scroll", this.watchPageScroll)
+  }
+
+  beforeDestroy () {
+    window.removeEventListener("scroll", this.watchPageScroll)
+  }
+
+  documentTemplateList: I_DocumentTemplate[] = []
+
+  decounceScrollTimer = false as any
+
+  routeTransitionFinished = false
+  watchPageScroll () {
+    if (this.preventAutoScroll) {
+      return
+    }
+
+    if (this.decounceScrollTimer) {
+      window.clearTimeout(this.decounceScrollTimer)
+    }
+
+    this.decounceScrollTimer = window.setTimeout(() => {
+      const currentScroll = window.scrollY
+
+      const dataCopy: I_OpenedDocument = extend(true, {}, this.findRequestedOrActiveDocument())
+
+      dataCopy.scrollDistance = currentScroll
+
+      if (this.currentData._id !== undefined) {
+        // Attempts to add current document to list
+        const dataPass = { doc: dataCopy, treeAction: false }
+        this.SSET_updateOpenedDocument(dataPass)
+      }
+    }, 100)
+  }
+
+  /**
+   * Check if the current document has edits or not
+   */
+  checkHasEdits () {
+    const currentDocument = this.findRequestedOrActiveDocument()
+
+    if (currentDocument && currentDocument.hasEdits) {
+      this.hasEdits = true
+    }
+    else {
+      this.hasEdits = false
+    }
+  }
+
+  /**
+   * Watches on changes of the opened documents in order to load proper blueprint and object data
+   */
+  @Watch("SGET_allOpenedDocuments", { deep: true })
+  async onDocChange () {
+    this.checkHasEdits()
+
+    await this.sleep(100)
+
+    const matchingDoc = this.findRequestedOrActiveDocument()
+    if (matchingDoc && matchingDoc._id === this.currentData._id && !matchingDoc.hasEdits) {
+      this.reloadLocalContent()
+    }
+  }
+
+  /**
+   * Attemp to reload the current local content. If it doesn't exist, create a new one.
+   */
+  reloadLocalContent () {
+    // Determine the type and retrieve the right blueprint
+    this.bluePrintData = this.retrieveDocumentBlueprint()
+
+    // Check if the objects exists in a database
+    let retrievedObject = false as unknown as I_OpenedDocument | I_ShortenedDocument
+
+    if (this.SGET_document(this.$route.params.id)) {
+      retrievedObject = this.SGET_document(this.$route.params.id)
+    }
+
+    if (this.SGET_openedDocument(this.$route.params.id)) {
+      retrievedObject = this.SGET_openedDocument(this.$route.params.id)
+    }
+
+    // Either create a new document or load existing one
+    this.currentData = (retrievedObject) ? extend(true, [], retrievedObject) : this.createNewDocumentObject()
+
+    // @ts-ignore
+    this.extraClasses = (this.retrieveFieldValue(this.currentData, "extraClasses")) ? this.retrieveFieldValue(this.currentData, "extraClasses") : ""
+
+    if (!this.currentData) {
+      this.$router.push({ path: "/project" }).catch((e: {name: string}) => {
+        if (e && e.name !== "NavigationDuplicated") {
+          console.log(e)
+        }
+      })
+      return
+    }
+
+    const objectFields = this.mapNewObjectFields()
+
+    if (!objectFields) {
+      return
+    }
+
+    this.currentData.extraFields = objectFields
+
+    if (this.currentData.editMode) {
+      this.editMode = true
+    }
+    else {
+      this.editMode = false
+    }
+
+    if (this.$route.query?.editMode) {
+      this.editMode = true
+      this.currentData.editMode = true
+      const query = Object.assign({}, this.$route.query)
+      delete query.editMode
+      this.$router.replace({ query }).catch(e => console.log(e))
+    }
+
+    const dataCopy: I_OpenedDocument = extend(true, {}, this.currentData)
+
+    // Attempts to add current document to list
+    const dataPass = { doc: dataCopy, treeAction: false }
+    this.SSET_addOpenedDocument(dataPass)
+
+    if (!this.currentData.isNew) {
+      updateLastOpenedDocuments(this.currentData._id).catch(e => console.log(e))
+    }
+  }
+
+  /**
+   * React to a local field getting updated by updating it iun the store accordingly
+   */
+  reactToFieldUpdate (inputData: string, field: I_ExtraFields) {
+    // FIELD - Text
+    if (field.type === "text") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Number
+    if (field.type === "number") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Switch
+    if (field.type === "switch") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+
+      if (field.id === "categorySwitch") {
+        const localCopy: I_Blueprint = (extend(true, {}, this.bluePrintData))
+        const blueprintUpdateCopy: I_Blueprint = (extend(true, {}, this.bluePrintData))
+        blueprintUpdateCopy.extraFields = []
+
+        // Reset fields so they re-render
+        this.SSET_blueprint(blueprintUpdateCopy)
+        this.retrieveDocumentBlueprint()
+        this.SSET_blueprint(localCopy)
+        this.retrieveDocumentBlueprint()
+      }
+    }
+
+    // FIELD - Color Picker
+    if (field.type === "colorPicker") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - List
+    if (field.type === "list") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Simple select
+    if (field.type === "singleSelect") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Multi select
+    if (field.type === "multiSelect") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Single relationship
+    if (field.type === "singleToNoneRelationship" || field.type === "singleToManyRelationship" || field.type === "singleToSingleRelationship") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Multi relationship
+    if (field.type === "manyToNoneRelationship" || field.type === "manyToSingleRelationship" || field.type === "manyToManyRelationship") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      // @ts-ignore
+      if (inputData.isSilent) {
+        dataPass.doc.hasEdits = false
+      }
+
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Wysiwyg
+    if (field.type === "wysiwyg") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Tags
+    if (field.type === "tags") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+
+    // FIELD - Document template
+    if (field.type === "documentTemplate") {
+      this.currentData.hasEdits = true
+      const indexToUpdate = this.currentData.extraFields.findIndex(s => s.id === field.id)
+      this.currentData.extraFields[indexToUpdate].value = inputData
+
+      this.localDataCopy = extend(true, {}, this.currentData)
+      const dataPass = { doc: this.localDataCopy, treeAction: true }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+  }
+
+  reactToFullScreenStatusChange (inputScreenStatus: I_HasFullScreenEditMode) {
+    this.currentData.hasFullScreenEditMode = inputScreenStatus
+
+    this.localDataCopy = extend(true, {}, this.currentData)
+    const dataPass = { doc: this.localDataCopy, treeAction: false }
+    this.SSET_updateOpenedDocument(dataPass)
+  }
+
+  /**
+   * Retrieves the current document type blueprint
+   */
+  retrieveDocumentBlueprint () : I_Blueprint {
+    this.bluePrintData = this.SGET_blueprint(this.$route.params.type)
+    return this.SGET_blueprint(this.$route.params.type)
+  }
+
+  /**
+   * Map new object "name" and "parentDoc" fields if pre-filled
+   */
+  mapNewObjectFields () {
+    const currentExtraFields = (this.currentData && this.currentData.extraFields) ? this.currentData.extraFields : []
+
+    const blueprint = this.retrieveDocumentBlueprint()
+
+    if (!blueprint) {
+      return false
+    }
+
+    for (const field of blueprint.extraFields) {
+      const exists = currentExtraFields.find(f => {
+        return f.id === field.id
+      })
+
+      if (!exists) {
+        if (field.id === "name") {
+          currentExtraFields.push(
+            {
+              id: "name",
+              value: `New ${this.bluePrintData.nameSingular.toLowerCase()}`
+            }
+          )
+        }
+        else if (field.id === "parentDoc") {
+          if (this.$route.query?.parent) {
+            // Check if the objects exists in a database
+            const parentID = this.$route.query.parent as string
+            let retrievedObject = false as unknown as I_ShortenedDocument
+            try {
+              retrievedObject = this.SGET_document(parentID)
+            }
+            catch (error) {}
+
+            currentExtraFields.push(
+              {
+                id: "parentDoc",
+                value: {
+                  value: {
+                    _id: retrievedObject._id,
+                    value: retrievedObject._id,
+                    type: this.bluePrintData._id,
+                    disable: false,
+                    url: retrievedObject.url,
+                    label: this.retrieveFieldValue(retrievedObject, "name"),
+                    pairedField: ""
+                  },
+                  addedValues: {
+                    pairedId: "",
+                    value: ""
+                  }
+                }
+              }
+            )
+          }
+          else {
+            currentExtraFields.push({ id: field.id, value: "" })
+          }
+        }
+        else if (field.id === "tags") {
+          if (this.$route.query?.tag) {
+            // Check if the objects exists in a database
+            const tag = this.$route.query.tag as string
+            currentExtraFields.push(
+              {
+                id: "tags",
+                value: [tag]
+              }
+            )
+          }
+          else {
+            currentExtraFields.push({ id: field.id, value: "" })
+          }
+        }
+        else {
+          currentExtraFields.push({ id: field.id, value: "" })
+        }
+      }
+    }
+
+    return currentExtraFields
+  }
+
+  /**
+   * Creates a new document object
+   */
+  createNewDocumentObject () : I_OpenedDocument {
+    this.editMode = true
+
+    if (!this.$route.params.id || !this.bluePrintData) {
+      // @ts-ignore
+      return false
+    }
+
+    const uniqueID = this.$route.params.id
+    return {
+      _id: uniqueID,
+      type: this.bluePrintData._id,
+      icon: this.bluePrintData.icon,
+      editMode: true,
+      isNew: true,
+      isFinished: false,
+      hasEdits: false,
+      url: `/project/display-content/${this.bluePrintData._id}/${uniqueID}`,
+      extraFields: []
+    }
+  }
+
+  /**
+   * Check if field should be showing if the category setting is turned on
+   */
+  categoryFieldFilter (currentFieldID: string) {
+    const isCategory = this.retrieveFieldValue(this.currentData, "categorySwitch")
+
+    const ignoredList = ["breakDocumentSettings", "name", "documentColor", "documentBackgroundColor", "parentDoc", "order", "categorySwitch", "minorSwitch", "deadSwitch", "finishedSwitch", "tags", "otherNames", "docTemplate"]
+    return (
+      (
+        (!isCategory && currentFieldID !== "categoryDescription") ||
+        ignoredList.includes(currentFieldID)
+      ) || (isCategory && currentFieldID === "categoryDescription")
+    )
+  }
+
+  checkBreakSectionValues (field: any) {
+    // If this isnt break, let it through
+    if (field.type !== "break") {
+      return true
+    }
+
+    // If this is a break, keep checking following field either until a filled value if found (in which case, elt it through) or until anothe break OR end of the list is found - in which case, deny it
+    const fullFieldLength = this.bluePrintData.extraFields.length
+    let matchedIndex = this.bluePrintData.extraFields.findIndex(f => f.id === field.id)
+    let matchedField = this.bluePrintData.extraFields[matchedIndex + 1]
+    while (matchedField.type !== "break" || matchedIndex + 1 === fullFieldLength) {
+      matchedField = this.bluePrintData.extraFields[matchedIndex + 1]
+
+      if (!matchedField || matchedField.type === "break") {
+        return false
+      }
+
+      const hasValue = this.hasValueFieldFilter(matchedField)
+      if (hasValue) {
+        return true
+      }
+      matchedIndex++
+    }
+
+    return false
+  }
+
+  checkForLegacyFieldValue (document: I_OpenedDocument| I_ShortenedDocument, field: {id: string}) {
+    const isLegacyField = this.determineLegacyField(document, field.id)
+
+    if (!isLegacyField) {
+      return true
+    }
+
+    const value = this.retrieveFieldValue(this.currentData, field.id)
+
+    let hasValue = true
+
+    if (!value ||
+    (typeof value === "string" && value.length === 0) ||
+    // @ts-ignore
+    (typeof value.value === "string" && value.value.length === 0) ||
+    // @ts-ignore
+    (Array.isArray(value) && value.length === 0) ||
+    // @ts-ignore
+    (value.value && value.value.length === 0) ||
+    // @ts-ignore
+     (value.value === null)) {
+      hasValue = false
+    }
+
+    if (isLegacyField && hasValue) {
+      return true
+    }
+
+    return false
+  }
+
+  /**
+   * Checks if the field in question
+   */
+  hasValueFieldFilter (field: any) {
+    if (this.retrieveFieldType(this.currentData, field.id) === "break") {
+      return true
+    }
+    if (!this.hideEmptyFields && !this.retrieveFieldValue(this.currentData, "finishedSwitch")) {
+      return true
+    }
+
+    const value = this.retrieveFieldValue(this.currentData, field.id)
+
+    if (!value ||
+    (Array.isArray(value) && value.length === 0) ||
+    // @ts-ignore
+     (value?.value?.length === 0) ||
+    // @ts-ignore
+     (value.value === null)) {
+      return false
+    }
+
+    return true
+  }
+
+  /****************************************************************/
+  // RESPONSIVE COLLUMN STYLES
+  /****************************************************************/
+
+  determineSize_MD (field: I_ExtraFields) {
+    if (field.type === "break") {
+      return 12
+    }
+    if (field.sizing <= 6) {
+      return 6
+    }
+
+    return field.sizing
+  }
+
+  determineSize_LG (field: I_ExtraFields) {
+    if (field.type === "break") {
+      return 12
+    }
+
+    if (field.sizing <= 4) {
+      return 4
+    }
+
+    return field.sizing
+  }
+
+  determineSize_XL (field: I_ExtraFields) {
+    if (field.type === "break") {
+      return 12
+    }
+    return field.sizing
+  }
+
+  /****************************************************************/
+  // DELETE DIALOG
+  /****************************************************************/
+
+  deleteObjectDialogTrigger: string | false = false
+  deleteObjectDialogClose () {
+    this.deleteObjectDialogTrigger = false
+  }
+
+  deleteObjectAssignUID () {
+    this.deleteObjectDialogTrigger = this.generateUID()
+  }
+
+  /****************************************************************/
+  // ADD NEW DOCUMENT UNDER PARENT
+  /****************************************************************/
+  addNewUnderParent () {
+    const currentDoc = this.findRequestedOrActiveDocument()
+    if (currentDoc) {
+      const routeObject = {
+        _id: currentDoc.type,
+        parent: currentDoc._id
+      }
+      // @ts-ignore
+      this.addNewObjectRoute(routeObject)
+    }
+  }
+
+  /****************************************************************/
+  // DOCUMENT COPY
+  /****************************************************************/
+  documentPass = null as unknown as I_OpenedDocument
+
+  copyTargetDocument () {
+    this.documentPass = extend(true, {}, this.findRequestedOrActiveDocument())
+
+    const blueprint = this.SGET_blueprint(this.documentPass.type)
+    const newDocument = copyDocument(this.documentPass, this.generateUID(), blueprint)
+
+    const dataPass = {
+      doc: newDocument,
+      treeAction: false
+    }
+
+    // @ts-ignore
+    this.SSET_addOpenedDocument(dataPass)
+    this.$router.push({
+      path: newDocument.url
+    }).catch((e: {name: string}) => {
+      const errorName : string = e.name
+      if (errorName === "NavigationDuplicated") {
+        return
+      }
+      console.log(e)
+    })
+  }
+
+  /****************************************************************/
+  // DOCUMENT ACTIONS
+  /****************************************************************/
+
+  /**
+   * Turns onthe edit mode
+   */
+  toggleEditMode () {
+    const currentDoc = this.findRequestedOrActiveDocument()
+    if (currentDoc && !currentDoc.editMode) {
+      const dataCopy: I_OpenedDocument = extend(true, {}, currentDoc)
+      dataCopy.editMode = true
+      const dataPass = { doc: dataCopy, treeAction: false }
+      this.SSET_updateOpenedDocument(dataPass)
+    }
+  }
+
+  /**
+   * Saves the current document
+   */
+  async saveCurrentDocument (keepEditMode: boolean) {
+    if (document.activeElement && keepEditMode === false) {
+      (document.activeElement as HTMLElement).blur()
+    }
+
+    const currentDoc = this.findRequestedOrActiveDocument()
+
+    // @ts-ignore
+    const isNew = currentDoc.isNew
+
+    const allDocuments = this.SGET_allOpenedDocuments
+
+    const openedDocumentsCopy: I_OpenedDocument[] = extend(true, [], allDocuments.docs)
+
+    if (currentDoc) {
+      const docCopy:I_OpenedDocument = extend(true, [], currentDoc)
+      // @ts-ignore
+      const savedDocument: {
+        documentCopy: I_OpenedDocument,
+        allOpenedDocuments: I_OpenedDocument[]
+      } = await saveDocument(docCopy, openedDocumentsCopy, this.SGET_allDocuments.docs, keepEditMode, this)
+
+      // Update the opened document
+      const dataPass = { doc: savedDocument.documentCopy, treeAction: true }
+      this.SSET_updateOpenedDocument(dataPass)
+
+      // Update document
+      if (!isNew) {
+        // @ts-ignore
+        this.SSET_updateDocument({ doc: this.mapShortDocument(savedDocument.documentCopy, this.SGET_allDocumentsByType(savedDocument.documentCopy.type).docs) })
+      }
+      // Add new document
+      else {
+        // @ts-ignore
+        this.SSET_addDocument({ doc: this.mapShortDocument(savedDocument.documentCopy, this.SGET_allDocumentsByType(savedDocument.documentCopy.type).docs) })
+      }
+
+      // Update all others
+      for (const doc of savedDocument.allOpenedDocuments) {
+        // Update the opened document
+        const dataPass = { doc: doc, treeAction: true }
+        this.SSET_updateOpenedDocument(dataPass)
+
+        // @ts-ignored
+        this.SSET_updateDocument({ doc: this.mapShortDocument(doc, this.SGET_allDocumentsByType(doc.type).docs) })
+      }
+
+      this.$q.notify({
+        group: false,
+        type: "positive",
+        message: "Document successfully saved"
+      })
+    }
+  }
+
+  /****************************************************************/
+  // Open current document in sidebar
+  /****************************************************************/
+  openThisDocumentInSidebar () {
+    const currentDoc = this.findRequestedOrActiveDocument() as I_OpenedDocument
+    this.openDocumentPreviewPanel(currentDoc._id)
+  }
+
+  copyID () {
+    const copyText = this.$refs.idCopy
+
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    copyText.select()
+    document.execCommand("copy")
+
+    this.$q.notify({
+      group: false,
+      type: "positive",
+      message: "Document ID Copied"
+    })
+  }
+
+  triggerExport () {
+    const localId = this.currentData._id
+    this.SSET_setExportDialogState([localId])
+  }
+
+  checkDocumentTemplate (id: string) {
+    const ignoredList = ["breakDocumentSettings", "name", "documentColor", "documentBackgroundColor", "parentDoc", "order", "categorySwitch", "minorSwitch", "deadSwitch", "finishedSwitch", "tags", "docTemplate"]
+
+    if (ignoredList.includes(id)) {
+      return true
+    }
+
+    const selectedTemplate = this.retrieveFieldValue(this.currentData, "docTemplate")
+
+    if (!selectedTemplate) {
+      return true
+    }
+
+    const matchedDocumentTemplate = this.documentTemplateList.find(e => e.id === selectedTemplate)
+
+    if (!matchedDocumentTemplate) {
+      return true
+    }
+
+    const matchedDocumentType = matchedDocumentTemplate.documentTypeList.find(e => e.documentTypeID === this.bluePrintData._id)
+
+    if (!matchedDocumentType) {
+      return true
+    }
+
+    if (matchedDocumentType.excludedFieldIDList.includes(id)) {
+      return false
+    }
+
+    return true
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.inputWrapper {
+  min-height: 95px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+
+  &.break {
+    min-height: inherit;
+  }
+}
+</style>
+
+<style lang="scss">
+.documentColumnWrapper {
+  flex-grow: 1;
+
+  &.isLegacy {
+    border: 1px dashed $primary;
+    padding: 30px;
+    margin-left: 20px;
+    max-width: 98%;
+    margin-top: 20px;
+    background-color: rgba($secondary, 0.15);
+  }
+}
+
+.separatorWrapper {
+  margin-top: auto;
+}
+
+.q-field {
+  max-width: 100%;
+}
+
+.documentDisplay {
+  visibility: hidden !important;
+
+  &.routeTransitionFinished{
+    visibility: visible !important;
+  }
+
+  &.hiddenFields {
+    padding-top: 105px;
+  }
+
+  .localControlRow {
+    position: absolute;
+    right: 48px;
+    top: 50px;
+  }
+
+  /* WebKit/Blink Browsers */
+  ::selection {
+    background: lighten($dark, 30);
+    color: white;
+  }
+
+  /* Gecko Browsers */
+  ::-moz-selection {
+    background: lighten($dark, 30);
+    color: white;
+  }
+}
+
+body:not(.body--dark) {
+
+  .documentDisplay {
+
+  a,
+  .text-primary{
+    color: #e6ae2b !important;
+  }
+
+    .isDead {
+      text-decoration-color: #000;
+    }
+  }
+}
+
+body.body--dark {
+  .documentDisplay {
+
+    /* WebKit/Blink Browsers */
+    ::selection {
+      color: lighten($primary, 25);
+      background: lighten($secondary, 7);
+    }
+
+    /* Gecko Browsers */
+    ::-moz-selection {
+      color: lighten($primary, 25);
+      background: lighten($secondary, 7);
+    }
+    $darkModeText: #dcdcdc;
+
+    color: $darkModeText;
+
+    .connectionList .connectionNote,
+    .listNote {
+      color: $darkModeText;
+      opacity: 0.9;
+    }
+
+    .q-list--dark,
+    .q-item--dark,
+    .q-field--dark .q-field__native,
+    .q-field--dark .q-field__prefix,
+    .q-field--dark .q-field__suffix,
+    .q-field--dark .q-field__input {
+      color: $darkModeText;
+    }
+
+    .q-separator {
+      opacity: 0.85;
+      background-color: $primary !important;
+    }
+
+    .q-field--dark .q-field__control::before {
+      background-color: rgba(255, 255, 255, 0.1);
+      opacity: 0.6;
+      border: none;
+    }
+
+    .tagSelect,
+    .singleSelect,
+    .multiSelect,
+    .singleRelashionshipSelect,
+    .multiRelashionshipSelect,
+    .existingDocumentSelect,
+    .newDocumentSelect {
+      &.q-field--dark .q-field__control::before {
+        border: none;
+      }
+
+      .relationshipChipNewTab,
+      .q-field__input,
+      .q-icon,
+      .q-field__native span {
+        color: $darkModeText !important;
+
+        .q-icon,
+        &.q-chip__icon--remove {
+          color: #000 !important;
+        }
+      }
+    }
+  }
+}
+</style>

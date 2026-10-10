@@ -91,6 +91,8 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                 <SmartSelect label="Resources" ids={entity.pairedResources || []} type="resource" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedResources: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Linked Skills" ids={entity.pairedSkills || []} type="ability" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedSkills: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Linked Languages" ids={entity.pairedLanguage || []} type="language" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedLanguage: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Schools of Magic / Teachings" ids={entity.pairedMagic || []} type="magic" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedMagic: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label="Sciences & Technologies" ids={entity.pairedTech || []} type="science" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedTech: ids })} onCreate={onCreateNew} gridSpan={6} />
             </EditorGroup>
 
             <EditorGroup title="Relationships" icon={Heart}>
@@ -119,6 +121,18 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                     onUpdate={(updatedData: any) => {
                         const rel = updatedData.groupConnections.religious;
                         onUpdate({ ...entity, leadingReligiousLeaders: rel.leadingFigureOf, pairedConnectionRelGroup: rel.connectedTo, pairedBelongingRelGroup: rel.memberOf, pairedAllyRelGroup: rel.allyOf, pairedEnemyRelGroup: rel.enemyOf });
+                    }} onCreateNew={onCreateNew} />
+
+                <GroupRoleGroup label="Magical groups & Circles" roleKey="magic" entity={{...entity, groupConnections: { magic: { leadingFigureOf: entity.leadingMagicalLeaders || [], connectedTo: entity.pairedConnectionMagicGroup || [], memberOf: entity.pairedBelongingMagicGroup || [], allyOf: entity.pairedAllyMagicGroup || [], enemyOf: entity.pairedEnemyMagicGroup || []} }} as any} allEntities={allEntities} 
+                    onUpdate={(updatedData: any) => {
+                        const mag = updatedData.groupConnections.magic;
+                        onUpdate({ ...entity, leadingMagicalLeaders: mag.leadingFigureOf, pairedConnectionMagicGroup: mag.connectedTo, pairedBelongingMagicGroup: mag.memberOf, pairedAllyMagicGroup: mag.allyOf, pairedEnemyMagicGroup: mag.enemyOf });
+                    }} onCreateNew={onCreateNew} />
+
+                <GroupRoleGroup label="Sciences & Academies" roleKey="science" entity={{...entity, groupConnections: { science: { leadingFigureOf: entity.leadingTechLeaders || [], connectedTo: entity.pairedConnectionTechGroup || [], memberOf: entity.pairedBelongingTechGroup || [], allyOf: entity.pairedAllyTechGroup || [], enemyOf: entity.pairedEnemyTechGroup || []} }} as any} allEntities={allEntities} 
+                    onUpdate={(updatedData: any) => {
+                        const sci = updatedData.groupConnections.science;
+                        onUpdate({ ...entity, leadingTechLeaders: sci.leadingFigureOf, pairedConnectionTechGroup: sci.connectedTo, pairedBelongingTechGroup: sci.memberOf, pairedAllyTechGroup: sci.allyOf, pairedEnemyTechGroup: sci.enemyOf });
                     }} onCreateNew={onCreateNew} />
             </EditorGroup>
 

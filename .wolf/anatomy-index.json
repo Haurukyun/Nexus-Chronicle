@@ -1,12 +1,12 @@
 {
   "version": 1,
   "meta": {
-    "lastScanned": "2026-10-04T03:39:58.720Z",
+    "lastScanned": "2026-10-05T16:41:04.931Z",
     "fileCount": 145,
     "hits": 0,
     "misses": 0,
-    "renderedHash": "5f486469a93046964d940bf23923b6a798eaf61cd303718d4b72f49a7f2b069e",
-    "storeUpdatedAt": "2026-10-04T03:39:58.723Z",
+    "renderedHash": "2e4b68fc59af611f84f5bdedcb593a2984feec10e2c7470f9c863a5df744e038",
+    "storeUpdatedAt": "2026-10-05T16:41:04.934Z",
     "rootHash": "0cb97c01393471c4"
   },
   "files": {
@@ -16,7 +16,7 @@
       "hash": "4a6869d72e894df2",
       "size": 68,
       "mtimeMs": 1774726396918.7642,
-      "updatedAt": "2026-10-04T03:39:58.101Z",
+      "updatedAt": "2026-10-05T16:41:03.921Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -26,7 +26,7 @@
       "hash": "5adbd679651fa5aa",
       "size": 77,
       "mtimeMs": 1786271030285.35,
-      "updatedAt": "2026-10-04T03:39:58.102Z",
+      "updatedAt": "2026-10-05T16:41:03.922Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -36,7 +36,7 @@
       "hash": "9ad59ecb23f33338",
       "size": 1300,
       "mtimeMs": 1790993538010.5576,
-      "updatedAt": "2026-10-04T03:39:58.102Z",
+      "updatedAt": "2026-10-05T16:41:03.922Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -46,7 +46,7 @@
       "hash": "b0090e54c5a4263f",
       "size": 148,
       "mtimeMs": 1774726396918.7642,
-      "updatedAt": "2026-10-04T03:39:58.103Z",
+      "updatedAt": "2026-10-05T16:41:03.922Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -56,7 +56,7 @@
       "hash": "e401f79554a8d796",
       "size": 297,
       "mtimeMs": 1790718690949.9912,
-      "updatedAt": "2026-10-04T03:39:58.103Z",
+      "updatedAt": "2026-10-05T16:41:03.923Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -66,7 +66,7 @@
       "hash": "a7693b7882e0dc3f",
       "size": 4616,
       "mtimeMs": 1791078809361.9104,
-      "updatedAt": "2026-10-04T03:39:58.104Z",
+      "updatedAt": "2026-10-05T16:41:03.923Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -76,7 +76,7 @@
       "hash": "074d6b42b583729a",
       "size": 395,
       "mtimeMs": 1790718690814.7395,
-      "updatedAt": "2026-10-04T03:39:58.104Z",
+      "updatedAt": "2026-10-05T16:41:03.925Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -86,7 +86,7 @@
       "hash": "e401f79554a8d796",
       "size": 297,
       "mtimeMs": 1790718690953.0408,
-      "updatedAt": "2026-10-04T03:39:58.104Z",
+      "updatedAt": "2026-10-05T16:41:03.926Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -96,7 +96,7 @@
       "hash": "c9934a0afa8cb769",
       "size": 9237,
       "mtimeMs": 1791078778997.175,
-      "updatedAt": "2026-10-04T03:39:58.106Z",
+      "updatedAt": "2026-10-05T16:41:03.927Z",
       "source": "scan",
       "symbols": [
         {
@@ -117,7 +117,7 @@
       "hash": "82a55e13335bdb64",
       "size": 8035,
       "mtimeMs": 1791078799374.7944,
-      "updatedAt": "2026-10-04T03:39:58.106Z",
+      "updatedAt": "2026-10-05T16:41:03.927Z",
       "source": "scan",
       "symbols": [
         {
@@ -138,7 +138,7 @@
       "hash": "71f1f92fb055d2da",
       "size": 1196,
       "mtimeMs": 1791076008868.1985,
-      "updatedAt": "2026-10-04T03:39:58.107Z",
+      "updatedAt": "2026-10-05T16:41:03.927Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -148,7 +148,7 @@
       "hash": "e317010cb130f232",
       "size": 267,
       "mtimeMs": 1774726396920.7617,
-      "updatedAt": "2026-10-04T03:39:58.107Z",
+      "updatedAt": "2026-10-05T16:41:03.928Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -158,7 +158,7 @@
       "hash": "f7e4bc3152edc9cf",
       "size": 1671,
       "mtimeMs": 1791076008873.9995,
-      "updatedAt": "2026-10-04T03:39:58.108Z",
+      "updatedAt": "2026-10-05T16:41:03.928Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -168,7 +168,7 @@
       "hash": "1032e9f62416d00b",
       "size": 59,
       "mtimeMs": 1791076102061.783,
-      "updatedAt": "2026-10-04T03:39:58.108Z",
+      "updatedAt": "2026-10-05T16:41:03.928Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -178,7 +178,7 @@
       "hash": "7eb70257593da06f",
       "size": 2,
       "mtimeMs": 1775654192283.5017,
-      "updatedAt": "2026-10-04T03:39:58.108Z",
+      "updatedAt": "2026-10-05T16:41:03.928Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -188,7 +188,7 @@
       "hash": "04ef7df62abb8780",
       "size": 19291,
       "mtimeMs": 1791084013106.9568,
-      "updatedAt": "2026-10-04T03:39:58.110Z",
+      "updatedAt": "2026-10-05T16:41:03.929Z",
       "source": "scan",
       "symbols": [
         {
@@ -228,7 +228,7 @@
       "hash": "f86993e34ab88b11",
       "size": 2050,
       "mtimeMs": 1791083117841.9973,
-      "updatedAt": "2026-10-04T03:39:58.113Z",
+      "updatedAt": "2026-10-05T16:41:03.930Z",
       "source": "scan",
       "symbols": [
         {
@@ -258,7 +258,7 @@
       "hash": "12cfa243281beeea",
       "size": 11473,
       "mtimeMs": 1791083081770.2473,
-      "updatedAt": "2026-10-04T03:39:58.114Z",
+      "updatedAt": "2026-10-05T16:41:03.931Z",
       "source": "scan",
       "symbols": [
         {
@@ -288,7 +288,7 @@
       "hash": "224e0e6478b3928f",
       "size": 1822,
       "mtimeMs": 1791083064481.9807,
-      "updatedAt": "2026-10-04T03:39:58.115Z",
+      "updatedAt": "2026-10-05T16:41:03.931Z",
       "source": "scan",
       "symbols": [
         {
@@ -319,7 +319,7 @@
       "hash": "4e506f2efb6f3962",
       "size": 97,
       "mtimeMs": 1775656587032.1274,
-      "updatedAt": "2026-10-04T03:39:58.116Z",
+      "updatedAt": "2026-10-05T16:41:03.931Z",
       "source": "scan",
       "imports": [
         "src/components/editor/EditorGroup.tsx",
@@ -334,7 +334,7 @@
       "hash": "d82f045ae51962ab",
       "size": 10600,
       "mtimeMs": 1791083132044.118,
-      "updatedAt": "2026-10-04T03:39:58.118Z",
+      "updatedAt": "2026-10-05T16:41:03.932Z",
       "source": "scan",
       "symbols": [
         {
@@ -369,7 +369,7 @@
       "hash": "f1b283f0b5b0c832",
       "size": 1834,
       "mtimeMs": 1791082658372.952,
-      "updatedAt": "2026-10-04T03:39:58.119Z",
+      "updatedAt": "2026-10-05T16:41:03.932Z",
       "source": "scan",
       "symbols": [
         {
@@ -402,7 +402,7 @@
       "hash": "76f31874f1d296a8",
       "size": 15818,
       "mtimeMs": 1791083132050.076,
-      "updatedAt": "2026-10-04T03:39:58.120Z",
+      "updatedAt": "2026-10-05T16:41:03.932Z",
       "source": "scan",
       "symbols": [
         {
@@ -437,7 +437,7 @@
       "hash": "03a6c490929ac993",
       "size": 12634,
       "mtimeMs": 1791083132053.2314,
-      "updatedAt": "2026-10-04T03:39:58.121Z",
+      "updatedAt": "2026-10-05T16:41:03.932Z",
       "source": "scan",
       "symbols": [
         {
@@ -472,7 +472,7 @@
       "hash": "8a700abb49c57fa0",
       "size": 8330,
       "mtimeMs": 1791083132055.974,
-      "updatedAt": "2026-10-04T03:39:58.122Z",
+      "updatedAt": "2026-10-05T16:41:03.933Z",
       "source": "scan",
       "symbols": [
         {
@@ -507,7 +507,7 @@
       "hash": "cbc999f955855df1",
       "size": 4595,
       "mtimeMs": 1791083132058.5996,
-      "updatedAt": "2026-10-04T03:39:58.122Z",
+      "updatedAt": "2026-10-05T16:41:03.933Z",
       "source": "scan",
       "symbols": [
         {
@@ -541,7 +541,7 @@
       "hash": "8e9560acc14bb9fa",
       "size": 4059,
       "mtimeMs": 1791083064486.4165,
-      "updatedAt": "2026-10-04T03:39:58.123Z",
+      "updatedAt": "2026-10-05T16:41:03.933Z",
       "source": "scan",
       "symbols": [
         {
@@ -571,7 +571,7 @@
       "hash": "b766bc3a751520d2",
       "size": 7242,
       "mtimeMs": 1791083132062.7896,
-      "updatedAt": "2026-10-04T03:39:58.125Z",
+      "updatedAt": "2026-10-05T16:41:03.933Z",
       "source": "scan",
       "symbols": [
         {
@@ -606,7 +606,7 @@
       "hash": "099f389b8086a2d4",
       "size": 746,
       "mtimeMs": 1786270656189.822,
-      "updatedAt": "2026-10-04T03:39:58.126Z",
+      "updatedAt": "2026-10-05T16:41:03.933Z",
       "source": "scan",
       "imports": [
         "src/components/editor/specifics/ChapterSpecifics.tsx",
@@ -638,7 +638,7 @@
       "hash": "e4afb9af6f57c084",
       "size": 10480,
       "mtimeMs": 1791083132066.996,
-      "updatedAt": "2026-10-04T03:39:58.127Z",
+      "updatedAt": "2026-10-05T16:41:03.934Z",
       "source": "scan",
       "symbols": [
         {
@@ -673,7 +673,7 @@
       "hash": "79c781314a614fda",
       "size": 6025,
       "mtimeMs": 1791083132069.238,
-      "updatedAt": "2026-10-04T03:39:58.128Z",
+      "updatedAt": "2026-10-05T16:41:03.934Z",
       "source": "scan",
       "symbols": [
         {
@@ -707,7 +707,7 @@
       "hash": "ca957f441e0eebb0",
       "size": 21604,
       "mtimeMs": 1791083288642.2192,
-      "updatedAt": "2026-10-04T03:39:58.130Z",
+      "updatedAt": "2026-10-05T16:41:03.934Z",
       "source": "scan",
       "symbols": [
         {
@@ -743,7 +743,7 @@
       "hash": "80b500dc22af64de",
       "size": 13514,
       "mtimeMs": 1791083132073.2544,
-      "updatedAt": "2026-10-04T03:39:58.131Z",
+      "updatedAt": "2026-10-05T16:41:03.934Z",
       "source": "scan",
       "symbols": [
         {
@@ -778,7 +778,7 @@
       "hash": "f5e63ddcba49fcc6",
       "size": 7150,
       "mtimeMs": 1791083132077.5586,
-      "updatedAt": "2026-10-04T03:39:58.132Z",
+      "updatedAt": "2026-10-05T16:41:03.935Z",
       "source": "scan",
       "symbols": [
         {
@@ -813,7 +813,7 @@
       "hash": "f1d770caf0284e53",
       "size": 7512,
       "mtimeMs": 1791083132080.9102,
-      "updatedAt": "2026-10-04T03:39:58.132Z",
+      "updatedAt": "2026-10-05T16:41:03.935Z",
       "source": "scan",
       "symbols": [
         {
@@ -848,7 +848,7 @@
       "hash": "92152c542cb6dac6",
       "size": 8583,
       "mtimeMs": 1791083132085.564,
-      "updatedAt": "2026-10-04T03:39:58.133Z",
+      "updatedAt": "2026-10-05T16:41:03.935Z",
       "source": "scan",
       "symbols": [
         {
@@ -883,7 +883,7 @@
       "hash": "d91f55f85bf14e7d",
       "size": 12029,
       "mtimeMs": 1791083132090.491,
-      "updatedAt": "2026-10-04T03:39:58.134Z",
+      "updatedAt": "2026-10-05T16:41:03.935Z",
       "source": "scan",
       "symbols": [
         {
@@ -918,7 +918,7 @@
       "hash": "192d1bf65f76874f",
       "size": 13255,
       "mtimeMs": 1791083132095.3323,
-      "updatedAt": "2026-10-04T03:39:58.134Z",
+      "updatedAt": "2026-10-05T16:41:03.936Z",
       "source": "scan",
       "symbols": [
         {
@@ -953,7 +953,7 @@
       "hash": "ba992f625e970f58",
       "size": 13153,
       "mtimeMs": 1791083132101.795,
-      "updatedAt": "2026-10-04T03:39:58.135Z",
+      "updatedAt": "2026-10-05T16:41:03.936Z",
       "source": "scan",
       "symbols": [
         {
@@ -988,7 +988,7 @@
       "hash": "430143ab8ab8382e",
       "size": 10813,
       "mtimeMs": 1791083132106.7183,
-      "updatedAt": "2026-10-04T03:39:58.136Z",
+      "updatedAt": "2026-10-05T16:41:03.936Z",
       "source": "scan",
       "symbols": [
         {
@@ -1023,7 +1023,7 @@
       "hash": "c1d037bc96b5eef2",
       "size": 11693,
       "mtimeMs": 1791083132112.1956,
-      "updatedAt": "2026-10-04T03:39:58.137Z",
+      "updatedAt": "2026-10-05T16:41:03.936Z",
       "source": "scan",
       "symbols": [
         {
@@ -1058,7 +1058,7 @@
       "hash": "6aafc7777799423d",
       "size": 13346,
       "mtimeMs": 1791083132116.3408,
-      "updatedAt": "2026-10-04T03:39:58.138Z",
+      "updatedAt": "2026-10-05T16:41:03.937Z",
       "source": "scan",
       "symbols": [
         {
@@ -1093,7 +1093,7 @@
       "hash": "6321927e4bed598f",
       "size": 17502,
       "mtimeMs": 1791083164467.3694,
-      "updatedAt": "2026-10-04T03:39:58.140Z",
+      "updatedAt": "2026-10-05T16:41:03.937Z",
       "source": "scan",
       "symbols": [
         {
@@ -1121,7 +1121,7 @@
       "hash": "17cdbab4574232fb",
       "size": 37272,
       "mtimeMs": 1791083639382.295,
-      "updatedAt": "2026-10-04T03:39:58.142Z",
+      "updatedAt": "2026-10-05T16:41:03.938Z",
       "source": "scan",
       "symbols": [
         {
@@ -1156,7 +1156,7 @@
       "hash": "8b62ca65433d5f8f",
       "size": 12694,
       "mtimeMs": 1791083011142.8423,
-      "updatedAt": "2026-10-04T03:39:58.144Z",
+      "updatedAt": "2026-10-05T16:41:03.939Z",
       "source": "scan",
       "symbols": [
         {
@@ -1183,7 +1183,7 @@
       "hash": "fcdf43aba60264e3",
       "size": 5706,
       "mtimeMs": 1791082400689.5706,
-      "updatedAt": "2026-10-04T03:39:58.145Z",
+      "updatedAt": "2026-10-05T16:41:03.939Z",
       "source": "scan",
       "symbols": [
         {
@@ -1207,7 +1207,7 @@
       "hash": "4bb76841b2b4f7de",
       "size": 3299,
       "mtimeMs": 1786272253844.1057,
-      "updatedAt": "2026-10-04T03:39:58.145Z",
+      "updatedAt": "2026-10-05T16:41:03.939Z",
       "source": "scan",
       "symbols": [
         {
@@ -1227,7 +1227,7 @@
       "hash": "441f4ae2aea96d21",
       "size": 1933,
       "mtimeMs": 1790720704666.74,
-      "updatedAt": "2026-10-04T03:39:58.146Z",
+      "updatedAt": "2026-10-05T16:41:03.939Z",
       "source": "scan",
       "symbols": [
         {
@@ -1289,7 +1289,7 @@
       "hash": "50a92386250ccce0",
       "size": 3954,
       "mtimeMs": 1791083619278.1301,
-      "updatedAt": "2026-10-04T03:39:58.146Z",
+      "updatedAt": "2026-10-05T16:41:03.939Z",
       "source": "scan",
       "symbols": [
         {
@@ -1321,7 +1321,7 @@
       "hash": "c241b3ba0b84924e",
       "size": 1153,
       "mtimeMs": 1791082689681.0051,
-      "updatedAt": "2026-10-04T03:39:58.147Z",
+      "updatedAt": "2026-10-05T16:41:03.939Z",
       "source": "scan",
       "imports": [
         "src/types.ts",
@@ -1335,7 +1335,7 @@
       "hash": "da913c3b59aea1b8",
       "size": 3558,
       "mtimeMs": 1791082998480.1035,
-      "updatedAt": "2026-10-04T03:39:58.147Z",
+      "updatedAt": "2026-10-05T16:41:03.940Z",
       "source": "scan",
       "symbols": [
         {
@@ -1359,7 +1359,7 @@
       "hash": "bb92e13a7a3981d8",
       "size": 1435,
       "mtimeMs": 1791083131950.6736,
-      "updatedAt": "2026-10-04T03:39:58.148Z",
+      "updatedAt": "2026-10-05T16:41:03.940Z",
       "source": "scan",
       "imports": [
         "src/types.ts",
@@ -1373,7 +1373,7 @@
       "hash": "ea5aeaad1f5169a1",
       "size": 19061,
       "mtimeMs": 1791083164463.9453,
-      "updatedAt": "2026-10-04T03:39:58.149Z",
+      "updatedAt": "2026-10-05T16:41:03.940Z",
       "source": "scan",
       "symbols": [
         {
@@ -1405,7 +1405,7 @@
       "hash": "28957e17548adcd6",
       "size": 633,
       "mtimeMs": 1790809870024.8284,
-      "updatedAt": "2026-10-04T03:39:58.150Z",
+      "updatedAt": "2026-10-05T16:41:03.940Z",
       "source": "scan",
       "imports": [
         "src/components/ui/FormInput.tsx",
@@ -1437,7 +1437,7 @@
       "hash": "facf563fd1413a9b",
       "size": 11711,
       "mtimeMs": 1791082400699.991,
-      "updatedAt": "2026-10-04T03:39:58.150Z",
+      "updatedAt": "2026-10-05T16:41:03.940Z",
       "source": "scan",
       "symbols": [
         {
@@ -1476,7 +1476,7 @@
       "hash": "f7ff63ecb7f37ff9",
       "size": 2765,
       "mtimeMs": 1791083260146.0369,
-      "updatedAt": "2026-10-04T03:39:58.151Z",
+      "updatedAt": "2026-10-05T16:41:03.940Z",
       "source": "scan",
       "symbols": [
         {
@@ -1500,7 +1500,7 @@
       "hash": "1085e67856886197",
       "size": 12768,
       "mtimeMs": 1791083033530.7058,
-      "updatedAt": "2026-10-04T03:39:58.152Z",
+      "updatedAt": "2026-10-05T16:41:03.941Z",
       "source": "scan",
       "symbols": [
         {
@@ -1533,7 +1533,7 @@
       "hash": "1aee422f6d969f7b",
       "size": 3218,
       "mtimeMs": 1791083033532.8506,
-      "updatedAt": "2026-10-04T03:39:58.152Z",
+      "updatedAt": "2026-10-05T16:41:03.941Z",
       "source": "scan",
       "symbols": [
         {
@@ -1571,7 +1571,7 @@
       "hash": "c3de5eebc529095c",
       "size": 14026,
       "mtimeMs": 1791083033534.9883,
-      "updatedAt": "2026-10-04T03:39:58.155Z",
+      "updatedAt": "2026-10-05T16:41:03.941Z",
       "source": "scan",
       "symbols": [
         {
@@ -1597,7 +1597,7 @@
       "hash": "41affc19d8b12e71",
       "size": 25494,
       "mtimeMs": 1791083033540.4983,
-      "updatedAt": "2026-10-04T03:39:58.157Z",
+      "updatedAt": "2026-10-05T16:41:03.942Z",
       "source": "scan",
       "symbols": [
         {
@@ -1625,7 +1625,7 @@
       "hash": "0a5bd972b305749c",
       "size": 2719,
       "mtimeMs": 1790727336401.6492,
-      "updatedAt": "2026-10-04T03:39:58.158Z",
+      "updatedAt": "2026-10-05T16:41:03.942Z",
       "source": "scan",
       "symbols": [
         {
@@ -1648,7 +1648,7 @@
       "hash": "e442ed97e028fc25",
       "size": 4240,
       "mtimeMs": 1791083033544.46,
-      "updatedAt": "2026-10-04T03:39:58.158Z",
+      "updatedAt": "2026-10-05T16:41:03.942Z",
       "source": "scan",
       "symbols": [
         {
@@ -1678,7 +1678,7 @@
       "hash": "45f4f0cf3f99c334",
       "size": 5014,
       "mtimeMs": 1791083132026.6555,
-      "updatedAt": "2026-10-04T03:39:58.159Z",
+      "updatedAt": "2026-10-05T16:41:03.942Z",
       "source": "scan",
       "symbols": [
         {
@@ -1702,7 +1702,7 @@
       "hash": "92b1d6ba986097a5",
       "size": 320,
       "mtimeMs": 1775659496645.694,
-      "updatedAt": "2026-10-04T03:39:58.160Z",
+      "updatedAt": "2026-10-05T16:41:03.943Z",
       "source": "scan",
       "importance": 0.0229
     },
@@ -1712,7 +1712,7 @@
       "hash": "b6118fb6f32741c4",
       "size": 631,
       "mtimeMs": 1790785437466.2188,
-      "updatedAt": "2026-10-04T03:39:58.161Z",
+      "updatedAt": "2026-10-05T16:41:03.943Z",
       "source": "scan",
       "imports": [
         "src/theme/useTheme.ts"
@@ -1725,7 +1725,7 @@
       "hash": "a2b73d6b6ea6a2d5",
       "size": 1457,
       "mtimeMs": 1790785410089.3645,
-      "updatedAt": "2026-10-04T03:39:58.161Z",
+      "updatedAt": "2026-10-05T16:41:03.943Z",
       "source": "scan",
       "imports": [
         "src/theme/useTheme.ts"
@@ -1738,7 +1738,7 @@
       "hash": "13e1aaa4bce8635d",
       "size": 1422,
       "mtimeMs": 1790785423202.4436,
-      "updatedAt": "2026-10-04T03:39:58.162Z",
+      "updatedAt": "2026-10-05T16:41:03.943Z",
       "source": "scan",
       "imports": [
         "src/theme/useTheme.ts"
@@ -1751,7 +1751,7 @@
       "hash": "4adcdb6c8acf246f",
       "size": 6228,
       "mtimeMs": 1791083619289.8467,
-      "updatedAt": "2026-10-04T03:39:58.162Z",
+      "updatedAt": "2026-10-05T16:41:03.943Z",
       "source": "scan",
       "symbols": [
         {
@@ -1781,7 +1781,7 @@
       "hash": "0095550c8fe51460",
       "size": 17432,
       "mtimeMs": 1791084981891.5195,
-      "updatedAt": "2026-10-04T03:39:58.163Z",
+      "updatedAt": "2026-10-05T16:41:03.944Z",
       "source": "scan",
       "symbols": [
         {
@@ -1802,7 +1802,7 @@
       "hash": "c51a76788a0b4660",
       "size": 504,
       "mtimeMs": 1775656517569.2563,
-      "updatedAt": "2026-10-04T03:39:58.164Z",
+      "updatedAt": "2026-10-05T16:41:03.944Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -1812,7 +1812,7 @@
       "hash": "5344fec2f668df22",
       "size": 957,
       "mtimeMs": 1775659503615.767,
-      "updatedAt": "2026-10-04T03:39:58.164Z",
+      "updatedAt": "2026-10-05T16:41:03.944Z",
       "source": "scan",
       "importance": 0.0229
     },
@@ -1822,7 +1822,7 @@
       "hash": "00f1a63dacb972ae",
       "size": 481,
       "mtimeMs": 1775656511134.5625,
-      "updatedAt": "2026-10-04T03:39:58.165Z",
+      "updatedAt": "2026-10-05T16:41:03.944Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -1832,7 +1832,7 @@
       "hash": "9025a3707a900a7b",
       "size": 5191,
       "mtimeMs": 1791083033554.606,
-      "updatedAt": "2026-10-04T03:39:58.165Z",
+      "updatedAt": "2026-10-05T16:41:03.944Z",
       "source": "scan",
       "symbols": [
         {
@@ -1856,7 +1856,7 @@
       "hash": "46f94e896754818f",
       "size": 21558,
       "mtimeMs": 1791082950325.5764,
-      "updatedAt": "2026-10-04T03:39:58.167Z",
+      "updatedAt": "2026-10-05T16:41:03.945Z",
       "source": "scan",
       "symbols": [
         {
@@ -1892,7 +1892,7 @@
       "hash": "a5ec3570afbcd19c",
       "size": 14939,
       "mtimeMs": 1791083050424.953,
-      "updatedAt": "2026-10-04T03:39:58.168Z",
+      "updatedAt": "2026-10-05T16:41:03.945Z",
       "source": "scan",
       "symbols": [
         {
@@ -1927,7 +1927,7 @@
       "hash": "dae9600d42adeda9",
       "size": 134,
       "mtimeMs": 1775656636707.2573,
-      "updatedAt": "2026-10-04T03:39:58.168Z",
+      "updatedAt": "2026-10-05T16:41:03.945Z",
       "source": "scan",
       "imports": [
         "src/components/viewer/ViewerHeaders.tsx",
@@ -1943,7 +1943,7 @@
       "hash": "985419cb5e811b41",
       "size": 8575,
       "mtimeMs": 1791080061125.5605,
-      "updatedAt": "2026-10-04T03:39:58.169Z",
+      "updatedAt": "2026-10-05T16:41:03.946Z",
       "source": "scan",
       "symbols": [
         {
@@ -1976,7 +1976,7 @@
       "hash": "157e183dfc49b43d",
       "size": 1225,
       "mtimeMs": 1791080061136.797,
-      "updatedAt": "2026-10-04T03:39:58.170Z",
+      "updatedAt": "2026-10-05T16:41:03.946Z",
       "source": "scan",
       "imports": [
         "src/types.ts",
@@ -1991,7 +1991,7 @@
       "hash": "ff6dce0f7cb9dce2",
       "size": 15678,
       "mtimeMs": 1791083260221.4243,
-      "updatedAt": "2026-10-04T03:39:58.171Z",
+      "updatedAt": "2026-10-05T16:41:03.946Z",
       "source": "scan",
       "symbols": [
         {
@@ -2025,7 +2025,7 @@
       "hash": "adc0af006ae0d737",
       "size": 9521,
       "mtimeMs": 1791080061148.202,
-      "updatedAt": "2026-10-04T03:39:58.172Z",
+      "updatedAt": "2026-10-05T16:41:03.947Z",
       "source": "scan",
       "symbols": [
         {
@@ -2058,7 +2058,7 @@
       "hash": "5c711e2a8651f4b3",
       "size": 7150,
       "mtimeMs": 1791080061152.6472,
-      "updatedAt": "2026-10-04T03:39:58.173Z",
+      "updatedAt": "2026-10-05T16:41:03.947Z",
       "source": "scan",
       "symbols": [
         {
@@ -2091,7 +2091,7 @@
       "hash": "030722354b25ee6e",
       "size": 3464,
       "mtimeMs": 1791080061157.0964,
-      "updatedAt": "2026-10-04T03:39:58.173Z",
+      "updatedAt": "2026-10-05T16:41:03.947Z",
       "source": "scan",
       "symbols": [
         {
@@ -2123,7 +2123,7 @@
       "hash": "0e26bf00ecfe7b6b",
       "size": 3774,
       "mtimeMs": 1791083064489.634,
-      "updatedAt": "2026-10-04T03:39:58.174Z",
+      "updatedAt": "2026-10-05T16:41:03.947Z",
       "source": "scan",
       "symbols": [
         {
@@ -2154,7 +2154,7 @@
       "hash": "65c31b83695074fb",
       "size": 6788,
       "mtimeMs": 1791080061161.983,
-      "updatedAt": "2026-10-04T03:39:58.174Z",
+      "updatedAt": "2026-10-05T16:41:03.947Z",
       "source": "scan",
       "symbols": [
         {
@@ -2186,7 +2186,7 @@
       "hash": "28399d690bc52235",
       "size": 866,
       "mtimeMs": 1776807782232.3267,
-      "updatedAt": "2026-10-04T03:39:58.175Z",
+      "updatedAt": "2026-10-05T16:41:03.948Z",
       "source": "scan",
       "imports": [
         "src/components/viewer/specifics/ChapterSpecificsViewer.tsx",
@@ -2218,7 +2218,7 @@
       "hash": "ab22cd6963bc803b",
       "size": 8961,
       "mtimeMs": 1791080061166.8784,
-      "updatedAt": "2026-10-04T03:39:58.176Z",
+      "updatedAt": "2026-10-05T16:41:03.948Z",
       "source": "scan",
       "symbols": [
         {
@@ -2251,7 +2251,7 @@
       "hash": "bf28b87155616e56",
       "size": 4182,
       "mtimeMs": 1791080061171.9275,
-      "updatedAt": "2026-10-04T03:39:58.177Z",
+      "updatedAt": "2026-10-05T16:41:03.948Z",
       "source": "scan",
       "symbols": [
         {
@@ -2283,7 +2283,7 @@
       "hash": "a3956f3c626a23ac",
       "size": 6493,
       "mtimeMs": 1791083288704.9822,
-      "updatedAt": "2026-10-04T03:39:58.178Z",
+      "updatedAt": "2026-10-05T16:41:03.948Z",
       "source": "scan",
       "symbols": [
         {
@@ -2316,7 +2316,7 @@
       "hash": "c7009fae461528e7",
       "size": 10855,
       "mtimeMs": 1791080061181.851,
-      "updatedAt": "2026-10-04T03:39:58.178Z",
+      "updatedAt": "2026-10-05T16:41:03.949Z",
       "source": "scan",
       "symbols": [
         {
@@ -2349,7 +2349,7 @@
       "hash": "9ede6d1b85126165",
       "size": 6082,
       "mtimeMs": 1791080061185.4392,
-      "updatedAt": "2026-10-04T03:39:58.179Z",
+      "updatedAt": "2026-10-05T16:41:03.949Z",
       "source": "scan",
       "symbols": [
         {
@@ -2381,7 +2381,7 @@
       "hash": "a35a56d528ed57a5",
       "size": 6537,
       "mtimeMs": 1791080061190.796,
-      "updatedAt": "2026-10-04T03:39:58.179Z",
+      "updatedAt": "2026-10-05T16:41:03.949Z",
       "source": "scan",
       "symbols": [
         {
@@ -2413,7 +2413,7 @@
       "hash": "f9cc1c014cfd8bd9",
       "size": 7222,
       "mtimeMs": 1791080061195.991,
-      "updatedAt": "2026-10-04T03:39:58.180Z",
+      "updatedAt": "2026-10-05T16:41:03.949Z",
       "source": "scan",
       "symbols": [
         {
@@ -2446,7 +2446,7 @@
       "hash": "0b31fdf9c9352184",
       "size": 10543,
       "mtimeMs": 1791080061200.4673,
-      "updatedAt": "2026-10-04T03:39:58.181Z",
+      "updatedAt": "2026-10-05T16:41:03.950Z",
       "source": "scan",
       "symbols": [
         {
@@ -2479,7 +2479,7 @@
       "hash": "c7b0d7689273c13b",
       "size": 10698,
       "mtimeMs": 1791080061205.724,
-      "updatedAt": "2026-10-04T03:39:58.181Z",
+      "updatedAt": "2026-10-05T16:41:03.950Z",
       "source": "scan",
       "symbols": [
         {
@@ -2512,7 +2512,7 @@
       "hash": "1f921b466bb93824",
       "size": 10617,
       "mtimeMs": 1791080061211.7222,
-      "updatedAt": "2026-10-04T03:39:58.182Z",
+      "updatedAt": "2026-10-05T16:41:03.951Z",
       "source": "scan",
       "symbols": [
         {
@@ -2545,7 +2545,7 @@
       "hash": "741d2981204378b1",
       "size": 8966,
       "mtimeMs": 1791080061215.4746,
-      "updatedAt": "2026-10-04T03:39:58.183Z",
+      "updatedAt": "2026-10-05T16:41:03.951Z",
       "source": "scan",
       "symbols": [
         {
@@ -2578,7 +2578,7 @@
       "hash": "976e996806ab26e8",
       "size": 9485,
       "mtimeMs": 1791080061222.1074,
-      "updatedAt": "2026-10-04T03:39:58.183Z",
+      "updatedAt": "2026-10-05T16:41:03.951Z",
       "source": "scan",
       "symbols": [
         {
@@ -2611,7 +2611,7 @@
       "hash": "63bcbba2b6a635f9",
       "size": 10762,
       "mtimeMs": 1791080061226.246,
-      "updatedAt": "2026-10-04T03:39:58.184Z",
+      "updatedAt": "2026-10-05T16:41:03.951Z",
       "source": "scan",
       "symbols": [
         {
@@ -2644,7 +2644,7 @@
       "hash": "c723a8606372ec33",
       "size": 7009,
       "mtimeMs": 1791076008893.3438,
-      "updatedAt": "2026-10-04T03:39:58.185Z",
+      "updatedAt": "2026-10-05T16:41:03.952Z",
       "source": "scan",
       "symbols": [
         {
@@ -2697,7 +2697,7 @@
       "hash": "04469da937934fc1",
       "size": 4217,
       "mtimeMs": 1791082915572.4897,
-      "updatedAt": "2026-10-04T03:39:58.185Z",
+      "updatedAt": "2026-10-05T16:41:03.952Z",
       "source": "scan",
       "symbols": [
         {
@@ -2727,7 +2727,7 @@
       "hash": "cdf8181843bca3c9",
       "size": 9991,
       "mtimeMs": 1791082918263.3408,
-      "updatedAt": "2026-10-04T03:39:58.186Z",
+      "updatedAt": "2026-10-05T16:41:03.952Z",
       "source": "scan",
       "symbols": [
         {
@@ -2763,7 +2763,7 @@
       "hash": "e2a8581778c3a430",
       "size": 1347,
       "mtimeMs": 1790720618943.9065,
-      "updatedAt": "2026-10-04T03:39:58.186Z",
+      "updatedAt": "2026-10-05T16:41:03.952Z",
       "source": "scan",
       "imports": [
         "src/types.ts"
@@ -2776,7 +2776,7 @@
       "hash": "9e3df9cb0718a902",
       "size": 2944,
       "mtimeMs": 1791076008897.8513,
-      "updatedAt": "2026-10-04T03:39:58.187Z",
+      "updatedAt": "2026-10-05T16:41:03.953Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -2786,7 +2786,7 @@
       "hash": "c8368b4685b86541",
       "size": 367,
       "mtimeMs": 1775656212028.7554,
-      "updatedAt": "2026-10-04T03:39:58.187Z",
+      "updatedAt": "2026-10-05T16:41:03.953Z",
       "source": "scan",
       "imports": [
         "src/App.tsx"
@@ -2799,7 +2799,7 @@
       "hash": "4ed4ad39bdedfcd1",
       "size": 70455,
       "mtimeMs": 1791082920296.671,
-      "updatedAt": "2026-10-04T03:39:58.190Z",
+      "updatedAt": "2026-10-05T16:41:03.954Z",
       "source": "scan",
       "symbols": [
         {
@@ -2832,7 +2832,7 @@
       "hash": "82418167325ec139",
       "size": 86,
       "mtimeMs": 1790785446732.8125,
-      "updatedAt": "2026-10-04T03:39:58.191Z",
+      "updatedAt": "2026-10-05T16:41:03.955Z",
       "source": "scan",
       "imports": [
         "src/theme/types.ts",
@@ -2847,7 +2847,7 @@
       "hash": "e12ec90b3c44ce62",
       "size": 2472,
       "mtimeMs": 1791076008899.857,
-      "updatedAt": "2026-10-04T03:39:58.192Z",
+      "updatedAt": "2026-10-05T16:41:03.955Z",
       "source": "scan",
       "symbols": [
         {
@@ -2877,7 +2877,7 @@
       "hash": "57d42f56a9fce82b",
       "size": 13705,
       "mtimeMs": 1791085049146.537,
-      "updatedAt": "2026-10-04T03:39:58.193Z",
+      "updatedAt": "2026-10-05T16:41:03.956Z",
       "source": "scan",
       "symbols": [
         {
@@ -2909,7 +2909,7 @@
       "hash": "9c7b81272a80555c",
       "size": 2003,
       "mtimeMs": 1791077168600.9458,
-      "updatedAt": "2026-10-04T03:39:58.193Z",
+      "updatedAt": "2026-10-05T16:41:03.957Z",
       "source": "scan",
       "symbols": [
         {
@@ -2946,7 +2946,7 @@
       "hash": "b21762f54ecd0719",
       "size": 1278,
       "mtimeMs": 1791080437551.274,
-      "updatedAt": "2026-10-04T03:39:58.194Z",
+      "updatedAt": "2026-10-05T16:41:03.957Z",
       "source": "scan",
       "imports": [
         "src/store/useWorldStore.ts",
@@ -2961,7 +2961,7 @@
       "hash": "cdd2ca12dc134cf3",
       "size": 51393,
       "mtimeMs": 1791080159554.8552,
-      "updatedAt": "2026-10-04T03:39:58.196Z",
+      "updatedAt": "2026-10-05T16:41:03.958Z",
       "source": "scan",
       "symbols": [
         {
@@ -3185,7 +3185,7 @@
       "hash": "7bf2f8e4c7e5e233",
       "size": 3434,
       "mtimeMs": 1790997662190.736,
-      "updatedAt": "2026-10-04T03:39:58.197Z",
+      "updatedAt": "2026-10-05T16:41:03.960Z",
       "source": "scan",
       "imports": [
         "src/utils/assetStore.ts",
@@ -3199,7 +3199,7 @@
       "hash": "1f973b5a20345ca7",
       "size": 13598,
       "mtimeMs": 1790997996589.2192,
-      "updatedAt": "2026-10-04T03:39:58.198Z",
+      "updatedAt": "2026-10-05T16:41:03.961Z",
       "source": "scan",
       "symbols": [
         {
@@ -3314,7 +3314,7 @@
       "hash": "3fc14a7729e4f260",
       "size": 9036,
       "mtimeMs": 1790720822793.7817,
-      "updatedAt": "2026-10-04T03:39:58.198Z",
+      "updatedAt": "2026-10-05T16:41:03.961Z",
       "source": "scan",
       "symbols": [
         {
@@ -3345,7 +3345,7 @@
       "hash": "726b5d661840782c",
       "size": 2819,
       "mtimeMs": 1790989854215.103,
-      "updatedAt": "2026-10-04T03:39:58.199Z",
+      "updatedAt": "2026-10-05T16:41:03.962Z",
       "source": "scan",
       "imports": [
         "src/utils/bidirectionalSync.ts",
@@ -3359,7 +3359,7 @@
       "hash": "ad6ddc79a98e2da7",
       "size": 34473,
       "mtimeMs": 1790805686712.9663,
-      "updatedAt": "2026-10-04T03:39:58.200Z",
+      "updatedAt": "2026-10-05T16:41:03.963Z",
       "source": "scan",
       "symbols": [
         {
@@ -3439,7 +3439,7 @@
       "hash": "8a510ec451678bca",
       "size": 1394,
       "mtimeMs": 1790989917406.432,
-      "updatedAt": "2026-10-04T03:39:58.200Z",
+      "updatedAt": "2026-10-05T16:41:03.964Z",
       "source": "scan",
       "imports": [
         "src/utils/graphSqliteVerification.ts",
@@ -3453,7 +3453,7 @@
       "hash": "c50dc720e1040a6b",
       "size": 3715,
       "mtimeMs": 1790989927068.5718,
-      "updatedAt": "2026-10-04T03:39:58.200Z",
+      "updatedAt": "2026-10-05T16:41:03.964Z",
       "source": "scan",
       "symbols": [
         {
@@ -3483,7 +3483,7 @@
       "hash": "0feda05543a9e9b1",
       "size": 8669,
       "mtimeMs": 1790996590721.9058,
-      "updatedAt": "2026-10-04T03:39:58.201Z",
+      "updatedAt": "2026-10-05T16:41:03.965Z",
       "source": "scan",
       "symbols": [
         {
@@ -3532,7 +3532,7 @@
       "hash": "d8d8d940ebd987da",
       "size": 2895,
       "mtimeMs": 1790990364080.8381,
-      "updatedAt": "2026-10-04T03:39:58.201Z",
+      "updatedAt": "2026-10-05T16:41:03.965Z",
       "source": "scan",
       "imports": [
         "src/types.ts",
@@ -3546,7 +3546,7 @@
       "hash": "77d7f6b18d38bb35",
       "size": 9391,
       "mtimeMs": 1790996601487.0195,
-      "updatedAt": "2026-10-04T03:39:58.202Z",
+      "updatedAt": "2026-10-05T16:41:03.966Z",
       "source": "scan",
       "symbols": [
         {
@@ -3620,7 +3620,7 @@
       "hash": "3d381fbb38ec8475",
       "size": 12680,
       "mtimeMs": 1790727373838.1316,
-      "updatedAt": "2026-10-04T03:39:58.203Z",
+      "updatedAt": "2026-10-05T16:41:03.967Z",
       "source": "scan",
       "symbols": [
         {
@@ -3757,7 +3757,7 @@
       "hash": "cf434fba6340c7ef",
       "size": 8258,
       "mtimeMs": 1790998061858.0554,
-      "updatedAt": "2026-10-04T03:39:58.203Z",
+      "updatedAt": "2026-10-05T16:41:03.968Z",
       "source": "scan",
       "symbols": [
         {
@@ -3844,7 +3844,7 @@
       "hash": "2b3d520316cb739d",
       "size": 8755,
       "mtimeMs": 1791083619324.1558,
-      "updatedAt": "2026-10-04T03:39:58.204Z",
+      "updatedAt": "2026-10-05T16:41:03.969Z",
       "source": "scan",
       "symbols": [
         {
@@ -3884,7 +3884,7 @@
       "hash": "822d170ee03faf8b",
       "size": 88,
       "mtimeMs": 1775656681416.262,
-      "updatedAt": "2026-10-04T03:39:58.205Z",
+      "updatedAt": "2026-10-05T16:41:03.970Z",
       "source": "scan",
       "imports": [
         "src/views/TrashView.tsx",
@@ -3899,7 +3899,7 @@
       "hash": "82a9efa27999d2f3",
       "size": 52147,
       "mtimeMs": 1791080511117.8708,
-      "updatedAt": "2026-10-04T03:39:58.207Z",
+      "updatedAt": "2026-10-05T16:41:03.971Z",
       "source": "scan",
       "symbols": [
         {
@@ -3946,7 +3946,7 @@
       "hash": "e2feb3360368f2b6",
       "size": 37860,
       "mtimeMs": 1791083619329.6462,
-      "updatedAt": "2026-10-04T03:39:58.208Z",
+      "updatedAt": "2026-10-05T16:41:03.973Z",
       "source": "scan",
       "symbols": [
         {
@@ -4029,7 +4029,7 @@
       "hash": "6d0050c2659a135a",
       "size": 14782,
       "mtimeMs": 1791080511124.5498,
-      "updatedAt": "2026-10-04T03:39:58.209Z",
+      "updatedAt": "2026-10-05T16:41:03.974Z",
       "source": "scan",
       "symbols": [
         {
@@ -4069,7 +4069,7 @@
       "hash": "c0a9a2bcd7d45a56",
       "size": 45814,
       "mtimeMs": 1791083619334.011,
-      "updatedAt": "2026-10-04T03:39:58.211Z",
+      "updatedAt": "2026-10-05T16:41:03.976Z",
       "source": "scan",
       "symbols": [
         {
@@ -4111,7 +4111,7 @@
       "hash": "aaea0edc12734683",
       "size": 8588,
       "mtimeMs": 1791080511128.9404,
-      "updatedAt": "2026-10-04T03:39:58.212Z",
+      "updatedAt": "2026-10-05T16:41:03.977Z",
       "source": "scan",
       "symbols": [
         {
@@ -4143,7 +4143,7 @@
       "hash": "4ef296936aa46b06",
       "size": 4946,
       "mtimeMs": 1791077471977.8254,
-      "updatedAt": "2026-10-04T03:39:58.213Z",
+      "updatedAt": "2026-10-05T16:41:03.978Z",
       "source": "scan",
       "symbols": [
         {
@@ -4176,7 +4176,7 @@
       "hash": "858a374b8c753386",
       "size": 36837,
       "mtimeMs": 1791080511132.7258,
-      "updatedAt": "2026-10-04T03:39:58.214Z",
+      "updatedAt": "2026-10-05T16:41:03.979Z",
       "source": "scan",
       "symbols": [
         {
@@ -4216,7 +4216,7 @@
       "hash": "8a460714d8a02659",
       "size": 90,
       "mtimeMs": 1790992139781.8313,
-      "updatedAt": "2026-10-04T03:39:58.215Z",
+      "updatedAt": "2026-10-05T16:41:03.980Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4226,7 +4226,7 @@
       "hash": "475e2e09e57f8026",
       "size": 40,
       "mtimeMs": 1790992139782.8352,
-      "updatedAt": "2026-10-04T03:39:58.216Z",
+      "updatedAt": "2026-10-05T16:41:03.981Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4236,7 +4236,7 @@
       "hash": "4ed9b2a9e6385de6",
       "size": 753,
       "mtimeMs": 1790996561246.6453,
-      "updatedAt": "2026-10-04T03:39:58.217Z",
+      "updatedAt": "2026-10-05T16:41:03.982Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4246,7 +4246,7 @@
       "hash": "d286a7ebb448500e",
       "size": 744,
       "mtimeMs": 1790992361606.6743,
-      "updatedAt": "2026-10-04T03:39:58.217Z",
+      "updatedAt": "2026-10-05T16:41:03.983Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4256,7 +4256,7 @@
       "hash": "2ec9ef4748b746c4",
       "size": 277003,
       "mtimeMs": 1790992139785.8535,
-      "updatedAt": "2026-10-04T03:39:58.230Z",
+      "updatedAt": "2026-10-05T16:41:03.997Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4266,7 +4266,7 @@
       "hash": "1dc29473c443e1df",
       "size": 1278,
       "mtimeMs": 1790998037784.821,
-      "updatedAt": "2026-10-04T03:39:58.232Z",
+      "updatedAt": "2026-10-05T16:41:03.999Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4276,7 +4276,7 @@
       "hash": "78a244bdd0351e24",
       "size": 183,
       "mtimeMs": 1790992139786.854,
-      "updatedAt": "2026-10-04T03:39:58.232Z",
+      "updatedAt": "2026-10-05T16:41:04.000Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4286,7 +4286,7 @@
       "hash": "8ec33a7d0eeb931b",
       "size": 1313,
       "mtimeMs": 1790994279823.9644,
-      "updatedAt": "2026-10-04T03:39:58.233Z",
+      "updatedAt": "2026-10-05T16:41:04.001Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4296,7 +4296,7 @@
       "hash": "dbef1f7e7d29d579",
       "size": 183,
       "mtimeMs": 1791076094974.851,
-      "updatedAt": "2026-10-04T03:39:58.234Z",
+      "updatedAt": "2026-10-05T16:41:04.001Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4306,7 +4306,7 @@
       "hash": "a1653689899b945b",
       "size": 5838,
       "mtimeMs": 1790990091783.848,
-      "updatedAt": "2026-10-04T03:39:58.235Z",
+      "updatedAt": "2026-10-05T16:41:04.003Z",
       "source": "scan",
       "symbols": [
         {
@@ -4326,7 +4326,7 @@
       "hash": "df05b05b27e489db",
       "size": 4211,
       "mtimeMs": 1790990095505.0276,
-      "updatedAt": "2026-10-04T03:39:58.236Z",
+      "updatedAt": "2026-10-05T16:41:04.003Z",
       "source": "scan",
       "symbols": [
         {
@@ -4353,7 +4353,7 @@
       "hash": "e1ed3afce6916f24",
       "size": 656,
       "mtimeMs": 1790990386771.498,
-      "updatedAt": "2026-10-04T03:39:58.236Z",
+      "updatedAt": "2026-10-05T16:41:04.004Z",
       "source": "scan",
       "importance": 0.0146
     },
@@ -4363,7 +4363,7 @@
       "hash": "2014f3c1cf986991",
       "size": 1373,
       "mtimeMs": 1790990317045.733,
-      "updatedAt": "2026-10-04T03:39:58.236Z",
+      "updatedAt": "2026-10-05T16:41:04.004Z",
       "source": "scan",
       "importance": 0.0146
     }

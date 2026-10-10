@@ -82,6 +82,7 @@ export const RELATION_PAIRS: RelationPairDef[] = [
     { typeA: 'character', fieldA: 'pairedBelongingMagicGroup', typeB: 'magic', fieldB: 'pairedBelongingCharacter' },
     { typeA: 'character', fieldA: 'pairedAllyMagicGroup', typeB: 'magic', fieldB: 'pairedAllyCharacter' },
     { typeA: 'character', fieldA: 'pairedEnemyMagicGroup', typeB: 'magic', fieldB: 'pairedEnemyCharacter' },
+    { typeA: 'character', fieldA: 'pairedMagic', typeB: 'magic', fieldB: 'pairedCharacter' },
 
     // 16. Character <-> Tech / Science
     { typeA: 'character', fieldA: 'leadingTechLeaders', typeB: 'tech', fieldB: 'leadingCharacters' },
@@ -89,6 +90,8 @@ export const RELATION_PAIRS: RelationPairDef[] = [
     { typeA: 'character', fieldA: 'pairedBelongingTechGroup', typeB: 'tech', fieldB: 'pairedBelongingCharacter' },
     { typeA: 'character', fieldA: 'pairedAllyTechGroup', typeB: 'tech', fieldB: 'pairedAllyCharacter' },
     { typeA: 'character', fieldA: 'pairedEnemyTechGroup', typeB: 'tech', fieldB: 'pairedEnemyCharacter' },
+    { typeA: 'character', fieldA: 'pairedTech', typeB: 'tech', fieldB: 'pairedCharacter' },
+    { typeA: 'character', fieldA: 'pairedTech', typeB: 'science', fieldB: 'pairedCharacter' },
 
     // 17. Condition <-> Location
     { typeA: 'condition', fieldA: 'pairedLocationsPositive', typeB: 'location', fieldB: 'pairedConditionsPositive' },
@@ -349,7 +352,21 @@ export const RELATION_PAIRS: RelationPairDef[] = [
     { typeA: 'note', fieldA: 'pairedConnectedProfessions', typeB: 'occupation', fieldB: 'pairedConnectedNotes' },
     { typeA: 'myth', fieldA: 'pairedProfessions', typeB: 'occupation', fieldB: 'pairedMyths' },
     { typeA: 'note', fieldA: 'pairedConnectedResources', typeB: 'resource', fieldB: 'pairedConnectedNotes' },
-    { typeA: 'myth', fieldA: 'pairedResources', typeB: 'resource', fieldB: 'pairedMyths' }
+    { typeA: 'myth', fieldA: 'pairedResources', typeB: 'resource', fieldB: 'pairedMyths' },
+
+    // 71. Group Historical Succession Lineage
+    { typeA: 'political', fieldA: 'succedingPolGroup', typeB: 'political', fieldB: 'preceedingPolGroup' },
+    { typeA: 'political', fieldA: 'preceedingPolGroup', typeB: 'political', fieldB: 'succedingPolGroup' },
+    { typeA: 'organization', fieldA: 'succedingOtherGroup', typeB: 'organization', fieldB: 'preceedingOtherGroup' },
+    { typeA: 'organization', fieldA: 'preceedingOtherGroup', typeB: 'organization', fieldB: 'succedingOtherGroup' },
+    { typeA: 'religious', fieldA: 'succedingRelGroup', typeB: 'religious', fieldB: 'preceedingRelGroup' },
+    { typeA: 'religious', fieldA: 'preceedingRelGroup', typeB: 'religious', fieldB: 'succedingRelGroup' },
+    { typeA: 'magic', fieldA: 'succedingMagicGroup', typeB: 'magic', fieldB: 'preceedingMagicGroup' },
+    { typeA: 'magic', fieldA: 'preceedingMagicGroup', typeB: 'magic', fieldB: 'succedingMagicGroup' },
+    { typeA: 'tech', fieldA: 'succedingTechGroup', typeB: 'tech', fieldB: 'preceedingTechGroup' },
+    { typeA: 'tech', fieldA: 'preceedingTechGroup', typeB: 'tech', fieldB: 'succedingTechGroup' },
+    { typeA: 'science', fieldA: 'succedingTechGroup', typeB: 'science', fieldB: 'preceedingTechGroup' },
+    { typeA: 'science', fieldA: 'preceedingTechGroup', typeB: 'science', fieldB: 'succedingTechGroup' }
 ];
 
 export interface DirectedRelationRule {

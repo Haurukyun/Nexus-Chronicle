@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-04T03:39:58.720Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-05T16:41:04.931Z
 > Files: 145 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.

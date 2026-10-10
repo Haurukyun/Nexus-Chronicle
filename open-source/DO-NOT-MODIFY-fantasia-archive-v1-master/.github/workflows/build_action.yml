@@ -1,0 +1,60 @@
+# This is a basic workflow that is manually triggered
+
+name: Build App
+
+# Manually triggered
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The version of the application being built"
+        required: true
+
+jobs:
+  # Builds all major OS versions of FA
+  build:
+    runs-on: ${{ matrix.os }}
+    environment: production
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2.3.4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: "12.22.12"
+
+      - name: npm install and build
+        run: |
+          npm install
+          npm run build
+
+      - name: Upload Linux Artifact - Snap
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          # Artifact name
+          name: Linux_FA Snap ${{ github.event.inputs.version }}
+          path: |
+            dist/electron/Packaged/*.snap
+
+      - name: Upload Linux Artifact - AppImage
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          # Artifact name
+          name: Linux_FA AppImage ${{ github.event.inputs.version }}
+          path: |
+            dist/electron/Packaged/*.AppImage
+
+      - name: Upload Windows Artifact
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          # Artifact name
+          name: Windows_FA ${{ github.event.inputs.version }}
+          path: dist/electron/Packaged/*.exe
