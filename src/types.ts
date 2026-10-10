@@ -898,6 +898,25 @@ export interface Ability extends BaseEntity {
 
 export type WorldEntity = Chapter | Note | Myth | Character | Location | Event | Species | Language | Culture | PoliticalGroup | Religion | Organization | Magic | Tech | Ability | Item | Occupation | Condition | Resource | BaseEntity;
 
+export interface FantasyEra {
+  id: string;
+  name: string;
+  abbreviation?: string;
+  startYear: number;
+  endYear?: number;
+  color?: string;
+  description?: string;
+}
+
+export interface MilestonePin {
+  id: string;
+  name: string;
+  year: number;
+  description?: string;
+  color?: string;
+  entityId?: string;
+}
+
 export interface WorldData {
   id?: string;
   name: string;
@@ -909,6 +928,8 @@ export interface WorldData {
   mapImage?: string;
   mapConnections: MapConnection[];
   worldPhase: WorldPhase;
+  timelineEras?: FantasyEra[];
+  milestonePins?: MilestonePin[];
 }
 
 export interface UniverseArchive {

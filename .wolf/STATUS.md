@@ -117,18 +117,25 @@ budget_tokens: 1000
     - Exhaustive mapping across all 20 blueprints, group affiliations, relational context notes (`addedValues`), and document flags (`categorySwitch`, `deadSwitch`, `finishedSwitch`, `minorSwitch`).
     - Automated circular parent detection and break, with instant bidirectional relationship reconciliation across all imported entities.
     - System Settings UI in `OptionsView.tsx` with "Import as New Realm" and "Merge into Active Realm" options, with native desktop file dialog bridge.
-  - **Comprehensive Unit Test Coverage** (`fantasiaArchiveMigration.test.ts`, `relationalNotesUtils.test.ts`): 12 dedicated unit tests covering NDJSON streams, ZIP unpacking, group affiliations, circular loops, and bidirectional synchronization. All 36 tests across 8 test suites pass in sub-second time.
+  - **Chronos Timeline Overhaul & Custom Fantasy Eras** (`TimelineView.tsx`, `timelineUtils.ts`, `ManageErasModal.tsx`, `AddMilestoneModal.tsx`, `TimelineInspectorCard.tsx`):
+    - **Custom Fantasy Eras** (`FantasyEra`, `DEFAULT_ERA_PRESETS`): Configurable fantasy epochs with start/end years, aura colors, abbreviations, and descriptions. Built-in presets for Mythic Chronicle (Ages of Power), High Fantasy Tolkien Ages (1st–4th Age), and Classical Antiquity (B.C.E./C.E.).
+    - **Visual Era Bands**: Rendered along the top of the Chronos time axis with luminous gradients and click-to-jump navigation.
+    - **Milestone Pins** (`MilestonePin`, `AddMilestoneModal.tsx`): Pivotal epoch turning points with vertical light beams spanning the canvas, top diamond pin badges, and codex entity linking.
+    - **Interval Lane Packing** (`packTimelineLanes`): Greedy interval scheduling ensuring overlapping character lifespans and historical events stack cleanly into non-overlapping horizontal lanes.
+    - **Category & Sub-Type Filtering**: Quick toolbar filters for All Entries, Historical Events (with event type dropdown), Character Lifespans (with All / Living / Deceased toggles), and Milestones, plus real-time search.
+    - **Zoom Scale Controls**: 4 zoom presets (Compact 2k, Standard 3.4k, Epic 5.2k, Panoramic 8k) with smooth horizontal scrolling.
+    - **Timeline Inspector Card** (`TimelineInspectorCard.tsx`): Dockable floating inspector card showing formatted era dates, timespans, descriptions, and 1-click "Open in Codex" navigation.
+    - **100% Test Validation**: 7 dedicated unit tests in `timelineUtils.test.ts`. 43/43 tests passing across 9 test suites.
 
 ---
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P9: Chronos Timeline Overhaul & Custom Eras_
+**Goal:** _Phase P10: Freeform Custom Lore Attributes & Interactive Graph Polish_
 
 ### Scope
-1. **Interactive Timeline / Chronos Polish**: Support custom fantasy era prefixes (e.g. "B.C.E.", "3rd Age", "Year of the Sun", epoch offsets), visual milestone markers, and event grouping on the Chronos timeline ribbons.
-2. **Custom Metadata / Freeform Key-Value Attributes**: Allow custom arbitrary key-value lore attributes on entities.
-3. **Interactive Nexus Graph Polish**: Edge relation filters, minor entity suppression, and hover card relational note previews.
+1. **Custom Metadata / Freeform Key-Value Attributes**: Allow worldbuilders to add arbitrary custom key-value attributes (e.g. "Ruling Dynasty", "Elemental Alignment", "Aura Frequency") to any entity.
+2. **Interactive Nexus Graph Polish**: Edge relation filters, minor entity suppression, and hover card relational note previews.
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)

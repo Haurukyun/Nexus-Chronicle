@@ -244,7 +244,7 @@ const App = () => {
                     {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
                     {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
                     {activeTabId === 'dashboard' && <DashboardView world={world} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'timeline' && <TimelineView world={world} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'timeline' && <TimelineView world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'nexus' && <NexusTreeView world={world} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'journey' && <JourneyView world={world} onNavigate={handleOpenEntity} />}
 
