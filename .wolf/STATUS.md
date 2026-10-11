@@ -141,6 +141,11 @@ budget_tokens: 1000
     - Persisted `scratchpadNote` state in Zustand storage with live Write, Preview, and Split markdown modes.
     - Integrated tabletop dice roller (`d4` through `d100`) and Mythic-inspired 3-tier GM Oracle (`Likely`, `50/50`, `Unlikely`) that auto-inserts formatted roll results.
     - 1-click **Convert to Codex Entry** modal with title generation, type selector (Note, Chapter, Myth, Event), and automatic draft population.
+  - **Tauri Dev Flashing CMD Windows Fix** (`.taurignore`, `package.json`, `vite.config.ts`, `.vscode/settings.json`):
+    - Added root and `src-tauri` `.taurignore` rules excluding target builds, `.dev-state.json`, `.wolf/`, and logs to eliminate unintended Cargo rebuilds.
+    - Added `server.watch.ignored` in `vite.config.ts` for build caches and state files.
+    - Updated `package.json` scripts (`tauri:dev`, `tauri:build`) with `windowsHide: true` and direct `process.execPath` spawning to eliminate Windows `cmd.exe` console windows.
+    - Disabled background `git.autofetch` and added file watcher exclusions in `.vscode/settings.json` to stop 180s burst git polling.
 
 ---
 

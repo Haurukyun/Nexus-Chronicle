@@ -1,0 +1,19 @@
+# Tauri development watcher ignore list
+# Prevents Tauri CLI from re-triggering compiler checks on non-Rust file changes
+
+# Build outputs
+target/
+src-tauri/target/
+dist/
+dist-ssr/
+node_modules/
+
+# Dev state & AI agent files
+.dev-state.json
+.wolf/
+.git/
+.vscode/
+tools/
+*.log
+*.sqlite
+*.db

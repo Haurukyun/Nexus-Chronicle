@@ -35,6 +35,14 @@ export default defineConfig({
     server: {
         port: 5173,
         host: true,
+        watch: {
+            ignored: [
+                '**/.dev-state.json',
+                '**/.wolf/**',
+                '**/src-tauri/target/**',
+                '**/*.log'
+            ]
+        }
     },
     plugins: [react(), devStatePlugin()],
     resolve: {

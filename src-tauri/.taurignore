@@ -1,0 +1,9 @@
+# Tauri development watcher ignore list
+target/
+../dist/
+../node_modules/
+../.dev-state.json
+../.wolf/
+../.git/
+../.vscode/
+../tools/

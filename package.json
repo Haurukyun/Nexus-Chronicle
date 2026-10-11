@@ -10,8 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "tauri:dev": "node -e \"const p=require('path'),cp=require('child_process'),cb=p.join(process.env.USERPROFILE||process.env.HOME,'.cargo','bin');process.env.PATH=cb+';'+process.env.PATH;cp.spawnSync('node',['node_modules/@tauri-apps/cli/tauri.js','dev'],{stdio:'inherit',env:process.env,shell:true})\"",
-    "tauri:build": "node -e \"const p=require('path'),cp=require('child_process'),cb=p.join(process.env.USERPROFILE||process.env.HOME,'.cargo','bin');process.env.PATH=cb+';'+process.env.PATH;cp.spawnSync('node',['node_modules/@tauri-apps/cli/tauri.js','build'],{stdio:'inherit',env:process.env,shell:true})\""
+    "tauri:dev": "node -e \"const p=require('path'),cp=require('child_process'),cb=p.join(process.env.USERPROFILE||process.env.HOME,'.cargo','bin');process.env.PATH=cb+';'+process.env.PATH;cp.spawnSync(process.execPath,['node_modules/@tauri-apps/cli/tauri.js','dev'],{stdio:'inherit',env:process.env,windowsHide:true})\"",
+    "tauri:build": "node -e \"const p=require('path'),cp=require('child_process'),cb=p.join(process.env.USERPROFILE||process.env.HOME,'.cargo','bin');process.env.PATH=cb+';'+process.env.PATH;cp.spawnSync(process.execPath,['node_modules/@tauri-apps/cli/tauri.js','build'],{stdio:'inherit',env:process.env,windowsHide:true})\""
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.1",
