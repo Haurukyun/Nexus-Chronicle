@@ -22,7 +22,7 @@ const ConfirmDeleteButton: React.FC<{ onConfirm: () => void; className: string; 
         <button
             onClick={() => { if (pending) { onConfirm(); setPending(false); } else { setPending(true); } }}
             onBlur={() => setPending(false)}
-            className={`${className} ${pending ? 'ring-2 ring-rose-500/60' : ''} transition-all`}
+            className={`${className} ${pending ? 'ring-2 ring-rose-500/60' : ''} flex items-center justify-center transition-all`}
             title={pending ? 'Click again to confirm deletion' : 'Send to Forgotten Depth'}
         >
             {pending
