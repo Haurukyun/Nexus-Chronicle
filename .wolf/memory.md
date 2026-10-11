@@ -30,6 +30,7 @@ description: chronological action log per session, consolidated weekly
 | 15:08 | Fixed relational context note annotation width restriction (BUG-013) in SmartSelect and LinksDisplay | `SmartSelect.tsx`, `LinksDisplay.tsx`, `.wolf/*` | Removed artificial max-w-[70px]; annotations now expand fluidly to fill available field container space | ~3k |
 | 16:47 | Fixed Royal Codex unclickable Vital Records backlinks (BUG-014) | `CharacterSpecificsViewer.tsx`, `EntityViewer.tsx`, `.wolf/*` | Replaced plain text string joins with clickable crimson navigation links for Origin, Residence, Species, Occupation, Demise, Hierarchy, and added magic/tech links | ~5k |
 | 21:18 | Annual Calendar View & Festivals System — Built AnnualCalendarView with full-year month grid, separate Festivals & Intercalary Days tab, year navigator, season badges, integrated Chronos/Annual toggle into TimelineView | `AnnualCalendarView.tsx`, `TimelineView.tsx`, `.wolf/*` | 0 TS errors, 48 tests passing; full annual calendar view complete | ~8k |
+| 00:36 | Custom Calendar & Era Polish — Added Christian Era (B.C. / A.C.) as default era preset, added The Elder Scrolls Tamrielic calendar, made Solar Standard default preset, separated Festivals from Months in ManageCalendarModal, replaced Reset to Faerûn with Reset to Default with confirmation prompt, elevated glassmorphism | `ManageCalendarModal.tsx`, `timelineUtils.ts`, `ManageErasModal.tsx`, `TimelineView.tsx`, `.wolf/*` | 0 TS errors, 48 tests passing | ~8k |
 
 
 

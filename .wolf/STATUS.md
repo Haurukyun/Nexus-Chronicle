@@ -6,7 +6,7 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-10-11 (21:17)
+> Last updated: 2026-10-12 (00:35)
 
 ---
 
@@ -189,6 +189,12 @@ budget_tokens: 1000
     - **Interactive View Toggle in TimelineView** (`TimelineView.tsx`): Segmented "Chronos / Annual" toggle button group in the timeline header. Seamlessly switches between the macro-scale Chronos timeline canvas and the micro-scale Annual calendar grid. Gracefully handles unconfigured calendar states with empty state prompt.
     - **Multi-Theme Fidelity**: High-contrast, theme-appropriate design across all 4 themes (`sovereign`, `wiki`, `royal-codex`, `grand-voyager`), strictly adhering to ivory-on-crimson and dark-crimson contrast standards for Royal Codex and red-accented crisp parchment for Wiki.
     - **Zero-Error Build & Test Suite**: 48/48 unit tests passing across 9 test suites; 0 TypeScript errors.
+  - **Custom Calendar & Era System Polish (B.C./A.C. Default, Festivals Separation, Tamriel Preset, Reset Confirmation)** (`ManageCalendarModal.tsx`, `ManageErasModal.tsx`, `timelineUtils.ts`, `timelineUtils.test.ts`, `TimelineView.tsx`):
+    - **New Christian Era Preset (B.C. / A.C.) as Default**: Added B.C. (Before Christ, -4000 to 0) and A.C. (After Christ, 1 to 3000) as default era preset across `DEFAULT_ERA_PRESETS`, `TimelineView.tsx`, and `ManageErasModal.tsx`. Hardened `extractYear()` regex to parse B.C./BC/Before Christ as negative values.
+    - **Elder Scrolls (Tamriel) Preset & Solar Standard Default**: Added official Calendar of Tamriel (12 months from Morning Star to Evening Star, 7-day week from Sundas to Loredas, quadrennial Sun's Dawn leap day). Made Solar Standard (Gregorian) the default calendar preset.
+    - **Complete Separation of Festivals from Months in Calendar Configuration**: Overhauled `ManageCalendarModal.tsx` into 5 distinct tabs. "Months" tab edits only regular months without festival interference; dedicated "Festivals & Intercalary Days" tab allows configuring standalone sacred days with dynamic calendar placement ("Celebrated after [Month]") and leap cycle association.
+    - **Reset to Default with Confirmation Prompt**: Replaced "Reset to Faerûn" with "Reset to Default" button. Clicking it triggers an overlay confirmation dialog warning the user before resetting to the Gregorian default.
+    - **Premium Glassmorphism Across All 4 Themes**: Elevated aesthetics of `ManageCalendarModal` with translucent card frames, ambient glow rings, refined inputs, and strict theme token mapping for Sovereign, Wiki, Royal Codex, and Grand Voyager.
 
 ---
 

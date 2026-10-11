@@ -90,7 +90,10 @@ describe('Timeline Utilities & Fantasy Eras', () => {
     });
 
     describe('DEFAULT_ERA_PRESETS', () => {
-        it('includes mythic, tolkien, and classical era presets', () => {
+        it('includes bc_ac, mythic, tolkien, and classical era presets', () => {
+            expect(DEFAULT_ERA_PRESETS.bc_ac.eras.length).toBe(2);
+            expect(DEFAULT_ERA_PRESETS.bc_ac.eras[0].abbreviation).toBe('B.C.');
+            expect(DEFAULT_ERA_PRESETS.bc_ac.eras[1].abbreviation).toBe('A.C.');
             expect(DEFAULT_ERA_PRESETS.mythic.eras.length).toBeGreaterThan(0);
             expect(DEFAULT_ERA_PRESETS.tolkien.eras.length).toBe(4);
             expect(DEFAULT_ERA_PRESETS.classical.eras.length).toBe(2);
@@ -100,6 +103,7 @@ describe('Timeline Utilities & Fantasy Eras', () => {
     describe('Fantasy Calendar System', () => {
         const harptos = DEFAULT_CALENDAR_PRESETS.harptos.calendar;
         const solar = DEFAULT_CALENDAR_PRESETS.solar.calendar;
+        const tamriel = DEFAULT_CALENDAR_PRESETS.tamriel.calendar;
 
         it('calculates standard and leap year days correctly', () => {
             // Harptos: 12 * 30 = 360 + 5 festivals = 365 days
@@ -110,9 +114,15 @@ describe('Timeline Utilities & Fantasy Eras', () => {
             expect(isLeapYear(1372, harptos)).toBe(true);
             expect(getDaysInYear(1372, harptos)).toBe(366);
 
-            // Solar
+            // Solar Standard (Gregorian)
             expect(getDaysInYear(2023, solar)).toBe(365);
             expect(getDaysInYear(2024, solar)).toBe(366);
+
+            // The Elder Scrolls (Tamriel)
+            expect(getDaysInYear(201, tamriel)).toBe(365);
+            expect(getDaysInYear(200, tamriel)).toBe(366);
+            expect(tamriel.months).toHaveLength(12);
+            expect(tamriel.weekDayNames).toHaveLength(7);
         });
 
         it('parses fantasy dates with month names, day numbers, and festival days', () => {

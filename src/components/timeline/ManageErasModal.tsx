@@ -25,7 +25,7 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
 }) => {
     const { themeId, layoutMode } = useTheme();
     const [localEras, setLocalEras] = useState<FantasyEra[]>(() => {
-        return eras && eras.length > 0 ? [...eras] : [...DEFAULT_ERA_PRESETS.mythic.eras];
+        return eras && eras.length > 0 ? [...eras] : [...DEFAULT_ERA_PRESETS.bc_ac.eras];
     });
 
     const [editingEra, setEditingEra] = useState<FantasyEra | null>(null);

@@ -88,12 +88,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const canvasInnerRef = useRef<HTMLDivElement>(null);
 
-    // Effective eras (fallback to mythic preset if not defined)
+    // Effective eras (fallback to B.C. / A.C. preset if not defined)
     const eras: FantasyEra[] = useMemo(() => {
         if (world.timelineEras && world.timelineEras.length > 0) {
             return world.timelineEras;
         }
-        return DEFAULT_ERA_PRESETS.mythic.eras;
+        return DEFAULT_ERA_PRESETS.bc_ac.eras;
     }, [world.timelineEras]);
 
     // Active fantasy calendar (optional)

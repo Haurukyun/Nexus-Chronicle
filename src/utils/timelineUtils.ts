@@ -1,9 +1,19 @@
 import { FantasyEra, MilestonePin, FantasyCalendar, FantasyMonth, FantasyLeapRule } from '../types';
 
+export const DEFAULT_ERA_KEY = 'bc_ac';
+
 /**
  * Standard fantasy era presets that worldbuilders can load with one click.
  */
 export const DEFAULT_ERA_PRESETS: Record<string, { label: string; description: string; eras: FantasyEra[] }> = {
+    bc_ac: {
+        label: 'Christian Era (B.C. / A.C.)',
+        description: 'Chronology centered on the incarnation: B.C. (Before Christ) and A.C. (After Christ).',
+        eras: [
+            { id: 'era-bc', name: 'Before Christ', abbreviation: 'B.C.', startYear: -4000, endYear: 0, color: '#a78bfa', description: 'Events and epochs prior to the incarnation of Christ.' },
+            { id: 'era-ac', name: 'After Christ', abbreviation: 'A.C.', startYear: 1, endYear: 3000, color: '#38bdf8', description: 'Events and historical annals following the incarnation of Christ.' }
+        ]
+    },
     mythic: {
         label: 'Mythic Chronicle (Ages of Power)',
         description: 'Four grand cosmological eras based on the World Phases.',
@@ -39,8 +49,8 @@ export const DEFAULT_ERA_PRESETS: Record<string, { label: string; description: s
  * Supports:
  * - "1452" -> 1452
  * - "-500" -> -500
- * - "500 BCE", "300 BC", "50 B.C." -> -500, -300, -50
- * - "120 AG", "Year 450", "450 3A" -> 120, 450, 450
+ * - "500 BCE", "300 BC", "50 B.C.", "1200 Before Christ" -> -500, -300, -50, -1200
+ * - "120 AG", "Year 450", "450 3A", "2026 AC", "1492 A.C." -> 120, 450, 450, 2026, 1492
  * - "1452-05-12" -> 1452
  */
 export function extractYear(dateStr?: string | null): number | null {
@@ -49,7 +59,7 @@ export function extractYear(dateStr?: string | null): number | null {
     if (!trimmed) return null;
 
     // Check for BC / BCE suffix
-    const isBce = /\b(b\.?c\.?e?|before\s+common\s+era)\b/i.test(trimmed);
+    const isBce = /(?:^|\s|\d)(b\.?c\.?(?:e\.?)?|before\s+christ|before\s+common\s+era)(?:\s|$|\b)/i.test(trimmed);
 
     // If ISO date like "1452-05-12", grab the first number
     if (/^-?\d{3,5}-\d{1,2}/.test(trimmed)) {
@@ -158,10 +168,76 @@ export function packTimelineLanes<T extends { start: number; end: number }>(
     return packed;
 }
 
+export const DEFAULT_CALENDAR_KEY = 'solar';
+
 /**
  * Standard fantasy calendar presets.
  */
 export const DEFAULT_CALENDAR_PRESETS: Record<string, { label: string; description: string; calendar: FantasyCalendar }> = {
+    solar: {
+        label: 'Solar Standard (Gregorian)',
+        description: 'Standard 12-month solar cycle with 365 days and leap day on February 29th every 4 years.',
+        calendar: {
+            id: 'cal-solar',
+            name: 'Solar Standard',
+            description: 'Common solar calendar dividing 365.25 days into 12 uneven months.',
+            yearSuffix: 'CE',
+            daysPerWeek: 7,
+            weekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            months: [
+                { id: 'm-1', name: 'January', days: 31, abbreviation: 'Jan', season: 'winter' },
+                { id: 'm-2', name: 'February', days: 28, abbreviation: 'Feb', season: 'winter' },
+                { id: 'm-3', name: 'March', days: 31, abbreviation: 'Mar', season: 'spring' },
+                { id: 'm-4', name: 'April', days: 30, abbreviation: 'Apr', season: 'spring' },
+                { id: 'm-5', name: 'May', days: 31, abbreviation: 'May', season: 'spring' },
+                { id: 'm-6', name: 'June', days: 30, abbreviation: 'Jun', season: 'summer' },
+                { id: 'm-7', name: 'July', days: 31, abbreviation: 'Jul', season: 'summer' },
+                { id: 'm-8', name: 'August', days: 31, abbreviation: 'Aug', season: 'summer' },
+                { id: 'm-9', name: 'September', days: 30, abbreviation: 'Sep', season: 'autumn' },
+                { id: 'm-10', name: 'October', days: 31, abbreviation: 'Oct', season: 'autumn' },
+                { id: 'm-11', name: 'November', days: 30, abbreviation: 'Nov', season: 'autumn' },
+                { id: 'm-12', name: 'December', days: 31, abbreviation: 'Dec', season: 'winter' }
+            ],
+            leapRule: {
+                frequency: 4,
+                extraDays: 1,
+                targetMonthId: 'm-2',
+                leapDayName: 'February 29'
+            }
+        }
+    },
+    tamriel: {
+        label: 'Tamrielic Calendar (The Elder Scrolls)',
+        description: 'Standard 12-month calendar of Tamriel with 365 days, 7-day weeks (Sundas to Loredas), and quadrennial leap day in Sun\'s Dawn.',
+        calendar: {
+            id: 'cal-tamriel',
+            name: 'Calendar of Tamriel',
+            description: 'The official calendar used throughout the Empire of Tamriel across Cyrodiil, Skyrim, Morrowind, and High Rock.',
+            yearSuffix: '4E',
+            daysPerWeek: 7,
+            weekDayNames: ['Sundas', 'Morndas', 'Tirdas', 'Middas', 'Turdas', 'Fredas', 'Loredas'],
+            months: [
+                { id: 'm-1', name: 'Morning Star', days: 31, abbreviation: 'Morn', season: 'winter' },
+                { id: 'm-2', name: "Sun's Dawn", days: 28, abbreviation: 'SDaw', season: 'winter' },
+                { id: 'm-3', name: 'First Seed', days: 31, abbreviation: 'FSee', season: 'spring' },
+                { id: 'm-4', name: "Rain's Hand", days: 30, abbreviation: 'RHan', season: 'spring' },
+                { id: 'm-5', name: 'Second Seed', days: 31, abbreviation: 'SSee', season: 'spring' },
+                { id: 'm-6', name: 'Mid Year', days: 30, abbreviation: 'MidY', season: 'summer' },
+                { id: 'm-7', name: "Sun's Height", days: 31, abbreviation: 'SHgt', season: 'summer' },
+                { id: 'm-8', name: 'Last Seed', days: 31, abbreviation: 'LSee', season: 'summer' },
+                { id: 'm-9', name: 'Hearthfire', days: 30, abbreviation: 'Hfir', season: 'autumn' },
+                { id: 'm-10', name: 'Frostfall', days: 31, abbreviation: 'Ffal', season: 'autumn' },
+                { id: 'm-11', name: "Sun's Dusk", days: 30, abbreviation: 'SDus', season: 'autumn' },
+                { id: 'm-12', name: 'Evening Star', days: 31, abbreviation: 'Even', season: 'winter' }
+            ],
+            leapRule: {
+                frequency: 4,
+                extraDays: 1,
+                targetMonthId: 'm-2',
+                leapDayName: "Sun's Dawn Leap Day"
+            }
+        }
+    },
     harptos: {
         label: 'Calendar of Harptos (Faerûn / D&D)',
         description: '12 months of 30 days, plus 5 seasonal festival days and a quadrennial Shieldmeet leap day. 10-day Tendays.',
@@ -262,38 +338,6 @@ export const DEFAULT_CALENDAR_PRESETS: Record<string, { label: string; descripti
                 extraDays: 1,
                 targetMonthId: 'f-2',
                 leapDayName: 'Enderi (Middle-days)'
-            }
-        }
-    },
-    solar: {
-        label: 'Solar Standard (Gregorian)',
-        description: 'Standard 12-month solar cycle with 365 days and leap day on February 29th every 4 years.',
-        calendar: {
-            id: 'cal-solar',
-            name: 'Solar Standard',
-            description: 'Common solar calendar dividing 365.25 days into 12 uneven months.',
-            yearSuffix: 'CE',
-            daysPerWeek: 7,
-            weekDayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-            months: [
-                { id: 'm-1', name: 'January', days: 31, abbreviation: 'Jan', season: 'winter' },
-                { id: 'm-2', name: 'February', days: 28, abbreviation: 'Feb', season: 'winter' },
-                { id: 'm-3', name: 'March', days: 31, abbreviation: 'Mar', season: 'spring' },
-                { id: 'm-4', name: 'April', days: 30, abbreviation: 'Apr', season: 'spring' },
-                { id: 'm-5', name: 'May', days: 31, abbreviation: 'May', season: 'spring' },
-                { id: 'm-6', name: 'June', days: 30, abbreviation: 'Jun', season: 'summer' },
-                { id: 'm-7', name: 'July', days: 31, abbreviation: 'Jul', season: 'summer' },
-                { id: 'm-8', name: 'August', days: 31, abbreviation: 'Aug', season: 'summer' },
-                { id: 'm-9', name: 'September', days: 30, abbreviation: 'Sep', season: 'autumn' },
-                { id: 'm-10', name: 'October', days: 31, abbreviation: 'Oct', season: 'autumn' },
-                { id: 'm-11', name: 'November', days: 30, abbreviation: 'Nov', season: 'autumn' },
-                { id: 'm-12', name: 'December', days: 31, abbreviation: 'Dec', season: 'winter' }
-            ],
-            leapRule: {
-                frequency: 4,
-                extraDays: 1,
-                targetMonthId: 'm-2',
-                leapDayName: 'February 29'
             }
         }
     }
