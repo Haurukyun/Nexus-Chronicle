@@ -376,54 +376,55 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     const isVoyager   = themeId === 'grand-voyager';
     const isRoyal     = themeId === 'royal-codex';
     const isWiki      = layoutMode === 'wiki';
+    const isLightCanvas = isWiki || isRoyal;
 
-    const titleGradient = isVoyager ? 'bg-gradient-to-r from-[#2dd4bf] via-[#5eead4] to-[#14b8a6]'
-                        : isRoyal   ? 'bg-gradient-to-r from-[#e6c88b] via-[#fff2d1] to-[#c8a96e]'
+    const titleGradient = isVoyager ? 'bg-gradient-to-r from-[#2dd4bf] via-[#5eead4] to-[#14b8a6] bg-clip-text text-transparent'
+                        : isRoyal   ? 'text-[#3d0a10]'
                         : isWiki    ? 'text-[#881337]'
-                        :             'bg-gradient-to-r from-[#fef08a] via-[#fde047] to-[#eab308]';
+                        :             'bg-gradient-to-r from-[#fef08a] via-[#fde047] to-[#eab308] bg-clip-text text-transparent';
 
-    const toolbarGlass = isVoyager ? 'bg-[#180c04]/75 border-[#3d2617]/80 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]'
-                       : isRoyal   ? 'bg-[#18110b]/80 border-[#c8a96e]/20 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.6)]'
-                       : isWiki    ? 'bg-white/85 border-[#d4c8af] shadow-md'
-                       :             'bg-slate-900/70 border-slate-700/60 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.6)]';
+    const toolbarGlass = isVoyager ? 'bg-[#180c04]/90 border-[#3d2617] text-[#f0dca8] backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]'
+                       : isRoyal   ? 'bg-[#f4efe4] border-2 border-[#c8a96e]/60 text-[#2b1810] shadow-md'
+                       : isWiki    ? 'bg-white border border-[#d4c8af] text-[#2b1810] shadow-sm'
+                       :             'bg-slate-900/80 border-slate-700/60 text-slate-100 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.6)]';
 
-    const canvasGlass  = isVoyager ? 'bg-[#0a0502]/80 border-[#3d2617]/70 backdrop-blur-xl'
-                       : isRoyal   ? 'bg-[#100c08]/85 border-[#c8a96e]/20 backdrop-blur-xl'
-                       : isWiki    ? 'bg-[#fbf9f5]/90 border-[#d4c8af]'
-                       :             'bg-slate-950/70 border-slate-800/80 backdrop-blur-xl';
+    const canvasGlass  = isVoyager ? 'bg-[#0a0502]/85 border-[#3d2617]/80 text-[#f0dca8] backdrop-blur-xl'
+                       : isRoyal   ? 'bg-[#fbf7eb] border-2 border-[#c8a96e]/60 text-[#2b1810] shadow-inner'
+                       : isWiki    ? 'bg-[#ffffff] border border-[#d4c8af] text-[#2b1810] shadow-sm'
+                       :             'bg-slate-950/75 border-slate-800/80 text-slate-100 backdrop-blur-xl';
 
     const erasBtnCls = isVoyager ? 'border-[#2dd4bf]/40 text-[#2dd4bf] hover:bg-[#2dd4bf]/15 hover:border-[#2dd4bf]/80 shadow-[0_0_12px_rgba(45,212,191,0.15)]'
-                     : isRoyal   ? 'border-[#c8a96e]/40 text-[#c8a96e] hover:bg-[#c8a96e]/15 shadow-[0_0_12px_rgba(200,169,110,0.15)]'
-                     : isWiki    ? 'border-red-700/40 text-red-700 hover:bg-red-700/10'
+                     : isRoyal   ? 'border-[#70121e]/50 text-[#70121e] bg-[#70121e]/5 hover:bg-[#70121e]/15 shadow-sm font-serif font-bold'
+                     : isWiki    ? 'border-red-700/40 text-red-800 bg-red-50/60 hover:bg-red-100/80 shadow-sm font-bold'
                      :             'border-[#fef08a]/35 text-[#fef08a] hover:bg-[#fef08a]/15 hover:border-[#fef08a]/70 shadow-[0_0_15px_rgba(254,240,138,0.15)]';
 
     const calendarBtnCls = isVoyager ? 'border-[#2dd4bf]/40 text-[#2dd4bf] hover:bg-[#2dd4bf]/15 hover:border-[#2dd4bf]/80 shadow-[0_0_12px_rgba(45,212,191,0.15)]'
-                         : isRoyal   ? 'border-[#c8a96e]/40 text-[#c8a96e] hover:bg-[#c8a96e]/15 shadow-[0_0_12px_rgba(200,169,110,0.15)]'
-                         : isWiki    ? 'border-[#d4c8af] text-[#2b1810] hover:bg-[#eee7d8] shadow-sm'
+                         : isRoyal   ? 'border-[#70121e]/50 text-[#70121e] bg-[#70121e]/5 hover:bg-[#70121e]/15 shadow-sm font-serif font-bold'
+                         : isWiki    ? 'border-[#d4c8af] text-[#2b1810] bg-white hover:bg-[#f4efe4] shadow-sm font-semibold'
                          :             'border-slate-700/80 text-slate-200 hover:text-white hover:bg-slate-800/60 hover:border-slate-600 shadow-[0_0_15px_rgba(255,255,255,0.05)]';
 
     const milestoneBtnCls = isVoyager ? 'bg-gradient-to-r from-[#14b8a6] to-[#2dd4bf] text-[#180c04] hover:brightness-110 shadow-[0_0_24px_rgba(45,212,191,0.35)]'
-                          : isRoyal   ? 'bg-gradient-to-r from-[#70121e] to-[#991b1b] text-[#fff8e7] hover:brightness-110 shadow-[0_0_24px_rgba(112,18,30,0.35)]'
-                          : isWiki    ? 'bg-red-700 text-white hover:bg-red-800 shadow-sm'
+                          : isRoyal   ? 'bg-gradient-to-r from-[#70121e] to-[#991b1b] text-[#fff8e7] hover:brightness-110 shadow-[0_0_24px_rgba(112,18,30,0.35)] font-serif font-bold'
+                          : isWiki    ? 'bg-red-700 text-white hover:bg-red-800 shadow-sm font-bold'
                           :             'bg-gradient-to-r from-[#fef08a] via-[#fde047] to-[#eab308] text-slate-950 hover:brightness-110 shadow-[0_0_24px_rgba(254,240,138,0.35)]';
 
     const activePill = isVoyager ? 'bg-[#2dd4bf]/25 text-[#2dd4bf] border border-[#2dd4bf]/50 shadow-[0_0_12px_rgba(45,212,191,0.25)]'
-                     : isRoyal   ? 'bg-[#c8a96e]/25 text-[#c8a96e] border border-[#c8a96e]/50 shadow-[0_0_12px_rgba(200,169,110,0.25)]'
-                     : isWiki    ? 'bg-red-700 text-white shadow-sm'
+                     : isRoyal   ? 'bg-[#70121e] text-[#fff8e7] border border-[#70121e] shadow-sm font-bold'
+                     : isWiki    ? 'bg-red-700 text-white shadow-sm font-bold'
                      :             'bg-[#fef08a]/20 text-[#fef08a] border border-[#fef08a]/45 shadow-[0_0_14px_rgba(254,240,138,0.22)]';
 
     return (
         <div className="h-full flex flex-col space-y-3.5 p-4 md:p-6 select-none overflow-hidden">
             {/* ── Top Header Bar ─────────────────────────────────────────────── */}
             <header className={`flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3.5 border-b shrink-0 ${
-                isWiki ? 'border-[#d4c8af]' : 'border-white/[0.08]'
+                isWiki ? 'border-[#d4c8af]' : isRoyal ? 'border-[#c8a96e]/40' : 'border-white/[0.08]'
             }`}>
                 <div className="flex items-center gap-3.5">
                     {/* Glowing Chronos Astrolabe Icon */}
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border relative overflow-hidden shadow-xl ${
                         isSovereign ? 'bg-[#fef08a]/10 border-[#fef08a]/30 text-[#fef08a] shadow-[0_0_25px_rgba(254,240,138,0.18)]'
                         : isVoyager ? 'bg-[#2dd4bf]/10 border-[#2dd4bf]/30 text-[#2dd4bf] shadow-[0_0_25px_rgba(45,212,191,0.18)]'
-                        : isRoyal   ? 'bg-[#c8a96e]/10 border-[#c8a96e]/30 text-[#c8a96e] shadow-[0_0_25px_rgba(200,169,110,0.18)]'
+                        : isRoyal   ? 'bg-[#70121e]/10 border-[#70121e]/30 text-[#70121e] shadow-md'
                         : isWiki    ? 'bg-red-700/10 border-red-700/30 text-red-700'
                         :             'bg-white/5 border-white/20 text-current'
                     }`}>
@@ -433,20 +434,18 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                     <div>
                         <div className="flex items-center gap-3 flex-wrap">
-                            <h1 className={`text-2xl md:text-4xl font-serif font-black uppercase tracking-wider ${
-                                isWiki ? titleGradient : `${titleGradient} bg-clip-text text-transparent`
-                            }`}
+                            <h1 className={`text-2xl md:text-4xl font-serif font-black uppercase tracking-wider ${titleGradient}`}
                             style={isSovereign ? { filter: 'drop-shadow(0 2px 10px rgba(254,240,138,0.25))' } : undefined}
                             >
                                 Chronos Timeline
                             </h1>
 
                             {/* Epochs & Records Micro Capsule */}
-                            <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono backdrop-blur-md shadow-sm ${
+                            <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono shadow-sm ${
                                 isSovereign ? 'border-[#fef08a]/20 bg-[#fef08a]/5 text-[#fef08a]/80'
                                 : isVoyager ? 'border-[#2dd4bf]/20 bg-[#2dd4bf]/5 text-[#2dd4bf]/80'
-                                : isRoyal   ? 'border-[#c8a96e]/20 bg-[#c8a96e]/5 text-[#c8a96e]/90 font-serif'
-                                : isWiki    ? 'border-red-700/20 bg-red-700/5 text-red-800'
+                                : isRoyal   ? 'border-[#70121e]/30 bg-[#70121e]/5 text-[#70121e] font-serif font-bold'
+                                : isWiki    ? 'border-red-700/30 bg-red-700/5 text-red-800 font-bold'
                                 :             'border-current/20 opacity-70'
                             }`}>
                                 <span className="flex items-center gap-1">
@@ -471,7 +470,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             </div>
                         </div>
 
-                        <p className="opacity-45 text-[11px] tracking-[0.28em] uppercase mt-1 italic font-serif flex items-center gap-2">
+                        <p className={`text-[11px] tracking-[0.28em] uppercase mt-1 italic font-serif flex items-center gap-2 ${
+                            isRoyal ? 'text-[#70121e]/80 font-bold' : isWiki ? 'text-[#881337]/80 font-bold' : 'opacity-50'
+                        }`}>
                             <span>The Flow of Historical Paradoxes &amp; Temporal Eras</span>
                         </p>
                     </div>
@@ -513,7 +514,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             <div className={`flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-2xl border shrink-0 text-xs shadow-xl ${toolbarGlass}`}>
                 {/* Category Filter Pills with LIVE COUNTS */}
                 <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-[11px] font-bold uppercase opacity-45 mr-1 flex items-center gap-1">
+                    <span className={`text-[11px] font-bold uppercase mr-1 flex items-center gap-1 ${
+                        isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : 'opacity-50'
+                    }`}>
                         <Filter size={12} /> Scope:
                     </span>
 
@@ -531,13 +534,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold uppercase tracking-wider transition-all text-[11px] ${
                                     categoryFilter === cat
                                         ? activePill
-                                        : 'border border-current/10 opacity-55 hover:opacity-100 hover:bg-current/5'
+                                        : isLightCanvas
+                                        ? 'border border-[#d4c8af] text-[#2b1810] hover:bg-[#f4efe4] bg-white/80 shadow-sm'
+                                        : 'border border-current/15 opacity-60 hover:opacity-100 hover:bg-current/10'
                                 }`}
                             >
                                 <span>{label}</span>
                                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                                     categoryFilter === cat
-                                        ? 'bg-black/30 text-current'
+                                        ? (isRoyal || isWiki ? 'bg-white/25 text-white' : 'bg-black/30 text-current')
+                                        : isLightCanvas
+                                        ? 'bg-black/5 text-[#2b1810]'
                                         : 'bg-current/10 opacity-70'
                                 }`}>
                                     {count}
@@ -549,17 +556,20 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     {/* Sub-filters for Events */}
                     {categoryFilter === 'events' && availableEventTypes.length > 0 && (
                         <div className="flex items-center gap-1.5 ml-2 pl-2 border-l border-current/15">
-                            <span className="text-[10px] uppercase font-bold opacity-45">Kind:</span>
+                            <span className={`text-[10px] uppercase font-bold ${isLightCanvas ? 'text-[#2b1810]' : 'opacity-50'}`}>Kind:</span>
                             <select
                                 value={selectedEventType}
                                 onChange={e => setSelectedEventType(e.target.value)}
-                                className={`px-2.5 py-1 rounded-xl border bg-slate-900 text-xs focus:outline-none ${
-                                    isSovereign ? 'border-[#fef08a]/20 text-[#fef08a]' : isVoyager ? 'border-[#2dd4bf]/20 text-[#2dd4bf]' : 'border-current/20'
+                                className={`px-2.5 py-1 rounded-xl border text-xs focus:outline-none ${
+                                    isRoyal ? 'bg-white border-[#c8a96e] text-[#2b1810]'
+                                    : isWiki ? 'bg-white border-[#d4c8af] text-[#2b1810]'
+                                    : isVoyager ? 'bg-[#180c04] border-[#2dd4bf]/20 text-[#2dd4bf]'
+                                    : 'bg-slate-900 border-slate-700 text-slate-100'
                                 }`}
                             >
                                 <option value="all">All Event Kinds</option>
                                 {availableEventTypes.map(type => (
-                                    <option key={type} value={type} className="text-slate-100 bg-slate-900">{type}</option>
+                                    <option key={type} value={type} className={isLightCanvas ? "text-[#2b1810] bg-white" : "text-slate-100 bg-slate-900"}>{type}</option>
                                 ))}
                             </select>
                         </div>
@@ -567,17 +577,21 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                     {/* Sub-filters for Lifespans */}
                     {categoryFilter === 'characters' && (
-                        <div className={`ml-2 pl-2 border-l border-current/15 flex items-center gap-1`}>
-                            <span className="text-[10px] uppercase font-bold opacity-45">Vitals:</span>
-                            <div className="flex items-center gap-0.5 border border-current/15 rounded-xl p-0.5 bg-black/20">
+                        <div className="ml-2 pl-2 border-l border-current/15 flex items-center gap-1">
+                            <span className={`text-[10px] uppercase font-bold ${isLightCanvas ? 'text-[#2b1810]' : 'opacity-50'}`}>Vitals:</span>
+                            <div className={`flex items-center gap-0.5 border rounded-xl p-0.5 ${
+                                isLightCanvas ? 'border-[#d4c8af] bg-[#f4efe4]' : 'border-current/15 bg-black/20'
+                            }`}>
                                 {(['all', 'living', 'deceased'] as LifeStatusFilter[]).map(st => (
                                     <button
                                         key={st}
                                         onClick={() => setLifeStatusFilter(st)}
                                         className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${
                                             lifeStatusFilter === st 
-                                                ? 'bg-current/20 opacity-100 shadow-sm' 
-                                                : 'opacity-40 hover:opacity-85'
+                                                ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                                  : isWiki ? 'bg-red-700 text-white shadow-sm'
+                                                  : 'bg-current/25 opacity-100 shadow-sm' 
+                                                : isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810]' : 'opacity-40 hover:opacity-85'
                                         }`}
                                     >
                                         {st === 'living' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
@@ -599,19 +613,18 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Filter timeline..."
-                            className={`pl-7 pr-7 py-1.5 rounded-xl border bg-black/30 text-xs focus:outline-none w-36 sm:w-48 shadow-inner transition-all ${
-                                isSovereign ? 'border-[#fef08a]/20 text-white placeholder:text-slate-500 focus:border-[#fef08a]/60 focus:bg-black/40'
-                                : isVoyager ? 'border-[#2dd4bf]/20 text-[#f0dca8] placeholder:text-[#f0dca8]/40 focus:border-[#2dd4bf]/60'
-                                : isRoyal   ? 'border-[#c8a96e]/25 text-[#fff8e7] placeholder:text-[#fff8e7]/40 focus:border-[#c8a96e]/60'
-                                : isWiki    ? 'border-[#d4c8af] bg-white text-[#2b1810] placeholder:text-slate-400 focus:border-red-500'
-                                :             'border-current/20'
+                            className={`pl-7 pr-7 py-1.5 rounded-xl border text-xs focus:outline-none w-36 sm:w-48 shadow-sm transition-all ${
+                                isRoyal ? 'border-[#c8a96e] bg-white text-[#2b1810] placeholder:text-[#2b1810]/40 focus:border-[#70121e] focus:ring-1 focus:ring-[#70121e]/30'
+                                : isWiki ? 'border-[#d4c8af] bg-white text-[#2b1810] placeholder:text-[#2b1810]/40 focus:border-red-500 focus:ring-1 focus:ring-red-400'
+                                : isVoyager ? 'border-[#3d2617] bg-[#180c04] text-[#f0dca8] placeholder:text-[#f0dca8]/40 focus:border-[#2dd4bf]/60'
+                                : 'border-slate-700 bg-slate-900 text-white placeholder:text-slate-500 focus:border-[#fef08a]/60'
                             }`}
                         />
-                        <Search size={12} className="absolute left-2.5 top-2.5 opacity-40" />
+                        <Search size={12} className={`absolute left-2.5 top-2.5 ${isLightCanvas ? 'text-[#2b1810]/50' : 'opacity-40'}`} />
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery('')}
-                                className="absolute right-2 top-2 opacity-50 hover:opacity-100 transition-opacity"
+                                className={`absolute right-2 top-2 transition-opacity ${isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810]' : 'opacity-50 hover:opacity-100'}`}
                             >
                                 <X size={12} />
                             </button>
@@ -619,16 +632,20 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     </div>
 
                     {/* Zoom Scale Selector */}
-                    <div className="flex items-center gap-1 bg-black/30 border border-current/15 rounded-xl p-0.5">
-                        <span className="text-[9px] uppercase font-bold opacity-35 px-1.5">Zoom:</span>
+                    <div className={`flex items-center gap-1 border rounded-xl p-0.5 ${
+                        isLightCanvas ? 'bg-[#f4efe4] border-[#d4c8af]' : 'bg-black/30 border-current/15'
+                    }`}>
+                        <span className={`text-[9px] uppercase font-bold px-1.5 ${isLightCanvas ? 'text-[#2b1810]/60' : 'opacity-35'}`}>Zoom:</span>
                         {(['compact', 'standard', 'epic', 'panoramic'] as ZoomLevel[]).map(z => (
                             <button
                                 key={z}
                                 onClick={() => setZoomLevel(z)}
                                 className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
                                     zoomLevel === z 
-                                        ? 'bg-current/25 opacity-100 shadow-sm border border-current/20' 
-                                        : 'opacity-40 hover:opacity-85'
+                                        ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                          : isWiki ? 'bg-red-700 text-white shadow-sm'
+                                          : 'bg-current/25 opacity-100 shadow-sm border border-current/20' 
+                                        : isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-white/70' : 'opacity-40 hover:opacity-85'
                                 }`}
                                 title={`Scale: ${ZOOM_CONFIGS[z].label}`}
                             >
@@ -704,13 +721,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 <div
                                     key={era.id}
                                     onClick={() => handleJumpToYear(era.startYear)}
-                                    className="absolute h-12 top-1 rounded-2xl border flex flex-col justify-center px-3.5 cursor-pointer group transition-all hover:scale-[1.01] hover:brightness-125 shadow-lg backdrop-blur-md"
+                                    className={`absolute h-12 top-1 rounded-2xl border flex flex-col justify-center px-3.5 cursor-pointer group transition-all hover:scale-[1.01] shadow-md backdrop-blur-md ${
+                                        isLightCanvas ? 'border-2' : ''
+                                    }`}
                                     style={{
                                         left: `${leftPct}%`,
                                         width: `${widthPct}%`,
-                                        background: `linear-gradient(135deg, ${eraColor}22 0%, ${eraColor}09 100%)`,
-                                        borderColor: `${eraColor}40`,
-                                        boxShadow: `0 4px 18px ${eraColor}15, inset 0 1px 0 0 ${eraColor}45`
+                                        background: isLightCanvas
+                                            ? `linear-gradient(135deg, ${eraColor}35 0%, ${eraColor}18 100%)`
+                                            : `linear-gradient(135deg, ${eraColor}22 0%, ${eraColor}09 100%)`,
+                                        borderColor: isLightCanvas ? `${eraColor}` : `${eraColor}40`,
+                                        boxShadow: isLightCanvas ? `0 2px 8px ${eraColor}25` : `0 4px 18px ${eraColor}15, inset 0 1px 0 0 ${eraColor}45`
                                     }}
                                     title={`${era.name} (${era.startYear} – ${era.endYear ?? 'Present'})\n${era.description || ''}\nClick to jump`}
                                 >
@@ -729,19 +750,25 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                 <span 
                                                     className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shrink-0"
                                                     style={{ 
-                                                        backgroundColor: `${eraColor}28`,
-                                                        color: eraColor 
+                                                        backgroundColor: isLightCanvas ? `${eraColor}40` : `${eraColor}28`,
+                                                        color: isLightCanvas ? '#1c140d' : eraColor 
                                                     }}
                                                 >
                                                     {era.abbreviation}
                                                 </span>
                                             )}
-                                            <span className="font-serif font-black text-xs md:text-sm tracking-wide truncate text-white drop-shadow-sm">
+                                            <span className={`font-serif font-black text-xs md:text-sm tracking-wide truncate ${
+                                                isLightCanvas ? 'text-[#1c140d]' : 'text-white drop-shadow-sm'
+                                            }`}>
                                                 {era.name}
                                             </span>
                                         </div>
 
-                                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-md border shrink-0 bg-black/30 border-white/10 opacity-75">
+                                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md border shrink-0 font-bold ${
+                                            isLightCanvas 
+                                                ? 'bg-white/90 border-[#c8a96e]/60 text-[#1c140d] shadow-sm'
+                                                : 'bg-black/30 border-white/10 opacity-75'
+                                        }`}>
                                             {era.startYear} — {era.endYear ?? '∞'}
                                         </span>
                                     </div>
@@ -754,13 +781,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     <div className="relative h-10 w-full mb-10 flex items-center z-10">
                         {/* Glowing Rail Line */}
                         <div 
-                            className="absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2 opacity-70"
+                            className="absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2"
                             style={{
-                                background: isSovereign 
+                                background: isRoyal 
+                                    ? 'linear-gradient(90deg, rgba(112,18,30,0.3) 0%, rgba(112,18,30,0.8) 50%, rgba(112,18,30,0.3) 100%)'
+                                    : isWiki
+                                    ? 'linear-gradient(90deg, rgba(185,28,28,0.3) 0%, rgba(185,28,28,0.8) 50%, rgba(185,28,28,0.3) 100%)'
+                                    : isSovereign 
                                     ? 'linear-gradient(90deg, rgba(254,240,138,0.2) 0%, rgba(254,240,138,0.6) 50%, rgba(254,240,138,0.2) 100%)'
-                                    : isVoyager
-                                    ? 'linear-gradient(90deg, rgba(45,212,191,0.2) 0%, rgba(45,212,191,0.6) 50%, rgba(45,212,191,0.2) 100%)'
-                                    : 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 100%)',
+                                    : 'linear-gradient(90deg, rgba(45,212,191,0.2) 0%, rgba(45,212,191,0.6) 50%, rgba(45,212,191,0.2) 100%)',
                                 boxShadow: isSovereign ? '0 0 10px rgba(254,240,138,0.3)' : undefined
                             }}
                         />
@@ -783,20 +812,32 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     <div 
                                         className={`-translate-y-1/2 transition-all ${
                                             isMajor 
-                                                ? 'w-2 h-2 rotate-45 border bg-current opacity-90' 
-                                                : 'w-px h-3.5 bg-current/40'
+                                                ? 'w-2.5 h-2.5 rotate-45 border shadow-sm' 
+                                                : 'w-px h-3.5'
                                         }`}
-                                        style={isMajor && isSovereign ? { backgroundColor: '#fef08a', borderColor: '#fef08a' } : undefined}
+                                        style={{
+                                            backgroundColor: isMajor 
+                                                ? (isRoyal ? '#70121e' : isWiki ? '#b91c1c' : isSovereign ? '#fef08a' : '#2dd4bf')
+                                                : (isLightCanvas ? '#1c140d' : 'currentColor'),
+                                            borderColor: isMajor
+                                                ? (isRoyal ? '#70121e' : isWiki ? '#b91c1c' : isSovereign ? '#fef08a' : '#2dd4bf')
+                                                : undefined,
+                                            opacity: isMajor ? 1 : (isLightCanvas ? 0.35 : 0.4)
+                                        }}
                                     />
 
                                     {/* Year Readout */}
                                     <div className="flex flex-col items-center mt-3">
                                         <span className={`font-mono tracking-tight leading-none ${
-                                            isMajor ? 'text-xs font-bold opacity-80' : 'text-[10px] opacity-40'
+                                            isMajor 
+                                                ? (isLightCanvas ? 'text-xs font-black text-[#1c140d]' : 'text-xs font-bold opacity-80') 
+                                                : (isLightCanvas ? 'text-[10px] font-bold text-[#1c140d]/70' : 'text-[10px] opacity-40')
                                         }`}>
                                             {tickYear}
                                         </span>
-                                        <span className="text-[9px] font-sans font-semibold opacity-45 uppercase mt-0.5">
+                                        <span className={`text-[9px] font-sans font-bold uppercase mt-0.5 ${
+                                            isLightCanvas ? (isRoyal ? 'text-[#70121e]' : 'text-[#b91c1c]') : 'opacity-45'
+                                        }`}>
                                             {eraLabel}
                                         </span>
                                     </div>
@@ -898,11 +939,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                                     {/* Tooltip / Label */}
                                     <div 
-                                        className="mt-2 px-2.5 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider whitespace-nowrap shadow-2xl border backdrop-blur-xl"
+                                        className="mt-2 px-2.5 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider whitespace-nowrap shadow-xl border backdrop-blur-xl"
                                         style={{ 
-                                            backgroundColor: `${pinColor}25`, 
-                                            borderColor: `${pinColor}60`,
-                                            color: '#ffffff'
+                                            backgroundColor: isLightCanvas ? '#ffffff' : `${pinColor}25`, 
+                                            borderColor: isLightCanvas ? `${pinColor}90` : `${pinColor}60`,
+                                            color: isLightCanvas ? '#1c140d' : '#ffffff',
+                                            boxShadow: isLightCanvas ? '0 4px 12px rgba(0,0,0,0.1)' : undefined
                                         }}
                                     >
                                         {pin.name} ({pin.year})
@@ -921,7 +963,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         {Array.from({ length: Math.max(maxLane + 1, 4) }).map((_, l) => (
                             <div 
                                 key={`lane-${l}`}
-                                className="absolute left-0 right-0 h-px border-b border-white/[0.04] pointer-events-none"
+                                className={`absolute left-0 right-0 h-px pointer-events-none ${
+                                    isLightCanvas ? 'border-b border-black/[0.06]' : 'border-b border-white/[0.04]'
+                                }`}
                                 style={{ top: `${l * laneHeightPx + 24}px` }}
                             />
                         ))}
@@ -953,10 +997,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                         <div 
                                             className="h-full rounded-xl border flex items-center px-3 gap-2 transition-all group-hover:scale-[1.01] group-hover:brightness-125 overflow-hidden backdrop-blur-md shadow-md"
                                             style={{
-                                                background: `linear-gradient(90deg, ${itemColor}25 0%, ${itemColor}12 100%)`,
-                                                borderColor: `${itemColor}55`,
+                                                background: isLightCanvas 
+                                                    ? `linear-gradient(90deg, ${itemColor}25 0%, #ffffff 100%)` 
+                                                    : `linear-gradient(90deg, ${itemColor}25 0%, ${itemColor}12 100%)`,
+                                                borderColor: isLightCanvas ? `${itemColor}` : `${itemColor}55`,
                                                 boxShadow: isInspected 
-                                                    ? `0 0 16px ${itemColor}60, inset 0 1px 0 0 rgba(255,255,255,0.2)` 
+                                                    ? `0 0 16px ${itemColor}60, inset 0 1px 0 0 rgba(255,255,255,0.4)` 
+                                                    : isLightCanvas 
+                                                    ? `0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 0 rgba(255,255,255,0.8)`
                                                     : `0 2px 10px ${itemColor}15, inset 0 1px 0 0 rgba(255,255,255,0.08)`
                                             }}
                                         >
@@ -964,18 +1012,22 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                 className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
                                                 style={{ backgroundColor: itemColor, boxShadow: `0 0 8px ${itemColor}` }}
                                             />
-                                            <span className="font-bold text-xs truncate text-white drop-shadow-sm">
+                                            <span className={`font-bold text-xs truncate ${isLightCanvas ? 'text-[#1c140d]' : 'text-white drop-shadow-sm'}`}>
                                                 {item.name}
                                             </span>
                                             {item.eventType && (
                                                 <span 
                                                     className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0 shadow-sm"
-                                                    style={{ backgroundColor: `${itemColor}30`, color: itemColor }}
+                                                    style={{ 
+                                                        backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`, 
+                                                        color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor,
+                                                        border: isLightCanvas ? `1px solid ${itemColor}60` : undefined
+                                                    }}
                                                 >
                                                     {item.eventType}
                                                 </span>
                                             )}
-                                            <span className="text-[10px] font-mono opacity-40 ml-auto shrink-0">
+                                            <span className={`text-[10px] font-mono ml-auto shrink-0 font-bold ${isLightCanvas ? 'text-[#1c140d]/70' : 'opacity-60 text-white'}`}>
                                                 {item.start} {item.end > item.start + 2 ? `– ${item.end}` : ''}
                                             </span>
                                         </div>
@@ -983,27 +1035,31 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                         /* Character Lifespan Ribbon */
                                         <div 
                                             className={`h-full rounded-full border flex items-center px-3.5 gap-2 transition-all group-hover:scale-[1.01] group-hover:brightness-125 overflow-hidden backdrop-blur-md shadow-md ${
-                                                item.isDead ? 'opacity-65' : 'opacity-95'
+                                                item.isDead ? 'opacity-75' : 'opacity-100'
                                             }`}
                                             style={{
-                                                background: `linear-gradient(90deg, ${itemColor}20 0%, ${itemColor}0e 100%)`,
-                                                borderColor: `${itemColor}45`,
+                                                background: isLightCanvas 
+                                                    ? `linear-gradient(90deg, ${itemColor}25 0%, #ffffff 100%)` 
+                                                    : `linear-gradient(90deg, ${itemColor}20 0%, ${itemColor}0e 100%)`,
+                                                borderColor: isLightCanvas ? `${itemColor}` : `${itemColor}45`,
                                                 boxShadow: isInspected 
-                                                    ? `0 0 16px ${itemColor}50, inset 0 1px 0 0 rgba(255,255,255,0.2)` 
+                                                    ? `0 0 16px ${itemColor}50, inset 0 1px 0 0 rgba(255,255,255,0.4)` 
+                                                    : isLightCanvas
+                                                    ? `0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 0 rgba(255,255,255,0.8)`
                                                     : `0 2px 8px ${itemColor}10, inset 0 1px 0 0 rgba(255,255,255,0.05)`
                                             }}
                                         >
                                             <div 
                                                 className={`w-2 h-2 rounded-full shrink-0 ${!item.isDead ? 'animate-pulse' : ''}`}
                                                 style={{ 
-                                                    backgroundColor: item.isDead ? '#94a3b8' : itemColor,
+                                                    backgroundColor: item.isDead ? '#64748b' : itemColor,
                                                     boxShadow: !item.isDead ? `0 0 6px ${itemColor}` : undefined
                                                 }}
                                             />
-                                            <span className="font-semibold text-xs truncate text-white drop-shadow-sm">
+                                            <span className={`font-semibold text-xs truncate ${isLightCanvas ? 'text-[#1c140d]' : 'text-white drop-shadow-sm'}`}>
                                                 {item.name}
                                             </span>
-                                            <span className="text-[10px] font-mono opacity-40 ml-auto shrink-0">
+                                            <span className={`text-[10px] font-mono ml-auto shrink-0 font-bold ${isLightCanvas ? 'text-[#1c140d]/70' : 'opacity-60 text-white'}`}>
                                                 {item.start} — {item.isDead ? `${item.end} †` : 'Living'}
                                             </span>
                                         </div>
@@ -1018,15 +1074,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 <div className={`max-w-lg w-full p-8 rounded-3xl border text-center shadow-2xl backdrop-blur-2xl transition-all ${
                                     isSovereign ? 'bg-slate-900/80 border-[#fef08a]/20 shadow-[0_20px_50px_rgba(0,0,0,0.7)]'
                                     : isVoyager ? 'bg-[#180c04]/85 border-[#2dd4bf]/20 shadow-[0_20px_50px_rgba(0,0,0,0.7)]'
-                                    : isRoyal   ? 'bg-[#18110b]/85 border-[#c8a96e]/25 shadow-[0_20px_50px_rgba(0,0,0,0.7)]'
-                                    : isWiki    ? 'bg-white/95 border-[#d4c8af] shadow-xl'
+                                    : isRoyal   ? 'bg-[#f4efe4] border-2 border-[#c8a96e]/60 text-[#2b1810] shadow-xl'
+                                    : isWiki    ? 'bg-white/95 border border-[#d4c8af] text-[#2b1810] shadow-xl'
                                     :             'bg-slate-900/80 border-slate-700/50'
                                 }`}>
                                     {/* Ornate Chronos Altar Icon */}
                                     <div className={`w-16 h-16 rounded-3xl mx-auto mb-4 flex items-center justify-center border shadow-xl relative ${
                                         isSovereign ? 'bg-[#fef08a]/10 border-[#fef08a]/30 text-[#fef08a]'
                                         : isVoyager ? 'bg-[#2dd4bf]/10 border-[#2dd4bf]/30 text-[#2dd4bf]'
-                                        : isRoyal   ? 'bg-[#c8a96e]/10 border-[#c8a96e]/30 text-[#c8a96e]'
+                                        : isRoyal   ? 'bg-[#70121e]/10 border-[#70121e]/30 text-[#70121e]'
                                         :             'bg-red-700/10 border-red-700/30 text-red-700'
                                     }`}>
                                         <History size={30} className="animate-pulse" />
@@ -1035,11 +1091,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     {rawItems.length === 0 ? (
                                         <>
                                             <h3 className={`text-xl font-serif font-black uppercase tracking-wider mb-2 ${
-                                                isWiki ? 'text-[#881337]' : `${titleGradient} bg-clip-text text-transparent`
+                                                isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#881337]' : `${titleGradient} bg-clip-text text-transparent`
                                             }`}>
                                                 The Chronos Tapestry is Unwritten
                                             </h3>
-                                            <p className="text-xs opacity-60 leading-relaxed mb-6 font-sans">
+                                            <p className={`text-xs leading-relaxed mb-6 font-sans ${isLightCanvas ? 'text-[#2b1810]/70' : 'opacity-60'}`}>
                                                 No dated events or character lifespans are recorded in this realm yet. Inscribe your first historic turning point or assign dates to existing entities to weave the timeline.
                                             </p>
 
@@ -1062,12 +1118,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     ) : (
                                         <>
                                             <h3 className={`text-xl font-serif font-black uppercase tracking-wider mb-2 ${
-                                                isWiki ? 'text-[#881337]' : `${titleGradient} bg-clip-text text-transparent`
+                                                isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#881337]' : `${titleGradient} bg-clip-text text-transparent`
                                             }`}>
                                                 No Records Match Active Filter
                                             </h3>
-                                            <p className="text-xs opacity-60 leading-relaxed mb-6 font-sans">
-                                                There are <span className="font-bold text-white">{rawItems.length}</span> ribbons recorded in other categories, but none currently match <span className="uppercase font-bold underline">"{categoryFilter}"</span>.
+                                            <p className={`text-xs leading-relaxed mb-6 font-sans ${isLightCanvas ? 'text-[#2b1810]/70' : 'opacity-60'}`}>
+                                                There are <span className={`font-bold ${isLightCanvas ? 'text-[#70121e]' : 'text-white'}`}>{rawItems.length}</span> ribbons recorded in other categories, but none currently match <span className="uppercase font-bold underline">"{categoryFilter}"</span>.
                                             </p>
 
                                             <button
@@ -1108,30 +1164,35 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             )}
 
             {/* ── Footer Legend Bar ─────────────────────────────────────────── */}
-            <footer className="flex flex-wrap justify-between items-center opacity-40 text-[10px] uppercase font-bold tracking-widest px-2 shrink-0 pt-1">
-                <div className="flex items-center gap-2">
-                    <ArrowLeft size={12} /> Antiquity ({minYear})
+            <footer className={`flex flex-wrap justify-between items-center text-[10px] uppercase font-bold tracking-widest px-2 shrink-0 pt-1 ${
+                isRoyal ? 'text-[#70121e]/85' 
+                : isWiki ? 'text-[#881337]/85'
+                : 'opacity-50 text-white'
+            }`}>
+                <div className={`flex items-center gap-2 ${isLightCanvas ? 'text-[#1c140d]/80' : ''}`}>
+                    <ArrowLeft size={12} className={isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : ''} /> Antiquity ({minYear})
                 </div>
 
-                <div className="flex items-center gap-5">
+                <div className={`flex items-center gap-5 ${isLightCanvas ? 'text-[#1c140d]/80' : ''}`}>
                     <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-sm bg-[#f59e0b] shadow-[0_0_5px_#f59e0b]" /> Events
+                        <span className="w-2.5 h-2.5 rounded-sm bg-[#f59e0b] shadow-[0_0_5px_#f59e0b]" /> Events
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#38bdf8] shadow-[0_0_5px_#38bdf8]" /> Living Lifespans
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#0284c7] shadow-[0_0_5px_#0284c7]" /> Living Lifespans
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#94a3b8]" /> Deceased (†)
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#64748b]" /> Deceased (†)
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rotate-45 bg-[#f59e0b]" /> Milestone Pin
+                        <span className="w-2.5 h-2.5 rotate-45 bg-[#f59e0b]" /> Milestone Pin
                     </span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    Future Horizons ({maxYear}) <ArrowRight size={12} />
+                <div className={`flex items-center gap-2 ${isLightCanvas ? 'text-[#1c140d]/80' : ''}`}>
+                    Future Horizons ({maxYear}) <ArrowRight size={12} className={isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : ''} />
                 </div>
             </footer>
+
 
             {/* ── Manage Eras Modal ─────────────────────────────────────────── */}
             <ManageErasModal

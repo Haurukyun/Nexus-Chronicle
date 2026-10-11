@@ -104,27 +104,28 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
     const isVoyager   = themeId === 'grand-voyager';
     const isRoyal     = themeId === 'royal-codex';
     const isWiki      = layoutMode === 'wiki';
+    const isLightModal = isWiki || isRoyal;
 
     const modalCard = isVoyager
         ? 'bg-[#180c04]/90 border-[#3d2617]/90 text-[#f0dca8] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-[#2dd4bf]/20'
         : isRoyal
-        ? 'bg-[#1c140d]/92 border-[#c8a96e]/35 text-[#fff8e7] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-[#c8a96e]/20 font-serif'
+        ? 'bg-[#fcfaf2] border-2 border-[#c8a96e]/80 text-[#2b1810] shadow-[0_25px_60px_-15px_rgba(60,30,10,0.4)] font-serif'
         : isWiki
         ? 'bg-[#fcfbf9]/95 border-[#d4c8af] text-[#2b1810] shadow-[0_25px_60px_-15px_rgba(80,50,20,0.2)]'
         : 'bg-slate-900/85 border-slate-700/60 text-slate-100 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-white/10';
 
     const iconAccent = isVoyager ? 'bg-[#2dd4bf]/15 text-[#2dd4bf]'
-                     : isRoyal   ? 'bg-[#c8a96e]/20 text-[#c8a96e]'
+                     : isRoyal   ? 'bg-[#70121e]/10 text-[#70121e]'
                      : isWiki    ? 'bg-red-500/10 text-red-600'
                      :             'bg-[#fef08a]/10 text-[#fef08a]';
 
     const inputCls = isVoyager ? 'bg-[#241208]/90 border-[#3d2617]/80 text-[#f0dca8] focus:border-[#2dd4bf]/50 focus:ring-1 focus:ring-[#2dd4bf]/30'
-                   : isRoyal   ? 'bg-[#2b1810]/90 border-[#c8a96e]/25 text-[#fff8e7] focus:border-[#c8a96e]/50 focus:ring-1 focus:ring-[#c8a96e]/30'
-                   : isWiki    ? 'bg-white border-[#d4c8af] text-[#2b1810] focus:border-red-500 focus:ring-1 focus:ring-red-400'
+                   : isRoyal   ? 'bg-[#ffffff] border-2 border-[#c8a96e]/60 text-[#2b1810] placeholder:text-[#2b1810]/40 focus:border-[#70121e] focus:ring-1 focus:ring-[#70121e]/30 shadow-xs'
+                   : isWiki    ? 'bg-white border-[#d4c8af] text-[#2b1810] placeholder:text-stone-400 focus:border-red-500 focus:ring-1 focus:ring-red-400 shadow-xs'
                    :             'bg-slate-800/80 border-slate-700/60 text-slate-100 focus:border-[#fef08a]/50 focus:ring-1 focus:ring-[#fef08a]/25';
 
     const tabActiveCls = isVoyager ? 'bg-[#2dd4bf]/20 text-[#2dd4bf] border-[#2dd4bf]/50 shadow-[0_0_12px_rgba(45,212,191,0.2)]'
-                       : isRoyal   ? 'bg-[#c8a96e]/20 text-[#c8a96e] border-[#c8a96e]/50 shadow-[0_0_12px_rgba(200,169,110,0.2)]'
+                       : isRoyal   ? 'bg-[#70121e] text-[#fff8e7] border-[#70121e] shadow-sm'
                        : isWiki    ? 'bg-red-700 text-white shadow-sm'
                        :             'bg-[#fef08a]/20 text-[#fef08a] border-[#fef08a]/50 shadow-[0_0_12px_rgba(254,240,138,0.2)]';
 
@@ -141,26 +142,30 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
             >
                 {/* Header */}
                 <div className={`p-6 border-b flex items-center justify-between shrink-0 ${
-                    isWiki ? 'border-[#d4c8af]' : 'border-white/10'
+                    isRoyal ? 'border-[#c8a96e]/40 bg-[#f4efe4]/30' : isWiki ? 'border-[#d4c8af]' : 'border-white/10'
                 }`}>
                     <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border ${iconAccent} ${
-                            isWiki ? 'border-red-500/20' : 'border-current/20'
+                            isRoyal ? 'border-[#70121e]/30' : isWiki ? 'border-red-500/20' : 'border-current/20'
                         }`}>
                             <Calendar size={20} />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold uppercase tracking-wider font-serif">
+                            <h2 className={`text-xl font-bold uppercase tracking-wider font-serif ${
+                                isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#881337]' : ''
+                            }`}>
                                 Custom Fantasy Calendar
                             </h2>
-                            <p className="text-xs opacity-60 font-sans">
+                            <p className={`text-xs font-sans ${isLightModal ? 'text-[#2b1810]/70' : 'opacity-60'}`}>
                                 Configure fantasy reckoning, unique months, festival holidays, and epoch leap cycles
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-xl hover:bg-white/10 opacity-70 hover:opacity-100 transition-colors"
+                        className={`p-2 rounded-xl transition-colors ${
+                            isLightModal ? 'text-[#2b1810] hover:bg-black/10' : 'hover:bg-white/10 opacity-70 hover:opacity-100'
+                        }`}
                     >
                         <X size={18} />
                     </button>
@@ -168,9 +173,11 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
 
                 {/* Preset Banner */}
                 <div className={`px-6 py-3 border-b flex items-center gap-2 flex-wrap text-xs ${
-                    isWiki ? 'bg-[#f4efe4] border-[#d4c8af]' : 'bg-black/25 border-white/5'
+                    isRoyal ? 'bg-[#f4efe4] border-[#c8a96e]/40' : isWiki ? 'bg-[#f4efe4] border-[#d4c8af]' : 'bg-black/25 border-white/5'
                 }`}>
-                    <span className="font-semibold uppercase tracking-wider text-[10px] opacity-70 flex items-center gap-1.5 mr-1">
+                    <span className={`font-semibold uppercase tracking-wider text-[10px] flex items-center gap-1.5 mr-1 ${
+                        isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : 'opacity-70'
+                    }`}>
                         <Sparkles size={12} /> Presets:
                     </span>
                     {Object.entries(DEFAULT_CALENDAR_PRESETS).map(([key, p]) => (
@@ -181,8 +188,8 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                             title={p.description}
                             className={`px-3 py-1 rounded-lg border text-xs font-medium transition-all ${
                                 isVoyager ? 'border-[#3d2617] hover:border-[#2dd4bf]/40 hover:bg-[#2dd4bf]/10'
-                                : isRoyal ? 'border-[#c8a96e]/30 hover:border-[#c8a96e] hover:bg-[#c8a96e]/10'
-                                : isWiki ? 'border-[#d4c8af] hover:border-red-400 hover:bg-red-50'
+                                : isRoyal ? 'border-[#c8a96e]/50 bg-white text-[#2b1810] hover:border-[#70121e] hover:bg-[#70121e]/5 shadow-xs font-serif'
+                                : isWiki ? 'border-[#d4c8af] bg-white text-[#2b1810] hover:border-red-400 hover:bg-red-50'
                                 : 'border-slate-700 hover:border-[#fef08a]/40 hover:bg-white/5'
                             }`}
                         >
@@ -193,39 +200,63 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
 
                 {/* Sub-navigation tabs & summary stats */}
                 <div className={`px-6 py-3 border-b flex items-center justify-between gap-4 flex-wrap shrink-0 ${
-                    isWiki ? 'border-[#d4c8af]' : 'border-white/10'
+                    isRoyal ? 'border-[#c8a96e]/40' : isWiki ? 'border-[#d4c8af]' : 'border-white/10'
                 }`}>
                     <div className={`flex items-center gap-1.5 p-1 rounded-xl border text-xs font-semibold backdrop-blur-md ${
-                        isWiki ? 'bg-[#eee7d8] border-[#d4c8af]'
-                        : isRoyal ? 'bg-black/40 border-[#c8a96e]/20'
+                        isRoyal ? 'bg-[#ede5d3] border-[#c8a96e]/60'
+                        : isWiki ? 'bg-[#eee7d8] border-[#d4c8af]'
                         : isVoyager ? 'bg-black/40 border-[#3d2617]/80'
                         : 'bg-slate-950/50 border-white/10'
                     }`}>
                         <button
                             type="button"
                             onClick={() => setActiveTab('months')}
-                            className={`px-3.5 py-1.5 rounded-lg border border-transparent transition-all ${activeTab === 'months' ? tabActiveCls : 'opacity-70 hover:opacity-100'}`}
+                            className={`px-3.5 py-1.5 rounded-lg border border-transparent transition-all ${
+                                activeTab === 'months' 
+                                    ? tabActiveCls 
+                                    : isLightModal 
+                                    ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-black/5' 
+                                    : 'opacity-70 hover:opacity-100'
+                            }`}
                         >
                             Months &amp; Festivals ({localCal.months.length})
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('settings')}
-                            className={`px-3.5 py-1.5 rounded-lg border border-transparent transition-all ${activeTab === 'settings' ? tabActiveCls : 'opacity-70 hover:opacity-100'}`}
+                            className={`px-3.5 py-1.5 rounded-lg border border-transparent transition-all ${
+                                activeTab === 'settings' 
+                                    ? tabActiveCls 
+                                    : isLightModal 
+                                    ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-black/5' 
+                                    : 'opacity-70 hover:opacity-100'
+                            }`}
                         >
                             Weekdays &amp; General
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('leap')}
-                            className={`px-3.5 py-1.5 rounded-lg border border-transparent transition-all ${activeTab === 'leap' ? tabActiveCls : 'opacity-70 hover:opacity-100'}`}
+                            className={`px-3.5 py-1.5 rounded-lg border border-transparent transition-all ${
+                                activeTab === 'leap' 
+                                    ? tabActiveCls 
+                                    : isLightModal 
+                                    ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-black/5' 
+                                    : 'opacity-70 hover:opacity-100'
+                            }`}
                         >
                             Leap Epoch Rules
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('preview')}
-                            className={`px-3.5 py-1.5 rounded-lg border border-transparent transition-all ${activeTab === 'preview' ? tabActiveCls : 'opacity-70 hover:opacity-100'}`}
+                            className={`px-3.5 py-1.5 rounded-lg border border-transparent transition-all ${
+                                activeTab === 'preview' 
+                                    ? tabActiveCls 
+                                    : isLightModal 
+                                    ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-black/5' 
+                                    : 'opacity-70 hover:opacity-100'
+                            }`}
                         >
                             Date Playground
                         </button>
@@ -234,19 +265,25 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                     {/* Quick Calendar Summary Pill */}
                     <div className="flex items-center gap-2 text-xs font-mono opacity-85">
                         <span className={`px-2.5 py-1 rounded-lg border backdrop-blur-sm ${
-                            isWiki ? 'bg-white/90 border-[#d4c8af] text-[#2b1810]' : 'bg-white/5 border-white/10'
+                            isRoyal ? 'bg-white border-[#c8a96e]/60 text-[#2b1810] font-bold shadow-xs' 
+                            : isWiki ? 'bg-white/90 border-[#d4c8af] text-[#2b1810]' 
+                            : 'bg-white/5 border-white/10'
                         }`}>
                             {standardYearDays} Days/Year
                         </span>
                         {localCal.leapRule && (
-                            <span className={`px-2.5 py-1 rounded-lg border backdrop-blur-sm text-emerald-400 font-semibold ${
-                                isWiki ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'bg-emerald-500/10 border-emerald-500/20'
+                            <span className={`px-2.5 py-1 rounded-lg border backdrop-blur-sm font-semibold ${
+                                isRoyal ? 'bg-emerald-50 border-emerald-400 text-emerald-800 shadow-xs'
+                                : isWiki ? 'bg-emerald-50 border-emerald-300 text-emerald-700' 
+                                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                             }`}>
                                 {leapYearDays}d Leap
                             </span>
                         )}
                         <span className={`px-2.5 py-1 rounded-lg border backdrop-blur-sm ${
-                            isWiki ? 'bg-white/90 border-[#d4c8af] text-[#2b1810]' : 'bg-white/5 border-white/10'
+                            isRoyal ? 'bg-white border-[#c8a96e]/60 text-[#2b1810] font-bold shadow-xs'
+                            : isWiki ? 'bg-white/90 border-[#d4c8af] text-[#2b1810]' 
+                            : 'bg-white/5 border-white/10'
                         }`}>
                             {regularMonthsCount}m + {intercalaryCount}f
                         </span>
@@ -271,8 +308,10 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                     <button
                                         type="button"
                                         onClick={() => handleAddMonth(false)}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border ${
-                                            isWiki ? 'border-red-400 text-red-700 bg-red-50 hover:bg-red-100' : 'border-white/20 hover:bg-white/10'
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                                            isRoyal ? 'border-[#c8a96e]/60 text-[#70121e] bg-white hover:bg-[#70121e]/10 shadow-xs'
+                                            : isWiki ? 'border-red-400 text-red-700 bg-red-50 hover:bg-red-100' 
+                                            : 'border-white/20 hover:bg-white/10'
                                         }`}
                                     >
                                         <Plus size={14} /> Add Month
@@ -280,9 +319,9 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                     <button
                                         type="button"
                                         onClick={() => handleAddMonth(true)}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border ${
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                                             isVoyager ? 'border-[#2dd4bf]/40 text-[#2dd4bf] bg-[#2dd4bf]/10 hover:bg-[#2dd4bf]/20'
-                                            : isRoyal ? 'border-[#c8a96e]/40 text-[#c8a96e] bg-[#c8a96e]/10 hover:bg-[#c8a96e]/20'
+                                            : isRoyal ? 'border-2 border-[#c8a96e] text-[#70121e] bg-[#fff7e6] hover:bg-[#ffeed0] shadow-xs'
                                             : isWiki ? 'border-amber-400 text-amber-800 bg-amber-50 hover:bg-amber-100'
                                             : 'border-[#fef08a]/40 text-[#fef08a] bg-[#fef08a]/10 hover:bg-[#fef08a]/20'
                                         }`}
@@ -301,10 +340,12 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                         className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${
                                             m.isIntercalary
                                                 ? isVoyager ? 'bg-[#2dd4bf]/10 border-[#2dd4bf]/30'
-                                                  : isRoyal ? 'bg-[#c8a96e]/10 border-[#c8a96e]/30'
-                                                  : isWiki ? 'bg-amber-50/70 border-amber-300'
+                                                  : isRoyal ? 'bg-[#fffbf0] border-2 border-[#c8a96e] text-[#2b1810] shadow-sm'
+                                                  : isWiki ? 'bg-amber-50/70 border-amber-300 text-[#2b1810]'
                                                   : 'bg-[#fef08a]/10 border-[#fef08a]/30'
-                                                : isWiki ? 'bg-white border-[#d4c8af]' : 'bg-black/20 border-white/10'
+                                                : isRoyal ? 'bg-white border border-[#c8a96e]/60 text-[#2b1810] shadow-xs'
+                                                : isWiki ? 'bg-white border-[#d4c8af] text-[#2b1810]' 
+                                                : 'bg-black/20 border-white/10'
                                         }`}
                                     >
                                         <div className="flex flex-col gap-1 shrink-0">
@@ -312,7 +353,7 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                                 type="button"
                                                 onClick={() => handleMoveMonth(idx, 'up')}
                                                 disabled={idx === 0}
-                                                className="p-1 rounded hover:bg-white/10 disabled:opacity-20 transition-opacity"
+                                                className={`p-1 rounded ${isLightModal ? 'hover:bg-black/5 text-[#2b1810]' : 'hover:bg-white/10'} disabled:opacity-20 transition-opacity`}
                                                 title="Move earlier in the year"
                                             >
                                                 <ArrowUp size={12} />
@@ -321,14 +362,14 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                                 type="button"
                                                 onClick={() => handleMoveMonth(idx, 'down')}
                                                 disabled={idx === localCal.months.length - 1}
-                                                className="p-1 rounded hover:bg-white/10 disabled:opacity-20 transition-opacity"
+                                                className={`p-1 rounded ${isLightModal ? 'hover:bg-black/5 text-[#2b1810]' : 'hover:bg-white/10'} disabled:opacity-20 transition-opacity`}
                                                 title="Move later in the year"
                                             >
                                                 <ArrowDown size={12} />
                                             </button>
                                         </div>
 
-                                        <span className="w-6 text-center font-mono text-xs opacity-50 shrink-0">
+                                        <span className={`w-6 text-center font-mono text-xs shrink-0 font-bold ${isLightModal ? 'text-[#2b1810]/70' : 'opacity-50'}`}>
                                             #{idx + 1}
                                         </span>
 
@@ -392,7 +433,11 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                             onClick={() => handleUpdateMonth(m.id, { isIntercalary: !m.isIntercalary })}
                                             className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border shrink-0 transition-all ${
                                                 m.isIntercalary
-                                                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                                                    ? isRoyal ? 'bg-[#c8a96e]/25 text-[#70121e] border-2 border-[#c8a96e]'
+                                                      : isWiki ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                                      : 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+                                                    : isRoyal ? 'border-[#c8a96e]/50 text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-black/5'
+                                                    : isWiki ? 'border-[#d4c8af] text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-black/5'
                                                     : 'border-white/10 opacity-50 hover:opacity-100'
                                             }`}
                                             title="Toggle whether this is a festival day that stands outside normal month counts"
@@ -526,8 +571,8 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                             </div>
 
                             <div className={`p-5 rounded-2xl border space-y-4 backdrop-blur-md ${
-                                isWiki ? 'bg-[#f4efe4]/80 border-[#d4c8af]'
-                                : isRoyal ? 'bg-[#2b1810]/60 border-[#c8a96e]/25'
+                                isRoyal ? 'bg-[#f4efe4] border-2 border-[#c8a96e]/60 text-[#2b1810]'
+                                : isWiki ? 'bg-[#f4efe4]/80 border-[#d4c8af] text-[#2b1810]'
                                 : isVoyager ? 'bg-[#241208]/60 border-[#3d2617]/80'
                                 : 'bg-slate-800/40 border-slate-700/50'
                             }`}>
@@ -640,8 +685,8 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                             </div>
 
                             <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-2xl border backdrop-blur-md ${
-                                isWiki ? 'bg-[#f4efe4]/80 border-[#d4c8af]'
-                                : isRoyal ? 'bg-[#2b1810]/60 border-[#c8a96e]/25'
+                                isRoyal ? 'bg-[#f4efe4] border-2 border-[#c8a96e]/60 text-[#2b1810]'
+                                : isWiki ? 'bg-[#f4efe4]/80 border-[#d4c8af] text-[#2b1810]'
                                 : isVoyager ? 'bg-[#241208]/60 border-[#3d2617]/80'
                                 : 'bg-slate-800/40 border-slate-700/50'
                             }`}>
@@ -657,9 +702,9 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                     />
                                     <div className="text-[10px] font-mono mt-1">
                                         {isLeapYear(testYear, localCal) ? (
-                                            <span className="text-emerald-400 font-bold">✓ Leap Year ({getDaysInYear(testYear, localCal)} days)</span>
+                                            <span className="text-emerald-600 font-bold">✓ Leap Year ({getDaysInYear(testYear, localCal)} days)</span>
                                         ) : (
-                                            <span className="opacity-60">Standard Year ({getDaysInYear(testYear, localCal)} days)</span>
+                                            <span className={`${isLightModal ? 'text-[#2b1810]/70' : 'opacity-60'}`}>Standard Year ({getDaysInYear(testYear, localCal)} days)</span>
                                         )}
                                     </div>
                                 </div>
@@ -698,17 +743,17 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
 
                             {/* Live Result Display */}
                             <div className={`p-6 rounded-3xl border text-center space-y-2 backdrop-blur-md shadow-inner ${
-                                isWiki ? 'bg-gradient-to-b from-[#f4efe4] to-white border-[#d4c8af]'
-                                : isRoyal ? 'bg-gradient-to-b from-[#2b1810]/80 to-[#1c140d]/80 border-[#c8a96e]/30'
+                                isRoyal ? 'bg-[#fffdfa] border-2 border-[#c8a96e]/70 shadow-md text-[#2b1810]'
+                                : isWiki ? 'bg-gradient-to-b from-[#f4efe4] to-white border-[#d4c8af]'
                                 : isVoyager ? 'bg-gradient-to-b from-[#241208]/80 to-[#180c04]/80 border-[#2dd4bf]/25'
                                 : 'bg-gradient-to-b from-slate-800/50 to-slate-900/60 border-slate-700/50'
                             }`}>
-                                <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">
+                                <span className={`text-[10px] font-bold uppercase tracking-widest ${isLightModal ? 'text-[#2b1810]/60' : 'opacity-50'}`}>
                                     Chronicle Lore Output
                                 </span>
                                 <div className={`text-2xl font-serif font-black tracking-wide ${
-                                    isWiki ? 'text-red-900'
-                                    : isRoyal ? 'text-[#e6c88b]'
+                                    isRoyal ? 'text-[#3d0a10]'
+                                    : isWiki ? 'text-[#881337]'
                                     : isVoyager ? 'text-[#2dd4bf]'
                                     : 'text-[#fef08a]'
                                 }`}>
@@ -720,7 +765,7 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                         localCal
                                     )}
                                 </div>
-                                <p className="text-xs opacity-60 font-mono">
+                                <p className={`text-xs font-mono ${isLightModal ? 'text-[#2b1810]/70' : 'opacity-60'}`}>
                                     Season: {localCal.months[testMonthIdx]?.season || 'Neutral'} · 
                                     {localCal.months[testMonthIdx]?.isIntercalary ? ' Intercalary Festival Day' : ` Month ${testMonthIdx + 1}`}
                                 </p>
@@ -731,13 +776,17 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
 
                 {/* Footer Controls */}
                 <div className={`p-4 border-t flex items-center justify-between gap-3 shrink-0 ${
-                    isWiki ? 'border-[#d4c8af]' : 'border-white/10'
+                    isRoyal ? 'border-[#c8a96e]/40 bg-[#f4efe4]/60'
+                    : isWiki ? 'border-[#d4c8af] bg-[#fcfbf9]' 
+                    : 'border-white/10'
                 }`}>
                     <button
                         type="button"
                         onClick={() => handleApplyPreset('harptos')}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs opacity-70 hover:opacity-100 transition-all font-sans ${
-                            isWiki ? 'border-[#d4c8af] text-[#2b1810] hover:bg-black/5' : 'border-white/10 hover:bg-white/5 text-inherit'
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs transition-all font-sans ${
+                            isRoyal ? 'border-[#c8a96e]/60 text-[#2b1810] hover:bg-black/5 bg-white font-serif'
+                            : isWiki ? 'border-[#d4c8af] text-[#2b1810] hover:bg-black/5' 
+                            : 'border-white/10 hover:bg-white/5 opacity-70 hover:opacity-100 text-inherit'
                         }`}
                     >
                         <RotateCcw size={13} /> Reset to Faerûn
@@ -748,7 +797,9 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                             type="button"
                             onClick={onClose}
                             className={`px-4 py-2 rounded-xl border text-xs font-semibold transition-all font-sans ${
-                                isWiki ? 'border-[#d4c8af] text-[#2b1810] hover:bg-black/5' : 'border-white/15 hover:bg-white/5 text-inherit'
+                                isRoyal ? 'border-[#c8a96e]/60 text-[#2b1810] hover:bg-black/5 bg-white font-serif'
+                                : isWiki ? 'border-[#d4c8af] text-[#2b1810] hover:bg-black/5' 
+                                : 'border-white/15 hover:bg-white/5 text-inherit'
                             }`}
                         >
                             Cancel

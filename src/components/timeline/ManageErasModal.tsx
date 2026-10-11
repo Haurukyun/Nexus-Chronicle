@@ -77,23 +77,24 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
     const isVoyager   = themeId === 'grand-voyager';
     const isRoyal     = themeId === 'royal-codex';
     const isWiki      = layoutMode === 'wiki';
+    const isLightModal = isWiki || isRoyal;
 
     const modalCard = isVoyager
         ? 'bg-[#180c04]/90 border-[#3d2617]/90 text-[#f0dca8] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-[#2dd4bf]/20'
         : isRoyal
-        ? 'bg-[#1c140d]/92 border-[#c8a96e]/35 text-[#fff8e7] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-[#c8a96e]/20 font-serif'
+        ? 'bg-[#fcfaf2] border-2 border-[#c8a96e]/80 text-[#2b1810] shadow-[0_25px_60px_-15px_rgba(60,30,10,0.4)] font-serif'
         : isWiki
         ? 'bg-[#fcfbf9]/95 border-[#d4c8af] text-[#2b1810] shadow-[0_25px_60px_-15px_rgba(80,50,20,0.2)]'
         : 'bg-slate-900/85 border-slate-700/60 text-slate-100 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-white/10';
 
-    const iconAccent = isVoyager ? 'bg-[#2dd4bf]/15 text-[#2dd4bf]'
-                     : isRoyal   ? 'bg-[#c8a96e]/20 text-[#c8a96e]'
-                     : isWiki    ? 'bg-red-500/10 text-red-600'
-                     :             'bg-[#fef08a]/10 text-[#fef08a]';
+    const iconAccent = isVoyager ? 'bg-[#2dd4bf]/15 text-[#2dd4bf] border-[#2dd4bf]/30'
+                     : isRoyal   ? 'bg-[#70121e]/10 text-[#70121e] border-[#70121e]/30'
+                     : isWiki    ? 'bg-red-500/10 text-red-600 border-red-500/20'
+                     :             'bg-[#fef08a]/10 text-[#fef08a] border-[#fef08a]/30';
 
     const inputCls = isVoyager ? 'bg-[#241208]/90 border-[#3d2617]/80 text-[#f0dca8] focus:border-[#2dd4bf]/50 focus:ring-1 focus:ring-[#2dd4bf]/30'
-                   : isRoyal   ? 'bg-[#2b1810]/90 border-[#c8a96e]/25 text-[#fff8e7] focus:border-[#c8a96e]/50 focus:ring-1 focus:ring-[#c8a96e]/30'
-                   : isWiki    ? 'bg-white border-[#d4c8af] text-[#2b1810] focus:border-red-500 focus:ring-1 focus:ring-red-400'
+                   : isRoyal   ? 'bg-white border-2 border-[#c8a96e]/60 text-[#2b1810] placeholder:text-[#2b1810]/40 focus:border-[#70121e] focus:ring-1 focus:ring-[#70121e]/30 shadow-xs'
+                   : isWiki    ? 'bg-white border border-[#d4c8af] text-[#2b1810] placeholder:text-stone-400 focus:border-red-500 focus:ring-1 focus:ring-red-400 shadow-xs'
                    :             'bg-slate-800/80 border-slate-700/60 text-slate-100 focus:border-[#fef08a]/50 focus:ring-1 focus:ring-[#fef08a]/25';
 
     const saveBtnCls = isVoyager ? 'bg-[#2dd4bf] text-[#090d08] hover:bg-[#14b8a6] shadow-[0_0_20px_rgba(45,212,191,0.35)]'
@@ -112,19 +113,25 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
             {/* Modal Dialog Card */}
             <div className={`relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl border shadow-2xl overflow-hidden z-10 backdrop-blur-2xl ${modalCard}`}>
                 {/* Header */}
-                <div className="px-6 py-5 border-b border-current/10 flex items-center justify-between shrink-0">
+                <div className={`px-6 py-5 border-b flex items-center justify-between shrink-0 ${
+                    isRoyal ? 'border-[#c8a96e]/40 bg-[#f4efe4]/30' : isWiki ? 'border-[#d4c8af]' : 'border-current/10'
+                }`}>
                     <div className="flex items-center gap-3">
-                        <div className={`p-2.5 rounded-xl ${iconAccent}`}>
+                        <div className={`p-2.5 rounded-xl border ${iconAccent}`}>
                             <Clock size={18} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-black uppercase tracking-wider">Fantasy Eras &amp; Epochs</h2>
-                            <p className="text-xs opacity-45 font-serif italic">Configure custom cosmological ages, abbreviations, and time offsets.</p>
+                            <h2 className={`text-lg font-black uppercase tracking-wider font-serif ${
+                                isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#881337]' : ''
+                            }`}>Fantasy Eras &amp; Epochs</h2>
+                            <p className={`text-xs font-serif italic ${isLightModal ? 'text-[#2b1810]/70' : 'opacity-45'}`}>Configure custom cosmological ages, abbreviations, and time offsets.</p>
                         </div>
                     </div>
                     <button 
                         onClick={onClose}
-                        className="p-2 rounded-xl opacity-50 hover:opacity-100 hover:bg-current/10 transition-colors"
+                        className={`p-2 rounded-xl transition-colors ${
+                            isLightModal ? 'text-[#2b1810] hover:bg-black/10' : 'opacity-50 hover:opacity-100 hover:bg-current/10'
+                        }`}
                     >
                         <X size={18} />
                     </button>
@@ -136,12 +143,14 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                     <div className={`p-4 rounded-2xl border space-y-2 ${
                         isSovereign ? 'bg-[#fef08a]/5 border-[#fef08a]/10'
                         : isVoyager ? 'bg-[#2dd4bf]/5 border-[#2dd4bf]/10'
-                        : isRoyal   ? 'bg-[#c8a96e]/5 border-[#c8a96e]/10'
+                        : isRoyal   ? 'bg-[#f4efe4] border-2 border-[#c8a96e]/50 text-[#2b1810]'
                         : isWiki    ? 'bg-[#d4c8af]/20 border-[#d4c8af]'
                         :             'bg-white/[0.03] border-white/[0.06]'
                     }`}>
-                        <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider opacity-60">
-                            <Sparkles size={13} className={isSovereign ? 'text-[#fef08a]' : isVoyager ? 'text-[#2dd4bf]' : 'text-amber-400'} /> Quick Era Presets
+                        <div className={`flex items-center gap-2 text-xs font-black uppercase tracking-wider ${
+                            isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : 'opacity-60'
+                        }`}>
+                            <Sparkles size={13} className={isSovereign ? 'text-[#fef08a]' : isVoyager ? 'text-[#2dd4bf]' : isRoyal ? 'text-[#70121e]' : 'text-amber-400'} /> Quick Era Presets
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {Object.entries(DEFAULT_ERA_PRESETS).map(([key, preset]) => (
@@ -151,6 +160,8 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                                     className={`px-3 py-1.5 rounded-xl border text-xs font-bold hover:brightness-110 transition-all flex items-center gap-1.5 ${
                                         isSovereign ? 'border-[#fef08a]/20 text-[#fef08a]/80 hover:bg-[#fef08a]/10'
                                         : isVoyager ? 'border-[#2dd4bf]/20 text-[#2dd4bf]/80 hover:bg-[#2dd4bf]/10'
+                                        : isRoyal ? 'border-[#c8a96e]/60 bg-white text-[#2b1810] hover:border-[#70121e] hover:bg-[#70121e]/5 shadow-xs font-serif'
+                                        : isWiki ? 'border-[#d4c8af] bg-white text-[#2b1810] hover:border-red-400 hover:bg-red-50'
                                         : 'border-current/20 hover:bg-current/10'
                                     }`}
                                     title={preset.description}
@@ -167,7 +178,11 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                             <span className="text-xs font-black uppercase tracking-wider opacity-70">Configured Eras ({localEras.length})</span>
                             <button
                                 onClick={handleAddEra}
-                                className="px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider border border-current/20 hover:bg-current/10 transition-colors flex items-center gap-1.5"
+                                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider border transition-colors flex items-center gap-1.5 ${
+                                    isRoyal ? 'border-[#c8a96e]/60 text-[#70121e] bg-white hover:bg-[#70121e]/10 shadow-xs font-serif'
+                                    : isWiki ? 'border-red-400 text-red-700 bg-red-50 hover:bg-red-100'
+                                    : 'border-current/20 hover:bg-current/10'
+                                }`}
                             >
                                 <Plus size={13} /> Add Era
                             </button>
@@ -188,7 +203,11 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                                                 isEditing
                                                     ? isSovereign ? 'border-[#fef08a]/30 bg-[#fef08a]/[0.04] ring-1 ring-[#fef08a]/10'
                                                       : isVoyager ? 'border-[#2dd4bf]/30 bg-[#2dd4bf]/[0.04] ring-1 ring-[#2dd4bf]/10'
+                                                      : isRoyal ? 'border-2 border-[#c8a96e] bg-[#fffbf0] shadow-sm'
+                                                      : isWiki ? 'border-2 border-[#d4c8af] bg-[#fcfbf9] shadow-sm'
                                                       : 'border-current/40 ring-1 ring-current/20 bg-current/5'
+                                                    : isRoyal ? 'border border-[#c8a96e]/50 bg-white hover:border-[#c8a96e] shadow-xs'
+                                                    : isWiki ? 'border border-[#d4c8af] bg-white hover:border-stone-400 shadow-xs'
                                                     : 'border-white/[0.06] bg-white/[0.02] hover:border-white/10'
                                             }`}
                                         >
@@ -214,7 +233,9 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => setEditingEra(isEditing ? null : era)}
-                                                        className="px-2.5 py-1 text-xs font-bold rounded-lg border border-current/20 hover:bg-current/10 transition-colors"
+                                                        className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition-colors ${
+                                                            isLightModal ? 'border-[#c8a96e]/50 hover:bg-black/5 text-[#2b1810]' : 'border-current/20 hover:bg-current/10'
+                                                        }`}
                                                     >
                                                         {isEditing ? 'Done' : 'Edit'}
                                                     </button>
@@ -236,8 +257,7 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                                                         <input
                                                             value={era.name}
                                                             onChange={e => handleUpdateEra(era.id, { name: e.target.value })}
-                                                            className="w-full px-3 py-1.5 rounded-xl border text-xs outline-none focus:ring-1 focus:ring-current/20 transition-colors"
-                                            style={{ background: 'none' }}
+                                                            className={`w-full px-3 py-1.5 rounded-xl border text-xs outline-none focus:ring-1 focus:ring-current/20 transition-colors ${inputCls}`}
                                                             placeholder="e.g. Third Age"
                                                         />
                                                     </div>
@@ -247,8 +267,7 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                                                         <input
                                                             value={era.abbreviation || ''}
                                                             onChange={e => handleUpdateEra(era.id, { abbreviation: e.target.value })}
-                                                            className="w-full px-3 py-1.5 rounded-xl border text-xs font-mono outline-none focus:ring-1 focus:ring-current/20 transition-colors"
-                                            style={{ background: 'none' }}
+                                                            className={`w-full px-3 py-1.5 rounded-xl border text-xs font-mono outline-none focus:ring-1 focus:ring-current/20 transition-colors ${inputCls}`}
                                                             placeholder="e.g. 3A"
                                                         />
                                                     </div>
@@ -259,8 +278,7 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                                                             type="number"
                                                             value={era.startYear}
                                                             onChange={e => handleUpdateEra(era.id, { startYear: parseInt(e.target.value) || 0 })}
-                                                            className="w-full px-3 py-1.5 rounded-xl border text-xs font-mono outline-none focus:ring-1 focus:ring-current/20 transition-colors"
-                                            style={{ background: 'none' }}
+                                                            className={`w-full px-3 py-1.5 rounded-xl border text-xs font-mono outline-none focus:ring-1 focus:ring-current/20 transition-colors ${inputCls}`}
                                                         />
                                                     </div>
 
@@ -270,8 +288,7 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
                                                             type="number"
                                                             value={era.endYear ?? ''}
                                                             onChange={e => handleUpdateEra(era.id, { endYear: e.target.value ? parseInt(e.target.value) : undefined })}
-                                                            className="w-full px-3 py-1.5 rounded-xl border text-xs font-mono outline-none focus:ring-1 focus:ring-current/20 transition-colors"
-                                            style={{ background: 'none' }}
+                                                            className={`w-full px-3 py-1.5 rounded-xl border text-xs font-mono outline-none focus:ring-1 focus:ring-current/20 transition-colors ${inputCls}`}
                                                             placeholder="Leave empty if ongoing"
                                                         />
                                                     </div>
@@ -302,11 +319,15 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
 
                 {/* Footer Controls */}
                 <div className={`px-6 py-4 border-t flex items-center justify-between shrink-0 ${
-                    isWiki ? 'border-[#d4c8af]/60 bg-[#f0ead8]/50' : 'border-white/[0.06] bg-white/[0.02]'
+                    isRoyal ? 'border-[#c8a96e]/40 bg-[#f4efe4]/60' : isWiki ? 'border-[#d4c8af]/60 bg-[#f0ead8]/50' : 'border-white/[0.06] bg-white/[0.02]'
                 }`}>
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 rounded-xl text-xs font-bold opacity-50 hover:opacity-100 transition-opacity"
+                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                            isRoyal ? 'border border-[#c8a96e]/60 text-[#2b1810] hover:bg-black/5 bg-white font-serif'
+                            : isWiki ? 'border border-[#d4c8af] text-[#2b1810] hover:bg-black/5 bg-white'
+                            : 'opacity-50 hover:opacity-100'
+                        }`}
                     >
                         Cancel
                     </button>

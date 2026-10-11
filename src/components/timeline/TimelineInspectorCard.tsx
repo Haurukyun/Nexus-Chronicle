@@ -41,6 +41,7 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
     const isVoyager   = themeId === 'grand-voyager';
     const isRoyal     = themeId === 'royal-codex';
     const isWiki      = layoutMode === 'wiki';
+    const isLightCanvas = isWiki || isRoyal;
 
     if (!item) return null;
 
@@ -51,9 +52,9 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
     return (
         <div className={`relative p-5 rounded-2xl border shadow-2xl transition-all ${
             isVoyager   ? 'bg-[#180c04]/90 border-[#3d2617]/90 text-[#f0dca8] backdrop-blur-2xl ring-1 ring-[#2dd4bf]/20 shadow-[0_16px_40px_rgba(0,0,0,0.8)]'
-            : isRoyal   ? 'bg-[#1c140d]/92 border-[#c8a96e]/35 text-[#fff8e7] backdrop-blur-2xl font-serif ring-1 ring-[#c8a96e]/20 shadow-[0_16px_40px_rgba(0,0,0,0.8)]'
+            : isRoyal   ? 'bg-[#fcfaf2] border-2 border-[#c8a96e]/80 text-[#2b1810] backdrop-blur-2xl font-serif shadow-[0_16px_40px_rgba(60,30,10,0.35)]'
             : isWiki    ? 'bg-[#fcfbf9]/95 border-[#d4c8af] text-[#2b1810] backdrop-blur-xl shadow-xl'
-            :              'bg-slate-900/85 border-slate-700/50 text-slate-100 backdrop-blur-2xl ring-1 ring-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.7)]'
+            :             'bg-slate-900/85 border-slate-700/50 text-slate-100 backdrop-blur-2xl ring-1 ring-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.7)]'
         }`}>
             {/* Top Bar */}
             <div className="flex items-start justify-between gap-3 mb-3">
@@ -62,9 +63,9 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
                     <span 
                         className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm border"
                         style={{
-                            backgroundColor: item.color ? `${item.color}18` : 'transparent',
-                            borderColor: item.color ? `${item.color}40` : 'currentColor',
-                            color: item.color || undefined
+                            backgroundColor: item.color ? `${item.color}20` : 'transparent',
+                            borderColor: item.color ? (isLightCanvas ? `${item.color}` : `${item.color}60`) : 'currentColor',
+                            color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : (item.color || undefined)
                         }}
                     >
                         {item.type === 'character' && <User size={11} />}
@@ -76,7 +77,7 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
                     </span>
 
                     {/* Formatted Era Year */}
-                    <span className="text-[10px] font-mono opacity-65 flex items-center gap-1">
+                    <span className={`text-[10px] font-mono flex items-center gap-1 ${isLightCanvas ? 'text-[#2b1810]/75 font-bold' : 'opacity-65'}`}>
                         <Clock size={11} /> {formattedStart}
                         {formattedEnd && formattedEnd !== formattedStart && ` — ${formattedEnd}`}
                     </span>
@@ -90,7 +91,7 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
                         return calText ? (
                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono border flex items-center gap-1 shadow-sm ${
                                 isVoyager ? 'border-[#2dd4bf]/35 bg-[#2dd4bf]/15 text-[#2dd4bf]'
-                                : isRoyal ? 'border-[#c8a96e]/35 bg-[#c8a96e]/15 text-[#c8a96e]'
+                                : isRoyal ? 'border-[#c8a96e]/60 bg-[#fff5e0] text-[#70121e] font-bold'
                                 : isWiki ? 'border-red-500/30 bg-red-50 text-red-700'
                                 : 'border-[#fef08a]/35 bg-[#fef08a]/15 text-[#fef08a]'
                             }`}>
@@ -102,7 +103,9 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
 
                 <button
                     onClick={onClose}
-                    className="p-1 rounded-lg opacity-50 hover:opacity-100 hover:bg-current/10 transition-colors"
+                    className={`p-1 rounded-lg transition-colors ${
+                        isLightCanvas ? 'text-[#2b1810] hover:bg-black/10' : 'opacity-50 hover:opacity-100 hover:bg-current/10'
+                    }`}
                     title="Close Inspector"
                 >
                     <X size={16} />
@@ -110,7 +113,9 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
             </div>
 
             {/* Title */}
-            <h3 className="text-lg font-bold tracking-tight mb-1 flex items-center gap-2">
+            <h3 className={`text-lg font-bold tracking-tight mb-1 flex items-center gap-2 ${
+                isRoyal ? 'text-[#3d0a10] font-serif font-black' : isWiki ? 'text-[#881337]' : ''
+            }`}>
                 {item.color && (
                     <div 
                         className="w-2.5 h-2.5 rounded-full shrink-0"
@@ -122,24 +127,30 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
 
             {/* Subtitle / Duration */}
             {duration !== null && duration > 0 && (
-                <p className="text-xs opacity-60 mb-3">
+                <p className={`text-xs mb-3 ${isLightCanvas ? 'text-[#2b1810]/70' : 'opacity-60'}`}>
                     Timespan: {duration} {duration === 1 ? 'Year' : 'Years'}
                 </p>
             )}
 
             {/* Description */}
             {item.description ? (
-                <div className="text-xs opacity-80 leading-relaxed mb-4 max-h-32 overflow-y-auto custom-scrollbar pr-1 border-t border-current/10 pt-2">
+                <div className={`text-xs leading-relaxed mb-4 max-h-32 overflow-y-auto custom-scrollbar pr-1 border-t pt-2 ${
+                    isLightCanvas ? 'text-[#2b1810]/85 border-black/10' : 'opacity-80 border-current/10'
+                }`}>
                     {item.description}
                 </div>
             ) : (
-                <div className="text-xs opacity-40 italic mb-4 border-t border-current/10 pt-2">
+                <div className={`text-xs italic mb-4 border-t pt-2 ${
+                    isLightCanvas ? 'text-[#2b1810]/50 border-black/10' : 'opacity-40 border-current/10'
+                }`}>
                     No chronicle notes documented for this entry.
                 </div>
             )}
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-2 pt-2 border-t border-current/10">
+            <div className={`flex items-center gap-2 pt-2 border-t ${
+                isLightCanvas ? 'border-black/10' : 'border-current/10'
+            }`}>
                 {/* Navigate to Entity */}
                 {(item.type !== 'milestone' || item.entityId) && (
                     <button
@@ -162,7 +173,11 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
                 {item.type === 'milestone' && item.rawMilestone && onEditMilestone && (
                     <button
                         onClick={() => onEditMilestone(item.rawMilestone!)}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-current/20 hover:bg-current/10 transition-colors"
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-colors ${
+                            isRoyal ? 'border-[#c8a96e]/60 text-[#2b1810] bg-white hover:bg-[#70121e]/10'
+                            : isWiki ? 'border-[#d4c8af] text-[#2b1810] bg-white hover:bg-black/5'
+                            : 'border-current/20 hover:bg-current/10'
+                        }`}
                     >
                         <Edit2 size={13} /> Edit Pin
                     </button>
