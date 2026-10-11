@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { 
     Calendar, History, ArrowLeft, ArrowRight, Bookmark,
     Sparkles, Filter, Search, X, User, Plus, RotateCcw,
@@ -290,6 +290,19 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         }));
     };
 
+    // Save Custom Calendar Presets Handler
+    const handleSaveCustomCalendarPresets = (presets: FantasyCalendar[]) => {
+        setWorld(prev => ({
+            ...prev,
+            customCalendarPresets: presets
+        }));
+        try {
+            localStorage.setItem('nexus_custom_calendar_presets', JSON.stringify(presets));
+        } catch (e) {
+            console.error('Failed to save presets to localStorage', e);
+        }
+    };
+
     // Save Milestone Handler
     const handleSaveMilestone = (milestone: MilestonePin) => {
         setWorld(prev => {
@@ -357,6 +370,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             behavior: 'smooth'
         });
     };
+
+    // By default, center/start camera view on Year 0 across all calendars and zoom levels
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const totalWidth = ZOOM_CONFIGS[zoomLevel].width;
+        const targetYear = Math.max(minYear, Math.min(maxYear, 0));
+        const ratio = (targetYear - minYear) / yearSpan;
+        // Position Year 0 at ~15% from left of visible container window so Year 0 and future history are immediately visible
+        const scrollTarget = ratio * totalWidth - (container.clientWidth * 0.15);
+
+        requestAnimationFrame(() => {
+            if (scrollContainerRef.current) {
+                scrollContainerRef.current.scrollTo({
+                    left: Math.max(0, scrollTarget),
+                    behavior: 'auto'
+                });
+            }
+        });
+    }, [zoomLevel, minYear, maxYear, yearSpan]);
 
     // Interactive mouse hover tracking on timeline canvas
     const handleCanvasMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -715,17 +749,21 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             )}
 
             {/* ── Main Interactive Timeline Canvas ──────────────────────────── */}
-            {mainViewMode === 'chronos' && <div 
-                ref={scrollContainerRef}
-                className={`flex-1 relative overflow-auto custom-scrollbar rounded-3xl border shadow-2xl p-6 transition-all ${canvasGlass}`}
-                style={{
-                    backgroundImage: isSovereign 
-                        ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(254,240,138,0.06), transparent 70%)'
-                        : isVoyager
-                        ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(45,212,191,0.06), transparent 70%)'
-                        : undefined
-                }}
-            >
+            {mainViewMode === 'chronos' && (
+                <div 
+                    className={`flex-1 relative rounded-3xl border shadow-2xl overflow-hidden flex flex-col transition-all ${canvasGlass}`}
+                    style={{
+                        backgroundImage: isSovereign 
+                            ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(254,240,138,0.06), transparent 70%)'
+                            : isVoyager
+                            ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(45,212,191,0.06), transparent 70%)'
+                            : undefined
+                    }}
+                >
+                    <div 
+                        ref={scrollContainerRef}
+                        className="flex-1 relative overflow-auto custom-scrollbar p-6"
+                    >
                 <div 
                     ref={canvasInnerRef}
                     onMouseMove={handleCanvasMouseMove}
@@ -902,6 +940,37 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 </div>
                             );
                         })}
+
+                        {/* Explicit Epoch Year 0 Landmark */}
+                        {minYear <= 0 && maxYear >= 0 && (
+                            <div 
+                                className="absolute top-1/2 flex flex-col items-center -translate-x-1/2 pointer-events-none z-20"
+                                style={{ left: `${((0 - minYear) / yearSpan) * 100}%` }}
+                            >
+                                <div 
+                                    className="w-3.5 h-3.5 rotate-45 border-2 shadow-lg -translate-y-1/2"
+                                    style={{
+                                        backgroundColor: isRoyal ? '#70121e' : isWiki ? '#b91c1c' : isSovereign ? '#fef08a' : '#2dd4bf',
+                                        borderColor: '#ffffff',
+                                        boxShadow: isSovereign ? '0 0 12px rgba(254,240,138,0.8)' : isVoyager ? '0 0 12px rgba(45,212,191,0.8)' : '0 2px 8px rgba(0,0,0,0.3)'
+                                    }}
+                                />
+                                <div className="flex flex-col items-center mt-3">
+                                    <span className={`font-mono font-black text-xs px-2 py-0.5 rounded-md shadow-md border ${
+                                        isLightCanvas 
+                                            ? 'bg-amber-100/90 text-[#1c140d] border-amber-300' 
+                                            : 'bg-white/10 text-white border-white/20 backdrop-blur-md'
+                                    }`}>
+                                        Year 0
+                                    </span>
+                                    <span className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${
+                                        isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'
+                                    }`}>
+                                        Epoch Origin
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* INTERACTIVE MOUSE TEMPORAL SCRUBBER CURSOR */}
@@ -1046,6 +1115,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     style={{
                                         left: `${leftPct}%`,
                                         width: `${widthPct}%`,
+                                        minWidth: '220px',
                                         top: `${topPx}px`,
                                         height: '36px'
                                     }}
@@ -1202,24 +1272,28 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         )}
                     </div>
                 </div>
-            </div>}
+            </div>
 
-            {/* ── Docked Inspector Card ─────────────────────────────────────── */}
+            {/* ── In-Canvas Floating Inspector in the Large Empty Gap ────────── */}
             {inspectedItem && (
-                <div className="shrink-0 max-w-xl mx-auto w-full z-40 animate-in fade-in slide-in-from-bottom-3 duration-200">
-                    <TimelineInspectorCard
-                        item={inspectedItem}
-                        eras={eras}
-                        calendar={calendar}
-                        onClose={() => setInspectedItem(null)}
-                        onNavigate={onNavigate}
-                        onEditMilestone={milestone => {
-                            setEditingMilestone(milestone);
-                            setIsAddMilestoneOpen(true);
-                        }}
-                    />
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 max-w-xl w-full px-4 z-40 pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <div className="pointer-events-auto">
+                        <TimelineInspectorCard
+                            item={inspectedItem}
+                            eras={eras}
+                            calendar={calendar}
+                            onClose={() => setInspectedItem(null)}
+                            onNavigate={onNavigate}
+                            onEditMilestone={milestone => {
+                                setEditingMilestone(milestone);
+                                setIsAddMilestoneOpen(true);
+                            }}
+                        />
+                    </div>
                 </div>
             )}
+        </div>
+    )}
 
             {/* ── Footer Legend Bar ─────────────────────────────────────────── */}
             <footer className={`flex flex-wrap justify-between items-center text-[10px] uppercase font-bold tracking-widest px-2 shrink-0 pt-1 ${
@@ -1276,7 +1350,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             <ManageCalendarModal
                 isOpen={isManageCalendarOpen}
                 calendar={calendar}
+                customPresets={world.customCalendarPresets}
                 onSaveCalendar={handleSaveCalendar}
+                onSaveCustomPresets={handleSaveCustomCalendarPresets}
                 onClose={() => setIsManageCalendarOpen(false)}
             />
         </div>

@@ -959,6 +959,7 @@ export interface WorldData {
   timelineEras?: FantasyEra[];
   milestonePins?: MilestonePin[];
   timelineCalendar?: FantasyCalendar;
+  customCalendarPresets?: FantasyCalendar[];
 }
 
 export interface UniverseArchive {

@@ -167,5 +167,19 @@ describe('Timeline Utilities & Fantasy Eras', () => {
             expect(hovered).toContain('GZ 373 (Yr 1372) DR');
             expect(hovered).toContain('Hammer 1');
         });
+
+        it('supports exporting, importing and cloning custom calendar presets', () => {
+            const customPreset = {
+                ...tamriel,
+                id: 'custom_preset_1',
+                name: 'Cyrodiil Imperial Reckoning',
+                description: 'Custom Imperial preset for worldbuilding'
+            };
+            const json = JSON.stringify(customPreset, null, 2);
+            const imported = JSON.parse(json);
+            expect(imported.name).toBe('Cyrodiil Imperial Reckoning');
+            expect(imported.months).toHaveLength(12);
+            expect(getDaysInYear(201, imported)).toBe(365);
+        });
     });
 });

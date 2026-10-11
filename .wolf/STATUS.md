@@ -195,6 +195,12 @@ budget_tokens: 1000
     - **Complete Separation of Festivals from Months in Calendar Configuration**: Overhauled `ManageCalendarModal.tsx` into 5 distinct tabs. "Months" tab edits only regular months without festival interference; dedicated "Festivals & Intercalary Days" tab allows configuring standalone sacred days with dynamic calendar placement ("Celebrated after [Month]") and leap cycle association.
     - **Reset to Default with Confirmation Prompt**: Replaced "Reset to Faerûn" with "Reset to Default" button. Clicking it triggers an overlay confirmation dialog warning the user before resetting to the Gregorian default.
     - **Premium Glassmorphism Across All 4 Themes**: Elevated aesthetics of `ManageCalendarModal` with translucent card frames, ambient glow rings, refined inputs, and strict theme token mapping for Sovereign, Wiki, Royal Codex, and Grand Voyager.
+  - **Chronos In-Canvas Inspector, 2K Ribbon Scaling, Default Camera to Year 0 & Custom Calendar Presets Manager** (`TimelineView.tsx`, `ManageCalendarModal.tsx`, `types.ts`, `timelineUtils.test.ts`):
+    - **In-Canvas Floating Inspector in Timeline Empty Void**: Clicked ribbons and milestones now summon the inspector card directly inside the timeline canvas's spacious bottom void as a horizontally centered overlay, rather than pushing down the layout and docking outside below the entire panel.
+    - **2K Zoom Ribbon Scaling (`minWidth: 220px`)**: Added a 220px minimum width constraint to event ribbons, ensuring event names like "The Great Convergence" and dates remain clearly readable even on the compact 2K zoom level instead of truncating into "The ...".
+    - **Camera Auto-Focus on Year 0 Across All Zoom Levels**: Chronos camera view now centers/starts from Year 0 by default on all zoom levels (2K, 3.4K, 5.2K, 8K) across all calendars, positioning Year 0 at ~15% from the left edge so positive history stretches out into view. Added a dedicated Year 0 / Epoch Origin diamond landmark marker on the timeline rail.
+    - **Custom Calendar Preset Creation, Deletion & JSON Import/Export**: Users can now save their active calendar configuration as a reusable custom preset with a name and description, delete custom presets with a single click, export any preset or active calendar to a standalone `.json` file (`downloadTextFile`), and import calendar presets directly from `.json` files. Presets are persisted to `WorldData.customCalendarPresets` and synced with `localStorage`.
+    - **Verified Quality**: 49/49 unit tests pass; 0 TypeScript errors.
 
 ---
 

@@ -1,19 +1,22 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { 
     X, Plus, Trash2, Sparkles, Check, Calendar, ArrowUp, ArrowDown, 
     RotateCcw, Sun, Moon, Clock, Compass, HelpCircle, Layers, CalendarDays,
-    Star, Snowflake, Leaf, Cloud, AlertCircle, Info
+    Star, Snowflake, Leaf, Cloud, AlertCircle, Info, Download, Upload
 } from 'lucide-react';
 import { FantasyCalendar, FantasyMonth, FantasyLeapRule } from '../../types';
 import { DEFAULT_CALENDAR_PRESETS, getDaysInYear, isLeapYear, formatFantasyDate } from '../../utils/timelineUtils';
+import { downloadTextFile } from '../../utils/exportUtils';
 import { useTheme } from '../../theme';
 
 interface ManageCalendarModalProps {
     isOpen: boolean;
     onClose: () => void;
     calendar?: FantasyCalendar;
+    customPresets?: FantasyCalendar[];
     onSaveCalendar: (calendar: FantasyCalendar) => void;
+    onSaveCustomPresets?: (presets: FantasyCalendar[]) => void;
 }
 
 type TabType = 'months' | 'festivals' | 'settings' | 'leap' | 'preview';
@@ -87,7 +90,9 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
     isOpen,
     onClose,
     calendar,
-    onSaveCalendar
+    customPresets: initialCustomPresets,
+    onSaveCalendar,
+    onSaveCustomPresets
 }) => {
     const { themeId, layoutMode } = useTheme();
 
@@ -100,6 +105,35 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
 
     const [activeTab, setActiveTab] = useState<TabType>('months');
     const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
+
+    // Custom calendar presets state (synced with world & local storage)
+    const [customPresets, setCustomPresets] = useState<FantasyCalendar[]>(() => {
+        if (initialCustomPresets && initialCustomPresets.length > 0) {
+            return initialCustomPresets;
+        }
+        try {
+            const saved = localStorage.getItem('nexus_custom_calendar_presets');
+            if (saved) return JSON.parse(saved);
+        } catch (e) {
+            console.error('Failed to load custom presets from localStorage', e);
+        }
+        return [];
+    });
+
+    useEffect(() => {
+        if (initialCustomPresets && initialCustomPresets.length > 0) {
+            setCustomPresets(initialCustomPresets);
+        }
+    }, [initialCustomPresets]);
+
+    // Save as Preset Modal dialog state
+    const [isSavePresetModalOpen, setIsSavePresetModalOpen] = useState(false);
+    const [newPresetName, setNewPresetName] = useState('');
+    const [newPresetDescription, setNewPresetDescription] = useState('');
+    const [presetNotification, setPresetNotification] = useState<string | null>(null);
+
+    // Hidden file input for importing calendar presets
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Date test playground state
     const [testYear, setTestYear] = useState<number>(2026);
@@ -114,6 +148,94 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
             setLocalCal(JSON.parse(JSON.stringify(preset.calendar)));
             setTestMonthIdx(0);
             setTestDay(1);
+            setPresetNotification(`Applied "${preset.label}" preset`);
+            setTimeout(() => setPresetNotification(null), 2500);
+        }
+    };
+
+    const handleSaveCurrentAsPreset = () => {
+        const name = newPresetName.trim() || localCal.name || 'Custom Calendar';
+        const newPreset: FantasyCalendar = {
+            ...JSON.parse(JSON.stringify(localCal)),
+            id: `custom_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+            name,
+            description: newPresetDescription.trim() || `Custom preset created on ${new Date().toLocaleDateString()}`
+        };
+        const updated = [...customPresets.filter(p => p.name !== name), newPreset];
+        setCustomPresets(updated);
+        onSaveCustomPresets?.(updated);
+        try {
+            localStorage.setItem('nexus_custom_calendar_presets', JSON.stringify(updated));
+        } catch (e) {
+            console.error('Failed to save presets to localStorage', e);
+        }
+        setIsSavePresetModalOpen(false);
+        setNewPresetName('');
+        setNewPresetDescription('');
+        setPresetNotification(`Saved "${name}" as custom preset!`);
+        setTimeout(() => setPresetNotification(null), 3000);
+    };
+
+    const handleDeleteCustomPreset = (presetId: string, e?: React.MouseEvent) => {
+        e?.stopPropagation();
+        const updated = customPresets.filter(p => p.id !== presetId);
+        setCustomPresets(updated);
+        onSaveCustomPresets?.(updated);
+        try {
+            localStorage.setItem('nexus_custom_calendar_presets', JSON.stringify(updated));
+        } catch (err) {
+            console.error('Failed to save to localStorage', err);
+        }
+        setPresetNotification('Preset removed.');
+        setTimeout(() => setPresetNotification(null), 2500);
+    };
+
+    const handleExportPreset = async (cal: FantasyCalendar, e?: React.MouseEvent) => {
+        e?.stopPropagation();
+        const filename = `${cal.name.toLowerCase().replace(/[^a-z0-9_-]/g, '_')}_calendar_preset.json`;
+        await downloadTextFile(JSON.stringify(cal, null, 2), filename, 'application/json');
+        setPresetNotification(`Exported "${cal.name}" as JSON!`);
+        setTimeout(() => setPresetNotification(null), 3000);
+    };
+
+    const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            const text = await file.text();
+            const parsed = JSON.parse(text);
+            if (!parsed.name || !Array.isArray(parsed.months)) {
+                alert('Invalid calendar preset JSON file: missing calendar name or months array.');
+                return;
+            }
+            const importedCalendar: FantasyCalendar = {
+                id: parsed.id || `custom_${Date.now()}`,
+                name: parsed.name,
+                description: parsed.description || 'Imported custom calendar preset',
+                yearSuffix: parsed.yearSuffix,
+                daysPerWeek: typeof parsed.daysPerWeek === 'number' ? parsed.daysPerWeek : 7,
+                weekDayNames: Array.isArray(parsed.weekDayNames) ? parsed.weekDayNames : undefined,
+                months: parsed.months,
+                leapRule: parsed.leapRule,
+                epochOffset: parsed.epochOffset
+            };
+            const updated = [...customPresets.filter(p => p.id !== importedCalendar.id && p.name !== importedCalendar.name), importedCalendar];
+            setCustomPresets(updated);
+            onSaveCustomPresets?.(updated);
+            try {
+                localStorage.setItem('nexus_custom_calendar_presets', JSON.stringify(updated));
+            } catch (err) {
+                console.error(err);
+            }
+            setLocalCal(JSON.parse(JSON.stringify(importedCalendar)));
+            setTestMonthIdx(0);
+            setTestDay(1);
+            setPresetNotification(`Imported & applied "${importedCalendar.name}"!`);
+            setTimeout(() => setPresetNotification(null), 3000);
+        } catch (err) {
+            alert('Failed to parse calendar preset JSON: ' + (err instanceof Error ? err.message : String(err)));
+        } finally {
+            if (e.target) e.target.value = '';
         }
     };
 
@@ -261,31 +383,169 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                 </div>
 
                 {/* ── Preset Banner ────────────────────────────────────────── */}
-                <div className={`px-6 py-3 border-b flex items-center gap-2 flex-wrap text-xs ${
+                <div className={`px-6 py-3 border-b flex items-center justify-between gap-3 flex-wrap text-xs ${
                     isRoyal ? 'bg-[#f4efe4] border-[#c8a96e]/40' : isWiki ? 'bg-[#f4efe4] border-[#d4c8af]' : 'bg-black/30 border-white/5'
                 }`}>
-                    <span className={`font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5 mr-1.5 ${
-                        isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'
-                    }`}>
-                        <Sparkles size={13} /> Presets:
-                    </span>
-                    {Object.entries(DEFAULT_CALENDAR_PRESETS).map(([key, p]) => (
+                    <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                        <span className={`font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5 mr-1 ${
+                            isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'
+                        }`}>
+                            <Sparkles size={13} /> Presets:
+                        </span>
+
+                        {/* Built-in Presets */}
+                        {Object.entries(DEFAULT_CALENDAR_PRESETS).map(([key, p]) => (
+                            <div key={key} className="inline-flex items-center rounded-xl border overflow-hidden group shadow-xs">
+                                <button
+                                    type="button"
+                                    onClick={() => handleApplyPreset(key)}
+                                    title={p.description}
+                                    className={`px-3 py-1 text-xs font-medium transition-all ${
+                                        isVoyager ? 'bg-[#241208]/70 hover:bg-[#2dd4bf]/15 text-[#f0dca8]'
+                                        : isRoyal ? 'bg-white text-[#2b1810] hover:bg-[#70121e]/5 font-serif'
+                                        : isWiki ? 'bg-white text-[#2b1810] hover:bg-red-50'
+                                        : 'bg-slate-900/60 hover:bg-white/5 text-slate-200'
+                                    }`}
+                                >
+                                    {p.label}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => handleExportPreset(p.calendar, e)}
+                                    title={`Export ${p.label} as JSON`}
+                                    className={`px-1.5 py-1 transition-all border-l ${
+                                        isVoyager ? 'border-[#3d2617] bg-[#241208]/70 hover:bg-[#2dd4bf]/20 text-[#f0dca8]/60 hover:text-[#2dd4bf]'
+                                        : isRoyal ? 'border-[#c8a96e]/40 bg-white text-[#2b1810]/60 hover:text-[#70121e]'
+                                        : isWiki ? 'border-[#d4c8af] bg-white text-[#2b1810]/60 hover:text-red-700'
+                                        : 'border-slate-800 bg-slate-900/60 hover:bg-white/10 text-slate-400 hover:text-white'
+                                    }`}
+                                >
+                                    <Download size={11} />
+                                </button>
+                            </div>
+                        ))}
+
+                        {/* Custom Presets */}
+                        {customPresets.map(cp => (
+                            <div key={cp.id} className="inline-flex items-center rounded-xl border border-dashed overflow-hidden group shadow-xs">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setLocalCal(JSON.parse(JSON.stringify(cp)));
+                                        setTestMonthIdx(0);
+                                        setTestDay(1);
+                                        setPresetNotification(`Applied custom preset "${cp.name}"`);
+                                        setTimeout(() => setPresetNotification(null), 2500);
+                                    }}
+                                    title={cp.description || cp.name}
+                                    className={`px-2.5 py-1 text-xs font-bold transition-all flex items-center gap-1.5 ${
+                                        isVoyager ? 'bg-[#2dd4bf]/10 text-[#2dd4bf] hover:bg-[#2dd4bf]/20'
+                                        : isRoyal ? 'bg-[#70121e]/5 text-[#70121e] hover:bg-[#70121e]/15 font-serif'
+                                        : isWiki ? 'bg-red-50 text-red-700 hover:bg-red-100'
+                                        : 'bg-amber-400/10 text-amber-300 hover:bg-amber-400/20'
+                                    }`}
+                                >
+                                    <span className="text-[9px] uppercase px-1 py-0.2 rounded font-mono font-normal opacity-70">Custom</span>
+                                    <span>{cp.name}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => handleExportPreset(cp, e)}
+                                    title={`Export ${cp.name} as JSON`}
+                                    className={`px-1.5 py-1 transition-all border-l ${
+                                        isVoyager ? 'border-[#2dd4bf]/30 hover:bg-[#2dd4bf]/20 text-[#2dd4bf]/70 hover:text-[#2dd4bf]'
+                                        : isRoyal ? 'border-[#70121e]/30 hover:bg-[#70121e]/10 text-[#70121e]/70 hover:text-[#70121e]'
+                                        : isWiki ? 'border-red-200 hover:bg-red-100 text-red-700/70 hover:text-red-700'
+                                        : 'border-amber-400/30 hover:bg-amber-400/20 text-amber-300/70 hover:text-amber-300'
+                                    }`}
+                                >
+                                    <Download size={11} />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => handleDeleteCustomPreset(cp.id, e)}
+                                    title={`Delete custom preset "${cp.name}"`}
+                                    className={`px-1.5 py-1 transition-all border-l text-red-400 hover:text-red-300 hover:bg-red-500/20 ${
+                                        isVoyager ? 'border-[#2dd4bf]/30'
+                                        : isRoyal ? 'border-[#70121e]/30'
+                                        : isWiki ? 'border-red-200'
+                                        : 'border-amber-400/30'
+                                    }`}
+                                >
+                                    <Trash2 size={11} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Preset Actions: Save as preset, Import JSON, Export JSON */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            accept=".json" 
+                            onChange={handleImportFile} 
+                            className="hidden" 
+                        />
+
                         <button
-                            key={key}
                             type="button"
-                            onClick={() => handleApplyPreset(key)}
-                            title={p.description}
-                            className={`px-3 py-1 rounded-xl border text-xs font-medium transition-all ${
-                                isVoyager ? 'border-[#3d2617] bg-[#241208]/70 hover:border-[#2dd4bf]/50 hover:bg-[#2dd4bf]/15 text-[#f0dca8]'
-                                : isRoyal ? 'border-[#c8a96e]/60 bg-white text-[#2b1810] hover:border-[#70121e] hover:bg-[#70121e]/5 shadow-xs font-serif'
-                                : isWiki ? 'border-[#d4c8af] bg-white text-[#2b1810] hover:border-red-400 hover:bg-red-50'
-                                : 'border-slate-800 bg-slate-900/60 hover:border-[#fef08a]/40 hover:bg-white/5 text-slate-200'
+                            onClick={() => {
+                                setNewPresetName(localCal.name || 'My World Calendar');
+                                setNewPresetDescription(localCal.description || '');
+                                setIsSavePresetModalOpen(true);
+                            }}
+                            title="Save current configuration as a reusable preset"
+                            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-xs ${
+                                isVoyager ? 'border-[#2dd4bf]/40 bg-[#2dd4bf]/15 text-[#2dd4bf] hover:bg-[#2dd4bf]/25'
+                                : isRoyal ? 'border-[#70121e]/40 bg-[#70121e]/10 text-[#70121e] hover:bg-[#70121e]/20 font-serif'
+                                : isWiki ? 'border-red-700/40 bg-red-700/10 text-red-700 hover:bg-red-700/20'
+                                : 'border-amber-400/40 bg-amber-400/15 text-amber-300 hover:bg-amber-400/25'
                             }`}
                         >
-                            {p.label}
+                            <Plus size={12} /> Save as Preset
                         </button>
-                    ))}
+
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            title="Import a custom calendar preset from a .json file"
+                            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-semibold transition-all shadow-xs ${
+                                isLightModal 
+                                    ? 'border-[#d4c8af] bg-white text-[#2b1810] hover:bg-black/5' 
+                                    : 'border-slate-800 bg-slate-900/60 hover:bg-white/10 text-slate-300'
+                            }`}
+                        >
+                            <Upload size={12} /> Import JSON
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={(e) => handleExportPreset(localCal, e)}
+                            title="Export current calendar configuration as a .json file"
+                            className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-semibold transition-all shadow-xs ${
+                                isLightModal 
+                                    ? 'border-[#d4c8af] bg-white text-[#2b1810] hover:bg-black/5' 
+                                    : 'border-slate-800 bg-slate-900/60 hover:bg-white/10 text-slate-300'
+                            }`}
+                        >
+                            <Download size={12} /> Export Current
+                        </button>
+                    </div>
                 </div>
+
+                {/* Subtle notification toast for preset actions */}
+                {presetNotification && (
+                    <div className={`px-6 py-1.5 text-xs font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-top-1 ${
+                        isRoyal ? 'bg-amber-100 text-[#70121e] border-b border-[#c8a96e]/40'
+                        : isWiki ? 'bg-emerald-50 text-emerald-800 border-b border-[#d4c8af]'
+                        : isVoyager ? 'bg-[#2dd4bf]/20 text-[#2dd4bf] border-b border-[#2dd4bf]/30'
+                        : 'bg-emerald-500/20 text-emerald-300 border-b border-emerald-500/30'
+                    }`}>
+                        <Check size={13} className="shrink-0" />
+                        <span>{presetNotification}</span>
+                    </div>
+                )}
 
                 {/* ── Navigation Tabs & Summary Strip ───────────────────────── */}
                 <div className={`px-6 py-3.5 border-b flex items-center justify-between gap-4 flex-wrap shrink-0 ${
@@ -1233,6 +1493,84 @@ export const ManageCalendarModal: React.FC<ManageCalendarModalProps> = ({
                                 }`}
                             >
                                 Confirm Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* ── Save Current Calendar as Preset Dialog ────────────────────────── */}
+            {isSavePresetModalOpen && (
+                <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+                    <div className={`w-full max-w-md p-6 rounded-3xl border shadow-2xl space-y-4 ${modalCard}`} onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                                <div className={`p-2 rounded-xl border ${iconAccent}`}>
+                                    <Sparkles size={18} />
+                                </div>
+                                <div>
+                                    <h3 className={`text-base font-bold uppercase tracking-wider font-serif ${
+                                        isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#881337]' : isVoyager ? 'text-[#f0dca8]' : 'text-slate-100'
+                                    }`}>
+                                        Save as Calendar Preset
+                                    </h3>
+                                    <p className={`text-xs ${isLightModal ? 'text-[#2b1810]/70' : 'opacity-60'}`}>
+                                        Store this calendar layout for reuse across worlds and chronos view
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsSavePresetModalOpen(false)}
+                                className="p-1.5 rounded-lg opacity-70 hover:opacity-100"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-3 pt-2">
+                            <div>
+                                <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${isLightModal ? 'text-[#2b1810]/80' : 'opacity-70'}`}>
+                                    Preset Name
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newPresetName}
+                                    onChange={e => setNewPresetName(e.target.value)}
+                                    placeholder="e.g. Celestial Reckoning, Valenwood Calendar"
+                                    className={`w-full px-3 py-2 rounded-xl text-xs ${inputCls}`}
+                                    autoFocus
+                                />
+                            </div>
+                            <div>
+                                <label className={`block text-xs font-bold uppercase tracking-wider mb-1 ${isLightModal ? 'text-[#2b1810]/80' : 'opacity-70'}`}>
+                                    Description (Optional)
+                                </label>
+                                <textarea
+                                    value={newPresetDescription}
+                                    onChange={e => setNewPresetDescription(e.target.value)}
+                                    placeholder="Brief lore description of this calendar system..."
+                                    rows={2}
+                                    className={`w-full px-3 py-2 rounded-xl text-xs resize-none ${inputCls}`}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
+                            <button
+                                type="button"
+                                onClick={() => setIsSavePresetModalOpen(false)}
+                                className={`px-4 py-2 rounded-xl border text-xs font-semibold ${
+                                    isLightModal ? 'border-[#d4c8af] text-[#2b1810] hover:bg-black/5 bg-white' : 'border-white/10 hover:bg-white/5 opacity-80'
+                                }`}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleSaveCurrentAsPreset}
+                                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider ${saveBtnCls}`}
+                            >
+                                <Check size={14} /> Save Preset
                             </button>
                         </div>
                     </div>
