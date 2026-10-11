@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Character, WorldEntity, EntityType } from '../../../types';
 import { FormInput, SmartSelect, FormToggle } from '../../ui';
 import { EditorGroup } from '../EditorGroup';
@@ -15,6 +15,28 @@ interface Props {
 
 export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew }) => {
     const { layoutMode, themeId } = useTheme();
+
+    const effectiveParentIds = useMemo(() => {
+        const set = new Set<string>(entity.parentsOfCharacter || []);
+        if (entity.parentId && allEntities.some(e => e.id === entity.parentId && e.type === 'character')) {
+            set.add(entity.parentId);
+        }
+        (entity.parentIds || []).forEach((id: string) => set.add(id));
+        set.delete(entity.id);
+        return Array.from(set);
+    }, [entity.parentsOfCharacter, entity.parentId, entity.parentIds, entity.id, allEntities]);
+
+    const effectiveChildIds = useMemo(() => {
+        const set = new Set<string>(entity.childOfCharacter || []);
+        allEntities.forEach(e => {
+            if (e.type === 'character' && e.parentId === entity.id) {
+                set.add(e.id);
+            }
+        });
+        (entity.childrenIds || []).forEach((id: string) => set.add(id));
+        set.delete(entity.id);
+        return Array.from(set);
+    }, [entity.childOfCharacter, entity.childrenIds, entity.id, allEntities]);
     return (
         <>
             <EditorGroup title="Basic information" icon={Info}>
@@ -96,8 +118,8 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
             </EditorGroup>
 
             <EditorGroup title="Relationships" icon={Heart}>
-                <SmartSelect label="Parents" ids={entity.parentsOfCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, parentsOfCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="parentsOfCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
-                <SmartSelect label="Children" ids={entity.childOfCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, childOfCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="childOfCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
+                <SmartSelect label="Parents" ids={effectiveParentIds} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, parentsOfCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="parentsOfCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
+                <SmartSelect label="Children" ids={effectiveChildIds} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, childOfCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="childOfCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
                 <SmartSelect label="Relatives" ids={entity.relativesOfCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, relativesOfCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="relativesOfCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
                 <SmartSelect label="Friends" ids={entity.allyResCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, allyResCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="allyResCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
                 <SmartSelect label="Enemies" ids={entity.enemydResCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, enemydResCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="enemydResCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
@@ -105,35 +127,33 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
             </EditorGroup>
 
             <EditorGroup title="Groups & Affiliations" icon={Swords}>
-                <GroupRoleGroup label="Political groups" roleKey="political" entity={{...entity, groupConnections: { political: { leadingFigureOf: entity.leadingPoliticalLeaders || [], connectedTo: entity.pairedConnectionPolGroup || [], memberOf: entity.pairedBelongingPolGroup || [], allyOf: entity.pairedAllyPolGroup || [], enemyOf: entity.pairedEnemyPolGroup || []} }} as any} allEntities={allEntities} 
-                    onUpdate={(updatedData: any) => {
-                        const pol = updatedData.groupConnections.political;
-                        onUpdate({ ...entity, leadingPoliticalLeaders: pol.leadingFigureOf, pairedConnectionPolGroup: pol.connectedTo, pairedBelongingPolGroup: pol.memberOf, pairedAllyPolGroup: pol.allyOf, pairedEnemyPolGroup: pol.enemyOf });
-                    }} onCreateNew={onCreateNew} />
-                
-                <GroupRoleGroup label="Organizations" roleKey="organization" entity={{...entity, groupConnections: { organization: { leadingFigureOf: entity.leadingOtherLeaders || [], connectedTo: entity.pairedConnectionOtherGroups || [], memberOf: entity.pairedBelongingOtherGroups || [], allyOf: entity.pairedAllyOtherGroups || [], enemyOf: entity.pairedEnemyOtherGroups || []} }} as any} allEntities={allEntities} 
-                    onUpdate={(updatedData: any) => {
-                        const org = updatedData.groupConnections.organization;
-                        onUpdate({ ...entity, leadingOtherLeaders: org.leadingFigureOf, pairedConnectionOtherGroups: org.connectedTo, pairedBelongingOtherGroups: org.memberOf, pairedAllyOtherGroups: org.allyOf, pairedEnemyOtherGroups: org.enemyOf });
-                    }} onCreateNew={onCreateNew} />
-                    
-                <GroupRoleGroup label="Religious groups" roleKey="religious" entity={{...entity, groupConnections: { religious: { leadingFigureOf: entity.leadingReligiousLeaders || [], connectedTo: entity.pairedConnectionRelGroup || [], memberOf: entity.pairedBelongingRelGroup || [], allyOf: entity.pairedAllyRelGroup || [], enemyOf: entity.pairedEnemyRelGroup || []} }} as any} allEntities={allEntities} 
-                    onUpdate={(updatedData: any) => {
-                        const rel = updatedData.groupConnections.religious;
-                        onUpdate({ ...entity, leadingReligiousLeaders: rel.leadingFigureOf, pairedConnectionRelGroup: rel.connectedTo, pairedBelongingRelGroup: rel.memberOf, pairedAllyRelGroup: rel.allyOf, pairedEnemyRelGroup: rel.enemyOf });
-                    }} onCreateNew={onCreateNew} />
-
-                <GroupRoleGroup label="Magical groups & Circles" roleKey="magic" entity={{...entity, groupConnections: { magic: { leadingFigureOf: entity.leadingMagicalLeaders || [], connectedTo: entity.pairedConnectionMagicGroup || [], memberOf: entity.pairedBelongingMagicGroup || [], allyOf: entity.pairedAllyMagicGroup || [], enemyOf: entity.pairedEnemyMagicGroup || []} }} as any} allEntities={allEntities} 
-                    onUpdate={(updatedData: any) => {
-                        const mag = updatedData.groupConnections.magic;
-                        onUpdate({ ...entity, leadingMagicalLeaders: mag.leadingFigureOf, pairedConnectionMagicGroup: mag.connectedTo, pairedBelongingMagicGroup: mag.memberOf, pairedAllyMagicGroup: mag.allyOf, pairedEnemyMagicGroup: mag.enemyOf });
-                    }} onCreateNew={onCreateNew} />
-
-                <GroupRoleGroup label="Sciences & Academies" roleKey="science" entity={{...entity, groupConnections: { science: { leadingFigureOf: entity.leadingTechLeaders || [], connectedTo: entity.pairedConnectionTechGroup || [], memberOf: entity.pairedBelongingTechGroup || [], allyOf: entity.pairedAllyTechGroup || [], enemyOf: entity.pairedEnemyTechGroup || []} }} as any} allEntities={allEntities} 
-                    onUpdate={(updatedData: any) => {
-                        const sci = updatedData.groupConnections.science;
-                        onUpdate({ ...entity, leadingTechLeaders: sci.leadingFigureOf, pairedConnectionTechGroup: sci.connectedTo, pairedBelongingTechGroup: sci.memberOf, pairedAllyTechGroup: sci.allyOf, pairedEnemyTechGroup: sci.enemyOf });
-                    }} onCreateNew={onCreateNew} />
+                <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                    <GroupRoleGroup label="Political groups" roleKey="political" entity={{...entity, groupConnections: { political: { leadingFigureOf: entity.leadingPoliticalLeaders || [], connectedTo: entity.pairedConnectionPolGroup || [], memberOf: entity.pairedBelongingPolGroup || [], allyOf: entity.pairedAllyPolGroup || [], enemyOf: entity.pairedEnemyPolGroup || []} }} as any} allEntities={allEntities}
+                        onUpdate={(updatedData: any) => {
+                            const pol = updatedData.groupConnections.political;
+                            onUpdate({ ...entity, leadingPoliticalLeaders: pol.leadingFigureOf, pairedConnectionPolGroup: pol.connectedTo, pairedBelongingPolGroup: pol.memberOf, pairedAllyPolGroup: pol.allyOf, pairedEnemyPolGroup: pol.enemyOf });
+                        }} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Organizations" roleKey="organization" entity={{...entity, groupConnections: { organization: { leadingFigureOf: entity.leadingOtherLeaders || [], connectedTo: entity.pairedConnectionOtherGroups || [], memberOf: entity.pairedBelongingOtherGroups || [], allyOf: entity.pairedAllyOtherGroups || [], enemyOf: entity.pairedEnemyOtherGroups || []} }} as any} allEntities={allEntities}
+                        onUpdate={(updatedData: any) => {
+                            const org = updatedData.groupConnections.organization;
+                            onUpdate({ ...entity, leadingOtherLeaders: org.leadingFigureOf, pairedConnectionOtherGroups: org.connectedTo, pairedBelongingOtherGroups: org.memberOf, pairedAllyOtherGroups: org.allyOf, pairedEnemyOtherGroups: org.enemyOf });
+                        }} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Religious groups" roleKey="religious" entity={{...entity, groupConnections: { religious: { leadingFigureOf: entity.leadingReligiousLeaders || [], connectedTo: entity.pairedConnectionRelGroup || [], memberOf: entity.pairedBelongingRelGroup || [], allyOf: entity.pairedAllyRelGroup || [], enemyOf: entity.pairedEnemyRelGroup || []} }} as any} allEntities={allEntities}
+                        onUpdate={(updatedData: any) => {
+                            const rel = updatedData.groupConnections.religious;
+                            onUpdate({ ...entity, leadingReligiousLeaders: rel.leadingFigureOf, pairedConnectionRelGroup: rel.connectedTo, pairedBelongingRelGroup: rel.memberOf, pairedAllyRelGroup: rel.allyOf, pairedEnemyRelGroup: rel.enemyOf });
+                        }} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Magical groups & Circles" roleKey="magic" entity={{...entity, groupConnections: { magic: { leadingFigureOf: entity.leadingMagicalLeaders || [], connectedTo: entity.pairedConnectionMagicGroup || [], memberOf: entity.pairedBelongingMagicGroup || [], allyOf: entity.pairedAllyMagicGroup || [], enemyOf: entity.pairedEnemyMagicGroup || []} }} as any} allEntities={allEntities}
+                        onUpdate={(updatedData: any) => {
+                            const mag = updatedData.groupConnections.magic;
+                            onUpdate({ ...entity, leadingMagicalLeaders: mag.leadingFigureOf, pairedConnectionMagicGroup: mag.connectedTo, pairedBelongingMagicGroup: mag.memberOf, pairedAllyMagicGroup: mag.allyOf, pairedEnemyMagicGroup: mag.enemyOf });
+                        }} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Sciences & Academies" roleKey="science" entity={{...entity, groupConnections: { science: { leadingFigureOf: entity.leadingTechLeaders || [], connectedTo: entity.pairedConnectionTechGroup || [], memberOf: entity.pairedBelongingTechGroup || [], allyOf: entity.pairedAllyTechGroup || [], enemyOf: entity.pairedEnemyTechGroup || []} }} as any} allEntities={allEntities}
+                        onUpdate={(updatedData: any) => {
+                            const sci = updatedData.groupConnections.science;
+                            onUpdate({ ...entity, leadingTechLeaders: sci.leadingFigureOf, pairedConnectionTechGroup: sci.connectedTo, pairedBelongingTechGroup: sci.memberOf, pairedAllyTechGroup: sci.allyOf, pairedEnemyTechGroup: sci.enemyOf });
+                        }} onCreateNew={onCreateNew} />
+                </div>
             </EditorGroup>
 
             <EditorGroup title="Cultural Context" icon={Scroll}>

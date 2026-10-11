@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Character, WorldEntity } from '../../../types';
 import { FieldRow, LinksDisplay } from '../../ui';
 import { ViewerSectionCard } from '../ViewerSectionCard';
@@ -20,6 +20,30 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
     const residenceNames = (entity.pairedCurrentLocationNew || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
     const originNames = (entity.pairedOriginLocationNew || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
     const isDeceased = Boolean(entity.deathDate?.trim() || (entity as any).dateOfDeath?.trim() || entity.deadSwitch);
+
+    const effectiveParentIds = useMemo(() => {
+        const set = new Set<string>(entity.parentsOfCharacter || []);
+        if (entity.parentId && allEntities.some(e => e.id === entity.parentId && e.type === 'character')) {
+            set.add(entity.parentId);
+        }
+        (entity.parentIds || []).forEach((id: string) => set.add(id));
+        if (backlinks?.parents) backlinks.parents.forEach((id: string) => set.add(id));
+        set.delete(entity.id);
+        return Array.from(set);
+    }, [entity.parentsOfCharacter, entity.parentId, entity.parentIds, entity.id, allEntities, backlinks]);
+
+    const effectiveChildIds = useMemo(() => {
+        const set = new Set<string>(entity.childOfCharacter || []);
+        allEntities.forEach(e => {
+            if (e.type === 'character' && e.parentId === entity.id) {
+                set.add(e.id);
+            }
+        });
+        (entity.childrenIds || []).forEach((id: string) => set.add(id));
+        if (backlinks?.children) backlinks.children.forEach((id: string) => set.add(id));
+        set.delete(entity.id);
+        return Array.from(set);
+    }, [entity.childOfCharacter, entity.childrenIds, entity.id, allEntities, backlinks]);
 
     return (
         <div className="space-y-6">
@@ -158,8 +182,8 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
 
             <ViewerSectionCard title="Interpersonal Web">
                 <div className="space-y-3">
-                    <LinksDisplay label="Parents" ids={[...new Set([...(entity.parentsOfCharacter || []), ...(backlinks?.parents || [])])]} all={allEntities} onNav={onNavigate} fieldKey="parentsOfCharacter" allRelationalNotes={entity.relationalNotes} />
-                    <LinksDisplay label="Children" ids={[...new Set([...(entity.childOfCharacter || []), ...(backlinks?.children || [])])]} all={allEntities} onNav={onNavigate} fieldKey="childOfCharacter" allRelationalNotes={entity.relationalNotes} />
+                    <LinksDisplay label="Parents" ids={effectiveParentIds} all={allEntities} onNav={onNavigate} fieldKey="parentsOfCharacter" allRelationalNotes={entity.relationalNotes} />
+                    <LinksDisplay label="Children" ids={effectiveChildIds} all={allEntities} onNav={onNavigate} fieldKey="childOfCharacter" allRelationalNotes={entity.relationalNotes} />
                     <LinksDisplay label="Relatives" ids={[...new Set([...(entity.relativesOfCharacter || []), ...(backlinks?.relatives || [])])]} all={allEntities} onNav={onNavigate} fieldKey="relativesOfCharacter" allRelationalNotes={entity.relationalNotes} />
                     <LinksDisplay label="Friends" ids={[...new Set([...(entity.allyResCharacter || []), ...(backlinks?.friends || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" fieldKey="allyResCharacter" allRelationalNotes={entity.relationalNotes} />
                     <LinksDisplay label="Enemies" ids={[...new Set([...(entity.enemydResCharacter || []), ...(backlinks?.enemies || [])])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" fieldKey="enemydResCharacter" allRelationalNotes={entity.relationalNotes} />

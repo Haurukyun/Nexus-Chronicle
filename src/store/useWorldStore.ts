@@ -1145,6 +1145,7 @@ export const useWorldStore = create<WorldStore>()(
                 if (draggedIdx === -1) return state;
                 const [removed] = newEntities.splice(draggedIdx, 1);
 
+                const prevParentId = removed.parentId || null;
                 const updatedEntity: WorldEntity = { ...removed };
 
                 if (!targetId) {
@@ -1167,6 +1168,48 @@ export const useWorldStore = create<WorldStore>()(
                         updatedEntity.parentId = target.parentId || null;
                         newEntities.splice(targetIdx + 1, 0, updatedEntity);
                     }
+                }
+
+                const newParentId = updatedEntity.parentId || null;
+
+                // --- Character parentId <-> parentsOfCharacter/childOfCharacter bidirectional sync ---
+                if (dragged.type === 'character') {
+                    const finalEntities = newEntities.map(e => {
+                        const asAny = e as any;
+
+                        // Remove dragged from old parent's childOfCharacter
+                        if (prevParentId && e.id === prevParentId && e.type === 'character') {
+                            const children: string[] = (asAny.childOfCharacter || []).filter((id: string) => id !== draggedId);
+                            return { ...e, childOfCharacter: children };
+                        }
+
+                        // Add dragged to new parent's childOfCharacter
+                        if (newParentId && e.id === newParentId && e.type === 'character') {
+                            const existing: string[] = asAny.childOfCharacter || [];
+                            const children = existing.includes(draggedId) ? existing : [...existing, draggedId];
+                            return { ...e, childOfCharacter: children };
+                        }
+
+                        // Update dragged entity's parentsOfCharacter
+                        if (e.id === draggedId) {
+                            const asD = e as any;
+                            let parents: string[] = asD.parentsOfCharacter || [];
+                            if (prevParentId) {
+                                parents = parents.filter((id: string) => id !== prevParentId);
+                            }
+                            if (newParentId && !parents.includes(newParentId)) {
+                                parents = [...parents, newParentId];
+                            }
+                            return { ...e, parentsOfCharacter: parents };
+                        }
+
+                        return e;
+                    });
+
+                    return syncWorld(state, {
+                        ...world,
+                        entities: finalEntities
+                    });
                 }
 
                 return syncWorld(state, {

@@ -230,27 +230,31 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
             </EditorGroup>
 
             <EditorGroup title="Governance Connections" icon={Anchor}>
-                <div className="lg:col-span-3 border-b border-slate-500/10 pb-4 mb-4">
+                <div className="col-span-12 border-b border-slate-500/10 pb-4 mb-2">
                     <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em]">Governing Authorities</h3>
                     <p className="text-[9px] opacity-40 italic">Groups that wield primary power over this territory</p>
                 </div>
-                <GroupRoleGroup label="Governing Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} isCustomGoverning />
-                <GroupRoleGroup label="Governing Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} isCustomGoverning />
-                <GroupRoleGroup label="Governing Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} isCustomGoverning />
-                <GroupRoleGroup label="Governing Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} isCustomGoverning />
-                <GroupRoleGroup label="Governing Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} isCustomGoverning />
+                <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                    <GroupRoleGroup label="Governing Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} isCustomGoverning />
+                </div>
             </EditorGroup>
 
             <EditorGroup title="Influential Connections" icon={Globe}>
-                <div className="lg:col-span-3 border-b border-slate-500/10 pb-4 mb-4">
+                <div className="col-span-12 border-b border-slate-500/10 pb-4 mb-2">
                     <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em]">Connected Entities</h3>
                     <p className="text-[9px] opacity-40 italic">Groups with significant influence but no formal authority</p>
                 </div>
-                <GroupRoleGroup label="Connected Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} />
-                <GroupRoleGroup label="Connected Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} />
-                <GroupRoleGroup label="Connected Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} />
-                <GroupRoleGroup label="Connected Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} />
-                <GroupRoleGroup label="Connected Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} />
+                <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                    <GroupRoleGroup label="Connected Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} />
+                </div>
             </EditorGroup>
         </>
     );

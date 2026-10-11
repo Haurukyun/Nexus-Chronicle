@@ -55,6 +55,8 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
         // Symmetric and basic complementary logic
         const asAny = entity as any;
         if (entity.parentIds?.includes(targetId) || asAny.parentsOfCharacter?.includes(targetId)) results.children.push(entity.id);
+        // parentId set by sidebar drag: treat as child of that parent character
+        if (entity.type === 'character' && entity.parentId === targetId) results.children.push(entity.id);
         if (entity.childrenIds?.includes(targetId) || asAny.childOfCharacter?.includes(targetId)) results.parents.push(entity.id);
         if (entity.friendIds?.includes(targetId) || asAny.allyResCharacter?.includes(targetId)) results.friends.push(entity.id);
         if (entity.enemyIds?.includes(targetId) || asAny.enemydResCharacter?.includes(targetId)) results.enemies.push(entity.id);

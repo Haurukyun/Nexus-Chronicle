@@ -157,6 +157,15 @@ budget_tokens: 1000
     - **Magnificent Altar Empty State**: Replaced the barren void with an ornate frosted lore altar featuring quick action buttons (`+ Record First Event`, `+ Inscribe Character`, `Show All Records`), eliminating desolate states when filtering.
   - **Export Single-Prompt File Saver Fix (BUG-009)** (`src-tauri/src/lib.rs`, `nativeFileBridge.ts`, `tauriAssetVault.ts`):
     - Resolved the double "where to save" dialog bug when exporting entries as Markdown or HTML. Registered native `write_file_to_disk` and `read_file_from_disk` commands in Tauri Rust runtime (`lib.rs`) for direct unrestricted filesystem persistence, and hardened `saveFileNative` so desktop mode never falls through to the browser's `showSaveFilePicker`. All single-entry and batch exports now prompt the user exactly once.
+  - **Groups & Affiliations Layout Fix (BUG-010)** (`GroupRoleGroup.tsx`, `CharacterSpecifics.tsx`, `LocationSpecifics.tsx`):
+    - Fixed horizontal overflow when window is narrow: `GroupRoleGroup` now uses `flex flex-col space-y-3.5 w-full min-w-0` internally and passes `gridSpan={12}` to SmartSelect. All 5 group cards are wrapped in `col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4` responsive grids in both `CharacterSpecifics` and `LocationSpecifics` (both governing and connected sets).
+    - `GroupRoleGroup` is now fully theme-aware (Sovereign/Wiki/Royal/Voyager styles).
+  - **Character Parent-Child Tree → Page Bidirectional Reflection (BUG-011)** (`CharacterSpecifics.tsx`, `CharacterSpecificsViewer.tsx`, `useWorldStore.ts`, `backlinkUtils.ts`):
+    - Nesting a character under another character in the sidebar (via drag-and-drop or "Belongs under") now automatically and immediately reflects in both character pages:
+      - **Editor**: `effectiveParentIds` and `effectiveChildIds` memos include `parentId` plus all related `parentIds`/`childrenIds` so the Parents/Children SmartSelect shows the tree relationship in real-time.
+      - **Viewer**: Same computation in `CharacterSpecificsViewer` — Parents and Children LinksDisplay use `effectiveParentIds`/`effectiveChildIds`.
+      - **`reorderAndReparentEntity`**: When reparenting characters in the sidebar, now also syncs `parentsOfCharacter` on the child and `childOfCharacter` on both old and new parent.
+      - **`backlinkUtils.ts`**: `parentId === targetId` for character-type entities now registers in `results.children`, completing the backlink coverage.
 
 ---
 

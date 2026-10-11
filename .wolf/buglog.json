@@ -129,6 +129,32 @@
       "tags": ["timeline", "modals", "props", "ux"],
       "occurrences": 1,
       "last_seen": "2026-10-11"
+    },
+    {
+      "id": "BUG-011",
+      "timestamp": "2026-10-11T12:45:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-10-11T14:45:00Z",
+      "error_message": "Groups & Affiliations cards horizontally overflow and overlap neighboring columns when window is small",
+      "file": "src/components/editor/GroupRoleGroup.tsx",
+      "root_cause": "GroupRoleGroup container rendered with hardcoded lg:col-span-3 inside a sub-grid and lacked min-w-0 and proper 12-column span configuration, while SmartSelect defaulted to gridSpan=12 inside narrow sub-columns, blowing out the container width on compact viewports.",
+      "fix": "Refactored GroupRoleGroup into a flex-col container with min-w-0 and gridSpan={12} on internal SmartSelect calls. Wrapped the 5 group cards in CharacterSpecifics and LocationSpecifics in a responsive 12-column grid (`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4`). Added full theme support via useTheme().",
+      "tags": ["layout", "responsive", "GroupRoleGroup", "overflow", "css"],
+      "occurrences": 1,
+      "last_seen": "2026-10-11"
+    },
+    {
+      "id": "BUG-012",
+      "timestamp": "2026-10-11T12:45:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-10-11T14:45:00Z",
+      "error_message": "Characters nested under another character in the sidebar tree do not reflect in Parents or Children fields on character pages",
+      "file": "src/store/useWorldStore.ts",
+      "root_cause": "Sidebar tree nesting writes to entity.parentId, whereas CharacterSpecifics and CharacterSpecificsViewer only read char.parentsOfCharacter / char.childOfCharacter. The two data representations were completely decoupled.",
+      "fix": "Implemented dual-layer sync: (1) In CharacterSpecifics and CharacterSpecificsViewer, computed effectiveParentIds and effectiveChildIds via useMemo uniting parentId, parentsOfCharacter, and related entities. (2) In reorderAndReparentEntity (useWorldStore), automatically synchronize parentsOfCharacter and childOfCharacter when dragging characters. (3) Added entity.parentId check to backlinkUtils.ts.",
+      "tags": ["character", "tree", "lineage", "bidirectionalSync", "store"],
+      "occurrences": 1,
+      "last_seen": "2026-10-11"
     }
   ]
 }
