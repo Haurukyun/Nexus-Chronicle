@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { 
     Calendar, History, ArrowLeft, ArrowRight, Bookmark,
     Sparkles, Filter, Search, X, User, Plus, RotateCcw,
-    Layers, Compass, Clock, Award
+    Layers, Compass, Clock, Award, CalendarDays
 } from 'lucide-react';
 import { WorldData, WorldEntity, Character, Event, FantasyEra, MilestonePin, FantasyCalendar } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
@@ -17,6 +17,7 @@ import { ManageErasModal } from '../components/timeline/ManageErasModal';
 import { AddMilestoneModal } from '../components/timeline/AddMilestoneModal';
 import { ManageCalendarModal } from '../components/timeline/ManageCalendarModal';
 import { TimelineInspectorCard, InspectedTimelineItem } from '../components/timeline/TimelineInspectorCard';
+import { AnnualCalendarView } from '../components/timeline/AnnualCalendarView';
 
 interface TimelineViewProps {
     world: WorldData;
@@ -58,6 +59,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     const storeSetWorld = useWorldStore(state => state.setWorld);
     const handleCreate = useWorldStore(state => state.handleCreate);
     const setWorld = propSetWorld || storeSetWorld;
+
+    // View mode: 'chronos' = big-picture timeline, 'annual' = full-year calendar
+    type MainViewMode = 'chronos' | 'annual';
+    const [mainViewMode, setMainViewMode] = useState<MainViewMode>('chronos');
 
     // View state
     const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
@@ -480,6 +485,35 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                 {/* Primary Action Buttons */}
                 <div className="flex items-center gap-3 flex-wrap">
+                    {/* ── View Mode Toggle ────────────────────────────── */}
+                    <div className={`flex items-center rounded-xl border overflow-hidden text-xs font-bold uppercase tracking-wider ${
+                        isRoyal ? 'border-[#c8a96e]/50' : isWiki ? 'border-[#d4c8af]' : isVoyager ? 'border-[#3d2617]' : 'border-slate-700/60'
+                    }`}>
+                        <button
+                            onClick={() => setMainViewMode('chronos')}
+                            title="Big-picture Chronos Timeline (eras, character lifespans, events)"
+                            className={`flex items-center gap-1.5 px-3.5 py-2.5 transition-all ${
+                                mainViewMode === 'chronos'
+                                    ? (isVoyager ? 'bg-[#2dd4bf]/20 text-[#2dd4bf]' : isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWiki ? 'bg-red-700 text-white' : 'bg-[#fef08a]/20 text-[#fef08a]')
+                                    : (isLightCanvas ? 'bg-transparent text-[#2b1810]/55 hover:text-[#2b1810] hover:bg-black/5' : 'bg-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5')
+                            }`}
+                        >
+                            <History size={13} /> Chronos
+                        </button>
+                        <button
+                            onClick={() => setMainViewMode('annual')}
+                            title="Annual Calendar — full-year month grid & festivals"
+                            disabled={!calendar}
+                            className={`flex items-center gap-1.5 px-3.5 py-2.5 transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+                                mainViewMode === 'annual'
+                                    ? (isVoyager ? 'bg-[#2dd4bf]/20 text-[#2dd4bf]' : isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWiki ? 'bg-red-700 text-white' : 'bg-[#fef08a]/20 text-[#fef08a]')
+                                    : (isLightCanvas ? 'bg-transparent text-[#2b1810]/55 hover:text-[#2b1810] hover:bg-black/5' : 'bg-transparent text-slate-400 hover:text-slate-200 hover:bg-white/5')
+                            }`}
+                        >
+                            <CalendarDays size={13} /> Annual
+                        </button>
+                    </div>
+
                     <button
                         onClick={() => setIsManageErasOpen(true)}
                         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all backdrop-blur-md ${erasBtnCls}`}
@@ -656,8 +690,32 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 </div>
             </div>
 
+            {/* ── Annual Calendar View (shown when mainViewMode === 'annual') ─── */}
+            {mainViewMode === 'annual' && calendar && (
+                <div className="flex-1 min-h-0">
+                    <AnnualCalendarView calendar={calendar} />
+                </div>
+            )}
+
+            {/* ── No Calendar Warning (annual mode, no calendar set) ──────────── */}
+            {mainViewMode === 'annual' && !calendar && (
+                <div className={`flex-1 flex flex-col items-center justify-center gap-4 rounded-3xl border ${canvasGlass}`}>
+                    <CalendarDays size={48} className="opacity-30" />
+                    <div className="text-center">
+                        <p className={`font-bold text-xl font-serif ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#881337]' : 'opacity-70'}`}>No Calendar Configured</p>
+                        <p className="text-sm opacity-60 mt-1">Set up a Fantasy Calendar first to access the Annual Calendar view.</p>
+                        <button
+                            onClick={() => setIsManageCalendarOpen(true)}
+                            className={`mt-4 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider border transition-all mx-auto ${calendarBtnCls}`}
+                        >
+                            <Calendar size={15} /> Set Up Calendar
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* ── Main Interactive Timeline Canvas ──────────────────────────── */}
-            <div 
+            {mainViewMode === 'chronos' && <div 
                 ref={scrollContainerRef}
                 className={`flex-1 relative overflow-auto custom-scrollbar rounded-3xl border shadow-2xl p-6 transition-all ${canvasGlass}`}
                 style={{
@@ -1144,7 +1202,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         )}
                     </div>
                 </div>
-            </div>
+            </div>}
 
             {/* ── Docked Inspector Card ─────────────────────────────────────── */}
             {inspectedItem && (

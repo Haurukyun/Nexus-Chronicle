@@ -29,6 +29,7 @@ description: chronological action log per session, consolidated weekly
 | 14:50 | Fixed Groups & Affiliations layout overflow (BUG-011) and Character parentId↔parentsOfCharacter tree-to-page sync (BUG-012) | `GroupRoleGroup.tsx`, `CharacterSpecifics.tsx`, `LocationSpecifics.tsx`, `CharacterSpecificsViewer.tsx`, `useWorldStore.ts`, `backlinkUtils.ts`, `.wolf/*` | Resolved narrow window overflow; characters nested in sidebar now dynamically and bidirectionally reflect in Parents and Children fields in editor and viewer | ~8k |
 | 15:08 | Fixed relational context note annotation width restriction (BUG-013) in SmartSelect and LinksDisplay | `SmartSelect.tsx`, `LinksDisplay.tsx`, `.wolf/*` | Removed artificial max-w-[70px]; annotations now expand fluidly to fill available field container space | ~3k |
 | 16:47 | Fixed Royal Codex unclickable Vital Records backlinks (BUG-014) | `CharacterSpecificsViewer.tsx`, `EntityViewer.tsx`, `.wolf/*` | Replaced plain text string joins with clickable crimson navigation links for Origin, Residence, Species, Occupation, Demise, Hierarchy, and added magic/tech links | ~5k |
+| 21:18 | Annual Calendar View & Festivals System — Built AnnualCalendarView with full-year month grid, separate Festivals & Intercalary Days tab, year navigator, season badges, integrated Chronos/Annual toggle into TimelineView | `AnnualCalendarView.tsx`, `TimelineView.tsx`, `.wolf/*` | 0 TS errors, 48 tests passing; full annual calendar view complete | ~8k |
 
 
 

@@ -6,7 +6,7 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-10-04 (05:27)
+> Last updated: 2026-10-11 (21:17)
 
 ---
 
@@ -183,7 +183,12 @@ budget_tokens: 1000
     - **Manage Calendar Modal** (`ManageCalendarModal.tsx`): Multi-tab manager portaled to `document.body` (`z-[9999]`) featuring month up/down reordering, festival toggle, weekday naming, periodic leap rules, and an interactive conversion playground with live lore date output.
     - **Timeline View Integration** (`TimelineView.tsx`): Dedicated calendar management button in header actions, real-time dynamic temporal scrubber laser beam and floating date capsule tracking mouse position with 4-theme styling, and timeline inspector date badges.
     - **Premium Glassmorphism & Multi-Theme Fidelity**: High-contrast, layered visual presentation across all 4 themes (`sovereign`, `wiki`, `royal-codex`, `grand-voyager`) with `backdrop-blur-2xl`, luminous ring highlights, theme-tinted laser beams and badges, and strict compliance with Royal Codex crimson `#70121e` button rules.
-    - **100% Test Coverage**: Added 5 dedicated unit tests in `timelineUtils.test.ts`. 48/48 tests passing across 9 suites; 0 TypeScript errors.
+  - **Annual Calendar View & Dedicated Festivals System** (`AnnualCalendarView.tsx`, `TimelineView.tsx`):
+    - **Dedicated Annual Calendar View** (`AnnualCalendarView.tsx`): Full-year month grid with day numbers arranged in weekly rows matching custom week lengths (e.g. 10-day Tendays, 7-day weeks), season indicators with badges (Spring, Summer, Autumn, Winter), day-of-year footer ranges, and dynamic year navigation with leap year recognition.
+    - **Separated Festivals & Intercalary Days Tab**: Completely separate from the Months grid per user specifications. Highlights standalone festival cards with luminous accent bars, leap cycle indicators, position context (e.g. "Celebrated after Month X"), and weekday cycle interaction notes.
+    - **Interactive View Toggle in TimelineView** (`TimelineView.tsx`): Segmented "Chronos / Annual" toggle button group in the timeline header. Seamlessly switches between the macro-scale Chronos timeline canvas and the micro-scale Annual calendar grid. Gracefully handles unconfigured calendar states with empty state prompt.
+    - **Multi-Theme Fidelity**: High-contrast, theme-appropriate design across all 4 themes (`sovereign`, `wiki`, `royal-codex`, `grand-voyager`), strictly adhering to ivory-on-crimson and dark-crimson contrast standards for Royal Codex and red-accented crisp parchment for Wiki.
+    - **Zero-Error Build & Test Suite**: 48/48 unit tests passing across 9 test suites; 0 TypeScript errors.
 
 ---
 
