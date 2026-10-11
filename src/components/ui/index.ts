@@ -18,3 +18,5 @@ export * from './ThemeBadge';
 export * from './NexusImage';
 export * from './AssetImageUploader';
 export * from './ImageCropModal';
+export * from './CommandPalette';
+export * from './ScratchpadDrawer';

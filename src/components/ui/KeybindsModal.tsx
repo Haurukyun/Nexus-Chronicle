@@ -127,6 +127,16 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
             icon: Keyboard,
             items: [
                 {
+                    keys: ['Ctrl', 'K'],
+                    action: 'Command Palette & Spotlight',
+                    description: 'Universal quick jump across all entities, realms, and actions'
+                },
+                {
+                    keys: ['Ctrl', 'J'],
+                    action: 'DM Scratchpad & Lore Journal',
+                    description: 'Toggle floating session scratchpad and GM dice roller'
+                },
+                {
                     keys: ['?'],
                     action: 'Grimoire of Shortcuts',
                     description: 'Toggle this cheat sheet from anywhere outside text inputs'

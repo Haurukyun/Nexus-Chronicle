@@ -131,6 +131,16 @@ budget_tokens: 1000
     - **Interactive Hover Cards**: Smart floating card anchored in SVG canvas coordinates surfacing entity type badge, description snippet, and connected edge relationships with live preview quotes from `relationalNotes`.
     - **Mid-Edge Relational Note Badges**: Rendered mid-edge SVG curved pills on highlighted edges displaying relational context notes (e.g. specific betrayal, treaty, or apprenticeship details) directly along connection ribbons.
     - **Navigation Ergonomics**: Added `onDoubleClick` directly on graph node elements to instantly navigate to the entry in Codex view.
+  - **Global Spotlight & Command Palette (`Ctrl+K` / `Cmd+K`)** (`CommandPalette.tsx`, `App.tsx`):
+    - Universal floating command palette portaled to `document.body` with fuzzy search across all 20 entity types (names, aliases, tags, types).
+    - Quick jump to all System Realms (`/dashboard`, `/timeline`, `/nexus`, `/journey`, `/map`, `/trash`, `/options`).
+    - Quick creation actions (`+ New Character`, `+ New Location`, `+ New Event`, `+ New Chapter`, `+ New Note`, etc.).
+    - Keyboard arrow navigation, loop cycling, auto-scroll, Enter to execute, and Escape to dismiss.
+  - **DM Session Scratchpad & Floating Lore Journal (`Ctrl+J`)** (`ScratchpadDrawer.tsx`, `App.tsx`, `useWorldStore.ts`):
+    - Slide-over floating drawer accessible from top header and global `Ctrl+J` shortcut.
+    - Persisted `scratchpadNote` state in Zustand storage with live Write, Preview, and Split markdown modes.
+    - Integrated tabletop dice roller (`d4` through `d100`) and Mythic-inspired 3-tier GM Oracle (`Likely`, `50/50`, `Unlikely`) that auto-inserts formatted roll results.
+    - 1-click **Convert to Codex Entry** modal with title generation, type selector (Note, Chapter, Myth, Event), and automatic draft population.
 
 ---
 

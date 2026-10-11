@@ -61,6 +61,9 @@ interface WorldStore {
     expandedCategories: string[];
     setExpandedCategories: (update: string[] | ((prev: string[]) => string[])) => void;
 
+    scratchpadNote: string;
+    setScratchpadNote: (note: string) => void;
+
     // Actions
     handleCreate: (type: EntityType, name?: string, shouldOpen?: boolean) => string;
     handleOpenEntity: (id: string) => void;
@@ -133,6 +136,9 @@ export const useWorldStore = create<WorldStore>()(
             setExpandedCategories: (update) => set((state) => ({
                 expandedCategories: typeof update === 'function' ? update(state.expandedCategories) : update
             })),
+
+            scratchpadNote: '',
+            setScratchpadNote: (note) => set({ scratchpadNote: note }),
 
             // Actions implementation
             handleCreate: (type, prefilledName, shouldOpen = true) => {

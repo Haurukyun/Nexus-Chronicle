@@ -31,3 +31,12 @@ export const HIERARCHY_CONFIG = [
     { id: 'groups', label: 'Groups/Teachings', icon: Swords, types: ['political', 'religious', 'organization', 'magic', 'science'] as EntityType[] },
     { id: 'details', label: 'Details', icon: Scroll, types: ['ability', 'item', 'occupation', 'condition', 'resource'] as EntityType[] }
 ];
+
+export const CATEGORY_COLORS: Record<string, string> = {
+    story: '#f59e0b',
+    world: '#3b82f6',
+    groups: '#10b981',
+    group: '#10b981',
+    details: '#8b5cf6',
+    detail: '#8b5cf6',
+};

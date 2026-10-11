@@ -19,6 +19,8 @@ import { Sidebar } from './components/layout/Sidebar';
 import { ThemeSwitcher } from './components/ui/ThemeSwitcher';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { KeybindsModal } from './components/ui/KeybindsModal';
+import { CommandPalette } from './components/ui/CommandPalette';
+import { ScratchpadDrawer } from './components/ui/ScratchpadDrawer';
 import { TropicalSceneBackground } from './components/ui/TropicalSceneBackground';
 
 
@@ -31,9 +33,14 @@ const App = () => {
         editingTabIds, setEditingTabIds,
         searchQuery, setSearchQuery,
         expandedCategories, setExpandedCategories,
+        scratchpadNote, setScratchpadNote, exportWorld,
         handleOpenEntity, handleCloseTab, handleCreate,
         handleSaveDraft, handleToggleEdit, handleDeleteToTrash
     } = useWorldStore();
+
+    const [showCommandPalette, setShowCommandPalette] = useState(false);
+    const [showScratchpad, setShowScratchpad] = useState(false);
+    const [showKeybindsModal, setShowKeybindsModal] = useState(false);
 
     const { t, layoutMode, themeId } = useTheme();
     const isManuscript = layoutMode === 'manuscript';
@@ -57,8 +64,6 @@ const App = () => {
         if (editingTabIds.includes(activeTabId as string)) return drafts[activeTabId as string];
         return world.entities.find(e => e.id === activeTabId);
     }, [world.entities, activeTabId, editingTabIds, drafts]);
-
-    const [showKeybindsModal, setShowKeybindsModal] = useState(false);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -84,14 +89,17 @@ const App = () => {
                 }
             }
 
-            // Focus sidebar search (Ctrl+K or Cmd+K)
+            // Summon Global Command Palette (Ctrl+K or Cmd+K)
             if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
                 e.preventDefault();
-                const searchInput = document.getElementById('sidebar-search-input') as HTMLInputElement | null;
-                if (searchInput) {
-                    searchInput.focus();
-                    searchInput.select();
-                }
+                setShowCommandPalette(prev => !prev);
+                return;
+            }
+
+            // Summon DM Scratchpad & Lore Journal (Ctrl+J or Cmd+J)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'j' || e.key === 'J')) {
+                e.preventDefault();
+                setShowScratchpad(prev => !prev);
                 return;
             }
 
@@ -105,8 +113,18 @@ const App = () => {
                 }
             }
 
-            // Escape: close keybinds modal or abandon edit
+            // Escape: close open overlays or abandon edit
             if (e.key === 'Escape') {
+                if (showCommandPalette) {
+                    e.preventDefault();
+                    setShowCommandPalette(false);
+                    return;
+                }
+                if (showScratchpad) {
+                    e.preventDefault();
+                    setShowScratchpad(false);
+                    return;
+                }
                 if (showKeybindsModal) {
                     e.preventDefault();
                     setShowKeybindsModal(false);
@@ -147,7 +165,7 @@ const App = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [activeTabId, editingTabIds, handleSaveDraft, handleToggleEdit, setActiveTabId, showKeybindsModal]);
+    }, [activeTabId, editingTabIds, handleSaveDraft, handleToggleEdit, setActiveTabId, showCommandPalette, showScratchpad, showKeybindsModal]);
 
     // App shell geometry tokens — derived from layoutMode (structure) + theme tokens (material)
     const bgClass = t.layout.appBg;
@@ -226,6 +244,23 @@ const App = () => {
 
                         {/* Header Action Tools */}
                         <div className="flex items-center gap-2 shrink-0">
+                            <button
+                                onClick={() => setShowCommandPalette(true)}
+                                title="Command Palette & Fast Search (Ctrl+K)"
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${t.button.secondary}`}
+                            >
+                                <Search size={13} />
+                                <span className="hidden md:inline">Jump</span>
+                                <kbd className="hidden lg:inline text-[8px] font-mono opacity-60 ml-0.5 px-1 rounded bg-current/10">Ctrl+K</kbd>
+                            </button>
+                            <button
+                                onClick={() => setShowScratchpad(true)}
+                                title="DM Scratchpad & Lore Journal (Ctrl+J)"
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${t.button.secondary}`}
+                            >
+                                <BookMarked size={13} />
+                                <span className="hidden sm:inline">Scratchpad</span>
+                            </button>
                             <button
                                 onClick={() => setShowKeybindsModal(true)}
                                 title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
@@ -338,6 +373,30 @@ const App = () => {
             <KeybindsModal 
                 isOpen={showKeybindsModal} 
                 onClose={() => setShowKeybindsModal(false)} 
+            />
+
+            <CommandPalette
+                isOpen={showCommandPalette}
+                onClose={() => setShowCommandPalette(false)}
+                world={world}
+                onNavigate={handleOpenEntity}
+                onNavigateSystem={(tabId) => setActiveTabId(tabId as any)}
+                onCreateEntity={(type) => handleCreate(type, undefined, true)}
+                onOpenScratchpad={() => setShowScratchpad(true)}
+                onOpenKeybinds={() => setShowKeybindsModal(true)}
+                onExportActiveRealm={() => exportWorld()}
+            />
+
+            <ScratchpadDrawer
+                isOpen={showScratchpad}
+                onClose={() => setShowScratchpad(false)}
+                world={world}
+                scratchpadNote={scratchpadNote}
+                onUpdateNote={setScratchpadNote}
+                onNavigate={handleOpenEntity}
+                handleCreate={handleCreate}
+                drafts={drafts}
+                setDrafts={setDrafts}
             />
         </div>
     );
