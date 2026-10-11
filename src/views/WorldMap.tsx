@@ -773,20 +773,22 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
                                 {/* Perfectly Centered Delete Connection Button */}
                                 <foreignObject
-                                    x={midX - 14}
-                                    y={midY - 14}
-                                    width="28"
-                                    height="28"
-                                    className="opacity-0 group-hover/line:opacity-100 transition-all pointer-events-auto"
+                                    x={midX - 24}
+                                    y={midY - 24}
+                                    width="48"
+                                    height="48"
+                                    className="opacity-0 group-hover/line:opacity-100 transition-all pointer-events-auto overflow-visible"
                                 >
-                                    <button
-                                        type="button"
-                                        onClick={(e) => deleteConnection(conn.id, e)}
-                                        title={`Sever ${meta.label}`}
-                                        className="w-7 h-7 rounded-full bg-red-950/90 border border-red-500/80 text-red-300 hover:bg-red-600 hover:text-white flex items-center justify-center shadow-2xl transition-transform hover:scale-110 cursor-pointer"
-                                    >
-                                        <Trash2 size={13} />
-                                    </button>
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => deleteConnection(conn.id, e)}
+                                            title={`Sever ${meta.label}`}
+                                            className="w-7 h-7 rounded-full bg-red-950/90 border border-red-500/80 text-red-300 hover:bg-red-600 hover:text-white flex items-center justify-center shadow-2xl transition-transform hover:scale-110 cursor-pointer"
+                                        >
+                                            <Trash2 size={13} />
+                                        </button>
+                                    </div>
                                 </foreignObject>
                             </g>
                         );
@@ -809,8 +811,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                                 data-pin-element="true"
                                 style={{
                                     transform: `translate3d(${screenPos.x}px, ${screenPos.y}px, 0)`,
+                                    zIndex: isHovered ? 60 : isDossierOpen || isBeaconActive ? 40 : 10,
                                 }}
-                                className="absolute top-0 left-0 pointer-events-auto cursor-pointer group/pin"
+                                className={`absolute top-0 left-0 pointer-events-auto cursor-pointer group/pin ${
+                                    isHovered ? 'z-50' : 'z-10'
+                                }`}
                                 onClick={(e) => handlePinSingleClick(loc.id, e)}
                                 onDoubleClick={(e) => handlePinDoubleClick(loc, e)}
                                 onMouseEnter={() => setHoveredPinId(loc.id)}
@@ -855,11 +860,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                                 </div>
 
                                 {/* Persistent Crisp Name Tag: Positioned Below the Pin Tip */}
-                                <div className={`absolute top-1 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[9px] font-sans font-bold uppercase tracking-wider whitespace-nowrap shadow-md pointer-events-none transition-all ${
-                                    isDossierOpen || isBeaconActive
+                                <div className={`absolute top-1 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[9px] font-sans font-bold uppercase tracking-wider whitespace-nowrap shadow-md pointer-events-auto transition-all ${
+                                    isHovered || isDossierOpen || isBeaconActive
                                         ? isRoyal
-                                            ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] scale-105'
-                                            : 'bg-amber-400 text-black border border-amber-200 scale-105'
+                                            ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] scale-110 shadow-xl ring-2 ring-[#c8a96e]/50'
+                                            : 'bg-amber-400 text-black border border-amber-200 scale-110 shadow-xl ring-2 ring-amber-300/50'
                                         : isRoyal
                                         ? 'bg-[#fbf8ef] text-[#3d0a10] border border-[#c8a96e]/70 group-hover/pin:scale-105 group-hover/pin:border-[#70121e]'
                                         : isWiki
