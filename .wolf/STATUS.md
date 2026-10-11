@@ -168,6 +168,10 @@ budget_tokens: 1000
       - **`backlinkUtils.ts`**: `parentId === targetId` for character-type entities now registers in `results.children`, completing the backlink coverage.
   - **Relational Note Annotation Chip Width Fix (BUG-013)** (`SmartSelect.tsx`, `LinksDisplay.tsx`):
     - Replaced hardcoded `max-w-[70px]` with fluid responsive sizing (`min-w-0 max-w-full` on button and `truncate` on note text with `shrink-0` on character name). Context note annotations now naturally utilize the entire available field space without premature truncation, while capping safely at the input border for extra-long notes. Also expanded viewer note display in `LinksDisplay.tsx` to `max-w-xl`.
+  - **Royal Codex Vital Records & Hierarchy Backlinks Interactivity (BUG-014)** (`CharacterSpecificsViewer.tsx`, `EntityViewer.tsx`):
+    - Replaced static text strings (`speciesNames`, `occupationNames`, `originNames`, `residenceNames`) in Royal Codex Vital Records with clickable crimson navigation links (`renderEntityLinks`), resolving the issue where location backlinks like "Dumbass Island" were unclickable on Royal Codex despite being clickable in Sovereign and Wiki modes.
+    - Added Place of Demise to Royal Codex when deceased, and added Schools of Magic (`pairedMagic`) and Sciences/Technologies (`pairedTech`) to both Royal and non-Royal inventory/connection sections.
+    - Made the Hierarchy parent link in Record Vitals sidebar clickable across all themes in `EntityViewer.tsx`.
 
 ---
 

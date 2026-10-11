@@ -27,6 +27,8 @@ description: chronological action log per session, consolidated weekly
 | 03:05 | Resolved Tauri dev periodic flashing CMD windows — Added .taurignore and vite watch.ignored for build/state files, updated package.json scripts with windowsHide: true without cmd.exe wrapper, disabled background 180s git.autofetch in .vscode/settings.json | `package.json`, `vite.config.ts`, `.taurignore`, `src-tauri/.taurignore`, `.vscode/settings.json`, `.wolf/*` | 0 TS errors, 43 tests passing; eliminated periodic cmd popup windows | ~4k |
 | 14:50 | Fixed Groups & Affiliations layout overflow (BUG-011) and Character parentId↔parentsOfCharacter tree-to-page sync (BUG-012) | `GroupRoleGroup.tsx`, `CharacterSpecifics.tsx`, `LocationSpecifics.tsx`, `CharacterSpecificsViewer.tsx`, `useWorldStore.ts`, `backlinkUtils.ts`, `.wolf/*` | Resolved narrow window overflow; characters nested in sidebar now dynamically and bidirectionally reflect in Parents and Children fields in editor and viewer | ~8k |
 | 15:08 | Fixed relational context note annotation width restriction (BUG-013) in SmartSelect and LinksDisplay | `SmartSelect.tsx`, `LinksDisplay.tsx`, `.wolf/*` | Removed artificial max-w-[70px]; annotations now expand fluidly to fill available field container space | ~3k |
+| 16:47 | Fixed Royal Codex unclickable Vital Records backlinks (BUG-014) | `CharacterSpecificsViewer.tsx`, `EntityViewer.tsx`, `.wolf/*` | Replaced plain text string joins with clickable crimson navigation links for Origin, Residence, Species, Occupation, Demise, Hierarchy, and added magic/tech links | ~5k |
+
 
 
 

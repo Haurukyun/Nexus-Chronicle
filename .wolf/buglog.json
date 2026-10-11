@@ -168,6 +168,19 @@
       "tags": ["ui", "SmartSelect", "relationalNotes", "layout", "typography"],
       "occurrences": 1,
       "last_seen": "2026-10-11"
+    },
+    {
+      "id": "BUG-014",
+      "timestamp": "2026-10-11T16:40:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-10-11T16:47:00Z",
+      "error_message": "Backlink entity links (such as Dumbass Island under Place of Origin) are not clickable in Royal Codex theme despite being clickable in Sovereign and Wiki modes",
+      "file": "src/components/viewer/specifics/CharacterSpecificsViewer.tsx",
+      "root_cause": "CharacterSpecificsViewer had a theme branch for Royal Codex that mapped entity IDs to static text strings (originNames, residenceNames, speciesNames, occupationNames) joined by commas and rendered them in a span without click handlers or onNavigate calls.",
+      "fix": "Created renderEntityLinks helper rendering interactive buttons with deep crimson styling (text-[#70121e] hover:underline) calling onNavigate(id). Applied to Origin, Residence, Species, Occupation, and Demise in Royal Codex Vital Records. Also added Hierarchy click navigation in EntityViewer.",
+      "tags": ["royal-codex", "backlinks", "navigation", "CharacterSpecificsViewer", "EntityViewer"],
+      "occurrences": 1,
+      "last_seen": "2026-10-11"
     }
   ]
 }

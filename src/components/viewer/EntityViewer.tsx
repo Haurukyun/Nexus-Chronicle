@@ -34,6 +34,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
     // Calculate categorized backlinks
     const backlinks = useMemo(() => getCategorizedBacklinks(entity.id, allEntities), [entity.id, allEntities]);
+    const parentEntity = allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId));
 
     // Royal Codex: show tabs (Overview / Biography / Relations / Inventory) at top
     const [activeTab, setActiveTab] = React.useState<string>('overview');
@@ -232,6 +233,19 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                             <span className="text-white text-[11px]">{entity.tags.join(', ')}</span>
                                         </div>
                                     ) : null}
+                                    {parentEntity && (
+                                        <div className="flex justify-between items-baseline">
+                                            <span className="text-[#c8a96e] font-bold text-[10px] uppercase tracking-widest">Hierarchy</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => onNavigate(parentEntity.id)}
+                                                className="text-[#fef08a] hover:text-white font-bold hover:underline text-[11px] text-right cursor-pointer"
+                                                title={`Navigate to ${parentEntity.name}`}
+                                            >
+                                                {parentEntity.name}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -271,7 +285,19 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                     <FieldRow label="Template" value={entity.docTemplate?.join(', ') || (entity as any).documentTemplate || "Generic"} />
                                     <FieldRow label="Order" value={entity.order || (entity as any).orderNumber} />
                                     <FieldRow label="Status" value={(entity as any).status || (entity.deadSwitch ? 'Lost' : 'Active')} />
-                                    <FieldRow label="Hierarchy" value={allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId))?.name} />
+                                    <FieldRow 
+                                        label="Hierarchy" 
+                                        value={parentEntity ? (
+                                            <button
+                                                type="button"
+                                                onClick={() => onNavigate(parentEntity.id)}
+                                                className="text-left font-bold hover:underline transition-colors cursor-pointer text-[#fef08a]"
+                                                title={`Navigate to ${parentEntity.name}`}
+                                            >
+                                                {parentEntity.name}
+                                            </button>
+                                        ) : null} 
+                                    />
                                 </div>
                             </div>
                         </div>

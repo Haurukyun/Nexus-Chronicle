@@ -15,10 +15,33 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
     const theme = useWorldStore(state => state.theme);
     const isRoyal = theme === 'royal-codex';
 
-    const speciesNames = (entity.pairedRace || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
-    const occupationNames = (entity.pairedProfession || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
-    const residenceNames = (entity.pairedCurrentLocationNew || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
-    const originNames = (entity.pairedOriginLocationNew || []).map(id => allEntities.find((e: any) => e.id === id)?.name).filter(Boolean).join(', ');
+    const renderEntityLinks = (ids: string[] | undefined, fallbackText?: string) => {
+        if (!ids || ids.length === 0) {
+            return <span className="text-[#3d271d] text-sm font-medium">{fallbackText || '—'}</span>;
+        }
+        const resolved = ids.map(id => allEntities.find((e: any) => e.id === id)).filter(Boolean);
+        if (resolved.length === 0) {
+            return <span className="text-[#3d271d] text-sm font-medium">{fallbackText || '—'}</span>;
+        }
+        return (
+            <span className="inline-flex flex-wrap justify-end items-center gap-x-1.5 gap-y-0.5 text-right">
+                {resolved.map((ent: any, idx: number) => (
+                    <span key={ent.id} className="inline-flex items-center">
+                        <button
+                            type="button"
+                            onClick={() => onNavigate(ent.id)}
+                            className="text-[#70121e] hover:text-[#3d0a10] font-bold hover:underline transition-colors cursor-pointer text-sm"
+                            title={`Navigate to ${ent.name}`}
+                        >
+                            {ent.name}
+                        </button>
+                        {idx < resolved.length - 1 && <span className="text-[#3d271d] mr-1">,</span>}
+                    </span>
+                ))}
+            </span>
+        );
+    };
+
     const isDeceased = Boolean(entity.deathDate?.trim() || (entity as any).dateOfDeath?.trim() || entity.deadSwitch);
 
     const effectiveParentIds = useMemo(() => {
@@ -60,11 +83,11 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Species:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{speciesNames || '—'}</span>
+                            {renderEntityLinks(entity.pairedRace, (entity as any).species)}
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Occupation:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{occupationNames || '—'}</span>
+                            {renderEntityLinks(entity.pairedProfession, (entity as any).occupation)}
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Age:</span>
@@ -72,21 +95,29 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Origin:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{originNames || '—'}</span>
+                            {renderEntityLinks(entity.pairedOriginLocationNew, (entity as any).placeOfOrigin)}
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Residence:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{residenceNames || '—'}</span>
+                            {renderEntityLinks(entity.pairedCurrentLocationNew, (entity as any).placeOfResidence)}
                         </div>
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Birth:</span>
                             <span className="text-[#3d271d] text-sm font-medium">{entity.birthDate || '—'}</span>
                         </div>
                         {isDeceased && (
-                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                                <span className="font-bold text-[#2b1810] text-sm">Death:</span>
-                                <span className="text-[#3d271d] text-sm font-medium">{entity.deathDate || '—'}</span>
-                            </div>
+                            <>
+                                <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                    <span className="font-bold text-[#2b1810] text-sm">Death:</span>
+                                    <span className="text-[#3d271d] text-sm font-medium">{entity.deathDate || (entity as any).dateOfDeath || '—'}</span>
+                                </div>
+                                {(entity.pairedDemiseLocationNew && entity.pairedDemiseLocationNew.length > 0) && (
+                                    <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                        <span className="font-bold text-[#2b1810] text-sm">Place of Demise:</span>
+                                        {renderEntityLinks(entity.pairedDemiseLocationNew)}
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 ) : (
@@ -150,6 +181,8 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                             <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Schools of Magic / Teachings" ids={entity.pairedMagic || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Sciences & Technologies" ids={entity.pairedTech || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} />
@@ -171,6 +204,8 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                             <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Schools of Magic / Teachings" ids={entity.pairedMagic || []} all={allEntities} onNav={onNavigate} />
+                            <LinksDisplay label="Sciences & Technologies" ids={entity.pairedTech || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} />
                             <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} />
