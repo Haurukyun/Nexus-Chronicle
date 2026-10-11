@@ -15,11 +15,14 @@ import {
   EyeOff,
   Crosshair,
   Info,
+  Users,
+  StickyNote,
 } from 'lucide-react';
 import { WorldData, WorldEntity, EntityType } from '../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../constants';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
+import { isEntityMinor } from '../utils/documentModeUtils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -296,6 +299,9 @@ interface Props {
 
 type ActiveFilters = Set<string>; // category ids
 
+// ─── Hover card position ──────────────────────────────────────────────────────
+interface HoverCardPos { svgX: number; svgY: number; }
+
 export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
   const { themeId, layoutMode } = useTheme();
   const svgRef = useRef<SVGSVGElement>(null);
@@ -317,6 +323,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
   // Hover / selected
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [hoveredPos, setHoveredPos] = useState<HoverCardPos | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Filter state
@@ -327,6 +334,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
   const [edgeKindFilters, setEdgeKindFilters] = useState<Set<EdgeKind>>(
     new Set<EdgeKind>(['family', 'ally', 'enemy', 'member', 'related', 'event', 'location'])
   );
+  const [suppressMinor, setSuppressMinor] = useState(false);
 
   const [showLegend, setShowLegend] = useState(true);
   const [dims, setDims] = useState({ w: 1200, h: 700 });
@@ -349,11 +357,20 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
   const { nodes: initialNodes, edges } = useMemo(() => {
     const visEntities = world.entities.filter((e) => {
       const cat = HIERARCHY_CONFIG.find((c) => c.types.includes(e.type))?.id;
-      return cat && activeFilters.has(cat);
+      if (!cat || !activeFilters.has(cat)) return false;
+      if (suppressMinor && isEntityMinor(e)) return false;
+      return true;
     });
     const edges = buildEdges(visEntities).filter((e) => edgeKindFilters.has(e.kind));
     return { nodes: visEntities, edges };
-  }, [world.entities, activeFilters, edgeKindFilters]);
+  }, [world.entities, activeFilters, edgeKindFilters, suppressMinor]);
+
+  // Entity lookup map for relational notes
+  const entityMap = useMemo(() => {
+    const map = new Map<string, WorldEntity>();
+    world.entities.forEach(e => map.set(e.id, e));
+    return map;
+  }, [world.entities]);
 
   // Init / reset simulation when entities change
   useEffect(() => {
@@ -603,9 +620,13 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                   key={node.id}
                   transform={`translate(${node.x},${node.y})`}
                   style={{ cursor: 'pointer', opacity: isDimmed ? 0.15 : 1, transition: 'opacity 0.2s' }}
-                  onPointerEnter={() => setHoveredId(node.id)}
-                  onPointerLeave={() => setHoveredId(null)}
+                  onPointerEnter={() => {
+                    setHoveredId(node.id);
+                    setHoveredPos({ svgX: node.x * zoom + pan.x, svgY: node.y * zoom + pan.y });
+                  }}
+                  onPointerLeave={() => { setHoveredId(null); setHoveredPos(null); }}
                   onClick={(e) => onNodeClick(e, node.id)}
+                  onDoubleClick={(e) => { e.stopPropagation(); onNavigate(node.id); }}
                 >
                   {/* Outer glow ring for selected */}
                   {isSelected && (
@@ -644,27 +665,26 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                   <text
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={11}
-                    fontWeight="900"
-                    fill={(layoutMode === 'wiki') ? '#1e1b18' : '#fff'}
-                    fillOpacity={0.85}
-                    style={{ pointerEvents: 'none', fontFamily: 'sans-serif', letterSpacing: '0.05em' }}
+                    fontSize={10}
+                    fontWeight="bold"
+                    fill={color}
+                    fillOpacity={0.9}
+                    style={{ pointerEvents: 'none', fontFamily: 'sans-serif' }}
                   >
-                    {TYPE_LABELS[node.type]?.charAt(0) ?? '?'}
+                    {TYPE_LABELS[node.type]?.[0] || '?'}
                   </text>
 
-                  {/* Name label below */}
+                  {/* Label below node */}
                   <text
-                    y={r + 12}
+                    y={r + 14}
                     textAnchor="middle"
-                    fontSize={10}
-                    fontWeight={isSelected || isHovered ? '700' : '500'}
-                    fill={(layoutMode === 'wiki') ? '#3d2b1f' : '#e2e8f0'}
-                    fillOpacity={isSelected || isHovered ? 1 : 0.75}
+                    fontSize={11}
+                    fontWeight={isSelected ? 'bold' : 'normal'}
+                    fill={isHovered || isSelected ? (themeId === 'wiki' || layoutMode === 'wiki' ? '#1c1917' : '#f8fafc') : (themeId === 'wiki' || layoutMode === 'wiki' ? '#44403c' : '#cbd5e1')}
                     style={{
                       pointerEvents: 'none',
-                      fontFamily: 'sans-serif',
-                      textShadow: (layoutMode === 'wiki') ? 'none' : '0 1px 4px rgba(0,0,0,0.8)',
+                      fontFamily: 'serif',
+                      textShadow: (themeId === 'wiki' || layoutMode === 'wiki') ? 'none' : '0 1px 4px rgba(0,0,0,0.8)',
                     }}
                   >
                     {node.name.length > 16 ? node.name.slice(0, 14) + '…' : node.name}
@@ -687,6 +707,60 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
               );
             })}
           </g>
+
+          {/* ── Mid-edge relational note labels on highlighted edges ──────────── */}
+          <g style={{ pointerEvents: 'none' }}>
+            {edgeList.map((edge, i) => {
+              const key = `${edge.source}|${edge.target}|${edge.kind}`;
+              if (!highlightedEdgeIds.has(key)) return null;
+              const s = nodes.find(n => n.id === edge.source);
+              const t = nodes.find(n => n.id === edge.target);
+              if (!s || !t) return null;
+
+              // Find relational note from either endpoint
+              const srcEntity = entityMap.get(edge.source) as any;
+              const tgtEntity = entityMap.get(edge.target) as any;
+              const noteKey1 = Object.keys(srcEntity?.relationalNotes || {}).find(k => k.endsWith(`:${edge.target}`));
+              const noteKey2 = Object.keys(tgtEntity?.relationalNotes || {}).find(k => k.endsWith(`:${edge.source}`));
+              const note = noteKey1 ? srcEntity.relationalNotes[noteKey1] : noteKey2 ? tgtEntity.relationalNotes[noteKey2] : null;
+              if (!note) return null;
+
+              // Midpoint on the quadratic bezier
+              const dx = t.x - s.x, dy = t.y - s.y;
+              const len = Math.sqrt(dx * dx + dy * dy) || 1;
+              const mx = (s.x + t.x) / 2 - (dy / len) * 20;
+              const my = (s.y + t.y) / 2 + (dx / len) * 20;
+              const color = EDGE_COLORS[edge.kind];
+              const label = note.length > 30 ? note.slice(0, 28) + '…' : note;
+              const approxW = label.length * 5.4 + 12;
+
+              return (
+                <g key={`rnote-${key}-${i}`} transform={`translate(${mx},${my})`}>
+                  <rect
+                    x={-approxW / 2}
+                    y={-10}
+                    width={approxW}
+                    height={18}
+                    rx={5}
+                    fill={`${color}22`}
+                    stroke={`${color}55`}
+                    strokeWidth={0.8}
+                  />
+                  <text
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    y={-1}
+                    fontSize={8}
+                    fill={color}
+                    fillOpacity={0.9}
+                    style={{ fontFamily: 'sans-serif', fontStyle: 'italic' }}
+                  >
+                    {label}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
         </g>
       </svg>
 
@@ -702,6 +776,96 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
           </p>
         </div>
       )}
+
+      {/* ── Hover card (floating near hovered node) ──────────────────────────── */}
+      {hoveredId && hoveredPos && !selectedId && (() => {
+        const node = nodes.find(n => n.id === hoveredId);
+        if (!node) return null;
+        const entity = entityMap.get(hoveredId) as any;
+        const description: string | undefined = entity?.description;
+
+        // Connections with relational notes
+        const connEdges = edgeList.filter(e => e.source === hoveredId || e.target === hoveredId);
+        const connections = connEdges.slice(0, 5).map(edge => {
+          const otherId = edge.source === hoveredId ? edge.target : edge.source;
+          const other = nodes.find(n => n.id === otherId);
+          const srcEnt = entityMap.get(edge.source) as any;
+          const tgtEnt = entityMap.get(edge.target) as any;
+          const noteKey1 = Object.keys(srcEnt?.relationalNotes || {}).find(k => k.endsWith(`:${edge.target}`));
+          const noteKey2 = Object.keys(tgtEnt?.relationalNotes || {}).find(k => k.endsWith(`:${edge.source}`));
+          const note = noteKey1 ? srcEnt.relationalNotes[noteKey1] : noteKey2 ? tgtEnt.relationalNotes[noteKey2] : null;
+          return { otherId, other, edge, note };
+        }).filter(c => c.other);
+
+        if (!description && connections.length === 0) return null;
+
+        const cardW = 260;
+        const containerWidth = containerRef.current?.clientWidth ?? 1200;
+        const containerHeight = containerRef.current?.clientHeight ?? 700;
+        let left = hoveredPos.svgX + NODE_RADIUS * zoom + 14;
+        let top = hoveredPos.svgY - 80;
+        if (left + cardW > containerWidth - 8) left = hoveredPos.svgX - cardW - NODE_RADIUS * zoom - 14;
+        if (top < 8) top = 8;
+        if (top + 220 > containerHeight - 8) top = containerHeight - 228;
+
+        return (
+          <div
+            className={`absolute pointer-events-none z-50 rounded-2xl border shadow-2xl p-4 flex flex-col gap-2 text-xs ${wikiPanel}`}
+            style={{ left, top, width: cardW }}
+          >
+            {/* Node header */}
+            <div className="flex items-center gap-2">
+              <span
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style={{ background: CATEGORY_COLORS[node.category] ?? '#94a3b8' }}
+              />
+              <span className="font-black text-sm truncate flex-1">{node.name}</span>
+              <span className="text-[9px] opacity-50 uppercase tracking-wider flex-shrink-0">{TYPE_LABELS[node.type]}</span>
+            </div>
+
+            {/* Description snippet */}
+            {description && (
+              <p className="opacity-70 text-[10px] leading-relaxed border-t border-current/10 pt-1.5 line-clamp-3">
+                {description.length > 130 ? description.slice(0, 128) + '…' : description}
+              </p>
+            )}
+
+            {/* Connections with relational notes */}
+            {connections.length > 0 && (
+              <div className="border-t border-current/10 pt-1.5 space-y-1.5">
+                <p className="text-[9px] font-bold uppercase tracking-widest opacity-45 flex items-center gap-1">
+                  <StickyNote size={9} /> {connEdges.length} Connection{connEdges.length !== 1 ? 's' : ''}
+                </p>
+                {connections.map(({ otherId, other, edge, note }) => (
+                  <div key={otherId} className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                        style={{ background: EDGE_COLORS[edge.kind] }}
+                      />
+                      <span className="font-semibold truncate flex-1">{other!.name}</span>
+                      <span
+                        className="text-[9px] opacity-50 flex-shrink-0 px-1.5 py-0.5 rounded"
+                        style={{ background: `${EDGE_COLORS[edge.kind]}20`, color: EDGE_COLORS[edge.kind] }}
+                      >
+                        {EDGE_LABELS[edge.kind]}
+                      </span>
+                    </div>
+                    {note && (
+                      <p className="text-[9px] opacity-60 italic pl-3 leading-tight">
+                        "{note.length > 65 ? note.slice(0, 63) + '…' : note}"
+                      </p>
+                    )}
+                  </div>
+                ))}
+                {connEdges.length > 5 && (
+                  <p className="text-[9px] opacity-35 pl-3">+{connEdges.length - 5} more…</p>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── Top-left: title ─────────────────────────────────────────────────── */}
       <div className="absolute top-4 left-4 pointer-events-none">
@@ -854,6 +1018,32 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
               );
             })}
           </div>
+
+          <div className={`h-px ${(layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
+
+          <p className="text-[10px] uppercase tracking-widest font-black opacity-60">
+            Document Scope
+          </p>
+          <button
+            onClick={() => setSuppressMinor((prev) => !prev)}
+            className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all border ${
+              suppressMinor
+                ? (themeId === 'royal-codex'
+                    ? 'border-[#70121e] bg-[#70121e]/15 text-[#3d0a10]'
+                    : layoutMode === 'wiki'
+                    ? 'border-[#b91c1c] bg-[#b91c1c]/10 text-[#b91c1c]'
+                    : 'border-amber-400/50 bg-amber-400/15 text-amber-200')
+                : 'border-current/15 opacity-60 hover:opacity-100'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Users size={12} className="opacity-70" />
+              <span>Suppress Minor Entries</span>
+            </div>
+            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-black/20">
+              {suppressMinor ? 'ON' : 'OFF'}
+            </span>
+          </button>
         </div>
       )}
 

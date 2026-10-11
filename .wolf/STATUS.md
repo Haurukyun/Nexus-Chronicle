@@ -126,16 +126,21 @@ budget_tokens: 1000
     - **Zoom Scale Controls**: 4 zoom presets (Compact 2k, Standard 3.4k, Epic 5.2k, Panoramic 8k) with smooth horizontal scrolling.
     - **Timeline Inspector Card** (`TimelineInspectorCard.tsx`): Dockable floating inspector card showing formatted era dates, timespans, descriptions, and 1-click "Open in Codex" navigation.
     - **100% Test Validation**: 7 dedicated unit tests in `timelineUtils.test.ts`. 43/43 tests passing across 9 test suites.
+  - **Interactive Nexus Graph Polish** (`NexusGraphView.tsx`):
+    - **Minor Entity Suppression**: Added `suppressMinor` toggle in Filter Panel under Document Scope; suppresses background/minor entities (`minorSwitch`) from the force simulation to focus on pivotal codex figures.
+    - **Interactive Hover Cards**: Smart floating card anchored in SVG canvas coordinates surfacing entity type badge, description snippet, and connected edge relationships with live preview quotes from `relationalNotes`.
+    - **Mid-Edge Relational Note Badges**: Rendered mid-edge SVG curved pills on highlighted edges displaying relational context notes (e.g. specific betrayal, treaty, or apprenticeship details) directly along connection ribbons.
+    - **Navigation Ergonomics**: Added `onDoubleClick` directly on graph node elements to instantly navigate to the entry in Codex view.
 
 ---
 
 ## 🚀 Next phase
 
-**Goal:** _Phase P10: Freeform Custom Lore Attributes & Interactive Graph Polish_
+**Goal:** _Phase P10: Freeform Custom Lore Attributes_
 
 ### Scope
 1. **Custom Metadata / Freeform Key-Value Attributes**: Allow worldbuilders to add arbitrary custom key-value attributes (e.g. "Ruling Dynasty", "Elemental Alignment", "Aura Frequency") to any entity.
-2. **Interactive Nexus Graph Polish**: Edge relation filters, minor entity suppression, and hover card relational note previews.
+2. **Schema & UI Integration**: Key-value editor card on `EntityEditor` and structured attributes badge/table display in `EntityViewer`.
 
 ### Closed decisions
 - State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
