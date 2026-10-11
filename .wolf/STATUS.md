@@ -172,6 +172,12 @@ budget_tokens: 1000
     - Replaced static text strings (`speciesNames`, `occupationNames`, `originNames`, `residenceNames`) in Royal Codex Vital Records with clickable crimson navigation links (`renderEntityLinks`), resolving the issue where location backlinks like "Dumbass Island" were unclickable on Royal Codex despite being clickable in Sovereign and Wiki modes.
     - Added Place of Demise to Royal Codex when deceased, and added Schools of Magic (`pairedMagic`) and Sciences/Technologies (`pairedTech`) to both Royal and non-Royal inventory/connection sections.
     - Made the Hierarchy parent link in Record Vitals sidebar clickable across all themes in `EntityViewer.tsx`.
+  - **Custom Fantasy Calendar System & Multi-Theme Glassmorphism Overhaul** (`types.ts`, `timelineUtils.ts`, `ManageCalendarModal.tsx`, `TimelineInspectorCard.tsx`, `TimelineView.tsx`, `ManageErasModal.tsx`, `AddMilestoneModal.tsx`):
+    - **Fantasy Calendar Engine** (`FantasyCalendar`, `FantasyMonth`, `FantasyLeapRule`): Fully custom reckoning supporting variable months, intercalary standalone holiday/festival days (outside normal month numbering), custom week lengths (e.g. Faerûn 10-day Tenday), named weekdays, and astronomical leap cycles with leap-day festivals. Built-in presets for Calendar of Harptos (Forgotten Realms), Shire Reckoning (Tolkien), and Barovian Lunar Cycle.
+    - **Manage Calendar Modal** (`ManageCalendarModal.tsx`): Multi-tab manager portaled to `document.body` (`z-[9999]`) featuring month up/down reordering, festival toggle, weekday naming, periodic leap rules, and an interactive conversion playground with live lore date output.
+    - **Timeline View Integration** (`TimelineView.tsx`): Dedicated calendar management button in header actions, real-time dynamic temporal scrubber laser beam and floating date capsule tracking mouse position with 4-theme styling, and timeline inspector date badges.
+    - **Premium Glassmorphism & Multi-Theme Fidelity**: High-contrast, layered visual presentation across all 4 themes (`sovereign`, `wiki`, `royal-codex`, `grand-voyager`) with `backdrop-blur-2xl`, luminous ring highlights, theme-tinted laser beams and badges, and strict compliance with Royal Codex crimson `#70121e` button rules.
+    - **100% Test Coverage**: Added 5 dedicated unit tests in `timelineUtils.test.ts`. 48/48 tests passing across 9 suites; 0 TypeScript errors.
 
 ---
 

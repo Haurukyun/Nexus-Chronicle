@@ -79,38 +79,38 @@ export const ManageErasModal: React.FC<ManageErasModalProps> = ({
     const isWiki      = layoutMode === 'wiki';
 
     const modalCard = isVoyager
-        ? 'bg-[#180c04]/90 border-[#3d2617]/80 text-[#f0dca8]'
+        ? 'bg-[#180c04]/90 border-[#3d2617]/90 text-[#f0dca8] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-[#2dd4bf]/20'
         : isRoyal
-        ? 'bg-[#1c140d]/90 border-[#c8a96e]/25 text-[#fff8e7] font-serif'
+        ? 'bg-[#1c140d]/92 border-[#c8a96e]/35 text-[#fff8e7] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-[#c8a96e]/20 font-serif'
         : isWiki
-        ? 'bg-[#fcfbf9]/95 border-[#d4c8af] text-[#2b1810]'
-        : 'bg-slate-900/85 border-slate-700/50 text-slate-100';
+        ? 'bg-[#fcfbf9]/95 border-[#d4c8af] text-[#2b1810] shadow-[0_25px_60px_-15px_rgba(80,50,20,0.2)]'
+        : 'bg-slate-900/85 border-slate-700/60 text-slate-100 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-white/10';
 
     const iconAccent = isVoyager ? 'bg-[#2dd4bf]/15 text-[#2dd4bf]'
                      : isRoyal   ? 'bg-[#c8a96e]/20 text-[#c8a96e]'
                      : isWiki    ? 'bg-red-500/10 text-red-600'
                      :             'bg-[#fef08a]/10 text-[#fef08a]';
 
-    const inputCls = isVoyager ? 'bg-[#241208] border-[#3d2617]/80 text-[#f0dca8] focus:border-[#2dd4bf]/50'
-                   : isRoyal   ? 'bg-[#2b1810] border-[#c8a96e]/25 text-[#fff8e7] focus:border-[#c8a96e]/50'
-                   : isWiki    ? 'bg-white border-[#d4c8af] text-[#2b1810] focus:border-red-400'
-                   :             'bg-slate-800/80 border-slate-700/60 text-slate-100 focus:border-[#fef08a]/40';
+    const inputCls = isVoyager ? 'bg-[#241208]/90 border-[#3d2617]/80 text-[#f0dca8] focus:border-[#2dd4bf]/50 focus:ring-1 focus:ring-[#2dd4bf]/30'
+                   : isRoyal   ? 'bg-[#2b1810]/90 border-[#c8a96e]/25 text-[#fff8e7] focus:border-[#c8a96e]/50 focus:ring-1 focus:ring-[#c8a96e]/30'
+                   : isWiki    ? 'bg-white border-[#d4c8af] text-[#2b1810] focus:border-red-500 focus:ring-1 focus:ring-red-400'
+                   :             'bg-slate-800/80 border-slate-700/60 text-slate-100 focus:border-[#fef08a]/50 focus:ring-1 focus:ring-[#fef08a]/25';
 
-    const saveBtnCls = isVoyager ? 'bg-[#2dd4bf] text-[#090d08] hover:bg-[#14b8a6] shadow-[0_0_16px_rgba(45,212,191,0.3)]'
-                     : isRoyal   ? 'bg-[#c8a96e] text-[#1c140d] hover:bg-[#dfc48e]'
-                     : isWiki    ? 'bg-[#b91c1c] text-white hover:bg-red-800'
-                     :             'bg-[#fef08a] text-black hover:bg-yellow-300 shadow-[0_0_18px_rgba(254,240,138,0.30)]';
+    const saveBtnCls = isVoyager ? 'bg-[#2dd4bf] text-[#090d08] hover:bg-[#14b8a6] shadow-[0_0_20px_rgba(45,212,191,0.35)]'
+                     : isRoyal   ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#851624] shadow-[0_0_20px_rgba(112,18,30,0.35)]'
+                     : isWiki    ? 'bg-[#b91c1c] text-white hover:bg-red-800 shadow-sm'
+                     :             'bg-[#fef08a] text-black hover:bg-yellow-300 shadow-[0_0_20px_rgba(254,240,138,0.35)]';
 
     const modalContent = (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 md:p-10 select-none">
             {/* Backdrop */}
             <div 
-                className="absolute inset-0 bg-black/75 backdrop-blur-xl transition-opacity" 
+                className="absolute inset-0 bg-black/75 backdrop-blur-md transition-opacity" 
                 onClick={onClose} 
             />
 
             {/* Modal Dialog Card */}
-            <div className={`relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl border shadow-2xl overflow-hidden z-10 backdrop-blur-xl ${modalCard}`}>
+            <div className={`relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-3xl border shadow-2xl overflow-hidden z-10 backdrop-blur-2xl ${modalCard}`}>
                 {/* Header */}
                 <div className="px-6 py-5 border-b border-current/10 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">

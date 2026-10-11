@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, ExternalLink, Calendar, Bookmark, User, Clock, Edit2 } from 'lucide-react';
-import { FantasyEra, MilestonePin } from '../../types';
-import { formatYearWithEra } from '../../utils/timelineUtils';
+import { FantasyEra, MilestonePin, FantasyCalendar } from '../../types';
+import { formatYearWithEra, parseFantasyDate, formatFantasyDate } from '../../utils/timelineUtils';
 import { useTheme } from '../../theme';
 
 export interface InspectedTimelineItem {
@@ -10,6 +10,7 @@ export interface InspectedTimelineItem {
     name: string;
     startYear: number;
     endYear?: number;
+    rawDate?: string;
     isDead?: boolean;
     description?: string;
     color?: string;
@@ -21,6 +22,7 @@ export interface InspectedTimelineItem {
 interface TimelineInspectorCardProps {
     item: InspectedTimelineItem | null;
     eras?: FantasyEra[];
+    calendar?: FantasyCalendar;
     onClose: () => void;
     onNavigate: (id: string) => void;
     onEditMilestone?: (milestone: MilestonePin) => void;
@@ -29,6 +31,7 @@ interface TimelineInspectorCardProps {
 export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
     item,
     eras = [],
+    calendar,
     onClose,
     onNavigate,
     onEditMilestone
@@ -47,10 +50,10 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
 
     return (
         <div className={`relative p-5 rounded-2xl border shadow-2xl transition-all ${
-            isVoyager   ? 'bg-[#180c04]/90 border-[#3d2617]/80 text-[#f0dca8] backdrop-blur-xl'
-            : isRoyal   ? 'bg-[#1c140d]/90 border-[#c8a96e]/30 text-[#fff8e7] backdrop-blur-xl font-serif'
-            : isWiki    ? 'bg-[#fcfbf9]/95 border-[#d4c8af] text-[#2b1810] backdrop-blur-sm shadow-amber-900/10'
-            :              'bg-slate-900/80 border-slate-700/40 text-slate-100 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]'
+            isVoyager   ? 'bg-[#180c04]/90 border-[#3d2617]/90 text-[#f0dca8] backdrop-blur-2xl ring-1 ring-[#2dd4bf]/20 shadow-[0_16px_40px_rgba(0,0,0,0.8)]'
+            : isRoyal   ? 'bg-[#1c140d]/92 border-[#c8a96e]/35 text-[#fff8e7] backdrop-blur-2xl font-serif ring-1 ring-[#c8a96e]/20 shadow-[0_16px_40px_rgba(0,0,0,0.8)]'
+            : isWiki    ? 'bg-[#fcfbf9]/95 border-[#d4c8af] text-[#2b1810] backdrop-blur-xl shadow-xl'
+            :              'bg-slate-900/85 border-slate-700/50 text-slate-100 backdrop-blur-2xl ring-1 ring-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.7)]'
         }`}>
             {/* Top Bar */}
             <div className="flex items-start justify-between gap-3 mb-3">
@@ -77,6 +80,24 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
                         <Clock size={11} /> {formattedStart}
                         {formattedEnd && formattedEnd !== formattedStart && ` — ${formattedEnd}`}
                     </span>
+
+                    {/* Formatted Calendar Date Badge */}
+                    {calendar && (() => {
+                        const parsed = item.rawDate ? parseFantasyDate(item.rawDate, calendar) : null;
+                        const calText = parsed && (parsed.monthName || parsed.day)
+                            ? formatFantasyDate(item.startYear, parsed.monthName, parsed.day, parsed.isIntercalary, calendar)
+                            : calendar.yearSuffix ? `${item.startYear} ${calendar.yearSuffix}` : null;
+                        return calText ? (
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono border flex items-center gap-1 shadow-sm ${
+                                isVoyager ? 'border-[#2dd4bf]/35 bg-[#2dd4bf]/15 text-[#2dd4bf]'
+                                : isRoyal ? 'border-[#c8a96e]/35 bg-[#c8a96e]/15 text-[#c8a96e]'
+                                : isWiki ? 'border-red-500/30 bg-red-50 text-red-700'
+                                : 'border-[#fef08a]/35 bg-[#fef08a]/15 text-[#fef08a]'
+                            }`}>
+                                <Calendar size={10} /> {calText}
+                            </span>
+                        ) : null;
+                    })()}
                 </div>
 
                 <button

@@ -4,16 +4,18 @@ import {
     Sparkles, Filter, Search, X, User, Plus, RotateCcw,
     Layers, Compass, Clock, Award
 } from 'lucide-react';
-import { WorldData, WorldEntity, Character, Event, FantasyEra, MilestonePin } from '../types';
+import { WorldData, WorldEntity, Character, Event, FantasyEra, MilestonePin, FantasyCalendar } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
 import { 
     extractYear, findEraForYear, formatYearWithEra, 
-    packTimelineLanes, DEFAULT_ERA_PRESETS 
+    packTimelineLanes, DEFAULT_ERA_PRESETS,
+    formatHoveredYearWithCalendar
 } from '../utils/timelineUtils';
 import { isEntityDeceased } from '../utils/documentModeUtils';
 import { ManageErasModal } from '../components/timeline/ManageErasModal';
 import { AddMilestoneModal } from '../components/timeline/AddMilestoneModal';
+import { ManageCalendarModal } from '../components/timeline/ManageCalendarModal';
 import { TimelineInspectorCard, InspectedTimelineItem } from '../components/timeline/TimelineInspectorCard';
 
 interface TimelineViewProps {
@@ -70,6 +72,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
     // Modal states
     const [isManageErasOpen, setIsManageErasOpen] = useState(false);
+    const [isManageCalendarOpen, setIsManageCalendarOpen] = useState(false);
     const [isAddMilestoneOpen, setIsAddMilestoneOpen] = useState(false);
     const [editingMilestone, setEditingMilestone] = useState<MilestonePin | null>(null);
 
@@ -87,6 +90,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         }
         return DEFAULT_ERA_PRESETS.mythic.eras;
     }, [world.timelineEras]);
+
+    // Active fantasy calendar (optional)
+    const calendar: FantasyCalendar | undefined = useMemo(() => {
+        return world.timelineCalendar;
+    }, [world.timelineCalendar]);
 
     // Milestone pins
     const milestonePins: MilestonePin[] = useMemo(() => {
@@ -269,6 +277,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         }));
     };
 
+    // Save Calendar Handler
+    const handleSaveCalendar = (newCalendar: FantasyCalendar) => {
+        setWorld(prev => ({
+            ...prev,
+            timelineCalendar: newCalendar
+        }));
+    };
+
     // Save Milestone Handler
     const handleSaveMilestone = (milestone: MilestonePin) => {
         setWorld(prev => {
@@ -303,6 +319,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             name: item.name,
             startYear: item.start,
             endYear: item.end,
+            rawDate: (item.entity as any)?.birthDate || (item.entity as any)?.startDate || (item.entity as any)?.date,
             isDead: item.isDead,
             description: item.description,
             color: item.color,
@@ -379,6 +396,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                      : isRoyal   ? 'border-[#c8a96e]/40 text-[#c8a96e] hover:bg-[#c8a96e]/15 shadow-[0_0_12px_rgba(200,169,110,0.15)]'
                      : isWiki    ? 'border-red-700/40 text-red-700 hover:bg-red-700/10'
                      :             'border-[#fef08a]/35 text-[#fef08a] hover:bg-[#fef08a]/15 hover:border-[#fef08a]/70 shadow-[0_0_15px_rgba(254,240,138,0.15)]';
+
+    const calendarBtnCls = isVoyager ? 'border-[#2dd4bf]/40 text-[#2dd4bf] hover:bg-[#2dd4bf]/15 hover:border-[#2dd4bf]/80 shadow-[0_0_12px_rgba(45,212,191,0.15)]'
+                         : isRoyal   ? 'border-[#c8a96e]/40 text-[#c8a96e] hover:bg-[#c8a96e]/15 shadow-[0_0_12px_rgba(200,169,110,0.15)]'
+                         : isWiki    ? 'border-[#d4c8af] text-[#2b1810] hover:bg-[#eee7d8] shadow-sm'
+                         :             'border-slate-700/80 text-slate-200 hover:text-white hover:bg-slate-800/60 hover:border-slate-600 shadow-[0_0_15px_rgba(255,255,255,0.05)]';
 
     const milestoneBtnCls = isVoyager ? 'bg-gradient-to-r from-[#14b8a6] to-[#2dd4bf] text-[#180c04] hover:brightness-110 shadow-[0_0_24px_rgba(45,212,191,0.35)]'
                           : isRoyal   ? 'bg-gradient-to-r from-[#70121e] to-[#991b1b] text-[#fff8e7] hover:brightness-110 shadow-[0_0_24px_rgba(112,18,30,0.35)]'
@@ -463,6 +485,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         title="Configure Fantasy Eras, Epochs & Aura Colors"
                     >
                         <Sparkles size={14} className="animate-pulse" /> Manage Eras
+                    </button>
+
+                    <button
+                        onClick={() => setIsManageCalendarOpen(true)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all backdrop-blur-md ${calendarBtnCls}`}
+                        title="Configure Custom Fantasy Calendar: months, festivals, weekdays, leap cycles"
+                    >
+                        <Calendar size={14} className={calendar ? (isVoyager ? 'text-[#2dd4bf]' : isRoyal ? 'text-[#c8a96e]' : isWiki ? 'text-red-700' : 'text-[#fef08a]') : 'opacity-60'} />
+                        <span>{calendar ? calendar.name : 'Calendar System'}</span>
                     </button>
 
                     <button
@@ -785,23 +816,45 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 className="w-px h-full -translate-x-1/2"
                                 style={{
                                     background: isSovereign 
-                                        ? 'linear-gradient(180deg, rgba(254,240,138,0.9) 0%, rgba(254,240,138,0.4) 60%, transparent 100%)'
-                                        : 'linear-gradient(180deg, rgba(56,189,248,0.9) 0%, rgba(56,189,248,0.4) 60%, transparent 100%)',
-                                    boxShadow: isSovereign ? '0 0 8px rgba(254,240,138,0.6)' : '0 0 8px rgba(56,189,248,0.6)'
+                                        ? 'linear-gradient(180deg, rgba(254,240,138,0.95) 0%, rgba(254,240,138,0.4) 60%, transparent 100%)'
+                                        : isVoyager
+                                        ? 'linear-gradient(180deg, rgba(45,212,191,0.95) 0%, rgba(45,212,191,0.4) 60%, transparent 100%)'
+                                        : isRoyal
+                                        ? 'linear-gradient(180deg, rgba(200,169,110,0.95) 0%, rgba(200,169,110,0.4) 60%, transparent 100%)'
+                                        : isWiki
+                                        ? 'linear-gradient(180deg, rgba(185,28,28,0.95) 0%, rgba(185,28,28,0.4) 60%, transparent 100%)'
+                                        : 'linear-gradient(180deg, rgba(56,189,248,0.95) 0%, rgba(56,189,248,0.4) 60%, transparent 100%)',
+                                    boxShadow: isSovereign ? '0 0 10px rgba(254,240,138,0.7)'
+                                             : isVoyager ? '0 0 10px rgba(45,212,191,0.7)'
+                                             : isRoyal ? '0 0 10px rgba(200,169,110,0.7)'
+                                             : isWiki ? '0 0 8px rgba(185,28,28,0.5)'
+                                             : '0 0 8px rgba(56,189,248,0.6)'
                                 }}
                             />
 
                             {/* Floating Cursor Tooltip */}
                             <div 
-                                className="absolute top-16 -translate-x-1/2 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold whitespace-nowrap shadow-2xl border backdrop-blur-xl"
+                                className="absolute top-16 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-mono font-bold whitespace-nowrap shadow-2xl border backdrop-blur-2xl ring-1"
                                 style={{
-                                    backgroundColor: isSovereign ? '#0f172a' : '#020617',
-                                    borderColor: isSovereign ? '#fef08a' : '#38bdf8',
-                                    color: isSovereign ? '#fef08a' : '#38bdf8',
-                                    boxShadow: '0 4px 20px rgba(0,0,0,0.8)'
+                                    backgroundColor: isSovereign ? 'rgba(15, 23, 42, 0.92)' 
+                                                   : isVoyager ? 'rgba(24, 12, 4, 0.95)' 
+                                                   : isRoyal ? 'rgba(28, 20, 13, 0.95)' 
+                                                   : isWiki ? 'rgba(255, 255, 255, 0.96)' 
+                                                   : 'rgba(2, 6, 23, 0.92)',
+                                    borderColor: isSovereign ? 'rgba(254, 240, 138, 0.5)' 
+                                               : isVoyager ? 'rgba(45, 212, 191, 0.5)' 
+                                               : isRoyal ? 'rgba(200, 169, 110, 0.5)' 
+                                               : isWiki ? 'rgba(212, 200, 175, 1)' 
+                                               : 'rgba(56, 189, 248, 0.5)',
+                                    color: isSovereign ? '#fef08a' 
+                                         : isVoyager ? '#2dd4bf' 
+                                         : isRoyal ? '#fff8e7' 
+                                         : isWiki ? '#881337' 
+                                         : '#38bdf8',
+                                    boxShadow: isWiki ? '0 4px 16px rgba(0,0,0,0.12)' : '0 8px 24px rgba(0,0,0,0.75)'
                                 }}
                             >
-                                Year {hoveredYear} ({formatYearWithEra(hoveredYear, eras)})
+                                {formatHoveredYearWithCalendar(hoveredYear, eras, calendar)}
                             </div>
                         </div>
                     )}
@@ -1043,6 +1096,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     <TimelineInspectorCard
                         item={inspectedItem}
                         eras={eras}
+                        calendar={calendar}
                         onClose={() => setInspectedItem(null)}
                         onNavigate={onNavigate}
                         onEditMilestone={milestone => {
@@ -1098,6 +1152,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     setIsAddMilestoneOpen(false);
                     setEditingMilestone(null);
                 }}
+            />
+            {/* ── Manage Calendar Modal ─────────────────────────────────────── */}
+            <ManageCalendarModal
+                isOpen={isManageCalendarOpen}
+                calendar={calendar}
+                onSaveCalendar={handleSaveCalendar}
+                onClose={() => setIsManageCalendarOpen(false)}
             />
         </div>
     );

@@ -98,14 +98,14 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
             />
 
             {/* Modal Dialog Card */}
-            <div className={`relative w-full max-w-lg flex flex-col rounded-3xl border shadow-2xl overflow-hidden z-10 transition-all ${
+            <div className={`relative w-full max-w-lg flex flex-col rounded-3xl border shadow-2xl overflow-hidden z-10 backdrop-blur-2xl transition-all ${
                 themeId === 'grand-voyager'
-                    ? 'bg-[#180c04] border-[#3d2617] text-[#f0dca8]'
+                    ? 'bg-[#180c04]/90 border-[#3d2617]/90 text-[#f0dca8] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-[#2dd4bf]/20'
                     : themeId === 'royal-codex'
-                    ? 'bg-[#1c140d] border-[#c8a96e]/30 text-[#fff8e7] font-serif'
+                    ? 'bg-[#1c140d]/92 border-[#c8a96e]/35 text-[#fff8e7] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-[#c8a96e]/20 font-serif'
                     : layoutMode === 'wiki'
-                    ? 'bg-[#fcfbf9] border-[#d4c8af] text-[#2b1810]'
-                    : 'bg-slate-900 border-slate-700/80 text-slate-100'
+                    ? 'bg-[#fcfbf9]/95 border-[#d4c8af] text-[#2b1810] shadow-[0_25px_60px_-15px_rgba(80,50,20,0.2)]'
+                    : 'bg-slate-900/85 border-slate-700/60 text-slate-100 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] ring-1 ring-white/10'
             }`}>
                 {/* Header */}
                 <div className="px-6 py-5 border-b border-current/10 flex items-center justify-between shrink-0">

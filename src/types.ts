@@ -917,6 +917,34 @@ export interface MilestonePin {
   entityId?: string;
 }
 
+export interface FantasyMonth {
+  id: string;
+  name: string;
+  days: number;
+  abbreviation?: string;
+  season?: 'spring' | 'summer' | 'autumn' | 'winter' | string;
+  isIntercalary?: boolean; // Standalone festival day outside normal months
+}
+
+export interface FantasyLeapRule {
+  frequency: number; // Every N years (e.g. 4)
+  extraDays: number; // Number of days to add (e.g. 1)
+  targetMonthId?: string; // Specific month or festival receiving the day
+  leapDayName?: string; // e.g. "Shieldmeet", "Intercalary Leap Day"
+}
+
+export interface FantasyCalendar {
+  id: string;
+  name: string;
+  description?: string;
+  yearSuffix?: string; // e.g. "DR", "CE", "Yr", "AC"
+  daysPerWeek: number; // e.g. 7 or 10 (Tenday)
+  weekDayNames?: string[]; // e.g. ["Firstday", "Secondday", ...]
+  months: FantasyMonth[];
+  leapRule?: FantasyLeapRule;
+  epochOffset?: number; // Base offset for year numbers
+}
+
 export interface WorldData {
   id?: string;
   name: string;
@@ -930,6 +958,7 @@ export interface WorldData {
   worldPhase: WorldPhase;
   timelineEras?: FantasyEra[];
   milestonePins?: MilestonePin[];
+  timelineCalendar?: FantasyCalendar;
 }
 
 export interface UniverseArchive {

@@ -4,7 +4,14 @@ import {
     findEraForYear,
     formatYearWithEra,
     packTimelineLanes,
-    DEFAULT_ERA_PRESETS
+    DEFAULT_ERA_PRESETS,
+    DEFAULT_CALENDAR_PRESETS,
+    isLeapYear,
+    getDaysInYear,
+    parseFantasyDate,
+    formatFantasyDate,
+    yearFractionToCalendar,
+    formatHoveredYearWithCalendar
 } from './timelineUtils';
 import { FantasyEra } from '../types';
 
@@ -87,6 +94,68 @@ describe('Timeline Utilities & Fantasy Eras', () => {
             expect(DEFAULT_ERA_PRESETS.mythic.eras.length).toBeGreaterThan(0);
             expect(DEFAULT_ERA_PRESETS.tolkien.eras.length).toBe(4);
             expect(DEFAULT_ERA_PRESETS.classical.eras.length).toBe(2);
+        });
+    });
+
+    describe('Fantasy Calendar System', () => {
+        const harptos = DEFAULT_CALENDAR_PRESETS.harptos.calendar;
+        const solar = DEFAULT_CALENDAR_PRESETS.solar.calendar;
+
+        it('calculates standard and leap year days correctly', () => {
+            // Harptos: 12 * 30 = 360 + 5 festivals = 365 days
+            expect(getDaysInYear(1371, harptos)).toBe(365);
+            expect(isLeapYear(1371, harptos)).toBe(false);
+
+            // Year 1372 is divisible by 4 -> Shieldmeet leap day added -> 366 days
+            expect(isLeapYear(1372, harptos)).toBe(true);
+            expect(getDaysInYear(1372, harptos)).toBe(366);
+
+            // Solar
+            expect(getDaysInYear(2023, solar)).toBe(365);
+            expect(getDaysInYear(2024, solar)).toBe(366);
+        });
+
+        it('parses fantasy dates with month names, day numbers, and festival days', () => {
+            const parsed1 = parseFantasyDate('14 Ches, 1372 DR', harptos);
+            expect(parsed1?.year).toBe(1372);
+            expect(parsed1?.monthName).toBe('Ches');
+            expect(parsed1?.day).toBe(14);
+            expect(parsed1?.isIntercalary).toBeFalsy();
+
+            const parsedFestival = parseFantasyDate('Midsummer, 1372', harptos);
+            expect(parsedFestival?.year).toBe(1372);
+            expect(parsedFestival?.monthName).toBe('Midsummer');
+            expect(parsedFestival?.isIntercalary).toBe(true);
+        });
+
+        it('formats rich fantasy dates properly', () => {
+            expect(formatFantasyDate(1372, 'Ches', 14, false, harptos)).toBe('14 Ches, 1372 DR');
+            expect(formatFantasyDate(1372, 'Midsummer', undefined, true, harptos)).toBe('Midsummer, 1372 DR');
+            expect(formatFantasyDate(1452, undefined, undefined, false, harptos)).toBe('1452 DR');
+        });
+
+        it('converts year fractions to exact fantasy calendar date breakdown', () => {
+            // Beginning of year in Harptos: Hammer 1
+            const start = yearFractionToCalendar(1372.0, harptos);
+            expect(start.year).toBe(1372);
+            expect(start.monthName).toBe('Hammer');
+            expect(start.day).toBe(1);
+            expect(start.weekdayName).toBe('Firstday');
+
+            // Day 31 in Harptos is Midwinter (festival)
+            // 31 / 366 ≈ 0.083
+            const midwinter = yearFractionToCalendar(1372.083, harptos);
+            expect(midwinter.monthName).toBe('Midwinter');
+            expect(midwinter.isIntercalary).toBe(true);
+        });
+
+        it('formats temporal scrubber hover string with era and calendar details', () => {
+            const eras = [
+                { id: '1', name: 'Golden Zenith', abbreviation: 'GZ', startYear: 1000, endYear: 2000 }
+            ];
+            const hovered = formatHoveredYearWithCalendar(1372.0, eras, harptos);
+            expect(hovered).toContain('GZ 373 (Yr 1372) DR');
+            expect(hovered).toContain('Hammer 1');
         });
     });
 });
