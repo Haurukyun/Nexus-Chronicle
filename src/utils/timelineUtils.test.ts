@@ -11,7 +11,9 @@ import {
     parseFantasyDate,
     formatFantasyDate,
     yearFractionToCalendar,
-    formatHoveredYearWithCalendar
+    formatHoveredYearWithCalendar,
+    calculateDynamicTickStep,
+    generateTimelineTicks
 } from './timelineUtils';
 import { FantasyEra } from '../types';
 
@@ -180,6 +182,28 @@ describe('Timeline Utilities & Fantasy Eras', () => {
             expect(imported.name).toBe('Cyrodiil Imperial Reckoning');
             expect(imported.months).toHaveLength(12);
             expect(getDaysInYear(201, imported)).toBe(365);
+        });
+
+        it('calculates dynamic tick step adapting to zoom down to 5-year gaps', () => {
+            // High zoom: 40-year span across 2000px => pxPerYear = 50px
+            // 5 * 50 = 250px >= 65px; 2 * 50 = 100px >= 65px; 1 * 50 = 50 < 65 => step = 2
+            expect(calculateDynamicTickStep(40, 2000)).toBe(2);
+
+            // Zoomed to 5-year gap: 100-year span across 1500px => pxPerYear = 15px
+            // 5 * 15 = 75px >= 65px => step = 5!
+            expect(calculateDynamicTickStep(100, 1500)).toBe(5);
+
+            // Wide epic span: 2000-year span across 3400px => pxPerYear = 1.7px
+            // 50 * 1.7 = 85px >= 65px => step = 50
+            expect(calculateDynamicTickStep(2000, 3400)).toBe(50);
+        });
+
+        it('generates correct 5-year gap ticks sequence', () => {
+            // Span 2000 to 2020 with step = 5 => 2000, 2005, 2010, 2015, 2020
+            const ticks = generateTimelineTicks(2000, 2020, 20, 5);
+            expect(ticks.map(t => t.year)).toEqual([2000, 2005, 2010, 2015, 2020]);
+            expect(ticks[0].pct).toBe(0);
+            expect(ticks[ticks.length - 1].pct).toBe(100);
         });
     });
 });

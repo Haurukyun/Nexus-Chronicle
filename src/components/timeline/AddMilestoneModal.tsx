@@ -11,6 +11,7 @@ interface AddMilestoneModalProps {
     onSaveMilestone: (milestone: MilestonePin) => void;
     onDeleteMilestone?: (id: string) => void;
     initialMilestone?: MilestonePin | null;
+    initialYear?: number;
     existingEntities?: WorldEntity[];
 }
 
@@ -31,6 +32,7 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
     onSaveMilestone,
     onDeleteMilestone,
     initialMilestone,
+    initialYear,
     existingEntities = []
 }) => {
     const { themeId, layoutMode } = useTheme();
@@ -52,14 +54,14 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
             setEntityId(initialMilestone.entityId || '');
         } else {
             setName('');
-            setYearInput('1000');
+            setYearInput(initialYear !== undefined ? initialYear.toString() : '1000');
             setDescription('');
             setColor(PRESET_COLORS[0]);
             setEntityId('');
         }
         setShowEntityPicker(false);
         setFilterSearch('');
-    }, [initialMilestone, isOpen]);
+    }, [initialMilestone, initialYear, isOpen]);
 
     if (!isOpen) return null;
 

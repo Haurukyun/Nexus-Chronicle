@@ -960,6 +960,7 @@ export interface WorldData {
   milestonePins?: MilestonePin[];
   timelineCalendar?: FantasyCalendar;
   customCalendarPresets?: FantasyCalendar[];
+  timelineCurrentYear?: number;
 }
 
 export interface UniverseArchive {

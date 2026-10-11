@@ -2,7 +2,8 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { 
     Calendar, History, ArrowLeft, ArrowRight, Bookmark,
     Sparkles, Filter, Search, X, User, Plus, RotateCcw,
-    Layers, Compass, Clock, Award, CalendarDays
+    Layers, Compass, Clock, Award, CalendarDays,
+    ZoomIn, ZoomOut, Edit3, Flag
 } from 'lucide-react';
 import { WorldData, WorldEntity, Character, Event, FantasyEra, MilestonePin, FantasyCalendar } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
@@ -10,7 +11,9 @@ import { useTheme } from '../theme';
 import { 
     extractYear, findEraForYear, formatYearWithEra, 
     packTimelineLanes, DEFAULT_ERA_PRESETS,
-    formatHoveredYearWithCalendar
+    formatHoveredYearWithCalendar,
+    calculateDynamicTickStep,
+    generateTimelineTicks
 } from '../utils/timelineUtils';
 import { isEntityDeceased } from '../utils/documentModeUtils';
 import { ManageErasModal } from '../components/timeline/ManageErasModal';
@@ -70,10 +73,38 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     const [lifeStatusFilter, setLifeStatusFilter] = useState<LifeStatusFilter>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('standard');
+    const [canvasWidth, setCanvasWidth] = useState<number>(3400);
     
     // Interactive mouse hover cursor along timeline
     const [hoveredYear, setHoveredYear] = useState<number | null>(null);
     const [hoveredPosPct, setHoveredPosPct] = useState<number | null>(null);
+
+    // Ribbon hover preview tooltip
+    const [hoveredRibbonItem, setHoveredRibbonItem] = useState<{
+        item: ProcessedTimelineItem;
+        clientX: number;
+        clientY: number;
+    } | null>(null);
+
+    // Current in-world year playhead
+    const currentYear = world.timelineCurrentYear ?? 0;
+    const [isEditingCurrentYear, setIsEditingCurrentYear] = useState(false);
+    const [currentYearInput, setCurrentYearInput] = useState('');
+
+    // Quick-add on the rail
+    const [quickAddMenu, setQuickAddMenu] = useState<{
+        year: number;
+        clientX: number;
+        clientY: number;
+    } | null>(null);
+    const [quickAddYear, setQuickAddYear] = useState<number | undefined>(undefined);
+
+    // Animated era transitions on jump
+    const [activeJumpEraId, setActiveJumpEraId] = useState<string | null>(null);
+    const [jumpNotification, setJumpNotification] = useState<{
+        eraName: string;
+        year: number;
+    } | null>(null);
 
     // Modal states
     const [isManageErasOpen, setIsManageErasOpen] = useState(false);
@@ -359,27 +390,121 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         });
     };
 
-    // Jump scroll to specific year
-    const handleJumpToYear = (targetYear: number) => {
+    // Dynamic tick step & ticks calculation (adapts down to 5-year gap timeline)
+    const minCanvasWidth = 1800;
+    const maxCanvasWidth = Math.min(60000, Math.max(24000, Math.ceil(yearSpan * 18)));
+
+    const dynamicStep = useMemo(() => {
+        return calculateDynamicTickStep(yearSpan, canvasWidth, 65);
+    }, [yearSpan, canvasWidth]);
+
+    const timelineTicks = useMemo(() => {
+        return generateTimelineTicks(minYear, maxYear, yearSpan, dynamicStep);
+    }, [minYear, maxYear, yearSpan, dynamicStep]);
+
+    // Set Current Year playhead
+    const handleSetCurrentYear = (newYear: number) => {
+        setWorld(prev => ({
+            ...prev,
+            timelineCurrentYear: newYear
+        }));
+        setIsEditingCurrentYear(false);
+    };
+
+    // Quick-create an event at a given year
+    const handleQuickCreateEvent = (year: number) => {
+        const id = handleCreate('event', `Event of Year ${year}`, true);
+        if (id) {
+            setWorld(prev => ({
+                ...prev,
+                entities: prev.entities.map(e => {
+                    if (e.id === id) {
+                        return {
+                            ...e,
+                            date: String(year),
+                            startDate: String(year)
+                        } as Event;
+                    }
+                    return e;
+                })
+            }));
+        }
+        setQuickAddMenu(null);
+    };
+
+    // Jump scroll to specific year with optional animated era traversal
+    const handleJumpToYear = (targetYear: number, eraId?: string) => {
         if (!scrollContainerRef.current) return;
-        const totalWidth = ZOOM_CONFIGS[zoomLevel].width;
+        const totalWidth = canvasWidth;
         const ratio = (targetYear - minYear) / yearSpan;
         const scrollTarget = ratio * totalWidth - scrollContainerRef.current.clientWidth / 2;
         scrollContainerRef.current.scrollTo({
             left: Math.max(0, scrollTarget),
             behavior: 'smooth'
         });
+
+        if (eraId) {
+            setActiveJumpEraId(eraId);
+            const matchedEra = eras.find(e => e.id === eraId);
+            if (matchedEra) {
+                setJumpNotification({ eraName: matchedEra.name, year: targetYear });
+            }
+            setTimeout(() => {
+                setActiveJumpEraId(null);
+                setJumpNotification(null);
+            }, 2200);
+        }
     };
 
-    // By default, center/start camera view on Year 0 across all calendars and zoom levels
+    // Continuous scrollable zoom (Ctrl + Wheel anywhere on canvas, or Wheel directly over ruler rail)
     useEffect(() => {
         const container = scrollContainerRef.current;
         if (!container) return;
 
-        const totalWidth = ZOOM_CONFIGS[zoomLevel].width;
-        const targetYear = Math.max(minYear, Math.min(maxYear, 0));
+        const handleWheel = (e: WheelEvent) => {
+            const target = e.target as HTMLElement | null;
+            const isOverRuler = Boolean(target?.closest('.chronos-ruler-track'));
+
+            if (e.ctrlKey || e.metaKey || isOverRuler) {
+                e.preventDefault();
+                const factor = e.deltaY < 0 ? 1.15 : 0.87;
+                const rect = container.getBoundingClientRect();
+                const cursorXInContainer = e.clientX - rect.left;
+                const contentX = cursorXInContainer + container.scrollLeft;
+
+                setCanvasWidth(prevWidth => {
+                    const nextWidth = Math.min(maxCanvasWidth, Math.max(minCanvasWidth, Math.round(prevWidth * factor)));
+                    if (nextWidth === prevWidth) return prevWidth;
+
+                    const ratio = contentX / prevWidth;
+                    const newScrollLeft = ratio * nextWidth - cursorXInContainer;
+
+                    requestAnimationFrame(() => {
+                        if (scrollContainerRef.current) {
+                            scrollContainerRef.current.scrollLeft = Math.max(0, newScrollLeft);
+                        }
+                    });
+                    return nextWidth;
+                });
+            }
+        };
+
+        container.addEventListener('wheel', handleWheel, { passive: false });
+        return () => {
+            container.removeEventListener('wheel', handleWheel);
+        };
+    }, [minCanvasWidth, maxCanvasWidth]);
+
+    // Initial camera centering on Year 0 (or Current Year) on mount / realm load
+    const initialCenteringDoneRef = useRef(false);
+    useEffect(() => {
+        if (initialCenteringDoneRef.current) return;
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const totalWidth = canvasWidth;
+        const targetYear = Math.max(minYear, Math.min(maxYear, currentYear));
         const ratio = (targetYear - minYear) / yearSpan;
-        // Position Year 0 at ~15% from left of visible container window so Year 0 and future history are immediately visible
         const scrollTarget = ratio * totalWidth - (container.clientWidth * 0.15);
 
         requestAnimationFrame(() => {
@@ -388,16 +513,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     left: Math.max(0, scrollTarget),
                     behavior: 'auto'
                 });
+                initialCenteringDoneRef.current = true;
             }
         });
-    }, [zoomLevel, minYear, maxYear, yearSpan]);
+    }, [canvasWidth, minYear, maxYear, yearSpan, currentYear]);
 
     // Interactive mouse hover tracking on timeline canvas
     const handleCanvasMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!canvasInnerRef.current) return;
         const rect = canvasInnerRef.current.getBoundingClientRect();
         const clientX = e.clientX - rect.left;
-        const totalW = ZOOM_CONFIGS[zoomLevel].width;
+        const totalW = canvasWidth;
         const clampedX = Math.max(0, Math.min(clientX, totalW));
         const pct = (clampedX / totalW) * 100;
         const year = Math.round(minYear + (yearSpan * (pct / 100)));
@@ -408,6 +534,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     const handleCanvasMouseLeave = () => {
         setHoveredYear(null);
         setHoveredPosPct(null);
+    };
+
+    // Click on ruler rail to open quick-add action menu
+    const handleRailClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if ((e.target as HTMLElement).closest('button, .milestone-pin-marker, .playhead-cap-marker')) return;
+        if (hoveredYear === null) return;
+        setQuickAddMenu({
+            year: hoveredYear,
+            clientX: e.clientX,
+            clientY: e.clientY
+        });
     };
 
     // ── Theme tokens ──────────────────────────────────────────────────────────
@@ -489,15 +626,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             }`}>
                                 <span className="flex items-center gap-1">
                                     {eras.slice(0, 4).map(era => (
-                                        <span 
+                                        <button 
                                             key={era.id} 
-                                            className="w-2 h-2 rounded-full inline-block shadow-sm"
+                                            onClick={() => handleJumpToYear(era.startYear, era.id)}
+                                            className="w-2.5 h-2.5 rounded-full inline-block shadow-sm hover:scale-125 transition-transform"
                                             style={{ backgroundColor: era.color || '#38bdf8' }}
-                                            title={era.name}
+                                            title={`${era.name} (Starts Yr ${era.startYear}) — Click to jump`}
                                         />
                                     ))}
                                     <span className="font-bold ml-1">{eras.length} Eras</span>
                                 </span>
+                                <span className="opacity-30">•</span>
+                                <button
+                                    onClick={() => handleJumpToYear(currentYear)}
+                                    className={`flex items-center gap-1 font-bold transition-all hover:scale-105 ${
+                                        isLightCanvas ? 'text-emerald-800' : 'text-emerald-400'
+                                    }`}
+                                    title={`Current In-World Year: ${currentYear} (Click to jump camera)`}
+                                >
+                                    <Clock size={11} className="animate-spin-slow" />
+                                    <span>Yr {currentYear}</span>
+                                </button>
                                 <span className="opacity-30">•</span>
                                 <span className="font-semibold">{rawItems.length} Ribbons</span>
                                 {milestonePins.length > 0 && (
@@ -699,27 +848,101 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         )}
                     </div>
 
-                    {/* Zoom Scale Selector */}
-                    <div className={`flex items-center gap-1 border rounded-xl p-0.5 ${
+                    {/* Zoom Scale Selector & Dynamic Precision Bar */}
+                    <div className={`flex items-center gap-1.5 border rounded-xl p-1 ${
                         isLightCanvas ? 'bg-[#f4efe4] border-[#d4c8af]' : 'bg-black/30 border-current/15'
                     }`}>
-                        <span className={`text-[9px] uppercase font-bold px-1.5 ${isLightCanvas ? 'text-[#2b1810]/60' : 'opacity-35'}`}>Zoom:</span>
-                        {(['compact', 'standard', 'epic', 'panoramic'] as ZoomLevel[]).map(z => (
+                        {/* Zoom out button */}
+                        <button
+                            onClick={() => {
+                                setCanvasWidth(prev => Math.max(minCanvasWidth, Math.round(prev * 0.82)));
+                            }}
+                            className={`p-1 rounded-lg transition-all ${
+                                isLightCanvas ? 'hover:bg-black/5 text-[#2b1810]' : 'hover:bg-white/10 opacity-70 hover:opacity-100'
+                            }`}
+                            title="Zoom Out (Ctrl + Scroll Down)"
+                        >
+                            <ZoomOut size={12} />
+                        </button>
+
+                        {/* Slider */}
+                        <input
+                            type="range"
+                            min={minCanvasWidth}
+                            max={maxCanvasWidth}
+                            step={150}
+                            value={canvasWidth}
+                            onChange={(e) => setCanvasWidth(Number(e.target.value))}
+                            className="w-16 sm:w-24 h-1.5 accent-amber-500 rounded-lg cursor-pointer"
+                            title={`Canvas Width: ${canvasWidth}px (${dynamicStep}y step)`}
+                        />
+
+                        {/* Zoom in button */}
+                        <button
+                            onClick={() => {
+                                setCanvasWidth(prev => Math.min(maxCanvasWidth, Math.round(prev * 1.22)));
+                            }}
+                            className={`p-1 rounded-lg transition-all ${
+                                isLightCanvas ? 'hover:bg-black/5 text-[#2b1810]' : 'hover:bg-white/10 opacity-70 hover:opacity-100'
+                            }`}
+                            title="Zoom In (Ctrl + Scroll Up)"
+                        >
+                            <ZoomIn size={12} />
+                        </button>
+
+                        {/* Quick Presets */}
+                        <div className="flex items-center gap-0.5 ml-1 border-l border-current/15 pl-1">
+                            {[
+                                { label: '2K', width: 2000, level: 'compact' },
+                                { label: '3.4K', width: 3400, level: 'standard' },
+                                { label: '5.2K', width: 5200, level: 'epic' },
+                                { label: '8K', width: 8000, level: 'panoramic' }
+                            ].map(preset => (
+                                <button
+                                    key={preset.label}
+                                    onClick={() => {
+                                        setCanvasWidth(preset.width);
+                                        setZoomLevel(preset.level as ZoomLevel);
+                                    }}
+                                    className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
+                                        Math.abs(canvasWidth - preset.width) < 300
+                                            ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                              : isWiki ? 'bg-red-700 text-white shadow-sm'
+                                              : 'bg-current/25 opacity-100 shadow-sm border border-current/20' 
+                                            : isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-white/70' : 'opacity-40 hover:opacity-85'
+                                    }`}
+                                    title={`Set scale to ${preset.width}px`}
+                                >
+                                    {preset.label}
+                                </button>
+                            ))}
+
+                            {/* Dedicated 5-Year Precision Focus Preset */}
                             <button
-                                key={z}
-                                onClick={() => setZoomLevel(z)}
-                                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
-                                    zoomLevel === z 
-                                        ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
-                                          : isWiki ? 'bg-red-700 text-white shadow-sm'
-                                          : 'bg-current/25 opacity-100 shadow-sm border border-current/20' 
+                                onClick={() => {
+                                    const target5y = Math.min(maxCanvasWidth, Math.max(2000, Math.ceil(yearSpan * 15)));
+                                    setCanvasWidth(target5y);
+                                }}
+                                className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${
+                                    dynamicStep <= 5
+                                        ? 'bg-amber-500/25 text-amber-500 border border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.25)] font-black'
                                         : isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-white/70' : 'opacity-40 hover:opacity-85'
                                 }`}
-                                title={`Scale: ${ZOOM_CONFIGS[z].label}`}
+                                title="Zoom to 5-Year Gap Precision (2000 > 2005 > 2010...)"
                             >
-                                {z === 'compact' ? '2K' : z === 'standard' ? '3.4K' : z === 'epic' ? '5.2K' : '8K'}
+                                <Sparkles size={10} className={dynamicStep <= 5 ? "animate-pulse" : ""} />
+                                <span>5Y Gap</span>
                             </button>
-                        ))}
+                        </div>
+
+                        {/* Step Readout Badge */}
+                        <div className={`px-2 py-0.5 rounded-md font-mono text-[9px] font-bold ml-1 ${
+                            dynamicStep <= 5
+                                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse'
+                                : isLightCanvas ? 'bg-black/5 text-[#2b1810]/70' : 'bg-white/5 opacity-60'
+                        }`}>
+                            {dynamicStep <= 5 ? '5y Gap' : `${dynamicStep}y`}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -769,8 +992,24 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     onMouseMove={handleCanvasMouseMove}
                     onMouseLeave={handleCanvasMouseLeave}
                     className="relative pb-28 cursor-crosshair"
-                    style={{ width: `${ZOOM_CONFIGS[zoomLevel].width}px` }}
+                    style={{ width: `${canvasWidth}px` }}
                 >
+                    {/* Floating Traversal Notification */}
+                    {jumpNotification && (
+                        <div className="sticky top-2 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex justify-center mb-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className={`px-4 py-1.5 rounded-full border shadow-2xl backdrop-blur-2xl flex items-center gap-2 font-serif font-black text-xs tracking-wider ${
+                                isLightCanvas
+                                    ? 'bg-amber-100/95 border-amber-400 text-[#3d0a10]'
+                                    : isVoyager
+                                    ? 'bg-[#180c04]/95 border-[#2dd4bf]/70 text-[#2dd4bf]'
+                                    : 'bg-slate-900/95 border-[#fef08a]/70 text-[#fef08a]'
+                            }`}>
+                                <Sparkles size={14} className="animate-spin-slow" />
+                                <span>Traversed to {jumpNotification.eraName} (Yr {jumpNotification.year})</span>
+                            </div>
+                        </div>
+                    )}
+
                     {/* BACKGROUND ERA AURA COLUMNS (Vertical visual territory for each era) */}
                     <div className="absolute inset-0 pointer-events-none z-0">
                         {eras.map(era => {
@@ -799,7 +1038,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         })}
                     </div>
 
-                    {/* 1. ERA BANDS ALONG TOP AXIS */}
+                    {/* 1. ERA BANDS ALONG TOP AXIS WITH ANIMATED JUMP TRANSITION */}
                     <div className="relative h-14 w-full mb-6 flex items-center z-10">
                         {eras.map(era => {
                             const eraStart = era.startYear;
@@ -812,22 +1051,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             const leftPct = ((clampedStart - minYear) / yearSpan) * 100;
                             const widthPct = Math.max(((clampedEnd - clampedStart) / yearSpan) * 100, 1.2);
                             const eraColor = era.color || '#38bdf8';
+                            const isJumping = activeJumpEraId === era.id;
 
                             return (
                                 <div
                                     key={era.id}
-                                    onClick={() => handleJumpToYear(era.startYear)}
-                                    className={`absolute h-12 top-1 rounded-2xl border flex flex-col justify-center px-3.5 cursor-pointer group transition-all hover:scale-[1.01] shadow-md backdrop-blur-md ${
-                                        isLightCanvas ? 'border-2' : ''
-                                    }`}
+                                    onClick={() => handleJumpToYear(era.startYear, era.id)}
+                                    className={`absolute h-12 top-1 rounded-2xl border flex flex-col justify-center px-3.5 cursor-pointer group transition-all duration-300 shadow-md backdrop-blur-md ${
+                                        isJumping 
+                                            ? 'scale-[1.04] ring-4 ring-white/90 z-30 animate-pulse' 
+                                            : 'hover:scale-[1.01]'
+                                    } ${isLightCanvas ? 'border-2' : ''}`}
                                     style={{
                                         left: `${leftPct}%`,
                                         width: `${widthPct}%`,
                                         background: isLightCanvas
                                             ? `linear-gradient(135deg, ${eraColor}35 0%, ${eraColor}18 100%)`
                                             : `linear-gradient(135deg, ${eraColor}22 0%, ${eraColor}09 100%)`,
-                                        borderColor: isLightCanvas ? `${eraColor}` : `${eraColor}40`,
-                                        boxShadow: isLightCanvas ? `0 2px 8px ${eraColor}25` : `0 4px 18px ${eraColor}15, inset 0 1px 0 0 ${eraColor}45`
+                                        borderColor: isJumping ? '#ffffff' : isLightCanvas ? `${eraColor}` : `${eraColor}40`,
+                                        boxShadow: isJumping 
+                                            ? `0 0 35px 8px ${eraColor}90, inset 0 0 15px rgba(255,255,255,0.6)`
+                                            : isLightCanvas ? `0 2px 8px ${eraColor}25` : `0 4px 18px ${eraColor}15, inset 0 1px 0 0 ${eraColor}45`
                                     }}
                                     title={`${era.name} (${era.startYear} – ${era.endYear ?? 'Present'})\n${era.description || ''}\nClick to jump`}
                                 >
@@ -835,7 +1079,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                         <div className="flex items-center gap-2 truncate">
                                             {/* Glowing Dot Beacon */}
                                             <span 
-                                                className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
+                                                className={`w-2.5 h-2.5 rounded-full shrink-0 shadow-sm ${isJumping ? 'animate-ping' : ''}`}
                                                 style={{ 
                                                     backgroundColor: eraColor, 
                                                     boxShadow: `0 0 8px ${eraColor}` 
@@ -873,8 +1117,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         })}
                     </div>
 
-                    {/* 2. PRECISION CHRONOLOGICAL TIME AXIS & TICK MARKS */}
-                    <div className="relative h-10 w-full mb-10 flex items-center z-10">
+                    {/* 2. PRECISION CHRONOLOGICAL TIME AXIS & DYNAMIC TICK MARKS */}
+                    <div 
+                        onClick={handleRailClick}
+                        className="chronos-ruler-track relative h-10 w-full mb-10 flex items-center z-10 cursor-pointer"
+                        title="Chronos Time Axis — Click anywhere to Quick-Add, or scroll to zoom dynamically"
+                    >
                         {/* Glowing Rail Line */}
                         <div 
                             className="absolute top-1/2 left-0 right-0 h-0.5 -translate-y-1/2"
@@ -890,52 +1138,55 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             }}
                         />
 
-                        {/* Major Axis Ticks */}
-                        {Array.from({ length: 25 }).map((_, i) => {
-                            const tickYear = Math.round(minYear + (yearSpan * (i / 24)));
-                            const leftPct = (i / 24) * 100;
-                            const eraMatch = findEraForYear(tickYear, eras);
-                            const eraLabel = eraMatch ? (eraMatch.abbreviation || eraMatch.name) : (tickYear < 0 ? 'BCE' : 'CE');
-                            const isMajor = i % 4 === 0;
+                        {/* Dynamic Scaled Axis Ticks (Scales down to 5-year gaps: 2000 > 2005 > 2010...) */}
+                        {timelineTicks.map(tick => {
+                            const eraMatch = findEraForYear(tick.year, eras);
+                            const eraLabel = eraMatch ? (eraMatch.abbreviation || eraMatch.name) : (tick.year < 0 ? 'BCE' : 'CE');
+                            const isStep5 = dynamicStep <= 5;
 
                             return (
                                 <div 
-                                    key={i} 
+                                    key={tick.year} 
                                     className="absolute top-1/2 flex flex-col items-center -translate-x-1/2 pointer-events-none"
-                                    style={{ left: `${leftPct}%` }}
+                                    style={{ left: `${tick.pct}%` }}
                                 >
                                     {/* Tick pip */}
                                     <div 
                                         className={`-translate-y-1/2 transition-all ${
-                                            isMajor 
+                                            tick.isMajor 
                                                 ? 'w-2.5 h-2.5 rotate-45 border shadow-sm' 
+                                                : isStep5
+                                                ? 'w-0.5 h-2.5 rounded-full'
                                                 : 'w-px h-3.5'
                                         }`}
                                         style={{
-                                            backgroundColor: isMajor 
+                                            backgroundColor: tick.isMajor 
                                                 ? (isRoyal ? '#70121e' : isWiki ? '#b91c1c' : isSovereign ? '#fef08a' : '#2dd4bf')
                                                 : (isLightCanvas ? '#1c140d' : 'currentColor'),
-                                            borderColor: isMajor
+                                            borderColor: tick.isMajor
                                                 ? (isRoyal ? '#70121e' : isWiki ? '#b91c1c' : isSovereign ? '#fef08a' : '#2dd4bf')
                                                 : undefined,
-                                            opacity: isMajor ? 1 : (isLightCanvas ? 0.35 : 0.4)
+                                            opacity: tick.isMajor ? 1 : (isLightCanvas ? 0.45 : 0.4)
                                         }}
                                     />
 
-                                    {/* Year Readout */}
+                                    {/* Dynamic Year Readout */}
                                     <div className="flex flex-col items-center mt-3">
                                         <span className={`font-mono tracking-tight leading-none ${
-                                            isMajor 
-                                                ? (isLightCanvas ? 'text-xs font-black text-[#1c140d]' : 'text-xs font-bold opacity-80') 
-                                                : (isLightCanvas ? 'text-[10px] font-bold text-[#1c140d]/70' : 'text-[10px] opacity-40')
+                                            tick.isMajor 
+                                                ? (isLightCanvas ? 'text-xs font-black text-[#1c140d]' : 'text-xs font-bold opacity-90') 
+                                                : (isLightCanvas ? 'text-[10px] font-bold text-[#1c140d]/75' : 'text-[10px] opacity-60')
                                         }`}>
-                                            {tickYear}
+                                            {tick.year}
                                         </span>
-                                        <span className={`text-[9px] font-sans font-bold uppercase mt-0.5 ${
-                                            isLightCanvas ? (isRoyal ? 'text-[#70121e]' : 'text-[#b91c1c]') : 'opacity-45'
-                                        }`}>
-                                            {eraLabel}
-                                        </span>
+                                        {/* Display Era label on major ticks or when ticks are spaced out */}
+                                        {(tick.isMajor || dynamicStep >= 25) && (
+                                            <span className={`text-[9px] font-sans font-bold uppercase mt-0.5 ${
+                                                isLightCanvas ? (isRoyal ? 'text-[#70121e]' : 'text-[#b91c1c]') : 'opacity-45'
+                                            }`}>
+                                                {eraLabel}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             );
@@ -971,7 +1222,43 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 </div>
                             </div>
                         )}
+
+                        {/* ── CURRENT YEAR PLAYHEAD BEAM & CAP MARKER ── */}
+                        {currentYear >= minYear && currentYear <= maxYear && (
+                            <div 
+                                className="playhead-cap-marker absolute top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-auto z-25 cursor-pointer group"
+                                style={{ left: `${((currentYear - minYear) / yearSpan) * 100}%` }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCurrentYearInput(String(currentYear));
+                                    setIsEditingCurrentYear(true);
+                                }}
+                                title={`Current In-World Year: ${currentYear} (Click to edit)`}
+                            >
+                                <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full border-2 border-white shadow-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-mono text-[10px] font-black tracking-tight group-hover:scale-110 transition-transform">
+                                    <Clock size={11} className="animate-spin-slow" />
+                                    <span>NOW • YR {currentYear}</span>
+                                </div>
+                                <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-teal-600 -mt-0.5" />
+                            </div>
+                        )}
                     </div>
+
+                    {/* CURRENT YEAR VERTICAL PLAYHEAD LASER BEAM */}
+                    {currentYear >= minYear && currentYear <= maxYear && (
+                        <div 
+                            className="absolute top-10 bottom-0 pointer-events-none z-20"
+                            style={{ left: `${((currentYear - minYear) / yearSpan) * 100}%` }}
+                        >
+                            <div 
+                                className="w-0.5 h-full -translate-x-1/2 shadow-lg"
+                                style={{
+                                    background: 'linear-gradient(180deg, rgba(16,185,129,0.95) 0%, rgba(5,150,105,0.7) 40%, rgba(16,185,129,0.15) 100%)',
+                                    boxShadow: '0 0 10px rgba(16,185,129,0.7)'
+                                }}
+                            />
+                        </div>
+                    )}
 
                     {/* INTERACTIVE MOUSE TEMPORAL SCRUBBER CURSOR */}
                     {hoveredPosPct !== null && hoveredYear !== null && (
@@ -1109,6 +1396,19 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 <div
                                     key={item.id}
                                     onClick={() => handleSelectRibbon(item)}
+                                    onMouseEnter={(e) => {
+                                        setHoveredRibbonItem({
+                                            item,
+                                            clientX: e.clientX,
+                                            clientY: e.clientY
+                                        });
+                                    }}
+                                    onMouseMove={(e) => {
+                                        setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY });
+                                    }}
+                                    onMouseLeave={() => {
+                                        setHoveredRibbonItem(null);
+                                    }}
                                     className={`absolute transition-all cursor-pointer group hover:z-40 ${
                                         isInspected ? 'z-30 ring-2 ring-white/60 scale-[1.02]' : 'z-10'
                                     }`}
@@ -1338,14 +1638,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             <AddMilestoneModal
                 isOpen={isAddMilestoneOpen}
                 initialMilestone={editingMilestone}
+                initialYear={quickAddYear}
                 existingEntities={world.entities}
                 onSaveMilestone={handleSaveMilestone}
                 onDeleteMilestone={handleDeleteMilestone}
                 onClose={() => {
                     setIsAddMilestoneOpen(false);
                     setEditingMilestone(null);
+                    setQuickAddYear(undefined);
                 }}
             />
+
             {/* ── Manage Calendar Modal ─────────────────────────────────────── */}
             <ManageCalendarModal
                 isOpen={isManageCalendarOpen}
@@ -1355,6 +1658,263 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 onSaveCustomPresets={handleSaveCustomCalendarPresets}
                 onClose={() => setIsManageCalendarOpen(false)}
             />
+
+            {/* ── Ribbon Hover Tooltip Preview ──────────────────────────────── */}
+            {hoveredRibbonItem && !inspectedItem && (
+                <div 
+                    className="fixed pointer-events-none z-50 transition-all duration-75 transform -translate-x-1/2 -translate-y-full mb-3 shadow-2xl"
+                    style={{
+                        left: `${Math.max(160, Math.min(window.innerWidth - 160, hoveredRibbonItem.clientX))}px`,
+                        top: `${Math.max(70, hoveredRibbonItem.clientY - 12)}px`,
+                        maxWidth: '340px'
+                    }}
+                >
+                    <div className={`p-3.5 rounded-2xl border backdrop-blur-2xl shadow-2xl ${
+                        isLightCanvas
+                            ? 'bg-white/95 border-[#c8a96e]/70 text-[#2b1810]'
+                            : isVoyager
+                            ? 'bg-[#180c04]/95 border-[#2dd4bf]/50 text-[#f0dca8]'
+                            : 'bg-slate-900/95 border-slate-700/80 text-slate-100'
+                    }`}>
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <span 
+                                className="text-[9px] uppercase px-2 py-0.5 rounded-full font-bold tracking-wider"
+                                style={{
+                                    backgroundColor: `${hoveredRibbonItem.item.color || '#38bdf8'}25`,
+                                    color: hoveredRibbonItem.item.color || '#38bdf8',
+                                    border: `1px solid ${hoveredRibbonItem.item.color || '#38bdf8'}60`
+                                }}
+                            >
+                                {hoveredRibbonItem.item.type === 'event'
+                                    ? (hoveredRibbonItem.item.eventType || 'Event')
+                                    : hoveredRibbonItem.item.isDead ? 'Character • Deceased (†)' : 'Character • Living'}
+                            </span>
+                            <span className="text-[10px] font-mono font-bold opacity-60">
+                                {hoveredRibbonItem.item.end - hoveredRibbonItem.item.start} yrs span
+                            </span>
+                        </div>
+
+                        <h4 className="font-serif font-black text-sm tracking-wide truncate mb-1">
+                            {hoveredRibbonItem.item.name}
+                        </h4>
+
+                        <div className="text-[11px] font-mono font-semibold mb-2 flex items-center gap-2 opacity-80">
+                            <span>Yr {hoveredRibbonItem.item.start} — {hoveredRibbonItem.item.isDead ? `${hoveredRibbonItem.item.end} (†)` : hoveredRibbonItem.item.type === 'character' ? 'Living' : hoveredRibbonItem.item.end}</span>
+                            {findEraForYear(hoveredRibbonItem.item.start, eras) && (
+                                <span className="px-1.5 py-0.2 rounded text-[9px] uppercase font-bold bg-white/10">
+                                    {findEraForYear(hoveredRibbonItem.item.start, eras)?.abbreviation || findEraForYear(hoveredRibbonItem.item.start, eras)?.name}
+                                </span>
+                            )}
+                        </div>
+
+                        {hoveredRibbonItem.item.description && (
+                            <p className="text-[11px] leading-relaxed line-clamp-2 opacity-70 italic font-sans mb-2">
+                                {hoveredRibbonItem.item.description}
+                            </p>
+                        )}
+
+                        <div className="pt-2 border-t border-current/10 flex items-center justify-between text-[9px] uppercase font-bold tracking-wider opacity-50">
+                            <span>Click ribbon to inspect in Chronos</span>
+                            <ArrowRight size={10} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Quick-Add On Rail Action Menu ─────────────────────────────── */}
+            {quickAddMenu && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                    onClick={() => setQuickAddMenu(null)}
+                >
+                    <div 
+                        className={`w-full max-w-sm p-5 rounded-3xl border shadow-2xl backdrop-blur-2xl animate-in zoom-in-95 duration-150 ${
+                            isLightCanvas
+                                ? 'bg-[#fcfaf5] border-[#c8a96e] text-[#2b1810]'
+                                : isVoyager
+                                ? 'bg-[#180c04]/95 border-[#2dd4bf]/40 text-[#f0dca8]'
+                                : 'bg-slate-900/95 border-slate-700 text-white'
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between pb-3 border-b border-current/15 mb-3">
+                            <div className="flex items-center gap-2">
+                                <Compass size={16} className={isVoyager ? 'text-[#2dd4bf]' : isRoyal ? 'text-[#70121e]' : 'text-[#fef08a]'} />
+                                <h3 className="font-serif font-black text-sm uppercase tracking-wider">
+                                    Chronos Rail • Year {quickAddMenu.year}
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setQuickAddMenu(null)}
+                                className="p-1 rounded-lg hover:bg-current/10 transition-colors opacity-60 hover:opacity-100"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+
+                        <p className="text-xs opacity-75 mb-4 font-sans leading-relaxed">
+                            Fast-action temporal weaver for Year <strong className="font-mono text-amber-500">{quickAddMenu.year}</strong> ({formatYearWithEra(quickAddMenu.year, eras)}):
+                        </p>
+
+                        <div className="space-y-2">
+                            <button
+                                onClick={() => {
+                                    setEditingMilestone(null);
+                                    setQuickAddYear(quickAddMenu.year);
+                                    setIsAddMilestoneOpen(true);
+                                    setQuickAddMenu(null);
+                                }}
+                                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-xs font-bold transition-all text-left ${
+                                    isLightCanvas
+                                        ? 'bg-white border-[#d4c8af] hover:border-[#70121e] hover:bg-amber-50/60'
+                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                }`}
+                            >
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
+                                    <Bookmark size={14} />
+                                </div>
+                                <div>
+                                    <div className="font-bold">Add Milestone Pin</div>
+                                    <div className="text-[10px] opacity-60">Plant a pivotal diamond marker at Year {quickAddMenu.year}</div>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => handleQuickCreateEvent(quickAddMenu.year)}
+                                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-xs font-bold transition-all text-left ${
+                                    isLightCanvas
+                                        ? 'bg-white border-[#d4c8af] hover:border-[#70121e] hover:bg-amber-50/60'
+                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
+                                }`}
+                            >
+                                <div className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-500 flex items-center justify-center shrink-0">
+                                    <Sparkles size={14} />
+                                </div>
+                                <div>
+                                    <div className="font-bold">Record Historical Event</div>
+                                    <div className="text-[10px] opacity-60">Create event entity starting Year {quickAddMenu.year}</div>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    handleSetCurrentYear(quickAddMenu.year);
+                                    setQuickAddMenu(null);
+                                }}
+                                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border text-xs font-bold transition-all text-left ${
+                                    isLightCanvas
+                                        ? 'bg-white border-[#d4c8af] hover:border-[#047857] hover:bg-emerald-50/60'
+                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-emerald-500/40'
+                                }`}
+                            >
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                                    <Clock size={14} />
+                                </div>
+                                <div>
+                                    <div className="font-bold">Set Current Year Playhead</div>
+                                    <div className="text-[10px] opacity-60">Move "The Present" playhead to Year {quickAddMenu.year}</div>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    handleJumpToYear(quickAddMenu.year);
+                                    setQuickAddMenu(null);
+                                }}
+                                className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-bold transition-all text-left opacity-75 hover:opacity-100 hover:bg-current/5"
+                            >
+                                <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+                                    <Compass size={14} />
+                                </div>
+                                <span>Center Camera View Here</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Edit Current Year Playhead Modal ───────────────────────────── */}
+            {isEditingCurrentYear && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                    onClick={() => setIsEditingCurrentYear(false)}
+                >
+                    <div 
+                        className={`w-full max-w-sm p-5 rounded-3xl border shadow-2xl backdrop-blur-2xl animate-in zoom-in-95 duration-150 ${
+                            isLightCanvas
+                                ? 'bg-[#fcfaf5] border-[#c8a96e] text-[#2b1810]'
+                                : isVoyager
+                                ? 'bg-[#180c04]/95 border-[#2dd4bf]/40 text-[#f0dca8]'
+                                : 'bg-slate-900/95 border-slate-700 text-white'
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between pb-3 border-b border-current/15 mb-3">
+                            <div className="flex items-center gap-2">
+                                <Clock size={16} className="text-emerald-400" />
+                                <h3 className="font-serif font-black text-sm uppercase tracking-wider">
+                                    Set Current Year Playhead
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setIsEditingCurrentYear(false)}
+                                className="p-1 rounded-lg hover:bg-current/10 transition-colors opacity-60 hover:opacity-100"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+
+                        <p className="text-xs opacity-70 mb-3 font-sans leading-relaxed">
+                            Anchors the in-world present year marker across the Chronos timeline and campaign journals.
+                        </p>
+
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                const num = parseInt(currentYearInput, 10);
+                                if (!isNaN(num)) {
+                                    handleSetCurrentYear(num);
+                                }
+                            }}
+                            className="space-y-4"
+                        >
+                            <div>
+                                <label className="text-[10px] uppercase font-bold tracking-wider opacity-60 block mb-1">
+                                    In-World Year (Numeric)
+                                </label>
+                                <input
+                                    type="number"
+                                    value={currentYearInput}
+                                    onChange={(e) => setCurrentYearInput(e.target.value)}
+                                    placeholder="e.g. 1492"
+                                    className={`w-full px-4 py-2.5 rounded-xl border text-sm font-mono font-bold focus:outline-none ${
+                                        isLightCanvas
+                                            ? 'bg-white border-[#c8a96e] text-[#2b1810]'
+                                            : 'bg-slate-950 border-slate-700 text-white'
+                                    }`}
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditingCurrentYear(false)}
+                                    className="px-3.5 py-2 rounded-xl text-xs font-bold uppercase opacity-60 hover:opacity-100"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition-colors"
+                                >
+                                    Save Playhead
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

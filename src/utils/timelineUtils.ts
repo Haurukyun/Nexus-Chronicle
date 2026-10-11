@@ -546,3 +546,62 @@ export function formatHoveredYearWithCalendar(
     return `${eraStr}${suffix} · ${dateDetails.monthName} ${dateDetails.day} (Day ${dateDetails.dayOfYear}/${dateDetails.totalDays})${weekdayPart}`;
 }
 
+/**
+ * Calculates optimal step size for timeline ticks based on year span and pixel width.
+ * Aims to keep tick labels at least minPixelGap apart (default ~65px).
+ * Candidate steps: 1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000...
+ */
+export function calculateDynamicTickStep(yearSpan: number, canvasWidth: number, minPixelGap = 65): number {
+    const pxPerYear = canvasWidth / Math.max(yearSpan, 1);
+    const candidateSteps = [
+        1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500,
+        1000, 2000, 2500, 5000, 10000, 25000, 50000, 100000
+    ];
+    for (const step of candidateSteps) {
+        if (step * pxPerYear >= minPixelGap) {
+            return step;
+        }
+    }
+    return 100000;
+}
+
+export interface TimelineTick {
+    year: number;
+    pct: number;
+    isMajor: boolean;
+}
+
+/**
+ * Generates an array of timeline ticks with computed percentages and major/minor designation.
+ */
+export function generateTimelineTicks(
+    minYear: number,
+    maxYear: number,
+    yearSpan: number,
+    step: number
+): TimelineTick[] {
+    const ticks: TimelineTick[] = [];
+    if (yearSpan <= 0 || step <= 0) return ticks;
+
+    const start = Math.ceil(minYear / step) * step;
+    const end = Math.floor(maxYear / step) * step;
+
+    let majorFactor = 5;
+    if (step === 1) majorFactor = 5;
+    else if (step === 2) majorFactor = 5;
+    else if (step === 5) majorFactor = 5; // major every 25
+    else if (step === 10) majorFactor = 5; // major every 50
+    else if (step === 20 || step === 25) majorFactor = 4; // major every 100
+    else if (step === 50) majorFactor = 5; // major every 250
+    else if (step === 100) majorFactor = 5; // major every 500
+    else majorFactor = 5;
+
+    for (let y = start; y <= end; y += step) {
+        const pct = ((y - minYear) / yearSpan) * 100;
+        const isMajor = Math.abs(y % (step * majorFactor)) < 0.001 || y === 0;
+        ticks.push({ year: y, pct, isMajor });
+    }
+
+    return ticks;
+}
+
