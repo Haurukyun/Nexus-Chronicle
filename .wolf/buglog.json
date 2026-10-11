@@ -116,6 +116,19 @@
       "tags": ["export", "tauri", "desktop", "nativeFileBridge", "file-saver"],
       "occurrences": 1,
       "last_seen": "2026-10-11"
+    },
+    {
+      "id": "BUG-010",
+      "timestamp": "2026-10-11T03:54:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-10-11T03:55:00Z",
+      "error_message": "Manage Eras and Add Milestone Pin buttons do nothing when clicked in TimelineView",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "ManageErasModal and AddMilestoneModal both check `if (!isOpen) return null;` internally. In TimelineView.tsx, both modals were rendered conditionally with `{isOpen && <Modal .../>}` without passing the `isOpen` prop, leaving `isOpen` undefined inside the modal components, causing them to immediately render null.",
+      "fix": "Passed `isOpen={isManageErasOpen}` and `isOpen={isAddMilestoneOpen}` along with exact matching props (`onSaveEras`, `onSaveMilestone`, `initialMilestone`, `existingEntities`) to both modals in TimelineView.tsx.",
+      "tags": ["timeline", "modals", "props", "ux"],
+      "occurrences": 1,
+      "last_seen": "2026-10-11"
     }
   ]
 }

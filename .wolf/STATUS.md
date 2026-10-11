@@ -148,8 +148,13 @@ budget_tokens: 1000
     - Disabled background `git.autofetch` and added file watcher exclusions in `.vscode/settings.json` to stop 180s burst git polling.
   - **Viewer Delete Prompt Centering Fix** (`ViewerHeaders.tsx`):
     - Added `flex items-center justify-center` to `ConfirmDeleteButton` in `ViewerHeaders.tsx` so "Sure?" prompt text is perfectly centered both vertically and horizontally within the crimson confirmation button.
-  - **Chronos Timeline Glassmorphism & Sovereign UI Upgrade** (`TimelineView.tsx`, `ManageErasModal.tsx`, `AddMilestoneModal.tsx`, `TimelineInspectorCard.tsx`):
-    - Elevated Chronos timeline across all themes with sovereign-grade frosted glass (`backdrop-blur-xl`, `bg-slate-900/60`, border reflections), luminous glowing accents, modern pill badges, and refined inspector card aesthetics.
+  - **Chronos Timeline Visual Masterwork Overhaul** (`TimelineView.tsx`, `index.css`):
+    - **Atmospheric Celestial Header**: Luminous animated Chronos astrolabe icon with ambient aura glow, metallic gradient typography across all themes, and gem-embedded era color preview capsule.
+    - **Floating Island Control Bar**: Segmented filter pills with **live category item counters** (`All Entries (N)`, `Events (E)`, `Lifespans (L)`, `Milestones (M)`), event kind dropdown, living/deceased vitality filters with animated emerald pulse, and instant scale selectors (2K to 8K).
+    - **Interactive Temporal Scrubber**: Real-time laser line and floating year/epoch tooltip tracking mouse cursor across the canvas.
+    - **Luminous Era Aura Beams & Bands**: Commanding `h-14` glass era bands with glowing beacon dots, runic abbreviation chips, epoch date capsules, and translucent vertical aura wash columns projecting down across all timeline lanes.
+    - **Precision Chronos Rail**: Glowing 2px metallic rail with diamond tick markers and dual year/era labels.
+    - **Magnificent Altar Empty State**: Replaced the barren void with an ornate frosted lore altar featuring quick action buttons (`+ Record First Event`, `+ Inscribe Character`, `Show All Records`), eliminating desolate states when filtering.
   - **Export Single-Prompt File Saver Fix (BUG-009)** (`src-tauri/src/lib.rs`, `nativeFileBridge.ts`, `tauriAssetVault.ts`):
     - Resolved the double "where to save" dialog bug when exporting entries as Markdown or HTML. Registered native `write_file_to_disk` and `read_file_from_disk` commands in Tauri Rust runtime (`lib.rs`) for direct unrestricted filesystem persistence, and hardened `saveFileNative` so desktop mode never falls through to the browser's `showSaveFilePicker`. All single-entry and batch exports now prompt the user exactly once.
 
