@@ -3,10 +3,9 @@ import { createPortal } from 'react-dom';
 import { 
     MapPin, Globe, Link2, Trash2, X, Plus, Sparkles, Shield, Swords, 
     Compass, Search, AlertTriangle, CheckCircle2, ZoomIn, ZoomOut, 
-    RotateCcw, Maximize2, ExternalLink, Edit3, Grid, Filter, 
-    Navigation, Eye, Layers, ChevronRight
+    RotateCcw, Edit3, Grid, Filter, Eye, Layers, Move, Info
 } from 'lucide-react';
-import { WorldData, WorldEntity, MapConnection, Location, EntityType } from '../types';
+import { WorldData, MapConnection, Location } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
 import { NexusImage } from '../components/ui/NexusImage';
@@ -27,6 +26,10 @@ const CONNECTION_META: Record<ConnectionType, { label: string; color: string; ic
     war: { label: 'Warpaths', color: '#f87171', icon: Swords },
 };
 
+const MIN_ZOOM = 1.0;
+const MAX_ZOOM = 4.0;
+const PIN_HEAD_OFFSET_Y = 20; // Exact distance from pin tip to circular eye center
+
 export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate }) => {
     const { themeId, layoutMode } = useTheme();
     const isRoyal = themeId === 'royal-codex';
@@ -38,11 +41,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
     const clearFocusMapLocation = useWorldStore(state => state.clearFocusMapLocation);
 
     // Edit Modes & Link Building
-    const [editMode, setEditMode] = useState<'marker' | 'link' | 'pan'>('marker');
+    const [editMode, setEditMode] = useState<'marker' | 'link'>('marker');
     const [linkSource, setLinkSource] = useState<string | null>(null);
 
-    // Zoom & Pan state
+    // Canvas viewport state
     const containerRef = useRef<HTMLDivElement>(null);
+    const [containerSize, setContainerSize] = useState<{ width: number; height: number }>({ width: 1000, height: 600 });
     const [zoom, setZoom] = useState<number>(1);
     const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
     const [isPanning, setIsPanning] = useState(false);
@@ -67,7 +71,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
     const [showFiltersMenu, setShowFiltersMenu] = useState(false);
     const [showGrid, setShowGrid] = useState(false);
 
-    // Selected / Hovered Location for Dossier Card
+    // HOVER state: Floating mini-card by the pin
+    const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
+
+    // CLICK state: Top-left corner full inspector dossier tab
     const [dossierLocationId, setDossierLocationId] = useState<string | null>(null);
 
     // Modal state for placing/assigning a location marker
@@ -82,6 +89,35 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
     // Modal state for creating a new connection
     const [pendingConnection, setPendingConnection] = useState<{ sourceId: string; targetId: string } | null>(null);
     const [selectedConnectionType, setSelectedConnectionType] = useState<ConnectionType>('trade');
+
+    // Clamp pan so map edges never pull inside container viewport
+    const clampPan = useCallback((targetPanX: number, targetPanY: number, targetZoom: number, width: number, height: number) => {
+        const maxPanX = Math.max(0, (width * (targetZoom - 1)) / 2);
+        const maxPanY = Math.max(0, (height * (targetZoom - 1)) / 2);
+        return {
+            x: Math.min(maxPanX, Math.max(-maxPanX, targetPanX)),
+            y: Math.min(maxPanY, Math.max(-maxPanY, targetPanY))
+        };
+    }, []);
+
+    // ResizeObserver on map container
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const ro = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                if (width > 0 && height > 0) {
+                    setContainerSize({ width, height });
+                    setPan(prev => clampPan(prev.x, prev.y, zoom, width, height));
+                }
+            }
+        });
+
+        ro.observe(container);
+        return () => ro.disconnect();
+    }, [zoom, clampPan]);
 
     // All location entities
     const allLocations = useMemo(() =>
@@ -101,7 +137,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
         return allLocations.filter(l => l.name.toLowerCase().includes(q));
     }, [allLocations, searchQuery]);
 
-    // Active dossier entity
+    // Active entities for hover and click
+    const hoveredEntity = useMemo(() =>
+        hoveredPinId ? allLocations.find(l => l.id === hoveredPinId) : null,
+        [allLocations, hoveredPinId]
+    );
+
     const dossierEntity = useMemo(() =>
         dossierLocationId ? allLocations.find(l => l.id === dossierLocationId) : null,
         [allLocations, dossierLocationId]
@@ -117,28 +158,86 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
         return counts;
     }, [world.mapConnections]);
 
-    // Zoom Helpers
-    const zoomIn = () => setZoom(z => Math.min(4.0, Math.round((z + 0.3) * 100) / 100));
-    const zoomOut = () => setZoom(z => Math.max(0.5, Math.round((z - 0.3) * 100) / 100));
+    // Precise coordinate projection from percentage (0-100%) to unscaled screen space
+    const getScreenCoords = useCallback((xPercent: number, yPercent: number) => {
+        const w = containerSize.width;
+        const h = containerSize.height;
+        const cx = w / 2;
+        const cy = h / 2;
+        const wx = (xPercent / 100 - 0.5) * w;
+        const wy = (yPercent / 100 - 0.5) * h;
+        return {
+            x: cx + pan.x + wx * zoom,
+            y: cy + pan.y + wy * zoom,
+        };
+    }, [containerSize, pan, zoom]);
+
+    // Center of pin head for exact Ley-Line attachment
+    const getPinCenterCoords = useCallback((xPercent: number, yPercent: number) => {
+        const tip = getScreenCoords(xPercent, yPercent);
+        return {
+            x: tip.x,
+            y: tip.y - PIN_HEAD_OFFSET_Y
+        };
+    }, [getScreenCoords]);
+
+    // Mathematical inverse from click coordinate to map 0-100%
+    const getMapPercentFromClient = useCallback((clientX: number, clientY: number) => {
+        if (!containerRef.current) return { x: 50, y: 50 };
+        const rect = containerRef.current.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+        const cx = w / 2;
+        const cy = h / 2;
+
+        const mx = clientX - rect.left;
+        const my = clientY - rect.top;
+
+        const wx = (mx - cx - pan.x) / zoom;
+        const wy = (my - cy - pan.y) / zoom;
+
+        const pctX = (wx / w + 0.5) * 100;
+        const pctY = (wy / h + 0.5) * 100;
+
+        return {
+            x: Math.max(0, Math.min(100, Math.round(pctX * 10) / 10)),
+            y: Math.max(0, Math.min(100, Math.round(pctY * 10) / 10)),
+        };
+    }, [pan, zoom]);
+
+    // Zoom Controls (min: 1.0, max: 4.0)
+    const zoomIn = () => {
+        setZoom(prevZoom => {
+            const nextZoom = Math.min(MAX_ZOOM, Math.round((prevZoom + 0.3) * 100) / 100);
+            setPan(prevPan => clampPan(prevPan.x, prevPan.y, nextZoom, containerSize.width, containerSize.height));
+            return nextZoom;
+        });
+    };
+
+    const zoomOut = () => {
+        setZoom(prevZoom => {
+            const nextZoom = Math.max(MIN_ZOOM, Math.round((prevZoom - 0.3) * 100) / 100);
+            setPan(prevPan => clampPan(prevPan.x, prevPan.y, nextZoom, containerSize.width, containerSize.height));
+            return nextZoom;
+        });
+    };
+
     const resetZoom = () => {
-        setZoom(1);
+        setZoom(1.0);
         setPan({ x: 0, y: 0 });
     };
 
     // Center map on specific location coordinates
     const focusOnCoordinates = useCallback((xPercent: number, yPercent: number, targetZoom = 1.8) => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-        
-        // In container space, (xPercent / 100) * rect.width is point's position from top-left.
-        // We want this point to shift to the container center (rect.width / 2).
-        // targetPanX = (0.5 - xPercent / 100) * rect.width * targetZoom
-        const targetPanX = (0.5 - xPercent / 100) * rect.width * targetZoom;
-        const targetPanY = (0.5 - yPercent / 100) * rect.height * targetZoom;
+        const w = containerSize.width;
+        const h = containerSize.height;
+        const targetPanX = (0.5 - xPercent / 100) * w * targetZoom;
+        const targetPanY = (0.5 - yPercent / 100) * h * targetZoom;
+        const clamped = clampPan(targetPanX, targetPanY, targetZoom, w, h);
 
         setZoom(targetZoom);
-        setPan({ x: targetPanX, y: targetPanY });
-    }, []);
+        setPan(clamped);
+    }, [containerSize, clampPan]);
 
     // Watch for global focusMapLocationId trigger
     useEffect(() => {
@@ -170,12 +269,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
             const delta = e.deltaY < 0 ? 1.15 : 1 / 1.15;
             setZoom(prevZoom => {
-                const nextZoom = Math.min(Math.max(prevZoom * delta, 0.5), 4.0);
+                const nextZoom = Math.min(Math.max(prevZoom * delta, MIN_ZOOM), MAX_ZOOM);
                 setPan(prevPan => {
-                    // Keep cursor stationary in world space
+                    if (nextZoom <= 1.0) return { x: 0, y: 0 };
                     const nextPanX = cursorX - ((cursorX - prevPan.x) / prevZoom) * nextZoom;
                     const nextPanY = cursorY - ((cursorY - prevPan.y) / prevZoom) * nextZoom;
-                    return { x: nextPanX, y: nextPanY };
+                    return clampPan(nextPanX, nextPanY, nextZoom, rect.width, rect.height);
                 });
                 return nextZoom;
             });
@@ -183,10 +282,16 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
         container.addEventListener('wheel', handleWheel, { passive: false });
         return () => container.removeEventListener('wheel', handleWheel);
-    }, []);
+    }, [clampPan]);
 
     // Mouse drag pan handling
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        // If clicking on an interactive UI element, button, input, or modal, do not initiate pan or pin placement
+        const targetEl = e.target as HTMLElement;
+        if (targetEl?.closest('[data-interactive-ui="true"]') || targetEl?.closest('button') || targetEl?.closest('input')) {
+            return;
+        }
+
         if (e.button !== 0) return; // Only primary button
         setIsPanning(true);
         setHasDragged(false);
@@ -205,43 +310,35 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
         if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
             setHasDragged(true);
         }
-        setPan({
-            x: dragStart.panX + dx,
-            y: dragStart.panY + dy
-        });
+        setPan(clampPan(dragStart.panX + dx, dragStart.panY + dy, zoom, containerSize.width, containerSize.height));
     };
 
     const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isPanning) return;
         setIsPanning(false);
 
-        // If user simply clicked without dragging, and is in marker mode:
-        if (!hasDragged && editMode === 'marker') {
-            handleCanvasClick(e);
+        // Strict UI check: Never place a pin when clicking on UI elements, HUDs, buttons, modals, leylines, or pins
+        const targetEl = e.target as HTMLElement;
+        const isUiOrPinClick = Boolean(
+            targetEl?.closest('[data-interactive-ui="true"]') ||
+            targetEl?.closest('[data-pin-element="true"]') ||
+            targetEl?.closest('[data-leyline-interactive="true"]') ||
+            targetEl?.closest('button') ||
+            targetEl?.closest('input') ||
+            targetEl?.closest('form')
+        );
+
+        // If user simply clicked on empty map territory without dragging:
+        if (!hasDragged && editMode === 'marker' && !isUiOrPinClick) {
+            const coords = getMapPercentFromClient(e.clientX, e.clientY);
+            setPendingMarkerPos(coords);
+            setAnchorMode('existing');
+            setMarkerNameInput('');
+            setSelectedExistingId('');
+            setLocationSearch('');
+            setDuplicateError('');
+            setReplaceConfirm(false);
         }
-    };
-
-    // Transform click to accurate 0-100% map coordinates
-    const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-
-        const offX = e.clientX - (rect.left + rect.width / 2);
-        const offY = e.clientY - (rect.top + rect.height / 2);
-
-        const worldX = (offX - pan.x) / zoom + rect.width / 2;
-        const worldY = (offY - pan.y) / zoom + rect.height / 2;
-
-        const pctX = Math.max(0, Math.min(100, Math.round(((worldX / rect.width) * 100) * 10) / 10));
-        const pctY = Math.max(0, Math.min(100, Math.round(((worldY / rect.height) * 100) * 10) / 10));
-
-        setPendingMarkerPos({ x: pctX, y: pctY });
-        setAnchorMode('existing');
-        setMarkerNameInput('');
-        setSelectedExistingId('');
-        setLocationSearch('');
-        setDuplicateError('');
-        setReplaceConfirm(false);
     };
 
     const cancelModal = () => {
@@ -250,7 +347,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
         setReplaceConfirm(false);
     };
 
-    const handleMarkerClick = (id: string, e: React.MouseEvent) => {
+    // Single click on pin: opens corner dossier inspector tab (only on click!)
+    const handlePinSingleClick = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         if (editMode === 'link') {
             if (!linkSource) {
@@ -261,9 +359,19 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                 setLinkSource(null);
             }
         } else {
-            // Open Dossier Card on pin click
             setDossierLocationId(id);
         }
+    };
+
+    // Double click on pin: opens plant/relocate anchor modal
+    const handlePinDoubleClick = (loc: Location, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setAnchorMode('existing');
+        setSelectedExistingId(loc.id);
+        setPendingMarkerPos(loc.coordinates || { x: 50, y: 50 });
+        setReplaceConfirm(true);
+        setDuplicateError('');
+        setLocationSearch('');
     };
 
     // Plant or assign anchor
@@ -365,22 +473,27 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
     return (
         <div className="w-full h-full flex flex-col animate-in fade-in duration-500 p-6 md:p-8 space-y-4 relative select-none">
             {/* Top Atlas Header & Control Bar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 z-20">
-                <div className="flex items-center gap-4">
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <h2 className={`text-4xl md:text-5xl font-serif font-black uppercase tracking-tight ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'}`}>
-                                {world.name} Atlas
-                            </h2>
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest border ${
-                                isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/60 text-[#70121e] font-bold' : 'border-current/20 bg-black/20 opacity-70'
-                            }`}>
-                                {anchoredLocations.length} Anchors
-                            </span>
-                        </div>
-                        <p className={`text-[10px] tracking-[0.3em] uppercase italic mt-0.5 opacity-60 ${textPrimary}`}>
-                            Cartographic Navigation &amp; Ley-Line Overlays
-                        </p>
+            <div data-interactive-ui="true" className="flex flex-col md:flex-row md:items-center justify-between gap-4 z-20">
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-3">
+                        <h2 className={`text-4xl md:text-5xl font-serif font-black uppercase tracking-tight ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'}`}>
+                            {world.name} Atlas
+                        </h2>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest border ${
+                            isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/60 text-[#70121e] font-bold' : 'border-current/20 bg-black/20 opacity-70'
+                        }`}>
+                            {anchoredLocations.length} Anchors
+                        </span>
+                    </div>
+
+                    {/* Instruction & Gesture Hint Banner */}
+                    <div className="flex items-center gap-2 text-[10px] font-mono tracking-wider opacity-75">
+                        <span className={`px-2 py-0.5 rounded-md font-sans font-bold flex items-center gap-1.5 border ${
+                            isRoyal ? 'bg-[#ede2cc]/70 border-[#c8a96e]/50 text-[#451a03]' : 'bg-black/10 border-current/10'
+                        }`}>
+                            <Info size={12} className={accent} />
+                            <strong>Hover:</strong> Quick Peek · <strong>Click:</strong> Open Dossier · <strong>Double-Click:</strong> Relocate · <strong>Click Canvas:</strong> Plant Anchor
+                        </span>
                     </div>
                 </div>
 
@@ -425,7 +538,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                                                         setActiveBeaconId(loc.id);
                                                         setDossierLocationId(loc.id);
                                                     } else {
-                                                        // Unanchored - open anchor modal for this location
                                                         setAnchorMode('existing');
                                                         setSelectedExistingId(loc.id);
                                                         setPendingMarkerPos({ x: 50, y: 50 });
@@ -521,7 +633,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
             {/* Ley-Line Filters Floating Dropdown */}
             {showFiltersMenu && (
-                <div className={`absolute top-24 right-8 z-40 p-4 rounded-3xl border shadow-2xl space-y-3 w-72 animate-in slide-in-from-top-2 duration-200 ${
+                <div data-interactive-ui="true" className={`absolute top-24 right-8 z-40 p-4 rounded-3xl border shadow-2xl space-y-3 w-72 animate-in slide-in-from-top-2 duration-200 ${
                     isRoyal ? 'bg-[#fbf8ef] border-2 border-[#c8a96e] text-[#2b1810]' : isWiki ? 'bg-white border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900/95 border-slate-700 text-slate-100'
                 }`}>
                     <div className="flex items-center justify-between border-b pb-2 border-current/15">
@@ -569,11 +681,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
-                className={`flex-1 w-full min-h-[480px] rounded-[3.5rem] border-8 md:border-[14px] ${borderCard} ${bgCard} shadow-2xl relative overflow-hidden group select-none ${
+                className={`flex-1 w-full min-h-[500px] rounded-[3.5rem] border-8 md:border-[14px] ${borderCard} ${bgCard} shadow-2xl relative overflow-hidden select-none ${
                     isPanning ? 'cursor-grabbing' : editMode === 'marker' ? 'cursor-crosshair' : 'cursor-grab'
                 }`}
             >
-                {/* Scaled & Panned Canvas Layer */}
+                {/* Layer 1: Scaled & Panned Background Map Image Layer (constrained to minZoom=1.0) */}
                 <div
                     style={{
                         transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
@@ -581,12 +693,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                     }}
                     className="w-full h-full relative will-change-transform select-none"
                 >
-                    {/* Background Map Image */}
                     <img
                         src={world.mapImage}
                         draggable={false}
                         className={`w-full h-full object-cover pointer-events-none ${
-                            isWiki ? 'sepia-[.8] opacity-75' : isRoyal ? 'sepia-[.35] opacity-85 contrast-105' : 'sepia-[.4] opacity-60'
+                            isWiki ? 'sepia-[.8] opacity-80' : isRoyal ? 'sepia-[.35] opacity-90 contrast-105' : 'sepia-[.4] opacity-70'
                         }`}
                         alt="World Atlas"
                     />
@@ -604,83 +715,113 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                             </svg>
                         </div>
                     )}
+                </div>
 
-                    {/* SVG Layer for Connections */}
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                        <defs>
-                            <filter id="leyline-glow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur stdDeviation="3" result="blur" />
-                                <feMerge>
-                                    <feMergeNode in="blur" />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        {(world.mapConnections || []).map(conn => {
-                            const connType = (conn.type as ConnectionType) || 'trade';
-                            if (!routeFilters[connType]) return null;
+                {/* Layer 2: Vector Crisp Ley-Lines SVG Layer (Connected directly to Pin Centers) */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+                    <defs>
+                        <filter id="leyline-glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    {(world.mapConnections || []).map(conn => {
+                        const connType = (conn.type as ConnectionType) || 'trade';
+                        if (!routeFilters[connType]) return null;
 
-                            const s = world.entities.find(e => e.id === conn.sourceId);
-                            const t = world.entities.find(e => e.id === conn.targetId);
-                            if (!s?.coordinates || !t?.coordinates) return null;
+                        const s = world.entities.find(e => e.id === conn.sourceId) as Location | undefined;
+                        const t = world.entities.find(e => e.id === conn.targetId) as Location | undefined;
+                        if (!s?.coordinates || !t?.coordinates) return null;
 
-                            const meta = CONNECTION_META[connType] || CONNECTION_META.trade;
+                        // Connect directly to the circular eye/head of the pins
+                        const p1 = getPinCenterCoords(s.coordinates.x, s.coordinates.y);
+                        const p2 = getPinCenterCoords(t.coordinates.x, t.coordinates.y);
+                        const meta = CONNECTION_META[connType] || CONNECTION_META.trade;
 
-                            return (
-                                <g key={conn.id} className="pointer-events-auto cursor-pointer group/line" onClick={(e) => deleteConnection(conn.id, e)}>
-                                    <line
-                                        x1={`${s.coordinates.x}%`}
-                                        y1={`${s.coordinates.y}%`}
-                                        x2={`${t.coordinates.x}%`}
-                                        y2={`${t.coordinates.y}%`}
-                                        stroke={meta.color}
-                                        strokeWidth="3"
-                                        strokeDasharray={meta.strokeDash || 'none'}
-                                        className={`${conn.type === 'magic' ? 'animate-pulse' : ''} opacity-70 group-hover/line:opacity-100 transition-opacity`}
-                                        filter="url(#leyline-glow)"
-                                    />
-                                    {/* Delete Connection Target Circle on Line Midpoint */}
-                                    <circle
-                                        cx={`${(s.coordinates.x + t.coordinates.x) / 2}%`}
-                                        cy={`${(s.coordinates.y + t.coordinates.y) / 2}%`}
-                                        r="13"
-                                        fill="#0f172a"
-                                        className="opacity-0 group-hover/line:opacity-100 transition-opacity"
-                                    />
-                                    <foreignObject
-                                        x={`${(s.coordinates.x + t.coordinates.x) / 2}%`}
-                                        y={`${(s.coordinates.y + t.coordinates.y) / 2}%`}
-                                        width="24"
-                                        height="24"
-                                        className="opacity-0 group-hover/line:opacity-100 transition-opacity -translate-x-3 -translate-y-3"
+                        // Midpoint for delete button
+                        const midX = (p1.x + p2.x) / 2;
+                        const midY = (p1.y + p2.y) / 2;
+
+                        return (
+                            <g key={conn.id} data-leyline-interactive="true" className="pointer-events-auto cursor-pointer group/line">
+                                {/* Generous invisible 28px hit-box line so hovering doesn't slip off */}
+                                <line
+                                    x1={p1.x}
+                                    y1={p1.y}
+                                    x2={p2.x}
+                                    y2={p2.y}
+                                    stroke="transparent"
+                                    strokeWidth="28"
+                                    className="cursor-pointer"
+                                />
+
+                                {/* Visible Crisp Ley-Line */}
+                                <line
+                                    x1={p1.x}
+                                    y1={p1.y}
+                                    x2={p2.x}
+                                    y2={p2.y}
+                                    stroke={meta.color}
+                                    strokeWidth="2.5"
+                                    strokeDasharray={meta.strokeDash || 'none'}
+                                    className={`${conn.type === 'magic' ? 'animate-pulse' : ''} opacity-80 group-hover/line:opacity-100 transition-opacity pointer-events-none`}
+                                    filter="url(#leyline-glow)"
+                                />
+
+                                {/* Perfectly Centered Delete Connection Button */}
+                                <foreignObject
+                                    x={midX - 14}
+                                    y={midY - 14}
+                                    width="28"
+                                    height="28"
+                                    className="opacity-0 group-hover/line:opacity-100 transition-all pointer-events-auto"
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={(e) => deleteConnection(conn.id, e)}
+                                        title={`Sever ${meta.label}`}
+                                        className="w-7 h-7 rounded-full bg-red-950/90 border border-red-500/80 text-red-300 hover:bg-red-600 hover:text-white flex items-center justify-center shadow-2xl transition-transform hover:scale-110 cursor-pointer"
                                     >
-                                        <Trash2 size={16} className="text-red-400 hover:text-red-300 transition-colors" />
-                                    </foreignObject>
-                                </g>
-                            );
-                        })}
-                    </svg>
+                                        <Trash2 size={13} />
+                                    </button>
+                                </foreignObject>
+                            </g>
+                        );
+                    })}
+                </svg>
 
-                    {/* Markers Layer */}
+                {/* Layer 3: Ultra-Crisp Native DOM Pins & Labels Layer */}
+                <div className="absolute inset-0 pointer-events-none z-20">
                     {anchoredLocations.map(loc => {
                         if (!loc.coordinates) return null;
+                        const screenPos = getScreenCoords(loc.coordinates.x, loc.coordinates.y);
                         const isLinkSelected = linkSource === loc.id;
                         const isBeaconActive = activeBeaconId === loc.id;
                         const isDossierOpen = dossierLocationId === loc.id;
+                        const isHovered = hoveredPinId === loc.id;
 
                         return (
                             <div
                                 key={loc.id}
-                                style={{ left: `${loc.coordinates.x}%`, top: `${loc.coordinates.y}%` }}
-                                className={`absolute -translate-x-1/2 -translate-y-1/2 group/marker z-10 transition-transform ${
-                                    isLinkSelected ? 'scale-150 brightness-150 animate-bounce' : ''
-                                }`}
-                                onClick={(e) => handleMarkerClick(loc.id, e)}
+                                data-pin-element="true"
+                                style={{
+                                    transform: `translate3d(${screenPos.x}px, ${screenPos.y}px, 0)`,
+                                }}
+                                className="absolute top-0 left-0 pointer-events-auto cursor-pointer group/pin"
+                                onClick={(e) => handlePinSingleClick(loc.id, e)}
+                                onDoubleClick={(e) => handlePinDoubleClick(loc, e)}
+                                onMouseEnter={() => setHoveredPinId(loc.id)}
+                                onMouseLeave={() => setHoveredPinId(null)}
+                                title={`${loc.name} · Click to open dossier · Double-click to relocate`}
                             >
-                                <div className="relative cursor-pointer">
+                                {/* Pin container: Pin tip touches (0, 0) */}
+                                <div className="absolute bottom-0 left-0 -translate-x-1/2 flex flex-col items-center">
                                     {/* Radiant Pulse Beacon Animation */}
                                     {isBeaconActive && (
-                                        <div className="absolute inset-0 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                                        <div className="absolute top-3 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                                             <span className={`absolute -inset-6 rounded-full animate-ping opacity-75 ${
                                                 isRoyal ? 'bg-[#70121e]' : 'bg-yellow-400'
                                             }`} />
@@ -690,55 +831,91 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                                         </div>
                                     )}
 
-                                    {/* Pin Marker Icon */}
-                                    <MapPin
-                                        className={`${
-                                            isLinkSelected
-                                                ? 'text-blue-400'
-                                                : isDossierOpen
-                                                ? isRoyal ? 'text-[#70121e] scale-125' : 'text-yellow-400 scale-125'
-                                                : accent
-                                        } drop-shadow-xl group-hover/marker:scale-125 transition-transform duration-200`}
-                                        size={32}
-                                        strokeWidth={2.5}
-                                        fill={isRoyal ? "#70121e33" : isWiki ? "#b91c1c33" : "#fef08a44"}
-                                    />
-
-                                    {/* Tiny Label Badge on Pin */}
-                                    <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider whitespace-nowrap shadow-md pointer-events-none transition-all ${
-                                        isDossierOpen || isBeaconActive
-                                            ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e]' : 'bg-yellow-400 text-black border border-yellow-200'
-                                            : isRoyal ? 'bg-[#fbf8ef] text-[#3d0a10] border border-[#c8a96e]/60' : isWiki ? 'bg-white text-[#b91c1c] border border-[#d4c8af]' : 'bg-slate-950 text-[#fef08a] border border-slate-700'
+                                    {/* Crisp Vector Pin Icon (Teardrop tip touches the coordinate point) */}
+                                    <div className={`transition-transform duration-200 ${
+                                        isLinkSelected
+                                            ? 'scale-125 animate-bounce'
+                                            : isDossierOpen || isHovered
+                                            ? 'scale-115 -translate-y-1'
+                                            : 'group-hover/pin:scale-115 group-hover/pin:-translate-y-1'
                                     }`}>
-                                        {loc.name}
+                                        <MapPin
+                                            className={`${
+                                                isLinkSelected
+                                                    ? 'text-blue-400'
+                                                    : isDossierOpen
+                                                    ? isRoyal ? 'text-[#70121e]' : 'text-amber-500'
+                                                    : accent
+                                            } drop-shadow-md`}
+                                            size={32}
+                                            strokeWidth={2.5}
+                                            fill={isRoyal ? "#70121e33" : isWiki ? "#b91c1c33" : "#fef08a44"}
+                                        />
                                     </div>
                                 </div>
+
+                                {/* Persistent Crisp Name Tag: Positioned Below the Pin Tip */}
+                                <div className={`absolute top-1 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[9px] font-sans font-bold uppercase tracking-wider whitespace-nowrap shadow-md pointer-events-none transition-all ${
+                                    isDossierOpen || isBeaconActive
+                                        ? isRoyal
+                                            ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] scale-105'
+                                            : 'bg-amber-400 text-black border border-amber-200 scale-105'
+                                        : isRoyal
+                                        ? 'bg-[#fbf8ef] text-[#3d0a10] border border-[#c8a96e]/70 group-hover/pin:scale-105 group-hover/pin:border-[#70121e]'
+                                        : isWiki
+                                        ? 'bg-white text-[#b91c1c] border border-[#d4c8af] group-hover/pin:scale-105'
+                                        : 'bg-slate-950 text-[#fef08a] border border-slate-700 group-hover/pin:scale-105'
+                                }`}>
+                                    {loc.name}
+                                </div>
+
+                                {/* Floating Hover Peek Card: Small rectangle directly above pin when hovered */}
+                                {isHovered && !isDossierOpen && (
+                                    <div className={`absolute bottom-9 left-1/2 -translate-x-1/2 pointer-events-none z-50 p-2.5 rounded-2xl border shadow-2xl flex items-center gap-2.5 whitespace-nowrap animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md ${
+                                        isRoyal
+                                            ? 'bg-[#fbf8ef]/95 border-[#c8a96e] text-[#2b1810]'
+                                            : isWiki
+                                            ? 'bg-white/95 border-[#d4c8af] text-[#1a1a1a]'
+                                            : 'bg-slate-900/95 border-slate-700 text-white'
+                                    }`}>
+                                        {loc.imageUri ? (
+                                            <div className="w-8 h-8 rounded-xl overflow-hidden border border-current/20 shrink-0 shadow-sm">
+                                                <NexusImage src={loc.imageUri} className="w-full h-full object-cover" />
+                                            </div>
+                                        ) : (
+                                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border ${
+                                                isRoyal ? 'bg-[#ede2cc] text-[#70121e] border-[#c8a96e]/50' : 'bg-black/20 border-current/20'
+                                            }`}>
+                                                <Compass size={16} />
+                                            </div>
+                                        )}
+                                        <div className="flex flex-col pr-1">
+                                            <span className="text-xs font-serif font-black uppercase tracking-tight">{loc.name}</span>
+                                            <div className="flex items-center gap-1.5 text-[8px] font-mono opacity-65">
+                                                <span>{loc.locationType || 'Sanctuary'}</span>
+                                                <span>•</span>
+                                                <span>[{loc.coordinates.x}%, {loc.coordinates.y}%]</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
                 </div>
 
                 {/* Floating Ornate Compass Rose HUD (Bottom-Left) */}
-                <div className={`absolute bottom-8 left-8 z-30 p-4 rounded-3xl border shadow-2xl backdrop-blur-md flex items-center gap-3 pointer-events-auto ${
+                <div data-interactive-ui="true" className={`absolute bottom-8 left-8 z-30 p-4 rounded-3xl border shadow-2xl backdrop-blur-md flex items-center gap-3 pointer-events-auto ${
                     isRoyal ? 'bg-[#fbf8ef]/90 border-2 border-[#c8a96e]/70 text-[#2b1810]' : isWiki ? 'bg-white/90 border-[#d4c8af] text-[#2b1810]' : isVoyager ? 'bg-[#0f172a]/90 border-[#2dd4bf]/40 text-[#2dd4bf]' : 'bg-slate-950/80 border-slate-700 text-[#fef08a]'
                 }`}>
                     <div className="relative w-12 h-12 flex items-center justify-center">
                         <svg viewBox="0 0 100 100" className="w-full h-full transform transition-transform duration-500">
-                            {/* Outer Circle Ring */}
                             <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.4" />
                             <circle cx="50" cy="50" r="41" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" opacity="0.6" />
-                            
-                            {/* Compass Rose Points */}
-                            {/* North */}
                             <polygon points="50,6 55,45 50,50 45,45" fill={isRoyal ? '#70121e' : '#e11d48'} />
-                            {/* South */}
                             <polygon points="50,94 55,55 50,50 45,55" fill="currentColor" opacity="0.5" />
-                            {/* East */}
                             <polygon points="94,50 55,55 50,50 55,45" fill="currentColor" opacity="0.7" />
-                            {/* West */}
                             <polygon points="6,50 45,55 50,50 45,45" fill="currentColor" opacity="0.7" />
-
-                            {/* Center Gem Pin */}
                             <circle cx="50" cy="50" r="4" fill={isRoyal ? '#c8a96e' : '#fbbf24'} />
                         </svg>
                         <span className="absolute top-0 text-[8px] font-serif font-black uppercase text-red-500">N</span>
@@ -751,15 +928,16 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                     </div>
                 </div>
 
-                {/* Floating Zoom & Canvas Controls HUD (Bottom-Right) */}
-                <div className={`absolute bottom-8 right-8 z-30 flex items-center gap-1.5 p-2 rounded-2xl border shadow-2xl backdrop-blur-md ${
+                {/* Floating Zoom & Canvas Controls HUD (Bottom-Right, constrained to 100% min) */}
+                <div data-interactive-ui="true" className={`absolute bottom-8 right-8 z-30 flex items-center gap-1.5 p-2 rounded-2xl border shadow-2xl backdrop-blur-md pointer-events-auto ${
                     isRoyal ? 'bg-[#fbf8ef]/90 border-2 border-[#c8a96e]/70 text-[#2b1810]' : isWiki ? 'bg-white/90 border-[#d4c8af] text-[#2b1810]' : 'bg-slate-950/85 border-slate-700 text-white'
                 }`}>
                     <button
                         type="button"
                         onClick={zoomOut}
+                        disabled={zoom <= MIN_ZOOM}
                         title="Zoom Out"
-                        className="p-2 rounded-xl hover:bg-black/10 transition-colors"
+                        className="p-2 rounded-xl hover:bg-black/10 transition-colors disabled:opacity-30 disabled:pointer-events-none"
                     >
                         <ZoomOut size={16} />
                     </button>
@@ -769,8 +947,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                     <button
                         type="button"
                         onClick={zoomIn}
+                        disabled={zoom >= MAX_ZOOM}
                         title="Zoom In"
-                        className="p-2 rounded-xl hover:bg-black/10 transition-colors"
+                        className="p-2 rounded-xl hover:bg-black/10 transition-colors disabled:opacity-30 disabled:pointer-events-none"
                     >
                         <ZoomIn size={16} />
                     </button>
@@ -778,16 +957,16 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                     <button
                         type="button"
                         onClick={resetZoom}
-                        title="Reset View & Center"
+                        title="Reset View to 100% Fit"
                         className="p-2 rounded-xl hover:bg-black/10 transition-colors"
                     >
                         <RotateCcw size={15} />
                     </button>
                 </div>
 
-                {/* Rich Location Dossier Tooltip Card (Floating Inspector) */}
+                {/* Full Location Dossier Inspector Tab (Top-Left Corner - Opens strictly on Pin Click) */}
                 {dossierEntity && dossierEntity.coordinates && (
-                    <div className={`absolute top-6 left-6 z-40 max-w-sm w-full p-5 rounded-3xl border shadow-2xl space-y-4 animate-in slide-in-from-left-4 duration-300 backdrop-blur-md ${
+                    <div data-interactive-ui="true" className={`absolute top-6 left-6 z-40 max-w-sm w-full p-5 rounded-3xl border shadow-2xl space-y-4 animate-in slide-in-from-left-4 duration-200 backdrop-blur-md pointer-events-auto ${
                         isRoyal ? 'bg-[#fbf8ef]/95 border-2 border-[#c8a96e] text-[#2b1810]' : isWiki ? 'bg-white/95 border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900/95 border-slate-700 text-slate-100'
                     }`}>
                         <div className="flex items-start justify-between gap-3 border-b pb-3 border-current/15">
@@ -865,6 +1044,15 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                                 }`}
                             >
                                 <Eye size={13} /> Open Lore
+                            </button>
+                            <button
+                                type="button"
+                                onClick={(e) => handlePinDoubleClick(dossierEntity, e)}
+                                className="p-2 rounded-xl border border-current/20 hover:bg-current/10 transition-colors flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider"
+                                title="Relocate Anchor on Map"
+                            >
+                                <Move size={13} />
+                                <span className="hidden sm:inline">Relocate</span>
                             </button>
                             <button
                                 type="button"
