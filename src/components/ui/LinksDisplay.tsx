@@ -78,7 +78,7 @@ export const LinksDisplay = ({
                             {note && (
                                 <span
                                     title={note}
-                                    className={`text-[11px] italic px-2 py-0.5 rounded-md border flex items-center gap-1 max-w-xs truncate ${
+                                    className={`text-[11px] italic px-2 py-0.5 rounded-md border flex items-center gap-1 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl truncate ${
                                         isRoyal
                                             ? 'bg-[#ede2cc]/80 border-[#c8a96e]/50 text-[#5c2a12] font-serif'
                                             : isWikiMode

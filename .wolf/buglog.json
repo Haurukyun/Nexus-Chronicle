@@ -155,6 +155,19 @@
       "tags": ["character", "tree", "lineage", "bidirectionalSync", "store"],
       "occurrences": 1,
       "last_seen": "2026-10-11"
+    },
+    {
+      "id": "BUG-013",
+      "timestamp": "2026-10-11T15:05:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-10-11T15:08:00Z",
+      "error_message": "Relational context note in SmartSelect chips prematurely truncated at 70px despite ample empty container space",
+      "file": "src/components/ui/SmartSelect.tsx",
+      "root_cause": "SmartSelect chip note trigger had a hardcoded max-w-[70px] class on the note text span, capping visible text to ~10 characters regardless of parent input width.",
+      "fix": "Removed max-w-[70px], gave chip and button min-w-0 max-w-full and shrink-0 on the target entity name, allowing the note to expand fluidly and use all available width before truncating gracefully at container edge.",
+      "tags": ["ui", "SmartSelect", "relationalNotes", "layout", "typography"],
+      "occurrences": 1,
+      "last_seen": "2026-10-11"
     }
   ]
 }

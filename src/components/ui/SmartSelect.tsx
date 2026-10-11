@@ -119,10 +119,10 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
                     const hasNote = Boolean(note && note.trim().length > 0);
 
                     return (
-                        <span key={id} className={`${tagClass} px-2 py-0.5 rounded border flex items-center gap-1.5 group/tag`}>
+                        <span key={id} className={`${tagClass} px-2 py-0.5 rounded border flex items-center gap-1.5 group/tag max-w-full min-w-0`}>
                             {isCategory && <Folder size={10} className="opacity-70 shrink-0 text-teal-400" />}
-                            <span>{target?.name || 'Unknown'}</span>
-                            {isDeceased && <span className="font-serif text-[11px] text-rose-400 font-bold leading-none">†</span>}
+                            <span className="shrink-0">{target?.name || 'Unknown'}</span>
+                            {isDeceased && <span className="font-serif text-[11px] text-rose-400 font-bold leading-none shrink-0">†</span>}
                             
                             {/* Relational Context Note Trigger */}
                             {onRelationalNotesChange && !disabled && (
@@ -130,10 +130,10 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
                                     type="button"
                                     onClick={(e) => handleOpenNoteModal(id, e)}
                                     title={hasNote ? `Context Note: "${note}"` : `Add relationship context note`}
-                                    className={`px-1 py-0.5 rounded transition-all flex items-center gap-0.5 ${hasNote ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40 font-mono text-[9px]' : 'opacity-30 hover:opacity-100 hover:text-white'}`}
+                                    className={`px-1.5 py-0.5 rounded transition-all flex items-center gap-1 min-w-0 max-w-full ${hasNote ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40 font-mono text-[9px]' : 'opacity-30 hover:opacity-100 hover:text-white'}`}
                                 >
-                                    <FileText size={9} />
-                                    {hasNote && <span className="max-w-[70px] truncate">{note}</span>}
+                                    <FileText size={9} className="shrink-0" />
+                                    {hasNote && <span className="truncate">{note}</span>}
                                 </button>
                             )}
 

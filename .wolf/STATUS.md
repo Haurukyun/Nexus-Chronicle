@@ -166,6 +166,8 @@ budget_tokens: 1000
       - **Viewer**: Same computation in `CharacterSpecificsViewer` — Parents and Children LinksDisplay use `effectiveParentIds`/`effectiveChildIds`.
       - **`reorderAndReparentEntity`**: When reparenting characters in the sidebar, now also syncs `parentsOfCharacter` on the child and `childOfCharacter` on both old and new parent.
       - **`backlinkUtils.ts`**: `parentId === targetId` for character-type entities now registers in `results.children`, completing the backlink coverage.
+  - **Relational Note Annotation Chip Width Fix (BUG-013)** (`SmartSelect.tsx`, `LinksDisplay.tsx`):
+    - Replaced hardcoded `max-w-[70px]` with fluid responsive sizing (`min-w-0 max-w-full` on button and `truncate` on note text with `shrink-0` on character name). Context note annotations now naturally utilize the entire available field space without premature truncation, while capping safely at the input border for extra-long notes. Also expanded viewer note display in `LinksDisplay.tsx` to `max-w-xl`.
 
 ---
 
