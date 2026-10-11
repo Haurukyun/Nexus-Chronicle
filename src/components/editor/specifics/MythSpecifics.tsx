@@ -15,22 +15,34 @@ interface Props {
 
 export const MythSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew }) => {
     const { layoutMode, themeId } = useTheme();
+    const isWiki = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
+
+    const textareaClass = isRoyal
+        ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
+        : isWiki
+            ? 'w-full bg-white border border-[#d4c8af] rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm'
+            : 'w-full bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm';
+
+    const labelClass = `text-[10px] uppercase tracking-widest pl-1 mb-1 block ${
+        isRoyal ? 'text-[#451a03] font-serif font-bold' : isWiki ? 'text-[#854d0e] font-black' : 'text-slate-500 font-black'
+    }`;
     return (
         <>
             <EditorGroup title="Details" icon={Scroll}>
                 <div className="lg:col-span-3">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Description & History</label>
-                    <textarea className={`w-full ${(layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.description || ''} onChange={e => onUpdate({ ...entity, description: e.target.value })} />
+                    <label className={labelClass}>Description & History</label>
+                    <textarea className={`${textareaClass} h-32`} value={entity.description || ''} onChange={e => onUpdate({ ...entity, description: e.target.value })} />
                 </div>
                 <div className="lg:col-span-3">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Secrets/Spoilers/DM notes</label>
-                    <textarea className={`w-full ${(layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.spoilerNotes || ''} onChange={e => onUpdate({ ...entity, spoilerNotes: e.target.value })} />
+                    <label className={labelClass}>Secrets/Spoilers/DM notes</label>
+                    <textarea className={`${textareaClass} h-32`} value={entity.spoilerNotes || ''} onChange={e => onUpdate({ ...entity, spoilerNotes: e.target.value })} />
                 </div>
             </EditorGroup>
             <EditorGroup title="Basic" icon={Info}>
                 <div className="lg:col-span-3">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Connected Traditions & Customs to the myth, legend or story</label>
-                    <textarea className={`w-full ${(layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.traditions || ''} onChange={e => onUpdate({ ...entity, traditions: e.target.value })} />
+                    <label className={labelClass}>Connected Traditions & Customs to the myth, legend or story</label>
+                    <textarea className={`${textareaClass} h-32`} value={entity.traditions || ''} onChange={e => onUpdate({ ...entity, traditions: e.target.value })} />
                 </div>
                 <SmartSelect label="Connected to other Myths, legends and stories" ids={entity.pairedOtherMyths || []} type="myth" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedOtherMyths: ids })} onCreate={onCreateNew} />
             </EditorGroup>

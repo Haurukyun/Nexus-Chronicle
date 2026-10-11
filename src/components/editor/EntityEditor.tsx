@@ -18,6 +18,7 @@ import { isEntityCategory } from '../../utils/documentModeUtils';
 export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, onUpdate }: EntityEditorProps) => {
     const { themeId, layoutMode } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
     const isLocation = entity.type === 'location';
     const loc = entity as Location;
 
@@ -36,25 +37,47 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
             onKeyDown={handleKeyDown}
             className="max-w-7xl mx-auto pb-40 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700"
         >
-            <header className="flex justify-between items-end border-b border-slate-500/20 pb-8">
+            <header className={`flex justify-between items-end border-b pb-8 ${isRoyal ? 'border-[#c8a96e]/40' : 'border-slate-500/20'}`}>
                 <div>
-                    <h2 className={`text-5xl font-serif font-black uppercase tracking-tighter ${false ? 'text-[#b91c1c]' : 'text-[#fef08a]'}`}>The Sovereign Scribe</h2>
-                    <p className="opacity-50 text-xs italic">Inscribing the essence of: <span className="font-bold underline">{entity.name}</span></p>
+                    <h2 className={`text-5xl font-serif font-black uppercase tracking-tighter ${
+                        isRoyal 
+                            ? 'text-[#3d0a10]' 
+                            : isWikiMode 
+                                ? 'text-[#854d0e]' 
+                                : 'text-[#fef08a]'
+                    }`}>
+                        {isRoyal ? 'The Royal Chronicler' : isWikiMode ? 'The Grand Archive' : 'The Sovereign Scribe'}
+                    </h2>
+                    <p className={`text-xs italic ${isRoyal ? 'text-[#5c2a12] opacity-80 font-serif' : 'opacity-50'}`}>
+                        Inscribing the essence of: <span className="font-bold underline">{entity.name}</span>
+                    </p>
                 </div>
                 <div className="flex gap-4 items-center">
                     <FormToggle label={entity.isReadOnly ? "LOCKED" : "Lock Entry"} checked={entity.isReadOnly} onChange={(v: boolean) => onUpdate({ ...entity, isReadOnly: v })} />
                     <button 
                         onClick={onSave} 
                         title="Commit to Chronicle (Ctrl+Enter or Ctrl+S)"
-                        className={`px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest ${false ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black'} hover:scale-105 transition-all shadow-2xl active:scale-95 flex items-center gap-2`}
+                        className={`px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest ${
+                            isRoyal
+                                ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] hover:bg-[#881337] shadow-xl'
+                                : isWikiMode
+                                    ? 'bg-[#b91c1c] text-white shadow-xl hover:bg-[#991b1b]'
+                                    : 'bg-[#fef08a] text-black shadow-2xl hover:scale-105'
+                        } transition-all active:scale-95 flex items-center gap-2`}
                     >
                         <span>Commit to Chronicle</span>
-                        <kbd className="opacity-60 text-[9px] font-mono tracking-normal px-1.5 py-0.5 rounded bg-black/20">Ctrl+↵</kbd>
+                        <kbd className={`text-[9px] font-mono tracking-normal px-1.5 py-0.5 rounded ${
+                            isRoyal ? 'bg-[#400a11] text-[#fff8e7] border border-[#c8a96e]/40' : 'bg-black/20 opacity-60'
+                        }`}>Ctrl+↵</kbd>
                     </button>
                     <button 
                         onClick={onCancel} 
                         title="Abandon Scrawl (Esc)"
-                        className="p-4 text-slate-500 hover:text-red-500 transition-colors uppercase font-black text-[10px] tracking-widest flex items-center gap-1.5"
+                        className={`p-4 transition-colors uppercase font-black text-[10px] tracking-widest flex items-center gap-1.5 ${
+                            isRoyal 
+                                ? 'text-[#70121e] hover:text-[#991b1b] font-serif' 
+                                : 'text-slate-500 hover:text-red-500'
+                        }`}
                     >
                         <span>Abandon Scrawl</span>
                         <kbd className="opacity-40 text-[9px] font-mono tracking-normal">(Esc)</kbd>
@@ -78,7 +101,9 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                         excludeIds={[entity.id]}
                     />
                     
-                    <div className="col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl border border-slate-500/10 bg-black/5">
+                    <div className={`col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl border ${
+                        isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/60 shadow-inner' : 'border-slate-500/10 bg-black/5'
+                    }`}>
                         <FormToggle 
                             label="Clean Codex (Finished)" 
                             icon={CheckSquare} 
@@ -199,7 +224,9 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                 {/* 5. SECRETS (UNIVERSAL) */}
                 <EditorGroup title="Secrets/Spoilers/DM notes" icon={Ghost}>
                     <div className="col-span-12 space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest opacity-60 block">
+                        <label className={`text-[10px] uppercase tracking-widest block ${
+                            isRoyal ? 'text-[#451a03] font-serif font-bold' : 'text-slate-500 font-black opacity-60'
+                        }`}>
                             Private Ruminations
                         </label>
                         <MarkdownEditor

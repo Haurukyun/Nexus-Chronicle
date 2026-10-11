@@ -36,7 +36,7 @@ export const EditorGroup = ({ title, icon: Icon, children }: EditorGroupProps) =
         <div className={`mb-8 border rounded-2xl shadow-lg ${containerStyle}`}>
             <div className={`px-6 py-3.5 border-b flex items-center gap-3.5 rounded-t-2xl ${headerStyle}`}>
                 {isRoyal ? (
-                    <div className="w-7 h-7 rounded-md bg-[#70121e] border border-[#c8a96e] text-[#fef08a] font-serif font-black text-sm flex items-center justify-center shadow-sm shrink-0">
+                    <div className="w-7 h-7 rounded-md bg-[#70121e] border border-[#c8a96e] text-[#fff8e7] font-serif font-black text-sm flex items-center justify-center shadow-sm shrink-0">
                         {firstChar}
                     </div>
                 ) : (

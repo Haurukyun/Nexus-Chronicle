@@ -30,8 +30,9 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     minHeight = 'h-72',
     label,
 }) => {
-    const { layoutMode } = useTheme();
+    const { themeId, layoutMode } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
     const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('split');
 
     // Wikilink autocomplete state
@@ -43,10 +44,26 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const mirrorRef = useRef<HTMLDivElement>(null);
 
-    const accent = isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const borderFocus = isWikiMode ? 'focus:border-[#b91c1c]' : 'focus:border-[#fef08a]';
-    const bg = isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/60 border-slate-700';
-    const toolbarBg = isWikiMode ? 'bg-[#f0e6d2] border-[#d4c8af]' : 'bg-slate-900 border-slate-700/60';
+    const accent = isRoyal 
+        ? 'text-[#451a03] font-serif font-bold' 
+        : isWikiMode 
+            ? 'text-[#b91c1c]' 
+            : 'text-[#fef08a]';
+    const borderFocus = isRoyal 
+        ? 'focus:border-[#70121e]' 
+        : isWikiMode 
+            ? 'focus:border-[#b91c1c]' 
+            : 'focus:border-[#fef08a]';
+    const bg = isRoyal 
+        ? 'bg-[#fbf8ef] border-[#c8a96e]/60 text-[#2b1810] font-serif placeholder:text-[#8c6d48]/70 shadow-inner' 
+        : isWikiMode 
+            ? 'bg-white border-[#d4c8af]' 
+            : 'bg-slate-800/60 border-slate-700';
+    const toolbarBg = isRoyal 
+        ? 'bg-[#ede2cc] border-[#c8a96e]/50' 
+        : isWikiMode 
+            ? 'bg-[#f0e6d2] border-[#d4c8af]' 
+            : 'bg-slate-900 border-slate-700/60';
 
     // --- Toolbar helpers ---
     const wrapSelection = useCallback((before: string, after: string) => {
@@ -163,18 +180,24 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                             type="button"
                             title={btn.label}
                             onClick={btn.action}
-                            className={`p-1.5 rounded-lg text-[10px] font-bold transition-colors hover:bg-white/10 ${isWikiMode ? 'text-[#593d2b]' : 'text-slate-400 hover:text-white'}`}
+                            className={`p-1.5 rounded-lg text-[10px] font-bold transition-colors ${
+                                isRoyal
+                                    ? 'text-[#5c2a12] hover:bg-[#c8a96e]/30 hover:text-[#2b1810]'
+                                    : isWikiMode 
+                                        ? 'text-[#593d2b] hover:bg-white/10' 
+                                        : 'text-slate-400 hover:text-white hover:bg-white/10'
+                            }`}
                         >
                             <btn.icon size={13} />
                         </button>
                     ))}
-                    <span className={`ml-2 text-[9px] font-mono opacity-30 hidden sm:block`}>
+                    <span className={`ml-2 text-[9px] font-mono ${isRoyal ? 'text-[#8c6d48]' : 'opacity-30'} hidden sm:block`}>
                         [[Entity Name]] to link
                     </span>
                 </div>
 
                 {/* View Mode Toggle */}
-                <div className={`flex items-center gap-0.5 p-1 rounded-lg ${isWikiMode ? 'bg-black/5' : 'bg-white/5'}`}>
+                <div className={`flex items-center gap-0.5 p-1 rounded-lg ${isRoyal ? 'bg-[#dfd3bc]' : isWikiMode ? 'bg-black/5' : 'bg-white/5'}`}>
                     {([['edit', PenLine], ['split', Eye], ['preview', Eye]] as const).map(([m, Icon], i) => (
                         <button
                             key={m}
@@ -183,8 +206,14 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                             onClick={() => setMode(m)}
                             className={`px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wide transition-all flex items-center gap-1 ${
                                 mode === m
-                                    ? isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black'
-                                    : 'opacity-50 hover:opacity-100'
+                                    ? isRoyal
+                                        ? 'bg-[#70121e] text-[#fff8e7] font-bold shadow-sm'
+                                        : isWikiMode 
+                                            ? 'bg-[#b91c1c] text-white' 
+                                            : 'bg-[#fef08a] text-black'
+                                    : isRoyal
+                                        ? 'text-[#5c2a12] hover:text-[#2b1810]'
+                                        : 'opacity-50 hover:opacity-100'
                             }`}
                         >
                             {i === 0 ? <PenLine size={10} /> : i === 1 ? null : <Eye size={10} />}
@@ -195,10 +224,10 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             </div>
 
             {/* Editor Body */}
-            <div className={`flex rounded-b-xl border overflow-hidden ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-700'}`}>
+            <div className={`flex rounded-b-xl border overflow-hidden ${isRoyal ? 'border-[#c8a96e]/60' : isWikiMode ? 'border-[#d4c8af]' : 'border-slate-700'}`}>
                 {/* Textarea pane */}
                 {(mode === 'edit' || mode === 'split') && (
-                    <div className={`relative flex-1 ${mode === 'split' ? 'border-r' : ''} ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-700'}`}>
+                    <div className={`relative flex-1 ${mode === 'split' ? 'border-r' : ''} ${isRoyal ? 'border-[#c8a96e]/40' : isWikiMode ? 'border-[#d4c8af]' : 'border-slate-700'}`}>
                         <textarea
                             ref={textareaRef}
                             className={`w-full ${minHeight} px-5 py-4 text-sm leading-relaxed font-mono outline-none resize-none ${bg} transition-colors ${borderFocus}`}
@@ -211,10 +240,14 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                         {/* Wikilink autocomplete dropdown */}
                         {suggestions.length > 0 && caretRect && (
                             <div
-                                className={`absolute z-50 min-w-[200px] max-w-[280px] rounded-2xl border shadow-2xl overflow-hidden ${isWikiMode ? 'bg-[#fdfcf0] border-[#d4c8af]' : 'bg-slate-900 border-slate-700'}`}
+                                className={`absolute z-50 min-w-[200px] max-w-[280px] rounded-2xl border shadow-2xl overflow-hidden ${
+                                    isRoyal ? 'bg-[#f7f0e1] border-2 border-[#c8a96e]' : isWikiMode ? 'bg-[#fdfcf0] border-[#d4c8af]' : 'bg-slate-900 border-slate-700'
+                                }`}
                                 style={{ top: caretRect.top + 28, left: caretRect.left }}
                             >
-                                <div className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest opacity-40 border-b ${isWikiMode ? 'border-[#d4c8af]' : 'border-slate-700'}`}>
+                                <div className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest ${
+                                    isRoyal ? 'text-[#5c2a12] border-b border-[#c8a96e]/40 font-serif' : isWikiMode ? 'opacity-40 border-b border-[#d4c8af]' : 'opacity-40 border-b border-slate-700'
+                                }`}>
                                     Link entity — ↑↓ navigate · Enter select · Esc cancel
                                 </div>
                                 {suggestions.map((s, i) => (
@@ -224,8 +257,16 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                                         onMouseDown={(e) => { e.preventDefault(); applyWikilink(s); }}
                                         className={`w-full text-left px-4 py-2.5 text-xs flex items-center justify-between gap-3 transition-colors ${
                                             i === suggestionIndex
-                                                ? isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-[#fef08a] text-black'
-                                                : isWikiMode ? 'hover:bg-[#b91c1c]/10' : 'hover:bg-slate-800'
+                                                ? isRoyal 
+                                                    ? 'bg-[#70121e] text-[#fff8e7] font-bold' 
+                                                    : isWikiMode 
+                                                        ? 'bg-[#b91c1c] text-white' 
+                                                        : 'bg-[#fef08a] text-black'
+                                                : isRoyal
+                                                    ? 'hover:bg-[#ede2cc] text-[#2b1810]'
+                                                    : isWikiMode 
+                                                        ? 'hover:bg-[#b91c1c]/10' 
+                                                        : 'hover:bg-slate-800'
                                         }`}
                                     >
                                         <span className="font-bold truncate">{s.name}</span>
@@ -239,7 +280,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
                 {/* Preview pane */}
                 {(mode === 'preview' || mode === 'split') && (
-                    <div className={`flex-1 ${minHeight} overflow-y-auto px-5 py-4 ${isWikiMode ? 'bg-[#fdfcf0]' : 'bg-slate-900/30'}`}>
+                    <div className={`flex-1 ${minHeight} overflow-y-auto px-5 py-4 ${isRoyal ? 'bg-[#fdfbf7] text-[#2b1810]' : isWikiMode ? 'bg-[#fdfcf0]' : 'bg-slate-900/30'}`}>
                         {value.trim() ? (
                             <MarkdownRenderer
                                 content={value}
@@ -247,7 +288,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                                 onNavigate={onNavigate}
                             />
                         ) : (
-                            <p className="text-xs italic opacity-30">Preview will appear here...</p>
+                            <p className={`text-xs italic ${isRoyal ? 'text-[#8c6d48] font-serif' : 'opacity-30'}`}>Preview will appear here...</p>
                         )}
                     </div>
                 )}

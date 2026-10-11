@@ -15,12 +15,24 @@ interface Props {
 
 export const ResourceSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew }) => {
     const { layoutMode, themeId } = useTheme();
+    const isWiki = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
+
+    const textareaClass = isRoyal
+        ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
+        : isWiki
+            ? 'w-full bg-white border border-[#d4c8af] rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm'
+            : 'w-full bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm';
+
+    const labelClass = `text-[10px] uppercase tracking-widest pl-1 mb-1 block ${
+        isRoyal ? 'text-[#451a03] font-serif font-bold' : isWiki ? 'text-[#854d0e] font-black' : 'text-slate-500 font-black'
+    }`;
     return (
         <>
             <EditorGroup title="Traits" icon={Sparkles}>
                 <div className="lg:col-span-3">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Prominent features</label>
-                    <textarea className={`w-full ${(layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.features || ''} onChange={e => onUpdate({ ...entity, features: e.target.value })} />
+                    <label className={labelClass}>Prominent features</label>
+                    <textarea className={`${textareaClass} h-32`} value={entity.features || ''} onChange={e => onUpdate({ ...entity, features: e.target.value })} />
                 </div>
                 <FormInput label="Density" value={entity.density || ""} onChange={(v: string) => onUpdate({ ...entity, density: v })} />
                 <FormInput label="Hardness" value={entity.hardness || ""} onChange={(v: string) => onUpdate({ ...entity, hardness: v })} />
@@ -59,20 +71,20 @@ export const ResourceSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
             <EditorGroup title="Traditions" icon={Tent}>
                 <SmartSelect label="Connected to Cultures/Art" ids={entity.relatedCultures || []} type="culture" all={allEntities} onChange={(ids) => onUpdate({ ...entity, relatedCultures: ids })} onCreate={onCreateNew} />
                 <div className="lg:col-span-3">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Traditions & customs connected to the item</label>
-                    <textarea className={`w-full ${(layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.traditions || ''} onChange={e => onUpdate({ ...entity, traditions: e.target.value })} />
+                    <label className={labelClass}>Traditions & customs connected to the item</label>
+                    <textarea className={`${textareaClass} h-32`} value={entity.traditions || ''} onChange={e => onUpdate({ ...entity, traditions: e.target.value })} />
                 </div>
             </EditorGroup>
             <EditorGroup title="Details" icon={Scroll}>
                 <SmartSelect label="Used by Occupations/Classes" ids={entity.usedProfessions || []} type="occupation" all={allEntities} onChange={(ids) => onUpdate({ ...entity, usedProfessions: ids })} onCreate={onCreateNew} />
                 <SmartSelect label="Produced by Occupations/Classes" ids={entity.producedProfessions || []} type="occupation" all={allEntities} onChange={(ids) => onUpdate({ ...entity, producedProfessions: ids })} onCreate={onCreateNew} />
                 <div className="lg:col-span-3">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Description & History</label>
-                    <textarea className={`w-full ${(layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.description || ''} onChange={e => onUpdate({ ...entity, description: e.target.value })} />
+                    <label className={labelClass}>Description & History</label>
+                    <textarea className={`${textareaClass} h-32`} value={entity.description || ''} onChange={e => onUpdate({ ...entity, description: e.target.value })} />
                 </div>
                 <div className="lg:col-span-3">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">Secrets/Spoilers/DM notes</label>
-                    <textarea className={`w-full ${(layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={entity.spoilerNotes || ''} onChange={e => onUpdate({ ...entity, spoilerNotes: e.target.value })} />
+                    <label className={labelClass}>Secrets/Spoilers/DM notes</label>
+                    <textarea className={`${textareaClass} h-32`} value={entity.spoilerNotes || ''} onChange={e => onUpdate({ ...entity, spoilerNotes: e.target.value })} />
                 </div>
             </EditorGroup>
             <EditorGroup title="Governance" icon={Anchor}>

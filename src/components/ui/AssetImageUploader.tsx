@@ -19,8 +19,9 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
     onChange,
     helperText = 'Stored uncompressed in local IndexedDB asset vault.'
 }) => {
-    const { layoutMode } = useTheme();
+    const { themeId, layoutMode } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
     const [mode, setMode] = useState<'upload' | 'url'>('upload');
     const [urlInput, setUrlInput] = useState(value && !value.startsWith('asset://') ? value : '');
     const [isSaving, setIsSaving] = useState(false);
@@ -112,7 +113,9 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
     return (
         <div className="space-y-2">
             <div className="flex items-center justify-between">
-                <label className="text-[10px] font-black uppercase tracking-widest opacity-60 block">
+                <label className={`text-[10px] uppercase tracking-widest block ${
+                    isRoyal ? 'text-[#451a03] font-serif font-bold' : 'text-slate-500 font-black opacity-60'
+                }`}>
                     {label}
                 </label>
                 {/* Mode toggle */}
@@ -122,8 +125,14 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                         onClick={() => setMode('upload')}
                         className={`px-2 py-0.5 rounded transition-all flex items-center gap-1 ${
                             mode === 'upload'
-                                ? isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black font-bold'
-                                : 'hover:bg-white/10'
+                                ? isRoyal
+                                    ? 'bg-[#70121e] text-[#fff8e7] font-bold shadow-sm'
+                                    : isWikiMode 
+                                        ? 'bg-[#b91c1c] text-white' 
+                                        : 'bg-yellow-400 text-black font-bold'
+                                : isRoyal
+                                    ? 'text-[#5c2a12] hover:bg-[#c8a96e]/20'
+                                    : 'hover:bg-white/10'
                         }`}
                     >
                         <HardDrive size={10} /> Local File
@@ -133,8 +142,14 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                         onClick={() => setMode('url')}
                         className={`px-2 py-0.5 rounded transition-all flex items-center gap-1 ${
                             mode === 'url'
-                                ? isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black font-bold'
-                                : 'hover:bg-white/10'
+                                ? isRoyal
+                                    ? 'bg-[#70121e] text-[#fff8e7] font-bold shadow-sm'
+                                    : isWikiMode 
+                                        ? 'bg-[#b91c1c] text-white' 
+                                        : 'bg-yellow-400 text-black font-bold'
+                                : isRoyal
+                                    ? 'text-[#5c2a12] hover:bg-[#c8a96e]/20'
+                                    : 'hover:bg-white/10'
                         }`}
                     >
                         <Link2 size={10} /> Web URL
@@ -145,23 +160,29 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
             {/* Preview Box & Controls */}
             {value ? (
                 <div className={`p-5 rounded-[2rem] border space-y-4 max-w-xs mx-auto shadow-2xl ${
-                    isWikiMode ? 'bg-[#fefce8] border-[#d4c8af]' : 'bg-slate-900/60 border-slate-800/80 backdrop-blur-md'
+                    isRoyal 
+                        ? 'bg-[#f7f0e1] border-2 border-[#c8a96e]/60' 
+                        : isWikiMode 
+                            ? 'bg-[#fefce8] border-[#d4c8af]' 
+                            : 'bg-slate-900/60 border-slate-800/80 backdrop-blur-md'
                 }`}>
                     <div className="flex items-center justify-between px-1">
                         <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${
-                            isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]'
+                            isRoyal ? 'text-[#451a03] font-serif' : isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]'
                         }`}>
                             Card Portrait (1:1)
                         </span>
                         <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full ${
-                            isLocalAsset ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-500/20 text-blue-300'
+                            isLocalAsset 
+                                ? isRoyal ? 'bg-[#70121e]/15 text-[#70121e] font-bold border border-[#70121e]/30' : 'bg-emerald-500/20 text-emerald-300' 
+                                : isRoyal ? 'bg-[#c8a96e]/30 text-[#451a03] font-bold border border-[#c8a96e]/50' : 'bg-blue-500/20 text-blue-300'
                         }`}>
                             {isLocalAsset ? 'Vault HD' : 'Web URL'}
                         </span>
                     </div>
 
                     <div className={`relative w-full aspect-square rounded-2xl overflow-hidden border ${
-                        isWikiMode ? 'border-[#d4c8af] bg-[#ccc5a8]/20' : 'border-slate-700/60 shadow-xl bg-slate-950/40'
+                        isRoyal ? 'border-[#c8a96e]/50 bg-[#ede2cc]/30 shadow-md' : isWikiMode ? 'border-[#d4c8af] bg-[#ccc5a8]/20' : 'border-slate-700/60 shadow-xl bg-slate-950/40'
                     } flex items-center justify-center group`}>
                         <NexusImage src={value} className="w-full h-full object-cover" containerClassName="w-full h-full" />
                         <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity z-10">
@@ -184,12 +205,12 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 px-1 pt-1 border-t border-white/5">
+                    <div className={`flex items-center justify-between gap-2 px-1 pt-1 border-t ${isRoyal ? 'border-[#c8a96e]/30' : 'border-white/5'}`}>
                         <button
                             type="button"
                             onClick={handleOpenCropForCurrent}
                             className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-colors ${
-                                isWikiMode ? 'text-[#b91c1c] hover:underline' : 'text-yellow-400 hover:text-yellow-300'
+                                isRoyal ? 'text-[#70121e] font-serif hover:underline' : isWikiMode ? 'text-[#b91c1c] hover:underline' : 'text-yellow-400 hover:text-yellow-300'
                             }`}
                         >
                             <Crop size={13} /> Crop / Center
@@ -197,7 +218,7 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                         <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
-                            className="text-xs font-bold uppercase tracking-wider opacity-70 hover:opacity-100 cursor-pointer"
+                            className={`text-xs font-bold uppercase tracking-wider ${isRoyal ? 'text-[#5c2a12] font-serif hover:text-[#2b1810]' : 'opacity-70 hover:opacity-100'} cursor-pointer`}
                         >
                             Replace
                         </button>
@@ -216,9 +237,11 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition-all ${
-                        isWikiMode
-                            ? 'border-[#d4c8af] hover:border-[#b91c1c] bg-white/40'
-                            : 'border-slate-700/60 hover:border-yellow-400/60 bg-black/20 hover:bg-black/30'
+                        isRoyal
+                            ? 'border-[#c8a96e]/60 hover:border-[#70121e] bg-[#f7f0e1]/60 hover:bg-[#f7f0e1] text-[#2b1810]'
+                            : isWikiMode
+                                ? 'border-[#d4c8af] hover:border-[#b91c1c] bg-white/40'
+                                : 'border-slate-700/60 hover:border-yellow-400/60 bg-black/20 hover:bg-black/30'
                     }`}
                 >
                     <input
@@ -230,15 +253,15 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                     />
                     <div className="flex flex-col items-center gap-3">
                         {isSaving ? (
-                            <Sparkles size={28} className="text-yellow-400 animate-spin" />
+                            <Sparkles size={28} className={isRoyal ? 'text-[#70121e] animate-spin' : 'text-yellow-400 animate-spin'} />
                         ) : (
-                            <Upload size={28} className="opacity-40" />
+                            <Upload size={28} className={isRoyal ? 'text-[#70121e]/60' : 'opacity-40'} />
                         )}
                         <div>
-                            <p className="text-sm font-bold uppercase tracking-wider">
+                            <p className={`text-sm font-bold uppercase tracking-wider ${isRoyal ? 'font-serif text-[#3d0a10]' : ''}`}>
                                 {isSaving ? 'Inscribing to Asset Vault...' : 'Choose Image or Drop File Here'}
                             </p>
-                            <p className="text-xs opacity-50 mt-1">
+                            <p className={`text-xs mt-1 ${isRoyal ? 'text-[#5c2a12]/70 font-serif' : 'opacity-50'}`}>
                                 High-resolution PNG, JPEG, WebP, SVG supported (Uncompressed)
                             </p>
                         </div>
@@ -252,9 +275,11 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                         value={urlInput}
                         onChange={(e) => setUrlInput(e.target.value)}
                         className={`flex-1 px-4 py-2.5 rounded-xl border text-xs outline-none ${
-                            isWikiMode
-                                ? 'bg-white border-[#d4c8af] text-[#2b1810]'
-                                : 'bg-slate-800 border-slate-700 text-white'
+                            isRoyal
+                                ? 'bg-[#fbf8ef] border-[#c8a96e]/60 text-[#2b1810] placeholder:text-[#8c6d48]/60 focus:border-[#70121e] font-serif'
+                                : isWikiMode
+                                    ? 'bg-white border-[#d4c8af] text-[#2b1810]'
+                                    : 'bg-slate-800 border-slate-700 text-white'
                         }`}
                     />
                     <button
@@ -262,9 +287,11 @@ export const AssetImageUploader: React.FC<AssetImageUploaderProps> = ({
                         onClick={handleApplyUrl}
                         disabled={!urlInput.trim()}
                         className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider ${
-                            isWikiMode
-                                ? 'bg-[#b91c1c] text-white disabled:opacity-40'
-                                : 'bg-[#fef08a] text-black disabled:opacity-40'
+                            isRoyal
+                                ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] hover:bg-[#881337] disabled:opacity-40 shadow-md'
+                                : isWikiMode
+                                    ? 'bg-[#b91c1c] text-white disabled:opacity-40'
+                                    : 'bg-[#fef08a] text-black disabled:opacity-40'
                         }`}
                     >
                         Apply

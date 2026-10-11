@@ -16,20 +16,37 @@ interface Props {
 
 export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, onUpdate, onCreateNew }) => {
     const mapImage = useWorldStore(state => state.world.mapImage);
-    const { layoutMode } = useTheme();
+    const { layoutMode, themeId } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
+
+    const inputClass = isRoyal
+        ? `w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-[#70121e] text-[#2b1810] font-serif`
+        : isWikiMode
+            ? 'w-full bg-white border border-[#d4c8af] rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-yellow-500'
+            : 'w-full bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-yellow-500';
+
+    const textareaClass = isRoyal
+        ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
+        : isWikiMode
+            ? 'w-full bg-white border border-[#d4c8af] rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm'
+            : 'w-full bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm';
+
+    const labelClass = `text-[10px] font-black uppercase tracking-widest pl-1 mb-1 block ${
+        isRoyal ? 'text-[#451a03] font-serif font-bold' : isWikiMode ? 'text-[#854d0e]' : 'text-slate-500'
+    }`;
 
     return (
         <>
             {/* Atlas Anchor & Coordinate Picker (P2 #10) */}
             <EditorGroup title="Atlas Anchor & Map Coordinates" icon={Compass}>
-                <div className="col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl bg-black/10 border border-white/5">
+                <div className={`col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-2xl border ${isRoyal ? 'bg-[#fbf8ef] border-[#c8a96e]/30' : 'bg-black/10 border-white/5'}`}>
                     <div>
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold uppercase tracking-wider">Atlas Pin Status:</span>
                             {loc.coordinates ? (
                                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 ${
-                                    isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/20 text-[#fef08a]'
+                                    isRoyal ? 'bg-[#70121e]/10 text-[#70121e]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/20 text-[#fef08a]'
                                 }`}>
                                     <MapPin size={11} /> Anchored (X: {loc.coordinates.x}%, Y: {loc.coordinates.y}%)
                                 </span>
@@ -59,9 +76,11 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                                 type="button"
                                 onClick={() => onUpdate({ ...loc, coordinates: { x: 50, y: 50 } })}
                                 className={`px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
-                                    isWikiMode 
-                                        ? 'border-[#b91c1c]/40 text-[#b91c1c] hover:bg-[#b91c1c]/10' 
-                                        : 'border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10'
+                                    isRoyal
+                                        ? 'border-[#c8a96e]/40 text-[#70121e] hover:bg-[#c8a96e]/10'
+                                        : isWikiMode
+                                            ? 'border-[#b91c1c]/40 text-[#b91c1c] hover:bg-[#b91c1c]/10'
+                                            : 'border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10'
                                 }`}
                             >
                                 <Crosshair size={12} /> Pin at Center (50%, 50%)
@@ -72,7 +91,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
 
                 {/* Coordinate Number Inputs */}
                 <div className="col-span-6">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">
+                    <label className={labelClass}>
                         Coordinate X (% across map, 0 - 100)
                     </label>
                     <input
@@ -91,12 +110,12 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                                 onUpdate({ ...loc, coordinates: { x: Math.max(0, Math.min(100, val)), y: loc.coordinates?.y ?? 50 } });
                             }
                         }}
-                        className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-yellow-500`}
+                        className={inputClass}
                     />
                 </div>
 
                 <div className="col-span-6">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 block">
+                    <label className={labelClass}>
                         Coordinate Y (% down map, 0 - 100)
                     </label>
                     <input
@@ -115,14 +134,14 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                                 onUpdate({ ...loc, coordinates: { x: loc.coordinates?.x ?? 50, y: Math.max(0, Math.min(100, val)) } });
                             }
                         }}
-                        className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-yellow-500`}
+                        className={inputClass}
                     />
                 </div>
 
                 {/* Interactive Mini-Map Canvas */}
                 <div className="col-span-12 space-y-2">
                     <div className="flex items-center justify-between pl-1">
-                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest flex items-center gap-1.5">
+                        <span className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 ${isRoyal ? 'text-[#451a03]' : isWikiMode ? 'text-[#854d0e]' : 'text-slate-500'}`}>
                             <Navigation size={12} className="opacity-60" /> Interactive Atlas Pin Picker
                         </span>
                         <span className="text-[9px] opacity-40 italic">
@@ -138,7 +157,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                             onUpdate({ ...loc, coordinates: { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) } });
                         }}
                         className={`relative w-full aspect-[21/9] rounded-2xl overflow-hidden border-2 cursor-crosshair shadow-lg group select-none ${
-                            isWikiMode ? 'border-[#d4c8af] bg-[#eadecc]' : 'border-slate-700 bg-slate-950'
+                            isRoyal ? 'border-[#c8a96e] bg-[#ede2cc]' : isWikiMode ? 'border-[#d4c8af] bg-[#eadecc]' : 'border-slate-700 bg-slate-950'
                         }`}
                     >
                         {/* Map Image */}
@@ -161,16 +180,16 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                                 className="absolute -translate-x-1/2 -translate-y-full pointer-events-none flex flex-col items-center animate-in zoom-in duration-200"
                             >
                                 <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider mb-0.5 shadow-md whitespace-nowrap ${
-                                    isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-black/90 text-yellow-300 border border-yellow-500/40'
+                                    isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-black/90 text-yellow-300 border border-yellow-500/40'
                                 }`}>
                                     {loc.name || 'Location'}
                                 </div>
                                 <div className={`relative flex items-center justify-center p-1.5 rounded-full shadow-2xl ${
-                                    isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.8)]'
+                                    isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.8)]'
                                 }`}>
                                     <MapPin size={18} fill="currentColor" />
                                 </div>
-                                <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-md -mt-0.5" />
+                                <div className={`w-1.5 h-1.5 rounded-full shadow-md -mt-0.5 ${isRoyal ? 'bg-[#70121e]' : 'bg-yellow-400'}`} />
                             </div>
                         )}
 
@@ -190,10 +209,10 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                 <FormInput label="Date of end" icon={Hourglass} value={loc.dateOfEnd || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfEnd: v })} gridSpan={6} />
                 
                 <div className="col-span-12">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest pl-1 mb-1 flex items-center gap-2">
+                    <label className={labelClass + ' flex items-center gap-2'}>
                         <Sparkles size={12} className="opacity-60" /> Unusual features/Traits
                     </label>
-                    <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm shadow-sm`} value={loc.unusualFeatures || ""} onChange={e => onUpdate({ ...loc, unusualFeatures: e.target.value })} />
+                    <textarea className={`${textareaClass} h-32`} value={loc.unusualFeatures || ""} onChange={e => onUpdate({ ...loc, unusualFeatures: e.target.value })} />
                 </div>
 
                 <FormInput label="Location type" icon={Anchor} value={loc.locationType || ""} options={['Settlement', 'Dungeon', 'Empire', 'Wilderness', 'Holy Ground', 'Ruins', 'Planar Overlay']} onChange={(v: string) => onUpdate({ ...loc, locationType: v })} gridSpan={4} />
@@ -212,10 +231,10 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
 
             <EditorGroup title="Traditions & Customs" icon={Tent}>
                 <div className="lg:col-span-3 space-y-2">
-                    <div className={`w-full p-4 rounded-xl border border-dashed text-[10px] font-bold uppercase opacity-40 text-center ${isWikiMode ? 'border-black/20' : 'border-white/20'}`}>
+                    <div className={`w-full p-4 rounded-xl border border-dashed text-[10px] font-bold uppercase opacity-40 text-center ${isRoyal ? 'border-[#c8a96e]/40 text-[#451a03]' : isWikiMode ? 'border-black/20' : 'border-white/20'}`}>
                         📜 Local Customs, Rituals & Cultural Nuances
                     </div>
-                    <textarea className={`w-full ${isWikiMode ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700'} border rounded-xl px-6 py-5 h-64 outline-none text-lg leading-relaxed shadow-sm`} 
+                    <textarea className={`${textareaClass} h-64 px-6 py-5 text-lg leading-relaxed`}
                         placeholder="Describe the heartbeat of this place..."
                         value={loc.traditionsAndCustoms || ""} onChange={e => onUpdate({ ...loc, traditionsAndCustoms: e.target.value })} />
                 </div>
@@ -230,8 +249,8 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
             </EditorGroup>
 
             <EditorGroup title="Governance Connections" icon={Anchor}>
-                <div className="col-span-12 border-b border-slate-500/10 pb-4 mb-2">
-                    <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em]">Governing Authorities</h3>
+                <div className={`col-span-12 border-b pb-4 mb-2 ${isRoyal ? 'border-[#c8a96e]/30' : 'border-slate-500/10'}`}>
+                    <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isRoyal ? 'text-[#451a03] font-serif' : 'text-slate-500'}`}>Governing Authorities</h3>
                     <p className="text-[9px] opacity-40 italic">Groups that wield primary power over this territory</p>
                 </div>
                 <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -244,8 +263,8 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
             </EditorGroup>
 
             <EditorGroup title="Influential Connections" icon={Globe}>
-                <div className="col-span-12 border-b border-slate-500/10 pb-4 mb-2">
-                    <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em]">Connected Entities</h3>
+                <div className={`col-span-12 border-b pb-4 mb-2 ${isRoyal ? 'border-[#c8a96e]/30' : 'border-slate-500/10'}`}>
+                    <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isRoyal ? 'text-[#451a03] font-serif' : 'text-slate-500'}`}>Connected Entities</h3>
                     <p className="text-[9px] opacity-40 italic">Groups with significant influence but no formal authority</p>
                 </div>
                 <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">

@@ -1012,7 +1012,7 @@ export interface SmartSelectProps {
 
 export interface FieldRowProps {
     label: string;
-    value?: string | string[];
+    value?: React.ReactNode;
 }
 
 export interface TrashViewProps {
