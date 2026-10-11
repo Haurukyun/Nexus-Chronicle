@@ -75,7 +75,11 @@ export async function writeVaultAsset(uri: string, blob: Blob): Promise<void> {
 
         const arrayBuffer = await blob.arrayBuffer();
         const bytes = Array.from(new Uint8Array(arrayBuffer));
-        await invoke('plugin:fs|write_file', { path: filePath, data: bytes });
+        try {
+            await invoke('write_file_to_disk', { path: filePath, data: bytes });
+        } catch {
+            await invoke('plugin:fs|write_file', { path: filePath, data: bytes });
+        }
     } catch (err) {
         // Non-fatal: IDB remains as the fallback. User data is safe.
         console.warn('[tauriAssetVault] writeVaultAsset failed:', err);
@@ -92,7 +96,13 @@ export async function readVaultAsset(uri: string): Promise<Blob | null> {
     try {
         const dir = await getVaultDir();
         const filePath = `${dir}/${uriToFileName(uri)}`;
-        const rawBytes = await invoke<number[]>('plugin:fs|read_file', { path: filePath });
+        let rawBytes: number[] | null = null;
+        try {
+            rawBytes = await invoke<number[]>('read_file_from_disk', { path: filePath });
+        } catch {
+            rawBytes = await invoke<number[]>('plugin:fs|read_file', { path: filePath });
+        }
+        if (!rawBytes) return null;
         const bytes = new Uint8Array(rawBytes);
         const ext = uriToFileName(uri).split('.').pop()?.toLowerCase() || 'png';
         return new Blob([bytes], { type: extToMime(ext) });

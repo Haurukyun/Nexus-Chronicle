@@ -81,6 +81,7 @@ budget_tokens: 2000
 - **[2026-10-04]** Grand Voyager theme has a live SVG scene (`TropicalSceneBackground.tsx`) injected as `absolute inset-0` inside `<main>` in `App.tsx` only when `themeId === 'grand-voyager'`. The `<main>` tag uses `bg-transparent` in Grand Voyager mode. Do NOT add `pageBg` to `<main>` in Grand Voyager — it covers the scene.
 - **[2026-10-04]** Inline CSS `@keyframes` in SVG components MUST use globally unique names (e.g. `gv-waveDrift1`). Generic names like `waveDrift1` will be overridden by any other component defining the same keyframe. Same rule for SVG gradient/filter `id` attributes — they are global DOM ids.
 - **[2026-10-04]** `TropicalSceneBackground` has NO palm trees (removed at user request — "they look too bad"). Scene layers: blurred sky gradient → sun with rotating rays → soft drifting clouds → headland silhouettes → layered animated waves → sand with ripples → glitter sun-path column → ship silhouette → birds → vignette → glassmorphism overlay. Do NOT re-add trees.
+- **[2026-10-11]** In Tauri desktop, NEVER allow `saveFileNative` or any desktop file routine to fall through to `downloadBlobWeb()` / `window.showSaveFilePicker()`. When desktop file writing fails or catches, falling through to browser APIs in WebView2 triggers a confusing second "Where to save" prompt. Use native Rust commands (`write_file_to_disk` with `std::fs::write`) registered in `lib.rs` to guarantee unrestricted, single-prompt desktop file saving across any drive or path.
 
 
 ## Decision Log

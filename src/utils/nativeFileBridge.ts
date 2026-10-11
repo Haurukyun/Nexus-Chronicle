@@ -30,12 +30,19 @@ export const downloadBlobWeb = async (
     // 1. Desktop Chromium: Native File System Access API
     if (typeof window !== 'undefined' && 'showSaveFilePicker' in window) {
         try {
-            const ext = fileName.includes('.') ? `.${fileName.split('.').pop()}` : '.nexus';
+            const ext = fileName.includes('.') ? `.${fileName.split('.').pop()!.toLowerCase()}` : '.nexus';
+            const description = 
+                ext === '.json' ? 'JSON Codex Document' :
+                ext === '.md' ? 'Markdown Document' :
+                ext === '.html' ? 'HTML Document' :
+                ext === '.nexus' ? 'Nexus Campaign Archive' :
+                `${ext.toUpperCase().replace('.', '')} File`;
+
             const handle = await (window as any).showSaveFilePicker({
                 suggestedName: fileName,
                 types: [
                     {
-                        description: ext === '.json' ? 'JSON Codex Document' : 'Nexus Campaign Archive',
+                        description,
                         accept: { [mimeType]: [ext] }
                     }
                 ]
@@ -113,8 +120,8 @@ export const downloadBlobWeb = async (
 
 /**
  * Universal file saver:
- * 1. Inside Tauri: Displays the OS native Windows File Explorer Save dialog,
- *    then writes binary data directly to disk without browser download trays.
+ * 1. Inside Tauri: Displays the OS native Windows File Explorer Save dialog EXACTLY ONCE,
+ *    then writes binary data directly to disk without browser download trays or duplicate prompts.
  * 2. On Web / Mobile: Gracefully falls back to downloadBlobWeb.
  */
 export const saveFileNative = async (
@@ -123,17 +130,24 @@ export const saveFileNative = async (
     filters?: FileFilter[],
     mimeType: string = 'application/octet-stream'
 ): Promise<{ success: boolean; filePath?: string; cancelled?: boolean }> => {
-    const ext = defaultFileName.includes('.') ? defaultFileName.split('.').pop()! : 'nexus';
+    const ext = defaultFileName.includes('.') ? defaultFileName.split('.').pop()!.toLowerCase() : 'nexus';
+    const filterName = 
+        ext === 'json' ? 'JSON Codex Document' :
+        ext === 'md' ? 'Markdown Document' :
+        ext === 'html' ? 'HTML Document' :
+        ext === 'nexus' ? 'Nexus Campaign Archive' :
+        `${ext.toUpperCase()} File`;
+
     const effectiveFilters = filters || [
         {
-            name: ext === 'json' ? 'JSON Codex Document' : 'Nexus Campaign Archive',
+            name: filterName,
             extensions: [ext]
         }
     ];
 
     if (isDesktopApp()) {
         try {
-            // 1. Open native OS Save Dialog
+            // 1. Open native OS Save Dialog (EXACTLY ONCE)
             let selectedPath: string | null = null;
             try {
                 selectedPath = await invoke<string | null>('plugin:dialog|save', {
@@ -165,27 +179,63 @@ export const saveFileNative = async (
                 bytes = new TextEncoder().encode(data);
             }
 
-            // 3. Write directly to disk
+            // 3. Write directly to disk via native command
             const dataPayload = Array.from(bytes);
+            let writeSuccess = false;
+            let lastError: any = null;
+
+            // Prioritize custom native Rust command with unrestricted disk access
             try {
-                await invoke('plugin:fs|write_file', {
+                await invoke('write_file_to_disk', {
                     path: selectedPath,
                     data: dataPayload
                 });
-            } catch {
-                await invoke('plugin:fs|write', {
-                    path: selectedPath,
-                    data: dataPayload
-                });
+                writeSuccess = true;
+            } catch (nativeErr) {
+                lastError = nativeErr;
+                console.warn('[nativeFileBridge] write_file_to_disk fallback to plugin:fs:', nativeErr);
+                try {
+                    await invoke('plugin:fs|write_file', {
+                        path: selectedPath,
+                        contents: dataPayload
+                    });
+                    writeSuccess = true;
+                } catch {
+                    try {
+                        await invoke('plugin:fs|write_file', {
+                            path: selectedPath,
+                            data: dataPayload
+                        });
+                        writeSuccess = true;
+                    } catch {
+                        try {
+                            await invoke('plugin:fs|write', {
+                                path: selectedPath,
+                                data: dataPayload
+                            });
+                            writeSuccess = true;
+                        } catch (fsErr) {
+                            lastError = fsErr;
+                        }
+                    }
+                }
             }
 
-            return { success: true, filePath: selectedPath };
+            if (writeSuccess) {
+                return { success: true, filePath: selectedPath };
+            }
+
+            throw lastError || new Error('Failed to write file to disk');
         } catch (err) {
-            console.warn('[nativeFileBridge] Tauri native save failed, using web fallback:', err);
+            console.error('[nativeFileBridge] Tauri native save failed:', err);
+            // On desktop, the user already interacted with the native save dialog.
+            // Do NOT fall through to downloadBlobWeb() because that triggers window.showSaveFilePicker,
+            // which causes a confusing duplicate "Where to save" prompt.
+            return { success: false };
         }
     }
 
-    // Web Fallback
+    // Web Fallback (only executed in web browsers, never in desktop Tauri)
     const blob = data instanceof Blob 
         ? data 
         : new Blob([data as any], { type: mimeType });
@@ -227,15 +277,28 @@ export const openFileNative = async (
                 return null;
             }
 
-            let rawBytes: number[];
+            let rawBytes: number[] | null = null;
+
+            // Prioritize custom native Rust command
             try {
-                rawBytes = await invoke<number[]>('plugin:fs|read_file', {
+                rawBytes = await invoke<number[]>('read_file_from_disk', {
                     path: selectedPath
                 });
-            } catch {
-                rawBytes = await invoke<number[]>('plugin:fs|read', {
-                    path: selectedPath
-                });
+            } catch (nativeErr) {
+                console.warn('[nativeFileBridge] read_file_from_disk fallback to plugin:fs:', nativeErr);
+                try {
+                    rawBytes = await invoke<number[]>('plugin:fs|read_file', {
+                        path: selectedPath
+                    });
+                } catch {
+                    rawBytes = await invoke<number[]>('plugin:fs|read', {
+                        path: selectedPath
+                    });
+                }
+            }
+
+            if (!rawBytes) {
+                return null;
             }
 
             const bytes = new Uint8Array(rawBytes);
