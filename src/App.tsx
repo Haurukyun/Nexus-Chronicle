@@ -317,7 +317,15 @@ const App = () => {
                                                 onEdit={() => handleToggleEdit(activeTabId as string)}
                                                 onDelete={() => handleDeleteToTrash(activeEntity)}
                                                 onNavigate={handleOpenEntity}
-                                                onFocusMap={() => setActiveTabId('map')}
+                                                onFocusMap={() => {
+                                                    if (activeEntity?.type === 'location') {
+                                                        useWorldStore.getState().focusMapLocation(activeEntity.id);
+                                                    } else if (activeEntity?.type === 'character' && (activeEntity as any).pairedCurrentLocationNew?.[0]) {
+                                                        useWorldStore.getState().focusMapLocation((activeEntity as any).pairedCurrentLocationNew[0]);
+                                                    } else {
+                                                        setActiveTabId('map');
+                                                    }
+                                                }}
                                             />
                                         )}
                                     </ErrorBoundary>

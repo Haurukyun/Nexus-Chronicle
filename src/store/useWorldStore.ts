@@ -44,6 +44,9 @@ interface WorldStore {
 
     activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey';
     setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey') => void;
+    focusMapLocationId: string | null;
+    focusMapLocation: (id: string) => void;
+    clearFocusMapLocation: () => void;
 
     theme: ThemeMode;
     setTheme: (theme: ThemeMode) => void;
@@ -114,6 +117,9 @@ export const useWorldStore = create<WorldStore>()(
 
             activeTabId: 'map',
             setActiveTabId: (id) => set({ activeTabId: id }),
+            focusMapLocationId: null,
+            focusMapLocation: (id) => set({ activeTabId: 'map', focusMapLocationId: id }),
+            clearFocusMapLocation: () => set({ focusMapLocationId: null }),
 
             theme: 'sovereign',
             setTheme: (theme) => set({ theme }),

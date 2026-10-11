@@ -63,6 +63,15 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                                     </div>
                                 </div>
                             </div>
+                            <div className="flex justify-end mt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => useWorldStore.getState().focusMapLocation(loc.id)}
+                                    className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-colors ${t.colors.textAccent} hover:underline cursor-pointer`}
+                                >
+                                    <Compass size={13} /> Open in World Atlas
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>

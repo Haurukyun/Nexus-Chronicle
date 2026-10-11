@@ -11,7 +11,7 @@ interface WikiInfoboxProps {
     entity: WorldEntity;
     allEntities: WorldEntity[];
     onNavigate: (id: string) => void;
-    onFocusMap: () => void;
+    onFocusMap?: (id?: string) => void;
 }
 
 export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: WikiInfoboxProps) => {
@@ -69,7 +69,7 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                                 <span className="font-mono text-white/80">{entity.coordinates ? `${Math.round(entity.coordinates.x)}, ${Math.round(entity.coordinates.y)}` : 'Uncharted'}</span>
                             </div>
                             <div className="flex justify-center pt-1">
-                                <button onClick={onFocusMap} className="text-[9px] font-black text-[#e6c687] uppercase tracking-[0.2em] hover:text-white transition-colors">Focus on Atlas View</button>
+                                <button onClick={() => { useWorldStore.getState().focusMapLocation(entity.id); onFocusMap?.(entity.id); }} className="text-[9px] font-black text-[#e6c687] uppercase tracking-[0.2em] hover:text-white transition-colors">Focus on Atlas View</button>
                             </div>
                         </div>
                     </div>
@@ -139,7 +139,7 @@ export const WikiInfobox = ({ entity, allEntities, onNavigate, onFocusMap }: Wik
                         </div>
                         <div className="h-[1px] w-full bg-[#d4c8af]/40" />
                         <div className="flex justify-center">
-                            <button onClick={onFocusMap} className="text-[9px] font-black text-[#b91c1c] uppercase tracking-[0.2em] hover:opacity-70">Focus on Atlas View</button>
+                            <button onClick={() => { useWorldStore.getState().focusMapLocation(entity.id); onFocusMap?.(entity.id); }} className="text-[9px] font-black text-[#b91c1c] uppercase tracking-[0.2em] hover:opacity-70">Focus on Atlas View</button>
                         </div>
                     </div>
                 </div>

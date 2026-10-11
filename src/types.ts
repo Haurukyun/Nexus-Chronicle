@@ -955,7 +955,7 @@ export interface EntityViewerProps {
     onEdit: () => void;
     onDelete: () => void;
     onNavigate: (id: string) => void;
-    onFocusMap: () => void;
+    onFocusMap?: (id?: string) => void;
 }
 
 export interface RelationalNoteEntry {
