@@ -1,9 +1,9 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { 
     Calendar, History, ArrowLeft, ArrowRight, Bookmark,
     Sparkles, Filter, Search, X, User, Plus, RotateCcw,
     Layers, Compass, Clock, Award, CalendarDays,
-    ZoomIn, ZoomOut, Edit3, Flag
+    ZoomIn, ZoomOut, Edit3, Flag, ChevronLeft, ChevronRight, Navigation
 } from 'lucide-react';
 import { WorldData, WorldEntity, Character, Event, FantasyEra, MilestonePin, FantasyCalendar } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
@@ -118,6 +118,36 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     // Timeline scroll container ref
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const canvasInnerRef = useRef<HTMLDivElement>(null);
+
+    // Viewport scroll tracking (for edge overflow indicators)
+    const [viewport, setViewport] = useState<{ scrollLeft: number; clientWidth: number }>({
+        scrollLeft: 0,
+        clientWidth: 0
+    });
+    const canvasWidthRef = useRef(canvasWidth);
+    canvasWidthRef.current = canvasWidth;
+
+    // Canvas click-and-drag horizontal panning
+    const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
+    const dragStartXRef = useRef<number>(0);
+    const dragStartYRef = useRef<number>(0);
+    const dragStartScrollLeftRef = useRef<number>(0);
+    const dragStartScrollTopRef = useRef<number>(0);
+    const hasDraggedRef = useRef<boolean>(false);
+
+    // Frame-accumulated wheel delta for ultra-smooth 60fps zooming without stutter or dropped frames
+    const wheelAccumulatorRef = useRef<{
+        deltaY: number;
+        clientX?: number;
+        isDezoom: boolean;
+        rafId: number | null;
+    }>({
+        deltaY: 0,
+        clientX: undefined,
+        isDezoom: false,
+        rafId: null
+    });
+    const pendingScrollLeftRef = useRef<number | null>(null);
 
     // Effective eras (fallback to B.C. / A.C. preset if not defined)
     const eras: FantasyEra[] = useMemo(() => {
@@ -362,6 +392,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
     // Click handler for inspectable ribbons
     const handleSelectRibbon = (item: ProcessedTimelineItem) => {
+        if (hasDraggedRef.current) return;
         setInspectedItem({
             type: item.type,
             id: item.id,
@@ -378,6 +409,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
     // Click handler for milestone pins
     const handleSelectMilestone = (milestone: MilestonePin) => {
+        if (hasDraggedRef.current) return;
         setInspectedItem({
             type: 'milestone',
             id: milestone.id,
@@ -434,6 +466,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
     // Jump scroll to specific year with optional animated era traversal
     const handleJumpToYear = (targetYear: number, eraId?: string) => {
+        if (hasDraggedRef.current) return;
         if (!scrollContainerRef.current) return;
         const totalWidth = canvasWidth;
         const ratio = (targetYear - minYear) / yearSpan;
@@ -456,44 +489,235 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         }
     };
 
-    // Continuous scrollable zoom (Ctrl + Wheel anywhere on canvas, or Wheel directly over ruler rail)
+    // Track scroll position to compute edge overflow indicators
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        let rafId: number | null = null;
+        const updateBounds = () => {
+            setViewport({
+                scrollLeft: container.scrollLeft,
+                clientWidth: container.clientWidth
+            });
+        };
+
+        const onScroll = () => {
+            if (rafId !== null) return;
+            rafId = requestAnimationFrame(() => {
+                rafId = null;
+                updateBounds();
+            });
+        };
+
+        const onResize = () => updateBounds();
+
+        container.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onResize);
+
+        // Initial capture
+        updateBounds();
+
+        return () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            container.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onResize);
+        };
+    }, [mainViewMode]);
+
+    // Synchronize scroll position immediately after canvas width updates in the DOM (prevents clamping)
+    useLayoutEffect(() => {
+        if (pendingScrollLeftRef.current !== null && scrollContainerRef.current) {
+            scrollContainerRef.current.scrollLeft = pendingScrollLeftRef.current;
+            pendingScrollLeftRef.current = null;
+        }
+    }, [canvasWidth]);
+
+    // Zoom canvas width with mathematically exact anchored focal point:
+    // When dezooming, ALWAYS anchors strictly to the center of the screen (clientWidth / 2).
+    // When zooming in, anchors to cursor clientX.
+    // Both canvasWidth and viewport state are updated synchronously in the same batch,
+    // guaranteeing that edge indicators and canvas ribbons are 100% aligned with zero stale drift.
+    const zoomTimeline = (
+        getNextWidth: number | ((prev: number) => number),
+        anchorMode: 'center' | 'cursor' = 'center',
+        clientX?: number
+    ) => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const currentW = canvasWidthRef.current;
+        const targetWidth = typeof getNextWidth === 'function' ? getNextWidth(currentW) : getNextWidth;
+        const nextWidth = Math.min(maxCanvasWidth, Math.max(minCanvasWidth, Math.round(targetWidth)));
+        if (nextWidth === currentW) return;
+
+        const containerWidth = container.clientWidth || 1200;
+        let anchorViewportX = containerWidth / 2;
+        if (anchorMode === 'cursor' && clientX !== undefined) {
+            const rect = container.getBoundingClientRect();
+            anchorViewportX = Math.max(0, Math.min(containerWidth, clientX - rect.left));
+        }
+
+        // Canonical zoom transformation: anchor content position is invariant across scale
+        const currentScroll = pendingScrollLeftRef.current !== null ? pendingScrollLeftRef.current : container.scrollLeft;
+        const contentX = currentScroll + anchorViewportX;
+        const ratio = contentX / currentW;
+        const targetScrollLeft = Math.max(0, ratio * nextWidth - anchorViewportX);
+
+        pendingScrollLeftRef.current = targetScrollLeft;
+        canvasWidthRef.current = nextWidth;
+
+        // Apply immediately to DOM container
+        container.scrollLeft = targetScrollLeft;
+
+        // Synchronously update both canvasWidth and viewport state in the same React 18 batch
+        setCanvasWidth(nextWidth);
+        setViewport({
+            scrollLeft: targetScrollLeft,
+            clientWidth: containerWidth
+        });
+    };
+
+    // Scroll to zoom (no modifier needed), Shift + wheel to pan horizontally
+    // Uses requestAnimationFrame delta accumulation for silky, stutter-free 60fps zooming
     useEffect(() => {
         const container = scrollContainerRef.current;
         if (!container) return;
 
         const handleWheel = (e: WheelEvent) => {
             const target = e.target as HTMLElement | null;
-            const isOverRuler = Boolean(target?.closest('.chronos-ruler-track'));
+            // Don't intercept scroll inside inspector card or inputs/modals
+            if (target?.closest('.timeline-inspector-card') || target?.closest('.modal-content') || target?.closest('input') || target?.closest('textarea')) {
+                return;
+            }
 
-            if (e.ctrlKey || e.metaKey || isOverRuler) {
+            // Horizontal panning via Shift + wheel
+            if (e.shiftKey) {
                 e.preventDefault();
-                const factor = e.deltaY < 0 ? 1.15 : 0.87;
-                const rect = container.getBoundingClientRect();
-                const cursorXInContainer = e.clientX - rect.left;
-                const contentX = cursorXInContainer + container.scrollLeft;
-
-                setCanvasWidth(prevWidth => {
-                    const nextWidth = Math.min(maxCanvasWidth, Math.max(minCanvasWidth, Math.round(prevWidth * factor)));
-                    if (nextWidth === prevWidth) return prevWidth;
-
-                    const ratio = contentX / prevWidth;
-                    const newScrollLeft = ratio * nextWidth - cursorXInContainer;
-
-                    requestAnimationFrame(() => {
-                        if (scrollContainerRef.current) {
-                            scrollContainerRef.current.scrollLeft = Math.max(0, newScrollLeft);
-                        }
-                    });
-                    return nextWidth;
+                container.scrollLeft += (e.deltaY || e.deltaX);
+                setViewport({
+                    scrollLeft: container.scrollLeft,
+                    clientWidth: container.clientWidth
                 });
+                return;
+            }
+
+            // Trackpad horizontal swipe
+            if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 3) {
+                return;
+            }
+
+            // Vertical wheel scroll: smooth, predictable proportional scaling via requestAnimationFrame
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                const acc = wheelAccumulatorRef.current;
+                acc.deltaY += e.deltaY;
+                acc.isDezoom = acc.deltaY > 0;
+                acc.clientX = e.clientX;
+
+                if (acc.rafId === null) {
+                    acc.rafId = requestAnimationFrame(() => {
+                        acc.rafId = null;
+                        const delta = acc.deltaY;
+                        acc.deltaY = 0;
+                        if (delta === 0) return;
+
+                        // Clamped delta per display frame provides smooth, predictable, silky zooming
+                        const clampedDelta = Math.max(-120, Math.min(120, delta));
+                        const factor = Math.exp(-clampedDelta * 0.0015);
+                        const isDezoom = delta > 0;
+
+                        zoomTimeline(
+                            prev => prev * factor,
+                            isDezoom ? 'center' : 'cursor',
+                            isDezoom ? undefined : acc.clientX
+                        );
+                    });
+                }
             }
         };
 
         container.addEventListener('wheel', handleWheel, { passive: false });
         return () => {
             container.removeEventListener('wheel', handleWheel);
+            if (wheelAccumulatorRef.current.rafId !== null) {
+                cancelAnimationFrame(wheelAccumulatorRef.current.rafId);
+                wheelAccumulatorRef.current.rafId = null;
+            }
         };
-    }, [minCanvasWidth, maxCanvasWidth]);
+    }, [mainViewMode]);
+
+    // Handle click-and-drag horizontal canvas panning
+    const handleCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.button !== 0) return; // Only primary/left mouse button
+        const target = e.target as HTMLElement;
+        // Don't initiate drag if clicking on buttons, inputs, modals, or inspector card
+        if (target.closest('.timeline-inspector-card, .modal-content, input, textarea, button, [role="button"]')) {
+            return;
+        }
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        dragStartXRef.current = e.clientX;
+        dragStartYRef.current = e.clientY;
+        dragStartScrollLeftRef.current = container.scrollLeft;
+        dragStartScrollTopRef.current = container.scrollTop;
+        hasDraggedRef.current = false;
+        if (wheelAccumulatorRef.current.rafId !== null) {
+            cancelAnimationFrame(wheelAccumulatorRef.current.rafId);
+            wheelAccumulatorRef.current.rafId = null;
+            wheelAccumulatorRef.current.deltaY = 0;
+        }
+        setIsDraggingCanvas(true);
+    };
+
+    useEffect(() => {
+        if (!isDraggingCanvas) return;
+
+        const handleWindowMouseMove = (e: MouseEvent) => {
+            const container = scrollContainerRef.current;
+            if (!container) return;
+            const dx = e.clientX - dragStartXRef.current;
+            const dy = e.clientY - dragStartYRef.current;
+            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+                hasDraggedRef.current = true;
+            }
+            if (hasDraggedRef.current) {
+                e.preventDefault();
+                container.scrollLeft = dragStartScrollLeftRef.current - dx;
+                container.scrollTop = dragStartScrollTopRef.current - dy;
+                setViewport({
+                    scrollLeft: container.scrollLeft,
+                    clientWidth: container.clientWidth
+                });
+            }
+        };
+
+        const handleWindowMouseUp = () => {
+            setIsDraggingCanvas(false);
+            if (hasDraggedRef.current) {
+                // Intercept and swallow subsequent click event triggered by mouseup
+                const handleClickCapture = (captureEvent: MouseEvent) => {
+                    captureEvent.stopPropagation();
+                    captureEvent.preventDefault();
+                    window.removeEventListener('click', handleClickCapture, true);
+                };
+                window.addEventListener('click', handleClickCapture, true);
+                setTimeout(() => {
+                    window.removeEventListener('click', handleClickCapture, true);
+                    hasDraggedRef.current = false;
+                }, 60);
+            }
+        };
+
+        window.addEventListener('mousemove', handleWindowMouseMove);
+        window.addEventListener('mouseup', handleWindowMouseUp);
+
+        return () => {
+            window.removeEventListener('mousemove', handleWindowMouseMove);
+            window.removeEventListener('mouseup', handleWindowMouseUp);
+        };
+    }, [isDraggingCanvas]);
 
     // Initial camera centering on Year 0 (or Current Year) on mount / realm load
     const initialCenteringDoneRef = useRef(false);
@@ -509,17 +733,152 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
         requestAnimationFrame(() => {
             if (scrollContainerRef.current) {
+                const target = Math.max(0, scrollTarget);
                 scrollContainerRef.current.scrollTo({
-                    left: Math.max(0, scrollTarget),
+                    left: target,
                     behavior: 'auto'
+                });
+                setViewport({
+                    scrollLeft: target,
+                    clientWidth: scrollContainerRef.current.clientWidth
                 });
                 initialCenteringDoneRef.current = true;
             }
         });
     }, [canvasWidth, minYear, maxYear, yearSpan, currentYear]);
 
+    // Scroll to the nearest visible timeline item to current viewport center
+    const handleGoToNearestEvent = () => {
+        const container = scrollContainerRef.current;
+        if (!container || filteredItems.length === 0) return;
+        const CANVAS_PADDING_LEFT = 24;
+        const viewCenterRatio = Math.max(0, Math.min(1, (container.scrollLeft - CANVAS_PADDING_LEFT + container.clientWidth / 2) / canvasWidth));
+        const viewCenterYear = minYear + viewCenterRatio * yearSpan;
+        let closest = filteredItems[0];
+        let closestDist = Math.abs(((closest.start + closest.end) / 2) - viewCenterYear);
+        for (const item of filteredItems) {
+            const mid = (item.start + item.end) / 2;
+            const dist = Math.abs(mid - viewCenterYear);
+            if (dist < closestDist) { closestDist = dist; closest = item; }
+        }
+        const mid = (closest.start + closest.end) / 2;
+        const ratio = (mid - minYear) / yearSpan;
+        const scrollTarget = Math.max(0, (ratio * canvasWidth + CANVAS_PADDING_LEFT) - container.clientWidth / 2);
+        container.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+        setViewport({
+            scrollLeft: scrollTarget,
+            clientWidth: container.clientWidth
+        });
+        setInspectedItem({
+            type: closest.type,
+            id: closest.id,
+            name: closest.name,
+            startYear: closest.start,
+            endYear: closest.end,
+            rawDate: (closest.entity as any)?.birthDate || (closest.entity as any)?.startDate || (closest.entity as any)?.date,
+            isDead: closest.isDead,
+            description: closest.description,
+            color: closest.color,
+            eventType: closest.eventType
+        });
+    };
+
+    // Compute the nearest off-screen items on each edge (left = before viewport, right = after viewport)
+    // Synchronously checks exact rendered ribbon bounds (including minWidth: 220px and p-6 24px padding).
+    // An item is NEVER flagged as off-screen if its badge or ribbon is even partially visible.
+    const edgeItems = useMemo(() => {
+        const viewLeft = viewport.scrollLeft;
+        const viewRight = viewport.scrollLeft + viewport.clientWidth;
+
+        // If viewport has not been measured yet, don't show edge indicators
+        if (viewport.clientWidth <= 0) {
+            return { left: null, leftCount: 0, right: null, rightCount: 0 };
+        }
+
+        const leftOffscreen: ProcessedTimelineItem[] = [];
+        const rightOffscreen: ProcessedTimelineItem[] = [];
+        const CANVAS_PADDING_LEFT = 24;
+
+        for (const item of filteredItems) {
+            const rawLeft = ((item.start - minYear) / yearSpan) * canvasWidth;
+            const rawWidth = ((item.end - item.start) / yearSpan) * canvasWidth;
+            const itemWidthPx = Math.max(rawWidth, 220); // 220px minWidth for badge
+
+            const itemLeftInContainer = CANVAS_PADDING_LEFT + rawLeft;
+            const itemRightInContainer = itemLeftInContainer + itemWidthPx;
+
+            // An item is visible if its rendered bounds intersect the visible viewport.
+            // Generous 16px buffer ensures items on screen are never mistakenly treated as off-screen.
+            const isVisible = itemRightInContainer >= (viewLeft - 16) && itemLeftInContainer <= (viewRight + 16);
+            if (isVisible) {
+                continue;
+            }
+
+            if (itemRightInContainer < (viewLeft - 16)) {
+                leftOffscreen.push(item);
+            } else if (itemLeftInContainer > (viewRight + 16)) {
+                rightOffscreen.push(item);
+            }
+        }
+
+        // Nearest to the left view edge (closest to viewLeft, i.e. largest itemRightInContainer)
+        const leftNearest = leftOffscreen.length > 0
+            ? leftOffscreen.reduce((prev, curr) => {
+                const prevEnd = CANVAS_PADDING_LEFT + ((prev.start - minYear) / yearSpan) * canvasWidth + Math.max(((prev.end - prev.start) / yearSpan) * canvasWidth, 220);
+                const currEnd = CANVAS_PADDING_LEFT + ((curr.start - minYear) / yearSpan) * canvasWidth + Math.max(((curr.end - curr.start) / yearSpan) * canvasWidth, 220);
+                return currEnd > prevEnd ? curr : prev;
+            }) : null;
+
+        // Nearest to the right view edge (closest to viewRight, i.e. smallest itemLeftInContainer)
+        const rightNearest = rightOffscreen.length > 0
+            ? rightOffscreen.reduce((prev, curr) => {
+                const prevStart = CANVAS_PADDING_LEFT + ((prev.start - minYear) / yearSpan) * canvasWidth;
+                const currStart = CANVAS_PADDING_LEFT + ((curr.start - minYear) / yearSpan) * canvasWidth;
+                return currStart < prevStart ? curr : prev;
+            }) : null;
+
+        return {
+            left: leftNearest,
+            leftCount: leftOffscreen.length,
+            right: rightNearest,
+            rightCount: rightOffscreen.length
+        };
+    }, [filteredItems, viewport, canvasWidth, minYear, yearSpan]);
+
+    // Scroll to an edge item
+    const scrollToEdgeItem = (item: ProcessedTimelineItem) => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+        const CANVAS_PADDING_LEFT = 24;
+        const mid = (item.start + item.end) / 2;
+        const ratio = (mid - minYear) / yearSpan;
+        const scrollTarget = Math.max(0, (ratio * canvasWidth + CANVAS_PADDING_LEFT) - container.clientWidth / 2);
+        container.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+        setViewport({
+            scrollLeft: scrollTarget,
+            clientWidth: container.clientWidth
+        });
+        setInspectedItem({
+            type: item.type,
+            id: item.id,
+            name: item.name,
+            startYear: item.start,
+            endYear: item.end,
+            rawDate: (item.entity as any)?.birthDate || (item.entity as any)?.startDate || (item.entity as any)?.date,
+            isDead: item.isDead,
+            description: item.description,
+            color: item.color,
+            eventType: item.eventType
+        });
+    };
+
     // Interactive mouse hover tracking on timeline canvas
     const handleCanvasMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isDraggingCanvas) {
+            setHoveredYear(null);
+            setHoveredPosPct(null);
+            return;
+        }
         if (!canvasInnerRef.current) return;
         const rect = canvasInnerRef.current.getBoundingClientRect();
         const clientX = e.clientX - rect.left;
@@ -538,6 +897,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
     // Click on ruler rail to open quick-add action menu
     const handleRailClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (hasDraggedRef.current) return;
         if ((e.target as HTMLElement).closest('button, .milestone-pin-marker, .playhead-cap-marker')) return;
         if (hoveredYear === null) return;
         setQuickAddMenu({
@@ -821,8 +1181,25 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     )}
                 </div>
 
-                {/* Right controls: Search & Zoom Level */}
+                {/* Right controls: Go to Nearest + Search + Zoom Level */}
                 <div className="flex items-center gap-3">
+                    {/* Go to Nearest Event */}
+                    {filteredItems.length > 0 && (
+                        <button
+                            onClick={handleGoToNearestEvent}
+                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm ${
+                                isRoyal ? 'border-[#c8a96e]/50 text-[#70121e] hover:bg-[#70121e]/10 bg-[#f4efe4]'
+                                : isWiki ? 'border-[#d4c8af] text-[#881337] hover:bg-[#881337]/10 bg-white'
+                                : isVoyager ? 'border-[#2dd4bf]/30 text-[#2dd4bf] hover:bg-[#2dd4bf]/10 bg-[#0d344d]/30'
+                                : 'border-[#fef08a]/20 text-[#fef08a]/70 hover:text-[#fef08a] hover:bg-[#fef08a]/5 bg-transparent'
+                            }`}
+                            title="Scroll to the nearest event or lifespan closest to your current view center"
+                        >
+                            <Navigation size={11} />
+                            <span>Nearest</span>
+                        </button>
+                    )}
+
                     {/* Search */}
                     <div className="relative">
                         <input
@@ -855,12 +1232,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         {/* Zoom out button */}
                         <button
                             onClick={() => {
-                                setCanvasWidth(prev => Math.max(minCanvasWidth, Math.round(prev * 0.82)));
+                                zoomTimeline(prev => prev * 0.82, 'center');
                             }}
                             className={`p-1 rounded-lg transition-all ${
                                 isLightCanvas ? 'hover:bg-black/5 text-[#2b1810]' : 'hover:bg-white/10 opacity-70 hover:opacity-100'
                             }`}
-                            title="Zoom Out (Ctrl + Scroll Down)"
+                            title="Zoom Out (Scroll Down)"
                         >
                             <ZoomOut size={12} />
                         </button>
@@ -872,7 +1249,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             max={maxCanvasWidth}
                             step={150}
                             value={canvasWidth}
-                            onChange={(e) => setCanvasWidth(Number(e.target.value))}
+                            onChange={(e) => {
+                                const nextW = Number(e.target.value);
+                                zoomTimeline(nextW, 'center');
+                            }}
                             className="w-16 sm:w-24 h-1.5 accent-amber-500 rounded-lg cursor-pointer"
                             title={`Canvas Width: ${canvasWidth}px (${dynamicStep}y step)`}
                         />
@@ -880,12 +1260,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         {/* Zoom in button */}
                         <button
                             onClick={() => {
-                                setCanvasWidth(prev => Math.min(maxCanvasWidth, Math.round(prev * 1.22)));
+                                zoomTimeline(prev => prev * 1.22, 'center');
                             }}
                             className={`p-1 rounded-lg transition-all ${
                                 isLightCanvas ? 'hover:bg-black/5 text-[#2b1810]' : 'hover:bg-white/10 opacity-70 hover:opacity-100'
                             }`}
-                            title="Zoom In (Ctrl + Scroll Up)"
+                            title="Zoom In (Scroll Up)"
                         >
                             <ZoomIn size={12} />
                         </button>
@@ -901,7 +1281,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 <button
                                     key={preset.label}
                                     onClick={() => {
-                                        setCanvasWidth(preset.width);
+                                        zoomTimeline(preset.width, 'center');
                                         setZoomLevel(preset.level as ZoomLevel);
                                     }}
                                     className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
@@ -921,7 +1301,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             <button
                                 onClick={() => {
                                     const target5y = Math.min(maxCanvasWidth, Math.max(2000, Math.ceil(yearSpan * 15)));
-                                    setCanvasWidth(target5y);
+                                    zoomTimeline(target5y, 'center');
                                 }}
                                 className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${
                                     dynamicStep <= 5
@@ -985,13 +1365,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 >
                     <div 
                         ref={scrollContainerRef}
-                        className="flex-1 relative overflow-auto custom-scrollbar p-6"
+                        onMouseDown={handleCanvasMouseDown}
+                        className={`flex-1 relative overflow-auto custom-scrollbar p-6 ${isDraggingCanvas ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
                     >
                 <div 
                     ref={canvasInnerRef}
                     onMouseMove={handleCanvasMouseMove}
                     onMouseLeave={handleCanvasMouseLeave}
-                    className="relative pb-28 cursor-crosshair"
+                    className={`relative pb-28 ${isDraggingCanvas ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
                     style={{ width: `${canvasWidth}px` }}
                 >
                     {/* Floating Traversal Notification */}
@@ -1226,7 +1607,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         {/* ── CURRENT YEAR PLAYHEAD BEAM & CAP MARKER ── */}
                         {currentYear >= minYear && currentYear <= maxYear && (
                             <div 
-                                className="playhead-cap-marker absolute top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-auto z-25 cursor-pointer group"
+                                className="playhead-cap-marker absolute -top-6 -translate-x-1/2 flex flex-col items-center pointer-events-auto z-25 cursor-pointer group"
                                 style={{ left: `${((currentYear - minYear) / yearSpan) * 100}%` }}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -1235,26 +1616,32 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 }}
                                 title={`Current In-World Year: ${currentYear} (Click to edit)`}
                             >
-                                <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full border-2 border-white shadow-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-mono text-[10px] font-black tracking-tight group-hover:scale-110 transition-transform">
-                                    <Clock size={11} className="animate-spin-slow" />
-                                    <span>NOW • YR {currentYear}</span>
+                                <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded border text-[9px] font-mono font-bold tracking-tight shadow-sm transition-all group-hover:scale-105 ${
+                                    isLightCanvas
+                                        ? 'bg-emerald-50/95 border-emerald-400/60 text-emerald-800'
+                                        : 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300 backdrop-blur-sm'
+                                }`}>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                                    <span>Yr {currentYear}</span>
                                 </div>
-                                <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-teal-600 -mt-0.5" />
+                                <div className="w-px h-1.5 bg-emerald-400/50" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/80 -mt-0.5" />
                             </div>
                         )}
                     </div>
 
-                    {/* CURRENT YEAR VERTICAL PLAYHEAD LASER BEAM */}
+                    {/* CURRENT YEAR SUBTLE VERTICAL REFERENCE LINE */}
                     {currentYear >= minYear && currentYear <= maxYear && (
                         <div 
-                            className="absolute top-10 bottom-0 pointer-events-none z-20"
+                            className="absolute top-10 bottom-0 pointer-events-none z-10"
                             style={{ left: `${((currentYear - minYear) / yearSpan) * 100}%` }}
                         >
                             <div 
-                                className="w-0.5 h-full -translate-x-1/2 shadow-lg"
+                                className="w-px h-full -translate-x-1/2 opacity-40"
                                 style={{
-                                    background: 'linear-gradient(180deg, rgba(16,185,129,0.95) 0%, rgba(5,150,105,0.7) 40%, rgba(16,185,129,0.15) 100%)',
-                                    boxShadow: '0 0 10px rgba(16,185,129,0.7)'
+                                    background: isLightCanvas
+                                        ? 'linear-gradient(180deg, rgba(16,185,129,0.5) 0%, rgba(16,185,129,0.2) 30%, transparent 80%)'
+                                        : 'linear-gradient(180deg, rgba(52,211,153,0.45) 0%, rgba(52,211,153,0.15) 30%, transparent 80%)'
                                 }}
                             />
                         </div>
@@ -1410,7 +1797,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                         setHoveredRibbonItem(null);
                                     }}
                                     className={`absolute transition-all cursor-pointer group hover:z-40 ${
-                                        isInspected ? 'z-30 ring-2 ring-white/60 scale-[1.02]' : 'z-10'
+                                        isInspected ? 'z-30' : 'z-10'
                                     }`}
                                     style={{
                                         left: `${leftPct}%`,
@@ -1428,7 +1815,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                 background: isLightCanvas 
                                                     ? `linear-gradient(90deg, ${itemColor}25 0%, #ffffff 100%)` 
                                                     : `linear-gradient(90deg, ${itemColor}25 0%, ${itemColor}12 100%)`,
-                                                borderColor: isLightCanvas ? `${itemColor}` : `${itemColor}55`,
+                                                borderColor: isInspected
+                                                    ? (isLightCanvas ? '#0f172a' : '#f8fafc')
+                                                    : (isLightCanvas ? `${itemColor}` : `${itemColor}55`),
+                                                borderWidth: isInspected ? '1.5px' : '1px',
                                                 boxShadow: isInspected 
                                                     ? `0 0 16px ${itemColor}60, inset 0 1px 0 0 rgba(255,255,255,0.4)` 
                                                     : isLightCanvas 
@@ -1469,7 +1859,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                 background: isLightCanvas 
                                                     ? `linear-gradient(90deg, ${itemColor}25 0%, #ffffff 100%)` 
                                                     : `linear-gradient(90deg, ${itemColor}20 0%, ${itemColor}0e 100%)`,
-                                                borderColor: isLightCanvas ? `${itemColor}` : `${itemColor}45`,
+                                                borderColor: isInspected
+                                                    ? (isLightCanvas ? '#0f172a' : '#f8fafc')
+                                                    : (isLightCanvas ? `${itemColor}` : `${itemColor}45`),
+                                                borderWidth: isInspected ? '1.5px' : '1px',
                                                 boxShadow: isInspected 
                                                     ? `0 0 16px ${itemColor}50, inset 0 1px 0 0 rgba(255,255,255,0.4)` 
                                                     : isLightCanvas
@@ -1574,10 +1967,86 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 </div>
             </div>
 
+            {/* ── Edge Overflow Indicator: Left (Prior Events Off-Screen) ──── */}
+            {edgeItems.left && (
+                <button
+                    onClick={() => scrollToEdgeItem(edgeItems.left!)}
+                    className={`absolute left-3 top-1/2 -translate-y-1/2 z-30 flex items-center gap-1.5 pl-2 pr-3 py-1.5 rounded-full border shadow-xl backdrop-blur-md transition-all hover:scale-105 active:scale-95 group cursor-pointer ${
+                        isRoyal
+                            ? 'bg-[#f4efe4]/95 border-[#c8a96e]/70 text-[#70121e] hover:border-[#70121e] shadow-[#70121e]/10'
+                            : isWiki
+                            ? 'bg-white/95 border-[#d4c8af] text-[#881337] hover:border-[#881337] shadow-black/5'
+                            : isVoyager
+                            ? 'bg-[#180c04]/90 border-[#2dd4bf]/40 text-[#2dd4bf] hover:border-[#2dd4bf] shadow-[#2dd4bf]/10'
+                            : isSovereign
+                            ? 'bg-slate-950/90 border-[#fef08a]/35 text-[#fef08a] hover:border-[#fef08a] shadow-[#fef08a]/10'
+                            : 'bg-slate-900/90 border-white/20 text-white/90 hover:border-white/50 shadow-black/20'
+                    }`}
+                    title={`Jump to nearest prior item: ${edgeItems.left.name} (${edgeItems.left.start})${edgeItems.leftCount > 1 ? ` — ${edgeItems.leftCount} off-screen to the left` : ''}`}
+                >
+                    <ChevronLeft size={13} className="shrink-0 transition-transform group-hover:-translate-x-0.5" />
+                    <span 
+                        className="w-1.5 h-1.5 rounded-full shrink-0" 
+                        style={{ 
+                            backgroundColor: edgeItems.left.color || (edgeItems.left.type === 'event' ? '#f59e0b' : '#38bdf8'),
+                            boxShadow: `0 0 6px ${edgeItems.left.color || (edgeItems.left.type === 'event' ? '#f59e0b' : '#38bdf8')}`
+                        }} 
+                    />
+                    <span className="text-[10px] font-bold tracking-tight max-w-[85px] sm:max-w-[110px] truncate">
+                        {edgeItems.left.name}
+                    </span>
+                    {edgeItems.leftCount > 1 && (
+                        <span className={`text-[9px] font-mono px-1 rounded font-semibold ${
+                            isLightCanvas ? 'bg-black/5 text-[#2b1810]/70' : 'bg-white/10 text-white/70'
+                        }`}>
+                            +{edgeItems.leftCount - 1}
+                        </span>
+                    )}
+                </button>
+            )}
+
+            {/* ── Edge Overflow Indicator: Right (Upcoming Events Off-Screen) ─── */}
+            {edgeItems.right && (
+                <button
+                    onClick={() => scrollToEdgeItem(edgeItems.right!)}
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 z-30 flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full border shadow-xl backdrop-blur-md transition-all hover:scale-105 active:scale-95 group cursor-pointer ${
+                        isRoyal
+                            ? 'bg-[#f4efe4]/95 border-[#c8a96e]/70 text-[#70121e] hover:border-[#70121e] shadow-[#70121e]/10'
+                            : isWiki
+                            ? 'bg-white/95 border-[#d4c8af] text-[#881337] hover:border-[#881337] shadow-black/5'
+                            : isVoyager
+                            ? 'bg-[#180c04]/90 border-[#2dd4bf]/40 text-[#2dd4bf] hover:border-[#2dd4bf] shadow-[#2dd4bf]/10'
+                            : isSovereign
+                            ? 'bg-slate-950/90 border-[#fef08a]/35 text-[#fef08a] hover:border-[#fef08a] shadow-[#fef08a]/10'
+                            : 'bg-slate-900/90 border-white/20 text-white/90 hover:border-white/50 shadow-black/20'
+                    }`}
+                    title={`Jump to nearest upcoming item: ${edgeItems.right.name} (${edgeItems.right.start})${edgeItems.rightCount > 1 ? ` — ${edgeItems.rightCount} off-screen to the right` : ''}`}
+                >
+                    {edgeItems.rightCount > 1 && (
+                        <span className={`text-[9px] font-mono px-1 rounded font-semibold ${
+                            isLightCanvas ? 'bg-black/5 text-[#2b1810]/70' : 'bg-white/10 text-white/70'
+                        }`}>
+                            +{edgeItems.rightCount - 1}
+                        </span>
+                    )}
+                    <span className="text-[10px] font-bold tracking-tight max-w-[85px] sm:max-w-[110px] truncate">
+                        {edgeItems.right.name}
+                    </span>
+                    <span 
+                        className="w-1.5 h-1.5 rounded-full shrink-0" 
+                        style={{ 
+                            backgroundColor: edgeItems.right.color || (edgeItems.right.type === 'event' ? '#f59e0b' : '#38bdf8'),
+                            boxShadow: `0 0 6px ${edgeItems.right.color || (edgeItems.right.type === 'event' ? '#f59e0b' : '#38bdf8')}`
+                        }} 
+                    />
+                    <ChevronRight size={13} className="shrink-0 transition-transform group-hover:translate-x-0.5" />
+                </button>
+            )}
+
             {/* ── In-Canvas Floating Inspector in the Large Empty Gap ────────── */}
             {inspectedItem && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 max-w-xl w-full px-4 z-40 pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200">
-                    <div className="pointer-events-auto">
+                <div className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 max-w-xl w-full px-4 z-40 pointer-events-none animate-in fade-in slide-in-from-bottom-3 duration-200">
+                    <div className="pointer-events-auto timeline-inspector-card">
                         <TimelineInspectorCard
                             item={inspectedItem}
                             eras={eras}

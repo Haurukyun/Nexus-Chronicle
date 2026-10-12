@@ -474,19 +474,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
     const isSearching = searchQuery.length > 0;
 
-    const navBtnStyle = (viewId: string, activeColor: string) => {
+    const navBtnStyle = (viewId: string, sovereignColor?: string) => {
         const isActive = activeTabId === viewId;
-        if ((themeId === 'grand-voyager')) {
+        if (themeId === 'grand-voyager') {
             return isActive
                 ? 'bg-gradient-to-r from-[#0d344d] to-[#082030] text-[#2dd4bf] border border-[#14b8a6]/50 shadow-md shadow-teal-950/40 font-bold'
                 : 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-[#0d9488]/10';
         }
-        if ((themeId === 'royal-codex')) {
+        if (themeId === 'royal-codex') {
             return isActive
-                ? 'bg-[#2d1208] text-[#f0ddb0] border border-[#c8a96e]/30'
+                ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e]/60 font-serif font-bold shadow-md shadow-red-950/40'
                 : 'text-[#c8a96e]/70 hover:text-[#f0ddb0] hover:bg-[#2a150a]/50';
         }
-        return isActive ? activeColor : 'hover:bg-white/5';
+        if (layoutMode === 'wiki' || themeId === 'wiki') {
+            return isActive
+                ? 'bg-[#b91c1c] text-white shadow-md font-bold'
+                : 'text-[#5c4033] hover:text-[#b91c1c] hover:bg-stone-200/60';
+        }
+        // Sovereign theme (or dark mode)
+        const sovereignActive = sovereignColor || 'bg-[#fef08a] text-slate-950 shadow-lg shadow-yellow-500/25 font-bold';
+        return isActive ? sovereignActive : 'text-slate-300 hover:text-white hover:bg-white/5';
     };
 
     return (
@@ -673,7 +680,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Footer Nav */}
             <div className={`p-3 border-t ${borderColor} space-y-1`}>
                 <button onClick={() => setActiveTabId('dashboard')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('dashboard', 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20')}`}><BarChart3 size={14} /> World Ledger</button>
-                <button onClick={() => setActiveTabId('timeline')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('timeline', 'bg-purple-500 text-white shadow-lg shadow-purple-500/20')}`}><History size={14} /> Chronos View</button>
+                <button onClick={() => setActiveTabId('timeline')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('timeline', 'bg-[#fef08a] text-slate-950 shadow-lg shadow-yellow-500/25')}`}><History size={14} /> Chronos View</button>
                 <button onClick={() => setActiveTabId('nexus')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('nexus', 'bg-rose-500 text-white shadow-lg shadow-rose-500/20')}`}><GitMerge size={14} /> Nexus Lines</button>
                 <button onClick={() => setActiveTabId('journey')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('journey', 'bg-orange-500 text-white shadow-lg shadow-orange-500/20')}`}><Footprints size={14} /> Grand Journey</button>
                 <button onClick={() => setActiveTabId('map')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('map', 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20')}`}><Globe size={14} /> Atlas View</button>

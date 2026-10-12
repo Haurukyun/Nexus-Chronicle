@@ -12,6 +12,34 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Chronos Timeline — Zoom Flicker/Stutter & Edge Pill False-Positive — Final Fix** (`TimelineView.tsx`):
+  - Replaced `zoomFocalRatioRef` + `zoomTimeoutRef` debounce locking with a `wheelAccumulatorRef` that batches all raw `WheelEvent.deltaY` values arriving within a single animation frame into **one `requestAnimationFrame` callback** → one `zoomTimeline` call per frame = silky 60fps with zero stutter.
+  - Rewrote `zoomTimeline` with exact per-call anchor math: reads `canvasWidthRef.current` directly (not from a `prev => ...` functional updater), chains `pendingScrollLeftRef` across rapid zooms so successive calls never see stale scroll position. Calls `setCanvasWidth(n)` + `setViewport(...)` synchronously so React 18 batches them.
+  - Fixed `edgeItems` visibility: adds `CANVAS_PADDING_LEFT = 24px` offset to every item's pixel coords (`itemLeftInContainer = 24 + rawLeft`) before comparing vs `viewport.scrollLeft`. Previously items near the canvas left edge were wrongly flagged as off-screen when scroll was at 0.
+  - Fixed `handleGoToNearestEvent` and `scrollToEdgeItem` scroll targets with the same padding-corrected formula.
+  - Fixed two `TS2345` type errors (0 typecheck errors after fix).
+
+- **Chronos Timeline Teleportation Fix & Rock-Solid Zoom Stabilization** (`TimelineView.tsx`):
+  - Fixed the root causes of zoom teleportation (exponential multiplier compounding on rapid wheel events, DOM scroll clamping before React commits canvas width, and stale ratio calculations across un-rendered frames).
+  - Implemented locked focal ratio tracking (`zoomFocalRatioRef`): at the start of a zoom gesture, the focal center ratio is captured and strictly locked for the entire duration of rapid wheel bursts, completely eliminating ratio drift.
+  - Added normalized exponential delta scaling (`Math.exp(-clampedDelta * 0.0016)`) to ensure steady, predictable, proportional scaling on both mouse wheels and high-precision trackpads without supersonic jumps.
+  - Added synchronous `useLayoutEffect` scroll adjustment to set `scrollLeft` the instant the DOM commits the new canvas width, preventing browser scroll clamping.
+- **Chronos Timeline Always Center-Anchored Dezoom** (`TimelineView.tsx`):
+  - Refactored canvas zoom logic into a centralized `zoomTimeline` controller that guarantees all dezooming operations (mouse wheel scroll down, toolbar Zoom Out button, range slider decrease, and preset shifts) strictly anchor to the exact center of the screen (`clientWidth / 2`), preventing asymmetric drift to the left or right.
+- **Chronos Timeline Drag-to-Pan & Canvas Traversal** (`TimelineView.tsx`):
+  - Implemented intuitive click-and-drag horizontal panning directly on the timeline canvas, lanes, and ruler rail. Dragging left or right smoothly scrolls the camera across eras with real-time feedback.
+  - Added dynamic `cursor-grab` (default) and `cursor-grabbing` (active drag) states with `select-none` text protection.
+  - Implemented drag threshold detection and capture-phase click suppression so panning never accidentally triggers ribbon inspection, milestone modals, or quick-add menus.
+- **Chronos Timeline Nearest Event & Edge Overflow Navigation** (`TimelineView.tsx`):
+  - Added a "Nearest" navigation button in the timeline toolbar (next to the search filter) with theme-adaptive styling that smoothly scrolls the viewport to the closest event or character lifespan relative to the current camera center, opening its inspector card.
+  - Implemented compact ghost-style Edge Overflow Indicator pills on the left and right edges of the timeline canvas when zoomed in. These pills dynamically compute the nearest off-screen events/lifespans before and after the visible viewport bounds, showing the item's name, type accent beacon, and off-screen count badge (`+N`).
+  - Clicking either edge pill smoothly scrolls the timeline directly to that off-screen event and opens its inspector, allowing effortless traversal across distant eras without manual panning.
+- **Chronos Timeline Ergonomics & Sidebar Theme Matching** (`TimelineView.tsx`, `Sidebar.tsx`):
+  - Enabled continuous mouse scroll zoom anywhere over the timeline canvas with cursor-centered scaling, preserving Shift-wheel horizontal panning and bypassing child modals/inputs.
+  - Replaced the invasive neon green playhead beam and oversized center cap with a sleek, minimalist bookmark chip (`Yr {currentYear}`) placed above the rail line with a delicate 1px hairline reference guide that no longer crowds Year 0 or tick labels.
+  - Raised the floating inspector card ("The Great Convergence" card) comfortably above the bottom canvas edge (`bottom-16 sm:bottom-20`) with clear breathing room above the legend bar.
+  - Removed the sharp outer rectangular ring contour (`ring-2 ring-white/60`) from clicked event/lifespan ribbons, applying smooth rounded borders and ambient aura glow directly to the inner ribbon elements.
+  - Made the sidebar active navigation buttons (specifically Chronos View) dynamically match each theme's signature color palette: golden yellow (`#fef08a`) for Sovereign, crimson red (`#70121e`) with warm ivory for Royal Codex, red (`#b91c1c`) for Wiki, and teal (`#2dd4bf`) for Grand Voyager.
 - **Phase 0 cleanup** — Removed dead deps (RN/GenAI, ~330 packages), removed Vite `GEMINI_API_KEY` injection, added `src/index.css`, fixed CDN double-React risk, bumped Vite to 6.4.3 (0 vulnerabilities)
 - **Phase P0 Core Fixes** —
   - Fixed **BUG-001**: Synchronized backlink scanning across all `paired*` fields, relationships, group affiliations, and legacy aliases in `backlinkUtils.ts`.
