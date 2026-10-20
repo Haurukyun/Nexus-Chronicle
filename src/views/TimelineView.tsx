@@ -44,6 +44,7 @@ const ZOOM_PRESETS: ZoomPreset[] = [
     { label: '14K', width: 14000, tolerance: 3000, desc: 'Detailed Eras' },
     { label: '22K', width: 22000, tolerance: 4000, desc: 'Generational Detail' },
     { label: '32K', width: 32000, tolerance: 3500, desc: 'Decade Steps (0, 10, 20...)' },
+    { label: '5Y', width: 36000, tolerance: 3500, desc: '5-Year Gap Focus (0, 5, 10...)' },
     { label: '40K', width: 40000, tolerance: 4500, desc: 'Annual Precision (1, 2, 3...)' }
 ];
 
@@ -438,10 +439,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         });
     };
 
-    // Helper to calculate target width for presets that scale with historical span
-    const getPresetTargetWidth = useCallback((presetWidth: number, label: string) => {
+    // Helper to calculate target width for presets that scales to prevent annual label collision
+    const getPresetTargetWidth = useCallback((presetWidth: number, label?: string) => {
         if (label === '40K') {
             return Math.max(40000, Math.ceil(yearSpan * 28));
+        }
+        if (label === '5Y') {
+            return Math.max(36000, Math.ceil(yearSpan * 14));
         }
         if (label === '32K') {
             return Math.max(32000, Math.ceil(yearSpan * 9));
@@ -449,21 +453,24 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         return presetWidth;
     }, [yearSpan]);
 
-    // Dynamic tick step & ticks calculation (adapts down to 1-year annual precision)
+    // Dynamic tick step & ticks calculation (adapts down to 1y annual precision)
     const minCanvasWidth = 1800;
     const maxCanvasWidth = Math.max(45000, Math.ceil(yearSpan * 32));
 
     const dynamicStep = useMemo(() => {
-        // 40K preset or highest zoom bracket: strictly Annual (1-year step: 1, 2, 3...)
-        if (activePreset === '40K' || canvasWidth >= Math.max(36000, yearSpan * 22)) {
-            return 1;
-        }
-        // 32K preset or penultimate zoom bracket: strictly Decade (10-year step: 0, 10, 20...)
-        if (activePreset === '32K' || (canvasWidth >= Math.max(26000, yearSpan * 7) && canvasWidth < Math.max(36000, yearSpan * 22))) {
-            return 10;
-        }
+        // Preset locks
+        if (activePreset === '40K') return 1;
+        if (activePreset === '5Y') return 5;
+        if (activePreset === '32K') return 10;
+
+        // Manual zooming grading thresholds (mouse wheel / slider)
+        const pxPerYear = canvasWidth / Math.max(yearSpan, 1);
+        if (pxPerYear >= 22 || canvasWidth >= maxCanvasWidth * 0.9) return 1; // 1y annual precision
+        if (pxPerYear >= 6 || (canvasWidth >= maxCanvasWidth * 0.65 && canvasWidth < maxCanvasWidth * 0.9)) return 5; // 5y grading zoom (manual only)
+        if (pxPerYear >= 2.5 || (canvasWidth >= maxCanvasWidth * 0.45 && canvasWidth < maxCanvasWidth * 0.65)) return 10; // 10y decade zoom
+
         return calculateDynamicTickStep(yearSpan, canvasWidth, 65);
-    }, [yearSpan, canvasWidth, activePreset]);
+    }, [yearSpan, canvasWidth, activePreset, maxCanvasWidth]);
 
     const timelineTicks = useMemo(() => {
         return generateTimelineTicks(minYear, maxYear, yearSpan, dynamicStep);
@@ -978,10 +985,24 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         const clientX = e.clientX - rect.left;
         const totalW = canvasWidth;
         const clampedX = Math.max(0, Math.min(clientX, totalW));
-        const pct = (clampedX / totalW) * 100;
-        const year = Math.round(minYear + (yearSpan * (pct / 100)));
-        setHoveredPosPct(pct);
-        setHoveredYear(year);
+        const rawPct = (clampedX / totalW) * 100;
+        const exactYear = minYear + (yearSpan * (rawPct / 100));
+
+        // Precision snapping: if within 4px of an integer year tick mark, snap laser precisely to the tick line
+        const pxPerYear = totalW / Math.max(yearSpan, 1);
+        const nearestInt = Math.round(exactYear);
+        const distPx = Math.abs(exactYear - nearestInt) * pxPerYear;
+
+        let finalPct = rawPct;
+        let finalYear = exactYear;
+
+        if (distPx <= 4) {
+            finalYear = nearestInt;
+            finalPct = ((nearestInt - minYear) / yearSpan) * 100;
+        }
+
+        setHoveredPosPct(finalPct);
+        setHoveredYear(finalYear);
     };
 
     const handleCanvasMouseLeave = () => {
@@ -995,7 +1016,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         if ((e.target as HTMLElement).closest('button, .milestone-pin-marker, .playhead-cap-marker')) return;
         if (hoveredYear === null) return;
         setQuickAddMenu({
-            year: hoveredYear,
+            year: Math.floor(hoveredYear),
             clientX: e.clientX,
             clientY: e.clientY
         });
@@ -1018,10 +1039,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                        : isWiki    ? 'bg-white/95 border border-[#d4c8af] text-[#2b1810] shadow-sm backdrop-blur-lg'
                        :             'bg-slate-950/75 border border-white/[0.08] text-slate-100 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_0_0_rgba(255,255,255,0.06)]';
 
-    const canvasGlass  = isVoyager ? 'bg-[#0a0502]/85 border-[#3d2617]/80 text-[#f0dca8] backdrop-blur-xl'
+    const canvasGlass  = isVoyager ? 'bg-[#0a0502] border-[#3d2617]/80 text-[#f0dca8]'
                        : isRoyal   ? 'bg-[#fbf7eb] border-2 border-[#c8a96e]/60 text-[#2b1810] shadow-inner'
                        : isWiki    ? 'bg-[#ffffff] border border-[#d4c8af] text-[#2b1810] shadow-sm'
-                       :             'bg-slate-950/75 border-slate-800/80 text-slate-100 backdrop-blur-xl';
+                       :             'bg-[#040711] border-slate-800/80 text-slate-100';
 
     const erasBtnCls = isVoyager ? 'border-[#2dd4bf]/40 text-[#2dd4bf] hover:bg-[#2dd4bf]/15 hover:border-[#2dd4bf]/80 shadow-[0_0_12px_rgba(45,212,191,0.15)]'
                      : isRoyal   ? 'border-[#70121e]/50 text-[#70121e] bg-[#70121e]/5 hover:bg-[#70121e]/15 shadow-sm font-serif font-bold'
@@ -1392,8 +1413,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         <div className="flex items-center gap-1 ml-1 border-l border-white/10 pl-1.5 shrink-0">
                             {ZOOM_PRESETS.map(preset => {
                                 const targetW = getPresetTargetWidth(preset.width, preset.label);
-                                const isSelected = activePreset === preset.label || 
-                                    (activePreset === null && Math.abs(canvasWidth - targetW) < preset.tolerance);
+                                const isSelected = activePreset === preset.label;
 
                                 return (
                                     <button
@@ -1464,16 +1484,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
             {/* ── Main Interactive Timeline Canvas ──────────────────────────── */}
             {mainViewMode === 'chronos' && (
-                <div 
-                    className={`flex-1 relative rounded-3xl border shadow-2xl overflow-hidden flex flex-col ${canvasGlass}`}
-                    style={{
-                        backgroundImage: isSovereign 
-                            ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(254,240,138,0.06), transparent 70%)'
-                            : isVoyager
-                            ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(45,212,191,0.06), transparent 70%)'
-                            : undefined
-                    }}
-                >
+                <div className={`flex-1 relative rounded-3xl border shadow-2xl overflow-hidden flex flex-col ${canvasGlass}`}>
                     <div 
                         ref={scrollContainerRef}
                         onMouseDown={handleCanvasMouseDown}
@@ -1518,12 +1529,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             return (
                                 <div
                                     key={`col-${era.id}`}
-                                    className="absolute top-0 bottom-0 border-r border-dashed"
+                                    className="absolute top-0 bottom-0 border-r pointer-events-none"
                                     style={{
                                         left: `${leftPct}%`,
                                         width: `${widthPct}%`,
-                                        background: `linear-gradient(180deg, ${eraColor}09 0%, ${eraColor}02 40%, transparent 100%)`,
-                                        borderColor: `${eraColor}20`
+                                        background: isLightCanvas
+                                            ? `linear-gradient(180deg, ${eraColor}0c 0%, ${eraColor}03 30%, transparent 80%)`
+                                            : `linear-gradient(180deg, ${eraColor}06 0%, ${eraColor}01 30%, transparent 80%)`,
+                                        borderColor: isLightCanvas ? `${eraColor}20` : `${eraColor}15`
                                     }}
                                 />
                             );
@@ -1876,7 +1889,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             <div 
                                 key={`lane-${l}`}
                                 className={`absolute left-0 right-0 h-px pointer-events-none ${
-                                    isLightCanvas ? 'border-b border-black/[0.06]' : 'border-b border-white/[0.04]'
+                                    isLightCanvas ? 'bg-black/[0.04]' : 'bg-white/[0.03]'
                                 }`}
                                 style={{ top: `${l * laneHeightPx + 24}px` }}
                             />

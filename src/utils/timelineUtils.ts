@@ -587,7 +587,7 @@ export function generateTimelineTicks(
     const end = Math.floor(maxYear / step) * step;
 
     let majorFactor = 5;
-    if (step === 1) majorFactor = 5;
+    if (step === 1) majorFactor = 10; // major diamond every 10 years on annual zoom
     else if (step === 2) majorFactor = 5;
     else if (step === 5) majorFactor = 5; // major every 25
     else if (step === 10) majorFactor = 5; // major every 50
