@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
 import { 
     Calendar, History, ArrowLeft, ArrowRight, Bookmark,
     Sparkles, Filter, Search, X, User, Plus, RotateCcw,
@@ -39,12 +39,12 @@ interface ZoomPreset {
 }
 
 const ZOOM_PRESETS: ZoomPreset[] = [
-    { label: '2K', width: 2000, tolerance: 600, desc: 'Overview (Centuries)' },
-    { label: '4K', width: 4000, tolerance: 1200, desc: 'Macro Epochs' },
-    { label: '8K', width: 8000, tolerance: 2000, desc: 'Decades' },
-    { label: '14K', width: 14000, tolerance: 2800, desc: 'Detailed Eras' },
-    { label: '22K', width: 22000, tolerance: 3500, desc: '5-Year Gap Focus' },
-    { label: '32K', width: 32000, tolerance: 5000, desc: 'Annual Precision' }
+    { label: '2K', width: 2000, tolerance: 1500, desc: 'Overview (Centuries)' },
+    { label: '8K', width: 8000, tolerance: 2200, desc: 'Macro Epochs' },
+    { label: '14K', width: 14000, tolerance: 3000, desc: 'Detailed Eras' },
+    { label: '22K', width: 22000, tolerance: 4000, desc: 'Generational Detail' },
+    { label: '32K', width: 32000, tolerance: 3500, desc: 'Decade Steps (0, 10, 20...)' },
+    { label: '40K', width: 40000, tolerance: 4500, desc: 'Annual Precision (1, 2, 3...)' }
 ];
 
 interface ProcessedTimelineItem {
@@ -80,8 +80,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     const [selectedEventType, setSelectedEventType] = useState<string>('all');
     const [lifeStatusFilter, setLifeStatusFilter] = useState<LifeStatusFilter>('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const [activePreset, setActivePreset] = useState<string | null>('4K');
-    const [canvasWidth, setCanvasWidth] = useState<number>(4000);
+    const [activePreset, setActivePreset] = useState<string | null>('8K');
+    const [canvasWidth, setCanvasWidth] = useState<number>(8000);
     
     // Interactive mouse hover cursor along timeline
     const [hoveredYear, setHoveredYear] = useState<number | null>(null);
@@ -438,17 +438,48 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         });
     };
 
-    // Dynamic tick step & ticks calculation (adapts down to 5-year gap timeline)
+    // Helper to calculate target width for presets that scale with historical span
+    const getPresetTargetWidth = useCallback((presetWidth: number, label: string) => {
+        if (label === '40K') {
+            return Math.max(40000, Math.ceil(yearSpan * 28));
+        }
+        if (label === '32K') {
+            return Math.max(32000, Math.ceil(yearSpan * 9));
+        }
+        return presetWidth;
+    }, [yearSpan]);
+
+    // Dynamic tick step & ticks calculation (adapts down to 1-year annual precision)
     const minCanvasWidth = 1800;
-    const maxCanvasWidth = Math.min(60000, Math.max(34000, Math.ceil(yearSpan * 18)));
+    const maxCanvasWidth = Math.max(45000, Math.ceil(yearSpan * 32));
 
     const dynamicStep = useMemo(() => {
+        // 40K preset or highest zoom bracket: strictly Annual (1-year step: 1, 2, 3...)
+        if (activePreset === '40K' || canvasWidth >= Math.max(36000, yearSpan * 22)) {
+            return 1;
+        }
+        // 32K preset or penultimate zoom bracket: strictly Decade (10-year step: 0, 10, 20...)
+        if (activePreset === '32K' || (canvasWidth >= Math.max(26000, yearSpan * 7) && canvasWidth < Math.max(36000, yearSpan * 22))) {
+            return 10;
+        }
         return calculateDynamicTickStep(yearSpan, canvasWidth, 65);
-    }, [yearSpan, canvasWidth]);
+    }, [yearSpan, canvasWidth, activePreset]);
 
     const timelineTicks = useMemo(() => {
         return generateTimelineTicks(minYear, maxYear, yearSpan, dynamicStep);
     }, [minYear, maxYear, yearSpan, dynamicStep]);
+
+    // Window visible ticks so rendering thousands of annual ticks stays at 120 FPS
+    const visibleTicks = useMemo(() => {
+        if (timelineTicks.length <= 250) return timelineTicks;
+        const totalW = canvasWidth;
+        const viewLeft = Math.max(0, viewport.scrollLeft - 1200);
+        const viewRight = viewport.scrollLeft + viewport.clientWidth + 1200;
+        return timelineTicks.filter(tick => {
+            const px = (tick.pct / 100) * totalW;
+            return px >= viewLeft && px <= viewRight;
+        });
+    }, [timelineTicks, viewport.scrollLeft, viewport.clientWidth, canvasWidth]);
 
     // Set Current Year playhead
     const handleSetCurrentYear = (newYear: number) => {
@@ -1360,15 +1391,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         {/* 6 Clean Natural Presets (Zero Decimals, Zero Jumps, Invariable Layout Footprint) */}
                         <div className="flex items-center gap-1 ml-1 border-l border-white/10 pl-1.5 shrink-0">
                             {ZOOM_PRESETS.map(preset => {
+                                const targetW = getPresetTargetWidth(preset.width, preset.label);
                                 const isSelected = activePreset === preset.label || 
-                                    (activePreset === null && Math.abs(canvasWidth - preset.width) < preset.tolerance);
+                                    (activePreset === null && Math.abs(canvasWidth - targetW) < preset.tolerance);
 
                                 return (
                                     <button
                                         key={preset.label}
                                         onClick={() => {
                                             setActivePreset(preset.label);
-                                            zoomTimeline(preset.width, 'center');
+                                            zoomTimeline(targetW, 'center');
                                         }}
                                         className={`h-7 min-w-[2.4rem] px-2 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center justify-center shrink-0 border ${
                                             isSelected
@@ -1598,8 +1630,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             }}
                         />
 
-                        {/* Dynamic Scaled Axis Ticks (Scales down to 5-year gaps: 2000 > 2005 > 2010...) */}
-                        {timelineTicks.map(tick => {
+                        {/* Dynamic Scaled Axis Ticks (Scales down to 1-year annual precision: 1 > 2 > 3...) */}
+                        {visibleTicks.map(tick => {
                             const eraMatch = findEraForYear(tick.year, eras);
                             const eraLabel = eraMatch ? (eraMatch.abbreviation || eraMatch.name) : (tick.year < 0 ? 'BCE' : 'CE');
                             const isStep5 = dynamicStep <= 5;
