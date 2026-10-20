@@ -105,3 +105,212 @@ span.wikilink--broken {
 .animate-spin-slow {
   animation: spinSlow 20s linear infinite;
 }
+
+/* ─── Themed Zoom Slider ─────────────────────────────────────────────────── */
+.zoom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  outline: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.zoom-slider:hover { opacity: 1 !important; }
+
+/* Sovereign (dark slate / gold) */
+.zoom-slider-sovereign {
+  opacity: 0.85;
+  background: linear-gradient(
+    to right,
+    #fef08a var(--sl),
+    rgba(255,255,255,0.12) var(--sl)
+  );
+}
+.zoom-slider-sovereign::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fef9c3, #eab308);
+  border: 2px solid rgba(254,240,138,0.7);
+  box-shadow: 0 0 8px 2px rgba(254,240,138,0.55), 0 1px 4px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.zoom-slider-sovereign::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 14px 4px rgba(254,240,138,0.7), 0 1px 6px rgba(0,0,0,0.5);
+}
+
+/* Grand Voyager (dark timber / teal) */
+.zoom-slider-voyager {
+  opacity: 0.85;
+  background: linear-gradient(
+    to right,
+    #2dd4bf var(--sl),
+    rgba(255,255,255,0.10) var(--sl)
+  );
+}
+.zoom-slider-voyager::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #5eead4, #14b8a6);
+  border: 2px solid rgba(45,212,191,0.7);
+  box-shadow: 0 0 8px 2px rgba(45,212,191,0.55), 0 1px 4px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.zoom-slider-voyager::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 14px 4px rgba(45,212,191,0.7), 0 1px 6px rgba(0,0,0,0.5);
+}
+
+/* Royal Codex (parchment / crimson) */
+.zoom-slider-royal {
+  opacity: 0.9;
+  background: linear-gradient(
+    to right,
+    #70121e var(--sl),
+    rgba(0,0,0,0.14) var(--sl)
+  );
+}
+.zoom-slider-royal::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #b91c1c, #70121e);
+  border: 2px solid rgba(112,18,30,0.8);
+  box-shadow: 0 0 6px 2px rgba(112,18,30,0.4), 0 1px 4px rgba(0,0,0,0.25);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.zoom-slider-royal::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px 3px rgba(112,18,30,0.6), 0 1px 6px rgba(0,0,0,0.35);
+}
+
+/* Wiki (light parchment / red) */
+.zoom-slider-wiki {
+  opacity: 0.9;
+  background: linear-gradient(
+    to right,
+    #b91c1c var(--sl),
+    rgba(0,0,0,0.12) var(--sl)
+  );
+}
+.zoom-slider-wiki::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ef4444, #b91c1c);
+  border: 2px solid rgba(185,28,28,0.8);
+  box-shadow: 0 0 6px 2px rgba(185,28,28,0.35), 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.zoom-slider-wiki::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 12px 3px rgba(185,28,28,0.55), 0 1px 6px rgba(0,0,0,0.3);
+}
+
+/* ─── Themed Timeline Bottom Bar Scrollbar ───────────────────────────────── */
+.timeline-scrollbar-sovereign::-webkit-scrollbar,
+.timeline-scrollbar-voyager::-webkit-scrollbar,
+.timeline-scrollbar-royal::-webkit-scrollbar,
+.timeline-scrollbar-wiki::-webkit-scrollbar {
+  height: 10px;
+  width: 7px;
+}
+
+/* Sovereign (dark obsidian & warm gold) */
+.timeline-scrollbar-sovereign {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(254, 240, 138, 0.5) #040711;
+}
+.timeline-scrollbar-sovereign::-webkit-scrollbar-track {
+  background: #040711;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.timeline-scrollbar-sovereign::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, rgba(254, 240, 138, 0.4), rgba(234, 179, 8, 0.55));
+  border-radius: 9999px;
+  border: 2px solid #040711;
+  box-shadow: 0 0 8px rgba(254, 240, 138, 0.25);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.timeline-scrollbar-sovereign::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #fef08a, #eab308);
+  box-shadow: 0 0 14px rgba(254, 240, 138, 0.6);
+}
+
+/* Grand Voyager (dark timber & tropical teal) */
+.timeline-scrollbar-voyager {
+  scrollbar-width: thin;
+  scrollbar-color: #2dd4bf #0a0502;
+}
+.timeline-scrollbar-voyager::-webkit-scrollbar-track {
+  background: #0a0502;
+  border-top: 1px solid rgba(45, 212, 191, 0.2);
+}
+.timeline-scrollbar-voyager::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, rgba(45, 212, 191, 0.5), rgba(20, 184, 166, 0.65));
+  border-radius: 9999px;
+  border: 2px solid #0a0502;
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.timeline-scrollbar-voyager::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #5eead4, #14b8a6);
+  box-shadow: 0 0 14px rgba(45, 212, 191, 0.7);
+}
+
+/* Royal Codex (parchment & crimson gold) */
+.timeline-scrollbar-royal {
+  scrollbar-width: thin;
+  scrollbar-color: #70121e #ebd9be;
+}
+.timeline-scrollbar-royal::-webkit-scrollbar-track {
+  background: #ebd9be;
+  border-top: 1px solid rgba(200, 169, 110, 0.6);
+}
+.timeline-scrollbar-royal::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #70121e, #881337);
+  border-radius: 9999px;
+  border: 2px solid #ebd9be;
+  box-shadow: 0 1px 4px rgba(112, 18, 30, 0.35);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.timeline-scrollbar-royal::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #881337, #9f1239);
+  box-shadow: 0 0 10px rgba(112, 18, 30, 0.55);
+}
+
+/* Wiki Mode (clean encyclopedia parchment & crimson) */
+.timeline-scrollbar-wiki {
+  scrollbar-width: thin;
+  scrollbar-color: #b91c1c #f5f0e6;
+}
+.timeline-scrollbar-wiki::-webkit-scrollbar-track {
+  background: #f5f0e6;
+  border-top: 1px solid #d4c8af;
+}
+.timeline-scrollbar-wiki::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #b91c1c, #991b1b);
+  border-radius: 9999px;
+  border: 2px solid #f5f0e6;
+  box-shadow: 0 1px 3px rgba(185, 28, 28, 0.3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.timeline-scrollbar-wiki::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  box-shadow: 0 0 10px rgba(185, 28, 28, 0.5);
+}

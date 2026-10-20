@@ -11,7 +11,7 @@ export const DEFAULT_ERA_PRESETS: Record<string, { label: string; description: s
         description: 'Chronology centered on the incarnation: B.C. (Before Christ) and A.C. (After Christ).',
         eras: [
             { id: 'era-bc', name: 'Before Christ', abbreviation: 'B.C.', startYear: -4000, endYear: 0, color: '#a78bfa', description: 'Events and epochs prior to the incarnation of Christ.' },
-            { id: 'era-ac', name: 'After Christ', abbreviation: 'A.C.', startYear: 1, endYear: 3000, color: '#38bdf8', description: 'Events and historical annals following the incarnation of Christ.' }
+            { id: 'era-ac', name: 'After Christ', abbreviation: 'A.C.', startYear: 0, endYear: 3000, color: '#38bdf8', description: 'Events and historical annals following the incarnation of Christ.' }
         ]
     },
     mythic: {
@@ -39,7 +39,7 @@ export const DEFAULT_ERA_PRESETS: Record<string, { label: string; description: s
         description: 'Chronology anchored to an imperial epoch dividing negative antiquity from common era.',
         eras: [
             { id: 'era-bce', name: 'Before Common Era', abbreviation: 'BCE', startYear: -2000, endYear: 0, color: '#a78bfa', description: 'Antiquity and pre-imperial city-states.' },
-            { id: 'era-ce', name: 'Common Era', abbreviation: 'CE', startYear: 1, endYear: 2000, color: '#34d399', description: 'The Imperial Empire and modern annals.' }
+            { id: 'era-ce', name: 'Common Era', abbreviation: 'CE', startYear: 0, endYear: 2000, color: '#34d399', description: 'The Imperial Empire and modern annals.' }
         ]
     }
 };

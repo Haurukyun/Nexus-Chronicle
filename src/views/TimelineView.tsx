@@ -174,6 +174,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         return DEFAULT_ERA_PRESETS.bc_ac.eras;
     }, [world.timelineEras]);
 
+    // Sorted eras chronologically for seamless visual boundary bridging
+    const sortedEras: FantasyEra[] = useMemo(() => {
+        return [...eras].sort((a, b) => a.startYear - b.startYear);
+    }, [eras]);
+
     // Active fantasy calendar (optional)
     const calendar: FantasyCalendar | undefined = useMemo(() => {
         return world.timelineCalendar;
@@ -291,6 +296,33 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             yearSpan: paddedMax - paddedMin || 100
         };
     }, [world.entities, milestonePins, eras]);
+
+    // Helper to compute continuous visual boundaries so adjacent eras meet seamlessly with zero gap
+    const getEraVisualBounds = useCallback((era: FantasyEra, idx: number, allSorted: FantasyEra[]) => {
+        let visualStart = era.startYear;
+        let visualEnd = era.endYear !== undefined ? era.endYear : maxYear;
+
+        const prevEra = allSorted[idx - 1];
+        const nextEra = allSorted[idx + 1];
+
+        if (prevEra && prevEra.endYear !== undefined) {
+            // If era starts at 1 and previous ends at 0, align start seamlessly to Epoch Origin Year 0
+            if (prevEra.endYear === 0 && era.startYear === 1) {
+                visualStart = 0;
+            } else if (era.startYear === prevEra.endYear + 1 && prevEra.endYear !== 0) {
+                visualStart = prevEra.endYear;
+            }
+        }
+
+        if (nextEra && visualEnd !== undefined && nextEra.startYear === visualEnd + 1 && visualEnd !== 0) {
+            visualEnd = nextEra.startYear;
+        }
+
+        const clampedStart = Math.max(visualStart, minYear);
+        const clampedEnd = Math.min(visualEnd, maxYear);
+
+        return { clampedStart, clampedEnd };
+    }, [minYear, maxYear]);
 
     // Live counts for category buttons
     const categoryCounts = useMemo(() => {
@@ -759,6 +791,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         const container = scrollContainerRef.current;
         if (!container) return;
 
+        // If clicking directly on the scrollbar track or thumb, let native scrollbar handle it
+        const rect = container.getBoundingClientRect();
+        if (e.clientY >= rect.bottom - 14 || e.clientX >= rect.right - 14) {
+            return;
+        }
+
         dragStartXRef.current = e.clientX;
         dragStartYRef.current = e.clientY;
         dragStartScrollLeftRef.current = container.scrollLeft;
@@ -1063,6 +1101,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                      : isRoyal   ? 'bg-[#70121e] text-[#fff8e7] border border-[#70121e] shadow-sm font-bold'
                      : isWiki    ? 'bg-red-700 text-white shadow-sm font-bold'
                      :             'bg-[#fef08a]/20 text-[#fef08a] border border-[#fef08a]/45 shadow-[0_0_14px_rgba(254,240,138,0.22)]';
+
+    const timelineScrollbarCls = isVoyager ? 'timeline-scrollbar-voyager'
+                               : isRoyal   ? 'timeline-scrollbar-royal'
+                               : isWiki    ? 'timeline-scrollbar-wiki'
+                               :             'timeline-scrollbar-sovereign';
 
     return (
         <div className="h-full flex flex-col space-y-3.5 p-4 md:p-6 select-none overflow-hidden">
@@ -1389,7 +1432,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 const nextW = Number(e.target.value);
                                 zoomTimeline(nextW, 'center');
                             }}
-                            className="w-16 sm:w-22 h-1.5 accent-amber-400 rounded-lg cursor-pointer bg-white/10"
+                            className={`zoom-slider w-16 sm:w-22 ${
+                                isRoyal    ? 'zoom-slider-royal'
+                                : isWiki   ? 'zoom-slider-wiki'
+                                : isVoyager? 'zoom-slider-voyager'
+                                :            'zoom-slider-sovereign'
+                            }`}
+                            style={{
+                                '--sl': `${Math.round(((canvasWidth - minCanvasWidth) / (maxCanvasWidth - minCanvasWidth)) * 100)}%`
+                            } as React.CSSProperties}
                             title={`Canvas Width: ${canvasWidth.toLocaleString()}px (${dynamicStep}y step)`}
                         />
 
@@ -1488,7 +1539,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     <div 
                         ref={scrollContainerRef}
                         onMouseDown={handleCanvasMouseDown}
-                        className={`flex-1 relative overflow-auto custom-scrollbar p-6 ${isDraggingCanvas ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
+                        className={`flex-1 relative overflow-auto ${timelineScrollbarCls} p-6 ${isDraggingCanvas ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
                     >
                 <div 
                     ref={canvasInnerRef}
@@ -1515,15 +1566,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                     {/* BACKGROUND ERA AURA COLUMNS (Vertical visual territory for each era) */}
                     <div className="absolute inset-0 pointer-events-none z-0">
-                        {eras.map(era => {
-                            const eraStart = era.startYear;
-                            const eraEnd = era.endYear !== undefined ? era.endYear : maxYear;
-                            const clampedStart = Math.max(eraStart, minYear);
-                            const clampedEnd = Math.min(eraEnd, maxYear);
+                        {sortedEras.map((era, idx) => {
+                            const { clampedStart, clampedEnd } = getEraVisualBounds(era, idx, sortedEras);
                             if (clampedEnd < minYear || clampedStart > maxYear) return null;
 
                             const leftPct = ((clampedStart - minYear) / yearSpan) * 100;
-                            const widthPct = Math.max(((clampedEnd - clampedStart) / yearSpan) * 100, 1);
+                            const minWidthPct = (40 / Math.max(canvasWidth, 1)) * 100;
+                            const widthPct = Math.max(((clampedEnd - clampedStart) / yearSpan) * 100, minWidthPct);
                             const eraColor = era.color || '#38bdf8';
 
                             return (
@@ -1545,16 +1594,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                     {/* 1. ERA BANDS ALONG TOP AXIS WITH ANIMATED JUMP TRANSITION */}
                     <div className="relative h-14 w-full mb-6 flex items-center z-10">
-                        {eras.map(era => {
-                            const eraStart = era.startYear;
-                            const eraEnd = era.endYear !== undefined ? era.endYear : maxYear;
-                            const clampedStart = Math.max(eraStart, minYear);
-                            const clampedEnd = Math.min(eraEnd, maxYear);
+                        {sortedEras.map((era, idx) => {
+                            const { clampedStart, clampedEnd } = getEraVisualBounds(era, idx, sortedEras);
 
                             if (clampedEnd < minYear || clampedStart > maxYear) return null;
 
                             const leftPct = ((clampedStart - minYear) / yearSpan) * 100;
-                            const widthPct = Math.max(((clampedEnd - clampedStart) / yearSpan) * 100, 1.2);
+                            const minWidthPct = (40 / Math.max(canvasWidth, 1)) * 100;
+                            const widthPct = Math.max(((clampedEnd - clampedStart) / yearSpan) * 100, minWidthPct);
                             const eraColor = era.color || '#38bdf8';
                             const isJumping = activeJumpEraId === era.id;
 
@@ -1562,10 +1609,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 <div
                                     key={era.id}
                                     onClick={() => handleJumpToYear(era.startYear, era.id)}
-                                    className={`absolute h-12 top-1 rounded-2xl border flex flex-col justify-center px-3.5 cursor-pointer group transition-[box-shadow,border-color,transform] duration-300 shadow-md backdrop-blur-md ${
+                                    className={`absolute h-12 top-1 rounded-2xl border flex flex-col justify-center px-3.5 cursor-pointer group transition-[box-shadow,border-color] duration-200 backdrop-blur-md ${
                                         isJumping 
-                                            ? 'scale-[1.04] ring-4 ring-white/90 z-30 animate-pulse' 
-                                            : 'hover:scale-[1.01]'
+                                            ? 'ring-2 ring-white/80 animate-pulse' 
+                                            : ''
                                     } ${isLightCanvas ? 'border-2' : ''}`}
                                     style={{
                                         left: `${leftPct}%`,
@@ -1575,21 +1622,36 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                             : `linear-gradient(135deg, ${eraColor}22 0%, ${eraColor}09 100%)`,
                                         borderColor: isJumping ? '#ffffff' : isLightCanvas ? `${eraColor}` : `${eraColor}40`,
                                         boxShadow: isJumping 
-                                            ? `0 0 35px 8px ${eraColor}90, inset 0 0 15px rgba(255,255,255,0.6)`
+                                            ? `0 0 25px 4px ${eraColor}80, inset 0 0 12px rgba(255,255,255,0.4)`
                                             : isLightCanvas ? `0 2px 8px ${eraColor}25` : `0 4px 18px ${eraColor}15, inset 0 1px 0 0 ${eraColor}45`
                                     }}
                                     title={`${era.name} (${era.startYear} – ${era.endYear ?? 'Present'})\n${era.description || ''}\nClick to jump`}
                                 >
-                                    <div className="flex items-center justify-between gap-2 overflow-hidden">
-                                        <div className="flex items-center gap-2 truncate">
-                                            {/* Glowing Dot Beacon */}
-                                            <span 
-                                                className={`w-2.5 h-2.5 rounded-full shrink-0 shadow-sm ${isJumping ? 'animate-ping' : ''}`}
-                                                style={{ 
-                                                    backgroundColor: eraColor, 
-                                                    boxShadow: `0 0 8px ${eraColor}` 
-                                                }} 
-                                            />
+                                    {/* Hover FX: subtle era-color luminous inset glow — no resize, no border add */}
+                                    <div 
+                                        className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150 overflow-hidden"
+                                        style={{
+                                            boxShadow: isLightCanvas
+                                                ? `inset 0 0 18px ${eraColor}55`
+                                                : `inset 0 0 22px ${eraColor}60, 0 0 20px ${eraColor}30`,
+                                            background: isLightCanvas
+                                                ? `linear-gradient(135deg, ${eraColor}28 0%, ${eraColor}10 100%)`
+                                                : `linear-gradient(135deg, ${eraColor}30 0%, ${eraColor}10 100%)`
+                                        }}
+                                    />
+
+                                    <div className="flex items-center justify-between gap-2 min-w-0 relative z-10">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            {/* Glowing Dot Beacon with smooth circular glow, zero rectangular clipping */}
+                                            <span className="relative flex items-center justify-center shrink-0 w-3 h-3">
+                                                <span 
+                                                    className="relative w-2 h-2 rounded-full shrink-0"
+                                                    style={{ 
+                                                        backgroundColor: eraColor,
+                                                        boxShadow: `0 0 6px 1px ${eraColor}, 0 0 12px 3px ${eraColor}80`
+                                                    }}
+                                                />
+                                            </span>
                                             {/* Abbreviation Badge */}
                                             {era.abbreviation && (
                                                 <span 
@@ -1884,17 +1946,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         className="relative w-full"
                         style={{ height: `${ribbonCanvasHeight}px` }}
                     >
-                        {/* Horizontal Lane Rails */}
-                        {Array.from({ length: Math.max(maxLane + 1, 4) }).map((_, l) => (
-                            <div 
-                                key={`lane-${l}`}
-                                className={`absolute left-0 right-0 h-px pointer-events-none ${
-                                    isLightCanvas ? 'bg-black/[0.04]' : 'bg-white/[0.03]'
-                                }`}
-                                style={{ top: `${l * laneHeightPx + 24}px` }}
-                            />
-                        ))}
-
                         {packedItems.map(({ item, lane }) => {
                             const leftPct = ((item.start - minYear) / yearSpan) * 100;
                             const widthPct = Math.max(((item.end - item.start) / yearSpan) * 100, 1.0);
