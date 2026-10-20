@@ -30,14 +30,22 @@ interface TimelineViewProps {
 
 type CategoryFilter = 'all' | 'events' | 'characters' | 'milestones';
 type LifeStatusFilter = 'all' | 'living' | 'deceased';
-type ZoomLevel = 'compact' | 'standard' | 'epic' | 'panoramic';
 
-const ZOOM_CONFIGS: Record<ZoomLevel, { width: number; label: string }> = {
-    compact: { width: 2000, label: 'Compact (2k)' },
-    standard: { width: 3400, label: 'Standard (3.4k)' },
-    epic: { width: 5200, label: 'Epic (5.2k)' },
-    panoramic: { width: 8000, label: 'Panoramic (8k)' }
-};
+interface ZoomPreset {
+    label: string;
+    width: number;
+    tolerance: number;
+    desc: string;
+}
+
+const ZOOM_PRESETS: ZoomPreset[] = [
+    { label: '2K', width: 2000, tolerance: 600, desc: 'Overview (Centuries)' },
+    { label: '4K', width: 4000, tolerance: 1200, desc: 'Macro Epochs' },
+    { label: '8K', width: 8000, tolerance: 2000, desc: 'Decades' },
+    { label: '14K', width: 14000, tolerance: 2800, desc: 'Detailed Eras' },
+    { label: '22K', width: 22000, tolerance: 3500, desc: '5-Year Gap Focus' },
+    { label: '32K', width: 32000, tolerance: 5000, desc: 'Annual Precision' }
+];
 
 interface ProcessedTimelineItem {
     id: string;
@@ -72,8 +80,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     const [selectedEventType, setSelectedEventType] = useState<string>('all');
     const [lifeStatusFilter, setLifeStatusFilter] = useState<LifeStatusFilter>('all');
     const [searchQuery, setSearchQuery] = useState('');
-    const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('standard');
-    const [canvasWidth, setCanvasWidth] = useState<number>(3400);
+    const [activePreset, setActivePreset] = useState<string | null>('4K');
+    const [canvasWidth, setCanvasWidth] = useState<number>(4000);
     
     // Interactive mouse hover cursor along timeline
     const [hoveredYear, setHoveredYear] = useState<number | null>(null);
@@ -432,7 +440,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
     // Dynamic tick step & ticks calculation (adapts down to 5-year gap timeline)
     const minCanvasWidth = 1800;
-    const maxCanvasWidth = Math.min(60000, Math.max(24000, Math.ceil(yearSpan * 18)));
+    const maxCanvasWidth = Math.min(60000, Math.max(34000, Math.ceil(yearSpan * 18)));
 
     const dynamicStep = useMemo(() => {
         return calculateDynamicTickStep(yearSpan, canvasWidth, 65);
@@ -644,6 +652,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             // Vertical wheel scroll: smooth, predictable proportional scaling via requestAnimationFrame
             if (e.deltaY !== 0) {
                 e.preventDefault();
+                setActivePreset(null);
                 const acc = wheelAccumulatorRef.current;
                 acc.deltaY += e.deltaY;
                 acc.isDezoom = acc.deltaY > 0;
@@ -973,10 +982,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         : isWiki    ? 'text-[#881337]'
                         :             'bg-gradient-to-r from-[#fef08a] via-[#fde047] to-[#eab308] bg-clip-text text-transparent';
 
-    const toolbarGlass = isVoyager ? 'bg-[#180c04]/90 border-[#3d2617] text-[#f0dca8] backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5)]'
-                       : isRoyal   ? 'bg-[#f4efe4] border-2 border-[#c8a96e]/60 text-[#2b1810] shadow-md'
-                       : isWiki    ? 'bg-white border border-[#d4c8af] text-[#2b1810] shadow-sm'
-                       :             'bg-slate-900/80 border-slate-700/60 text-slate-100 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.6)]';
+    const toolbarGlass = isVoyager ? 'bg-[#180c04]/85 border-[#2dd4bf]/20 text-[#f0dca8] backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_0_rgba(45,212,191,0.1)]'
+                       : isRoyal   ? 'bg-[#f4efe4]/90 border-2 border-[#c8a96e]/60 text-[#2b1810] shadow-md backdrop-blur-xl'
+                       : isWiki    ? 'bg-white/95 border border-[#d4c8af] text-[#2b1810] shadow-sm backdrop-blur-lg'
+                       :             'bg-slate-950/75 border border-white/[0.08] text-slate-100 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_0_0_rgba(255,255,255,0.06)]';
 
     const canvasGlass  = isVoyager ? 'bg-[#0a0502]/85 border-[#3d2617]/80 text-[#f0dca8] backdrop-blur-xl'
                        : isRoyal   ? 'bg-[#fbf7eb] border-2 border-[#c8a96e]/60 text-[#2b1810] shadow-inner'
@@ -1142,11 +1151,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             </header>
 
             {/* ── Filter & Zoom Floating Island Toolbar ─────────────────────── */}
-            <div className={`flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-2xl border shrink-0 text-xs shadow-xl ${toolbarGlass}`}>
-                {/* Category Filter Pills with LIVE COUNTS */}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className={`text-[11px] font-bold uppercase mr-1 flex items-center gap-1 ${
-                        isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : 'opacity-50'
+            <div className={`flex flex-wrap items-center justify-between gap-3 px-4 py-2 rounded-2xl border shrink-0 text-xs shadow-xl ${toolbarGlass}`}>
+                {/* Category Filter Pills in a Glassmorphic Capsule */}
+                <div className={`flex items-center gap-1.5 p-1 rounded-2xl border backdrop-blur-xl shrink-0 ${
+                    isLightCanvas
+                        ? 'bg-white/70 border-[#d4c8af]/80 shadow-[0_2px_8px_rgba(0,0,0,0.04)]'
+                        : isVoyager
+                        ? 'bg-[#180c04]/70 border-[#2dd4bf]/25 shadow-[0_4px_20px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(45,212,191,0.12)]'
+                        : 'bg-black/40 border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_0_rgba(255,255,255,0.08)]'
+                }`}>
+                    <span className={`text-[11px] font-bold uppercase px-2 flex items-center gap-1.5 shrink-0 ${
+                        isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#881337]' : isVoyager ? 'text-[#2dd4bf]/80' : 'text-[#fef08a]/80'
                     }`}>
                         <Filter size={12} /> Scope:
                     </span>
@@ -1157,26 +1172,33 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                       cat === 'characters' ? categoryCounts.characters :
                                       categoryCounts.milestones;
                         const label = cat === 'all' ? 'All Entries' : cat === 'characters' ? 'Lifespans' : cat;
+                        const isSelected = categoryFilter === cat;
 
                         return (
                             <button
                                 key={cat}
                                 onClick={() => setCategoryFilter(cat)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold uppercase tracking-wider transition-all text-[11px] ${
-                                    categoryFilter === cat
-                                        ? activePill
+                                className={`flex items-center gap-1.5 px-3 py-1 rounded-xl font-bold uppercase tracking-wider transition-all text-[11px] border shrink-0 ${
+                                    isSelected
+                                        ? isRoyal
+                                            ? 'bg-[#70121e] text-[#fff8e7] border-[#70121e] shadow-md shadow-[#70121e]/30'
+                                            : isWiki
+                                            ? 'bg-red-700 text-white border-red-700 shadow-sm'
+                                            : isVoyager
+                                            ? 'bg-[#2dd4bf]/25 text-[#2dd4bf] border-[#2dd4bf]/60 shadow-[0_0_14px_rgba(45,212,191,0.3),inset_0_1px_0_0_rgba(255,255,255,0.2)]'
+                                            : 'bg-gradient-to-r from-[#fef08a]/25 to-[#fef08a]/15 text-[#fef08a] border-[#fef08a]/60 shadow-[0_0_16px_rgba(254,240,138,0.25),inset_0_1px_0_0_rgba(255,255,255,0.2)]'
                                         : isLightCanvas
-                                        ? 'border border-[#d4c8af] text-[#2b1810] hover:bg-[#f4efe4] bg-white/80 shadow-sm'
-                                        : 'border border-current/15 opacity-60 hover:opacity-100 hover:bg-current/10'
+                                        ? 'border-transparent text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-black/5 hover:border-black/5'
+                                        : 'border-transparent text-slate-400 hover:text-white hover:bg-white/[0.08] hover:border-white/10'
                                 }`}
                             >
                                 <span>{label}</span>
                                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                                    categoryFilter === cat
+                                    isSelected
                                         ? (isRoyal || isWiki ? 'bg-white/25 text-white' : 'bg-black/30 text-current')
                                         : isLightCanvas
                                         ? 'bg-black/5 text-[#2b1810]'
-                                        : 'bg-current/10 opacity-70'
+                                        : 'bg-white/10 text-slate-400'
                                 }`}>
                                     {count}
                                 </span>
@@ -1186,16 +1208,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                     {/* Sub-filters for Events */}
                     {categoryFilter === 'events' && availableEventTypes.length > 0 && (
-                        <div className="flex items-center gap-1.5 ml-2 pl-2 border-l border-current/15">
+                        <div className="flex items-center gap-1.5 ml-1 pl-2 border-l border-white/10">
                             <span className={`text-[10px] uppercase font-bold ${isLightCanvas ? 'text-[#2b1810]' : 'opacity-50'}`}>Kind:</span>
                             <select
                                 value={selectedEventType}
                                 onChange={e => setSelectedEventType(e.target.value)}
-                                className={`px-2.5 py-1 rounded-xl border text-xs focus:outline-none ${
+                                className={`px-2.5 py-1 rounded-xl border text-xs focus:outline-none backdrop-blur-md ${
                                     isRoyal ? 'bg-white border-[#c8a96e] text-[#2b1810]'
                                     : isWiki ? 'bg-white border-[#d4c8af] text-[#2b1810]'
-                                    : isVoyager ? 'bg-[#180c04] border-[#2dd4bf]/20 text-[#2dd4bf]'
-                                    : 'bg-slate-900 border-slate-700 text-slate-100'
+                                    : isVoyager ? 'bg-[#180c04]/90 border-[#2dd4bf]/30 text-[#2dd4bf]'
+                                    : 'bg-slate-900/90 border-white/10 text-slate-100'
                                 }`}
                             >
                                 <option value="all">All Event Kinds</option>
@@ -1208,21 +1230,21 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                     {/* Sub-filters for Lifespans */}
                     {categoryFilter === 'characters' && (
-                        <div className="ml-2 pl-2 border-l border-current/15 flex items-center gap-1">
+                        <div className="ml-1 pl-2 border-l border-white/10 flex items-center gap-1">
                             <span className={`text-[10px] uppercase font-bold ${isLightCanvas ? 'text-[#2b1810]' : 'opacity-50'}`}>Vitals:</span>
                             <div className={`flex items-center gap-0.5 border rounded-xl p-0.5 ${
-                                isLightCanvas ? 'border-[#d4c8af] bg-[#f4efe4]' : 'border-current/15 bg-black/20'
+                                isLightCanvas ? 'border-[#d4c8af] bg-[#f4efe4]' : 'border-white/10 bg-black/20'
                             }`}>
                                 {(['all', 'living', 'deceased'] as LifeStatusFilter[]).map(st => (
                                     <button
                                         key={st}
                                         onClick={() => setLifeStatusFilter(st)}
-                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${
+                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center gap-1 border ${
                                             lifeStatusFilter === st 
-                                                ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
-                                                  : isWiki ? 'bg-red-700 text-white shadow-sm'
-                                                  : 'bg-current/25 opacity-100 shadow-sm' 
-                                                : isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810]' : 'opacity-40 hover:opacity-85'
+                                                ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] border-[#70121e] shadow-sm'
+                                                  : isWiki ? 'bg-red-700 text-white border-red-700 shadow-sm'
+                                                  : 'bg-white/20 text-white border-white/30 shadow-sm' 
+                                                : 'border-transparent opacity-40 hover:opacity-85'
                                         }`}
                                     >
                                         {st === 'living' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
@@ -1235,65 +1257,72 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     )}
                 </div>
 
-                {/* Right controls: Go to Nearest + Search + Zoom Level */}
-                <div className="flex items-center gap-3">
+                {/* Right controls: Go to Nearest + Search + Zoom Controls */}
+                <div className="flex items-center gap-2.5 flex-wrap">
                     {/* Go to Nearest Event */}
                     {filteredItems.length > 0 && (
                         <button
                             onClick={handleGoToNearestEvent}
-                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-bold uppercase tracking-wider transition-all whitespace-nowrap shadow-sm ${
-                                isRoyal ? 'border-[#c8a96e]/50 text-[#70121e] hover:bg-[#70121e]/10 bg-[#f4efe4]'
-                                : isWiki ? 'border-[#d4c8af] text-[#881337] hover:bg-[#881337]/10 bg-white'
-                                : isVoyager ? 'border-[#2dd4bf]/30 text-[#2dd4bf] hover:bg-[#2dd4bf]/10 bg-[#0d344d]/30'
-                                : 'border-[#fef08a]/20 text-[#fef08a]/70 hover:text-[#fef08a] hover:bg-[#fef08a]/5 bg-transparent'
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border text-[11px] font-bold uppercase tracking-wider backdrop-blur-xl transition-all whitespace-nowrap shadow-sm active:scale-95 ${
+                                isRoyal ? 'border-[#c8a96e]/60 text-[#70121e] hover:bg-[#70121e]/10 bg-white/70'
+                                : isWiki ? 'border-[#d4c8af] text-[#881337] hover:bg-[#881337]/10 bg-white/80'
+                                : isVoyager ? 'border-[#2dd4bf]/30 text-[#2dd4bf] hover:bg-[#2dd4bf]/15 bg-[#180c04]/60 shadow-[inset_0_1px_0_0_rgba(45,212,191,0.15)]'
+                                : 'border-white/10 text-[#fef08a] hover:bg-[#fef08a]/10 hover:border-[#fef08a]/40 bg-black/40 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]'
                             }`}
                             title="Scroll to the nearest event or lifespan closest to your current view center"
                         >
-                            <Navigation size={11} />
+                            <Navigation size={11} className="text-current" />
                             <span>Nearest</span>
                         </button>
                     )}
 
-                    {/* Search */}
+                    {/* Search Input with Glassmorphism */}
                     <div className="relative">
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Filter timeline..."
-                            className={`pl-7 pr-7 py-1.5 rounded-xl border text-xs focus:outline-none w-36 sm:w-48 shadow-sm transition-all ${
-                                isRoyal ? 'border-[#c8a96e] bg-white text-[#2b1810] placeholder:text-[#2b1810]/40 focus:border-[#70121e] focus:ring-1 focus:ring-[#70121e]/30'
-                                : isWiki ? 'border-[#d4c8af] bg-white text-[#2b1810] placeholder:text-[#2b1810]/40 focus:border-red-500 focus:ring-1 focus:ring-red-400'
-                                : isVoyager ? 'border-[#3d2617] bg-[#180c04] text-[#f0dca8] placeholder:text-[#f0dca8]/40 focus:border-[#2dd4bf]/60'
-                                : 'border-slate-700 bg-slate-900 text-white placeholder:text-slate-500 focus:border-[#fef08a]/60'
+                            className={`pl-8 pr-7 py-1.5 rounded-2xl border text-xs focus:outline-none w-36 sm:w-44 shadow-sm backdrop-blur-xl transition-all ${
+                                isRoyal ? 'border-[#c8a96e]/60 bg-white/80 text-[#2b1810] placeholder:text-[#2b1810]/40 focus:border-[#70121e] focus:ring-1 focus:ring-[#70121e]/30'
+                                : isWiki ? 'border-[#d4c8af] bg-white/90 text-[#2b1810] placeholder:text-[#2b1810]/40 focus:border-red-500'
+                                : isVoyager ? 'border-[#2dd4bf]/25 bg-[#180c04]/70 text-[#f0dca8] placeholder:text-[#f0dca8]/40 focus:border-[#2dd4bf]/60 shadow-[inset_0_1px_0_0_rgba(45,212,191,0.1)]'
+                                : 'border-white/10 bg-black/40 text-white placeholder:text-slate-400 focus:border-[#fef08a]/60 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]'
                             }`}
                         />
-                        <Search size={12} className={`absolute left-2.5 top-2.5 ${isLightCanvas ? 'text-[#2b1810]/50' : 'opacity-40'}`} />
+                        <Search size={12} className={`absolute left-3 top-2.5 ${isLightCanvas ? 'text-[#2b1810]/50' : 'text-white/40'}`} />
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery('')}
-                                className={`absolute right-2 top-2 transition-opacity ${isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810]' : 'opacity-50 hover:opacity-100'}`}
+                                className={`absolute right-2.5 top-2.5 transition-opacity ${isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810]' : 'opacity-50 hover:opacity-100'}`}
                             >
                                 <X size={12} />
                             </button>
                         )}
                     </div>
 
-                    {/* Zoom Scale Selector & Dynamic Precision Bar */}
-                    <div className={`flex items-center gap-1.5 border rounded-xl p-1 ${
-                        isLightCanvas ? 'bg-[#f4efe4] border-[#d4c8af]' : 'bg-black/30 border-current/15'
+                    {/* Glassmorphic Zoom Scale Selector & Invariable Preset Buttons */}
+                    <div className={`flex items-center gap-1.5 p-1 rounded-2xl border backdrop-blur-xl ${
+                        isLightCanvas 
+                            ? 'bg-white/75 border-[#d4c8af]/80 shadow-[0_2px_12px_rgba(0,0,0,0.05),inset_0_1px_0_0_rgba(255,255,255,0.8)]' 
+                            : isVoyager
+                            ? 'bg-[#180c04]/70 border-[#2dd4bf]/30 shadow-[0_4px_24px_rgba(0,0,0,0.45),inset_0_1px_0_0_rgba(45,212,191,0.15)]'
+                            : 'bg-black/40 border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.45),inset_0_1px_0_0_rgba(255,255,255,0.08)]'
                     }`}>
                         {/* Zoom out button */}
                         <button
                             onClick={() => {
+                                setActivePreset(null);
                                 zoomTimeline(prev => prev * 0.82, 'center');
                             }}
-                            className={`p-1 rounded-lg transition-all ${
-                                isLightCanvas ? 'hover:bg-black/5 text-[#2b1810]' : 'hover:bg-white/10 opacity-70 hover:opacity-100'
+                            className={`w-7 h-7 flex items-center justify-center rounded-xl border transition-all shrink-0 ${
+                                isLightCanvas 
+                                    ? 'bg-black/5 hover:bg-black/10 border-black/5 text-[#2b1810]' 
+                                    : 'bg-white/[0.04] hover:bg-white/[0.12] border-white/[0.08] hover:border-white/20 text-slate-300 hover:text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] active:scale-95'
                             }`}
                             title="Zoom Out (Scroll Down)"
                         >
-                            <ZoomOut size={12} />
+                            <ZoomOut size={13} />
                         </button>
 
                         {/* Slider */}
@@ -1304,78 +1333,74 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             step={150}
                             value={canvasWidth}
                             onChange={(e) => {
+                                setActivePreset(null);
                                 const nextW = Number(e.target.value);
                                 zoomTimeline(nextW, 'center');
                             }}
-                            className="w-16 sm:w-24 h-1.5 accent-amber-500 rounded-lg cursor-pointer"
-                            title={`Canvas Width: ${canvasWidth}px (${dynamicStep}y step)`}
+                            className="w-16 sm:w-22 h-1.5 accent-amber-400 rounded-lg cursor-pointer bg-white/10"
+                            title={`Canvas Width: ${canvasWidth.toLocaleString()}px (${dynamicStep}y step)`}
                         />
 
                         {/* Zoom in button */}
                         <button
                             onClick={() => {
+                                setActivePreset(null);
                                 zoomTimeline(prev => prev * 1.22, 'center');
                             }}
-                            className={`p-1 rounded-lg transition-all ${
-                                isLightCanvas ? 'hover:bg-black/5 text-[#2b1810]' : 'hover:bg-white/10 opacity-70 hover:opacity-100'
+                            className={`w-7 h-7 flex items-center justify-center rounded-xl border transition-all shrink-0 ${
+                                isLightCanvas 
+                                    ? 'bg-black/5 hover:bg-black/10 border-black/5 text-[#2b1810]' 
+                                    : 'bg-white/[0.04] hover:bg-white/[0.12] border-white/[0.08] hover:border-white/20 text-slate-300 hover:text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] active:scale-95'
                             }`}
                             title="Zoom In (Scroll Up)"
                         >
-                            <ZoomIn size={12} />
+                            <ZoomIn size={13} />
                         </button>
 
-                        {/* Quick Presets */}
-                        <div className="flex items-center gap-0.5 ml-1 border-l border-current/15 pl-1">
-                            {[
-                                { label: '2K', width: 2000, level: 'compact' },
-                                { label: '3.4K', width: 3400, level: 'standard' },
-                                { label: '5.2K', width: 5200, level: 'epic' },
-                                { label: '8K', width: 8000, level: 'panoramic' }
-                            ].map(preset => (
-                                <button
-                                    key={preset.label}
-                                    onClick={() => {
-                                        zoomTimeline(preset.width, 'center');
-                                        setZoomLevel(preset.level as ZoomLevel);
-                                    }}
-                                    className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
-                                        Math.abs(canvasWidth - preset.width) < 300
-                                            ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
-                                              : isWiki ? 'bg-red-700 text-white shadow-sm'
-                                              : 'bg-current/25 opacity-100 shadow-sm border border-current/20' 
-                                            : isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-white/70' : 'opacity-40 hover:opacity-85'
-                                    }`}
-                                    title={`Set scale to ${preset.width}px`}
-                                >
-                                    {preset.label}
-                                </button>
-                            ))}
+                        {/* 6 Clean Natural Presets (Zero Decimals, Zero Jumps, Invariable Layout Footprint) */}
+                        <div className="flex items-center gap-1 ml-1 border-l border-white/10 pl-1.5 shrink-0">
+                            {ZOOM_PRESETS.map(preset => {
+                                const isSelected = activePreset === preset.label || 
+                                    (activePreset === null && Math.abs(canvasWidth - preset.width) < preset.tolerance);
 
-                            {/* Dedicated 5-Year Precision Focus Preset */}
-                            <button
-                                onClick={() => {
-                                    const target5y = Math.min(maxCanvasWidth, Math.max(2000, Math.ceil(yearSpan * 15)));
-                                    zoomTimeline(target5y, 'center');
-                                }}
-                                className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${
-                                    dynamicStep <= 5
-                                        ? 'bg-amber-500/25 text-amber-500 border border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.25)] font-black'
-                                        : isLightCanvas ? 'text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-white/70' : 'opacity-40 hover:opacity-85'
-                                }`}
-                                title="Zoom to 5-Year Gap Precision (2000 > 2005 > 2010...)"
-                            >
-                                <Sparkles size={10} className={dynamicStep <= 5 ? "animate-pulse" : ""} />
-                                <span>5Y Gap</span>
-                            </button>
+                                return (
+                                    <button
+                                        key={preset.label}
+                                        onClick={() => {
+                                            setActivePreset(preset.label);
+                                            zoomTimeline(preset.width, 'center');
+                                        }}
+                                        className={`h-7 min-w-[2.4rem] px-2 rounded-xl text-[10px] font-bold uppercase transition-all flex items-center justify-center shrink-0 border ${
+                                            isSelected
+                                                ? isRoyal
+                                                    ? 'bg-[#70121e] text-[#fff8e7] border-[#70121e] shadow-md shadow-[#70121e]/30'
+                                                    : isWiki
+                                                    ? 'bg-red-700 text-white border-red-700 shadow-sm'
+                                                    : isVoyager
+                                                    ? 'bg-[#2dd4bf]/25 text-[#2dd4bf] border-[#2dd4bf]/60 shadow-[0_0_12px_rgba(45,212,191,0.3),inset_0_1px_0_0_rgba(255,255,255,0.2)]'
+                                                    : 'bg-[#fef08a]/20 text-[#fef08a] border-[#fef08a]/60 shadow-[0_0_12px_rgba(254,240,138,0.25),inset_0_1px_0_0_rgba(255,255,255,0.15)]'
+                                                : isLightCanvas
+                                                    ? 'border-transparent text-[#2b1810]/70 hover:text-[#2b1810] hover:bg-black/5 hover:border-black/5'
+                                                    : 'border-transparent text-slate-400 hover:text-white hover:bg-white/[0.08] hover:border-white/10'
+                                        }`}
+                                        title={`${preset.desc} (${preset.width.toLocaleString()}px)`}
+                                    >
+                                        {preset.label}
+                                    </button>
+                                );
+                            })}
                         </div>
 
                         {/* Step Readout Badge */}
-                        <div className={`px-2 py-0.5 rounded-md font-mono text-[9px] font-bold ml-1 ${
+                        <div className={`px-2.5 py-1 rounded-xl font-mono text-[9px] font-bold ml-1 border backdrop-blur-md shrink-0 flex items-center gap-1 ${
                             dynamicStep <= 5
-                                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse'
-                                : isLightCanvas ? 'bg-black/5 text-[#2b1810]/70' : 'bg-white/5 opacity-60'
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.3)] animate-pulse'
+                                : isLightCanvas
+                                ? 'bg-black/5 text-[#2b1810]/80 border-black/10'
+                                : 'bg-white/[0.05] text-slate-300 border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]'
                         }`}>
-                            {dynamicStep <= 5 ? '5y Gap' : `${dynamicStep}y`}
+                            {dynamicStep <= 5 && <Sparkles size={9} className="text-amber-400" />}
+                            <span>{dynamicStep}y</span>
                         </div>
                     </div>
                 </div>
