@@ -148,6 +148,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         rafId: null
     });
     const pendingScrollLeftRef = useRef<number | null>(null);
+    // Tracks whether a wheel-zoom gesture is actively in-flight (suppresses extraneous state updates)
+    const isZoomingRef = useRef(false);
+    const zoomSettleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // Locks the invariant focal anchor (ratio across canvas width) during continuous zoom gestures
+    const zoomFocalAnchorRef = useRef<{
+        ratio: number;
+        anchorViewportX: number;
+    } | null>(null);
 
     // Effective eras (fallback to B.C. / A.C. preset if not defined)
     const eras: FantasyEra[] = useMemo(() => {
@@ -469,11 +477,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         if (hasDraggedRef.current) return;
         if (!scrollContainerRef.current) return;
         const totalWidth = canvasWidth;
+        const CANVAS_PADDING_LEFT = 24;
         const ratio = (targetYear - minYear) / yearSpan;
-        const scrollTarget = ratio * totalWidth - scrollContainerRef.current.clientWidth / 2;
+        const scrollTarget = Math.max(0, (ratio * totalWidth + CANVAS_PADDING_LEFT) - scrollContainerRef.current.clientWidth / 2);
         scrollContainerRef.current.scrollTo({
-            left: Math.max(0, scrollTarget),
+            left: scrollTarget,
             behavior: 'smooth'
+        });
+        setViewport({
+            scrollLeft: scrollTarget,
+            clientWidth: scrollContainerRef.current.clientWidth
         });
 
         if (eraId) {
@@ -496,6 +509,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
         let rafId: number | null = null;
         const updateBounds = () => {
+            // Do not allow asynchronous native scroll events to overwrite synchronous zoom viewport state
+            if (isZoomingRef.current) return;
             setViewport({
                 scrollLeft: container.scrollLeft,
                 clientWidth: container.clientWidth
@@ -503,6 +518,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         };
 
         const onScroll = () => {
+            if (isZoomingRef.current) return;
             if (rafId !== null) return;
             rafId = requestAnimationFrame(() => {
                 rafId = null;
@@ -525,7 +541,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         };
     }, [mainViewMode]);
 
-    // Synchronize scroll position immediately after canvas width updates in the DOM (prevents clamping)
+    // Synchronize scroll position immediately after canvas width updates in the DOM (safety fallback)
     useLayoutEffect(() => {
         if (pendingScrollLeftRef.current !== null && scrollContainerRef.current) {
             scrollContainerRef.current.scrollLeft = pendingScrollLeftRef.current;
@@ -552,25 +568,43 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         if (nextWidth === currentW) return;
 
         const containerWidth = container.clientWidth || 1200;
-        let anchorViewportX = containerWidth / 2;
-        if (anchorMode === 'cursor' && clientX !== undefined) {
-            const rect = container.getBoundingClientRect();
-            anchorViewportX = Math.max(0, Math.min(containerWidth, clientX - rect.left));
+        const CANVAS_PADDING_LEFT = 24;
+
+        // If a focal anchor is already locked for the active gesture, reuse it.
+        // Otherwise, establish the invariant anchor based on cursor clientX or container center.
+        let anchor = zoomFocalAnchorRef.current;
+        if (!anchor) {
+            let anchorViewportX = containerWidth / 2;
+            if (anchorMode === 'cursor' && clientX !== undefined) {
+                const rect = container.getBoundingClientRect();
+                anchorViewportX = Math.max(0, Math.min(containerWidth, clientX - rect.left));
+            }
+            const currentScroll = pendingScrollLeftRef.current !== null ? pendingScrollLeftRef.current : container.scrollLeft;
+            const contentXInCanvas = currentScroll + anchorViewportX - CANVAS_PADDING_LEFT;
+            const ratio = Math.max(0, Math.min(1, contentXInCanvas / currentW));
+            anchor = { ratio, anchorViewportX };
+
+            // Lock focal anchor for the duration of continuous multi-frame wheel gestures
+            if (isZoomingRef.current) {
+                zoomFocalAnchorRef.current = anchor;
+            }
         }
 
-        // Canonical zoom transformation: anchor content position is invariant across scale
-        const currentScroll = pendingScrollLeftRef.current !== null ? pendingScrollLeftRef.current : container.scrollLeft;
-        const contentX = currentScroll + anchorViewportX;
-        const ratio = contentX / currentW;
-        const targetScrollLeft = Math.max(0, ratio * nextWidth - anchorViewportX);
+        // Canonical invariant: anchor ratio of canvas width remains pinned at anchorViewportX
+        const targetScrollLeft = Math.max(0, Math.round(anchor.ratio * nextWidth + CANVAS_PADDING_LEFT - anchor.anchorViewportX));
 
         pendingScrollLeftRef.current = targetScrollLeft;
         canvasWidthRef.current = nextWidth;
 
-        // Apply immediately to DOM container
+        // 1. Immediately update canvas DOM width FIRST to prevent the browser from clamping targetScrollLeft
+        if (canvasInnerRef.current) {
+            canvasInnerRef.current.style.width = `${nextWidth}px`;
+        }
+
+        // 2. Immediately apply scroll to DOM container
         container.scrollLeft = targetScrollLeft;
 
-        // Synchronously update both canvasWidth and viewport state in the same React 18 batch
+        // 3. Synchronously batch React state updates (canvasWidth + viewport) together in the same render
         setCanvasWidth(nextWidth);
         setViewport({
             scrollLeft: targetScrollLeft,
@@ -614,6 +648,26 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 acc.deltaY += e.deltaY;
                 acc.isDezoom = acc.deltaY > 0;
                 acc.clientX = e.clientX;
+
+                // Dismiss any lingering hover ribbon tooltip during zoom
+                setHoveredRibbonItem(null);
+
+                // Mark zoom gesture as active and schedule settle detection
+                isZoomingRef.current = true;
+                if (zoomSettleTimerRef.current !== null) {
+                    clearTimeout(zoomSettleTimerRef.current);
+                }
+                zoomSettleTimerRef.current = setTimeout(() => {
+                    isZoomingRef.current = false;
+                    zoomSettleTimerRef.current = null;
+                    zoomFocalAnchorRef.current = null; // Release locked anchor when wheel gesture settles
+                    if (scrollContainerRef.current) {
+                        setViewport({
+                            scrollLeft: scrollContainerRef.current.scrollLeft,
+                            clientWidth: scrollContainerRef.current.clientWidth
+                        });
+                    }
+                }, 150);
 
                 if (acc.rafId === null) {
                     acc.rafId = requestAnimationFrame(() => {
@@ -729,7 +783,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         const totalWidth = canvasWidth;
         const targetYear = Math.max(minYear, Math.min(maxYear, currentYear));
         const ratio = (targetYear - minYear) / yearSpan;
-        const scrollTarget = ratio * totalWidth - (container.clientWidth * 0.15);
+        const CANVAS_PADDING_LEFT = 24;
+        const scrollTarget = Math.max(0, (ratio * totalWidth + CANVAS_PADDING_LEFT) - container.clientWidth / 2);
 
         requestAnimationFrame(() => {
             if (scrollContainerRef.current) {
@@ -873,10 +928,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     };
 
     // Interactive mouse hover tracking on timeline canvas
+    // Suppressed during active zoom gestures to eliminate extraneous re-renders
     const handleCanvasMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (isDraggingCanvas) {
-            setHoveredYear(null);
-            setHoveredPosPct(null);
+        if (isDraggingCanvas || isZoomingRef.current) {
             return;
         }
         if (!canvasInnerRef.current) return;
@@ -1354,7 +1408,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             {/* ── Main Interactive Timeline Canvas ──────────────────────────── */}
             {mainViewMode === 'chronos' && (
                 <div 
-                    className={`flex-1 relative rounded-3xl border shadow-2xl overflow-hidden flex flex-col transition-all ${canvasGlass}`}
+                    className={`flex-1 relative rounded-3xl border shadow-2xl overflow-hidden flex flex-col ${canvasGlass}`}
                     style={{
                         backgroundImage: isSovereign 
                             ? 'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(254,240,138,0.06), transparent 70%)'
@@ -1438,7 +1492,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 <div
                                     key={era.id}
                                     onClick={() => handleJumpToYear(era.startYear, era.id)}
-                                    className={`absolute h-12 top-1 rounded-2xl border flex flex-col justify-center px-3.5 cursor-pointer group transition-all duration-300 shadow-md backdrop-blur-md ${
+                                    className={`absolute h-12 top-1 rounded-2xl border flex flex-col justify-center px-3.5 cursor-pointer group transition-[box-shadow,border-color,transform] duration-300 shadow-md backdrop-blur-md ${
                                         isJumping 
                                             ? 'scale-[1.04] ring-4 ring-white/90 z-30 animate-pulse' 
                                             : 'hover:scale-[1.01]'
@@ -1533,7 +1587,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 >
                                     {/* Tick pip */}
                                     <div 
-                                        className={`-translate-y-1/2 transition-all ${
+                                        className={`-translate-y-1/2 ${
                                             tick.isMajor 
                                                 ? 'w-2.5 h-2.5 rotate-45 border shadow-sm' 
                                                 : isStep5
@@ -1715,7 +1769,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             >
                                 {/* Vertical Light Beam */}
                                 <div 
-                                    className="absolute top-0 bottom-0 w-px -translate-x-1/2 transition-all group-hover:w-0.5"
+                                    className="absolute top-0 bottom-0 w-px -translate-x-1/2 transition-[width] group-hover:w-0.5"
                                     style={{ 
                                         background: `linear-gradient(180deg, ${pinColor}95 0%, ${pinColor}40 60%, transparent 100%)`,
                                         filter: `drop-shadow(0 0 4px ${pinColor}70)`
@@ -1728,7 +1782,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     className="absolute -top-6 -translate-x-1/2 cursor-pointer transition-transform hover:scale-125 z-30 flex flex-col items-center"
                                 >
                                     <div 
-                                        className="w-5 h-5 rotate-45 rounded-sm border-2 shadow-2xl flex items-center justify-center transition-all group-hover:rotate-90 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+                                        className="w-5 h-5 rotate-45 rounded-sm border-2 shadow-2xl flex items-center justify-center transition-[transform,box-shadow] group-hover:rotate-90 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
                                         style={{ 
                                             backgroundColor: pinColor,
                                             borderColor: '#ffffff',
@@ -1796,7 +1850,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     onMouseLeave={() => {
                                         setHoveredRibbonItem(null);
                                     }}
-                                    className={`absolute transition-all cursor-pointer group hover:z-40 ${
+                                    className={`absolute cursor-pointer group hover:z-40 ${
                                         isInspected ? 'z-30' : 'z-10'
                                     }`}
                                     style={{
@@ -1810,7 +1864,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     {isEvent ? (
                                         /* Historical Event Ribbon */
                                         <div 
-                                            className="h-full rounded-xl border flex items-center px-3 gap-2 transition-all group-hover:scale-[1.01] group-hover:brightness-125 overflow-hidden backdrop-blur-md shadow-md"
+                                            className="h-full rounded-xl border flex items-center px-3 gap-2 transition-[box-shadow,border-color,filter,transform] group-hover:scale-[1.01] group-hover:brightness-125 overflow-hidden backdrop-blur-md shadow-md"
                                             style={{
                                                 background: isLightCanvas 
                                                     ? `linear-gradient(90deg, ${itemColor}25 0%, #ffffff 100%)` 
@@ -1852,7 +1906,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     ) : (
                                         /* Character Lifespan Ribbon */
                                         <div 
-                                            className={`h-full rounded-full border flex items-center px-3.5 gap-2 transition-all group-hover:scale-[1.01] group-hover:brightness-125 overflow-hidden backdrop-blur-md shadow-md ${
+                                            className={`h-full rounded-full border flex items-center px-3.5 gap-2 transition-[box-shadow,border-color,filter,transform] group-hover:scale-[1.01] group-hover:brightness-125 overflow-hidden backdrop-blur-md shadow-md ${
                                                 item.isDead ? 'opacity-75' : 'opacity-100'
                                             }`}
                                             style={{
