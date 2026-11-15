@@ -536,6 +536,22 @@
       "related_bugs": [],
       "occurrences": 2,
       "last_seen": "2026-11-15T06:31:06.060Z"
+    },
+    {
+      "id": "bug-032",
+      "timestamp": "2026-11-15T06:59:48.835Z",
+      "error_message": "CSS fix: hover",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "hover: z-40 ${ → min-w-[280px] hover:width-auto hover:scale-[1.02] hover:shadow-xl`",
+      "fix": "Changed hover: z-40 ${ → min-w-[280px] hover:width-auto hover:scale-[1.02] hover:shadow-xl`",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:59:48.875Z"
     }
   ],
   "applied_observations": {
@@ -552,7 +568,8 @@
     "c02a0dd2-e60b-44e3-add3-5376ccec1bf8": true,
     "eac3b3c6-ff52-4749-9aef-6f2c0e764aaf": true,
     "cc3f980f-1381-43e6-a8de-9f38540a8d43": true,
-    "6de12459-b948-4d7f-b2df-6e0593f48618": true
+    "6de12459-b948-4d7f-b2df-6e0593f48618": true,
+    "95ba2623-deb5-4305-bbe7-314e85bb4149": true
   },
   "next_id": 21
 }

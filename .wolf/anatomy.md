@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T06:31:07.632Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T07:01:01.127Z
 > Files: 352 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
@@ -515,7 +515,7 @@
 - `NexusGraphView.tsx` — CATEGORY_COLORS — uses useRef, useState, useEffect, useMemo (~12876 tok)
 - `NexusTreeView.tsx` — NexusTreeView — uses useMemo, useState (~4224 tok)
 - `OptionsView.tsx` — PHASE_COLORS — uses useState, useMemo (~17235 tok)
-- `TimelineView.tsx` — ZOOM_PRESETS (~43800 tok)
+- `TimelineView.tsx` — ZOOM_PRESETS (~43978 tok)
 - `TrashView.tsx` — TrashView (~1412 tok)
 - `WorldMap.tsx` — CONNECTION_META (~22605 tok)
 

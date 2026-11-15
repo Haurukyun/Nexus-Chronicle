@@ -1,13 +1,13 @@
 {
   "version": 1,
   "meta": {
-    "lastScanned": "2026-11-15T06:31:07.632Z",
+    "lastScanned": "2026-11-15T07:01:01.127Z",
     "fileCount": 352,
     "hits": 0,
     "misses": 0,
-    "renderedHash": "453ec4a8392d1cb08b071d1a3315cc9521dba1ffed2a93e707621c966ddefb57",
-    "storeUpdatedAt": "2026-11-15T06:31:07.636Z",
-    "rootHash": "661345d63e01d989"
+    "renderedHash": "ba27ac383081f970d7ba5c029f68c53a5cb48358dfcb6c0e50426c5637229ab3",
+    "storeUpdatedAt": "2026-11-15T07:01:01.137Z",
+    "rootHash": "2a5191fe2c819846"
   },
   "files": {
     ".eslintrc.js": {
@@ -7672,63 +7672,35 @@
     },
     "src/views/TimelineView.tsx": {
       "description": "ZOOM_PRESETS",
-      "tokens": 43800,
-      "hash": "1773d1d0472c1118",
-      "size": 154368,
-      "mtimeMs": 1794724265804.7808,
-      "updatedAt": "2026-11-15T06:31:07.157Z",
-      "source": "scan",
+      "tokens": 43978,
+      "hash": "d81c30af12ea124a",
+      "size": 154991,
+      "mtimeMs": 1794726060816.7751,
+      "updatedAt": "2026-11-15T07:01:01.126Z",
+      "source": "hook",
       "symbols": [
         {
           "name": "TimelineViewProps",
           "kind": "section",
           "startLine": 25,
-          "endLine": 29,
-          "tokens": 49
-        },
-        {
-          "name": "CategoryFilter",
-          "kind": "section",
-          "startLine": 31,
-          "endLine": 31,
-          "tokens": 20
-        },
-        {
-          "name": "LifeStatusFilter",
-          "kind": "section",
-          "startLine": 32,
-          "endLine": 32,
-          "tokens": 16
+          "endLine": 33,
+          "tokens": 85
         },
         {
           "name": "ZoomPreset",
           "kind": "section",
           "startLine": 34,
-          "endLine": 39,
-          "tokens": 30
+          "endLine": 50,
+          "tokens": 209
         },
         {
           "name": "ProcessedTimelineItem",
           "kind": "section",
           "startLine": 51,
-          "endLine": 64,
-          "tokens": 110
+          "endLine": 2664,
+          "tokens": 43316
         }
-      ],
-      "symbolSource": "ts",
-      "skeleton": "interface TimelineViewProps {\ntype CategoryFilter = 'all' | 'events' | 'characters' | 'milestones';\ntype LifeStatusFilter = 'all' | 'living' | 'deceased';\ninterface ZoomPreset {\ninterface ProcessedTimelineItem {",
-      "imports": [
-        "src/types.ts",
-        "src/store/useWorldStore.ts",
-        "src/theme/index.ts",
-        "src/utils/documentModeUtils.ts",
-        "src/components/timeline/ManageErasModal.tsx",
-        "src/components/timeline/AddMilestoneModal.tsx",
-        "src/components/timeline/ManageCalendarModal.tsx",
-        "src/components/timeline/TimelineInspectorCard.tsx",
-        "src/components/timeline/AnnualCalendarView.tsx"
-      ],
-      "importance": 0.0137
+      ]
     },
     "src/views/TrashView.tsx": {
       "description": "TrashView",
