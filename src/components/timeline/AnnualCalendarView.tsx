@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
     CalendarDays, Star, Sun, Cloud, Leaf, Snowflake,
-    Sparkles, Info, ChevronLeft, ChevronRight
+    Sparkles, Info, ChevronLeft, ChevronRight, Plus, ExternalLink
 } from 'lucide-react';
-import { FantasyCalendar, FantasyMonth } from '../../types';
-import { getEffectiveMonthsForYear, isLeapYear, EffectiveMonth } from '../../utils/timelineUtils';
+import { FantasyCalendar, FantasyMonth, WorldEntity, Event } from '../../types';
+import { getEffectiveMonthsForYear, isLeapYear, EffectiveMonth, extractYear } from '../../utils/timelineUtils';
 import { useTheme } from '../../theme';
 
 // ─── Season helpers ────────────────────────────────────────────────────────
@@ -33,11 +33,25 @@ function buildWeekGrid(month: EffectiveMonth, daysPerWeek: number): number[][] {
     return weeks;
 }
 
+// ─── Event marker for calendar days ───────────────────────────────────────
+interface CalendarEventMarker {
+    id: string;
+    name: string;
+    eventType?: string;
+    color: string;
+    day: number;
+    monthId: string;
+    monthName: string;
+}
+
 // ─── Props ─────────────────────────────────────────────────────────────────
 export interface AnnualCalendarViewProps {
     calendar: FantasyCalendar;
     displayYear?: number;
     onYearChange?: (year: number) => void;
+    events?: WorldEntity[]; // All entities, filtered for events
+    onEventClick?: (eventId: string) => void; // Navigate to event in timeline/codex
+    onDayClick?: (year: number, monthName: string, day: number, monthId: string) => void; // Quick-create event at this date
 }
 
 type CalTab = 'months' | 'festivals';
@@ -47,10 +61,18 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
     calendar,
     displayYear = 1,
     onYearChange,
+    events = [],
+    onEventClick,
+    onDayClick,
 }) => {
     const { themeId, layoutMode } = useTheme();
     const [activeTab, setActiveTab] = useState<CalTab>('months');
     const [localYear, setLocalYear] = useState(displayYear);
+
+    // Sync localYear with displayYear prop when it changes externally
+    useEffect(() => {
+        setLocalYear(displayYear);
+    }, [displayYear]);
 
     const year = localYear;
     const leap = isLeapYear(year, calendar);
@@ -58,6 +80,48 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
     const regularMonths = useMemo(() => effectiveMonths.filter(m => !m.isIntercalary), [effectiveMonths]);
     const festivals = useMemo(() => effectiveMonths.filter(m => m.isIntercalary), [effectiveMonths]);
     const leapFestivalId = calendar.leapRule?.targetMonthId;
+
+    // Process events for this year - extract events that fall within the displayed year
+    const yearEvents = useMemo((): CalendarEventMarker[] => {
+        const markers: CalendarEventMarker[] = [];
+        for (const entity of events) {
+            if (entity.type !== 'event') continue;
+            const evt = entity as Event;
+            const startYear = extractYear(evt.startDate || evt.date);
+            const endYear = extractYear(evt.endDate);
+
+            // Check if event overlaps with this year
+            const eventStart = startYear ?? 0;
+            const eventEnd = endYear ?? startYear ?? 0;
+            if (eventStart <= year && eventEnd >= year) {
+                // Try to parse fantasy date for month/day
+                const dateStr = evt.startDate || evt.date;
+                if (dateStr) {
+                    // Simple check if the date string contains a month name from this calendar
+                    for (const month of calendar.months) {
+                        if (dateStr.toLowerCase().includes(month.name.toLowerCase()) ||
+                            (month.abbreviation && dateStr.toLowerCase().includes(month.abbreviation.toLowerCase()))) {
+                            // Extract day number
+                            const dayMatch = dateStr.match(/\b([1-9]|[12]\d|3[01])\b/);
+                            const day = dayMatch ? parseInt(dayMatch[1], 10) : 1;
+                            if (day <= month.days) {
+                                markers.push({
+                                    id: entity.id,
+                                    name: entity.name,
+                                    eventType: evt.eventType,
+                                    color: '#f59e0b',
+                                    day,
+                                    monthId: month.id,
+                                    monthName: month.name
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return markers;
+    }, [events, year, calendar.months]);
 
     // ── Theme tokens ──────────────────────────────────────────────────────
     const isRoyal   = themeId === 'royal-codex';
@@ -288,12 +352,42 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
                                         {weekGrid.map((week, wi) => (
                                             <div key={wi} className="grid gap-0.5"
                                                 style={{ gridTemplateColumns: `repeat(${displayCols}, minmax(0, 1fr))` }}>
-                                                {week.map(day => (
-                                                    <div key={day}
-                                                        className={`text-center text-[11px] py-0.5 cursor-default transition-colors ${dayNumCls}`}>
-                                                        {day}
-                                                    </div>
-                                                ))}
+                                                {week.map(day => {
+                                                    // Find events for this day in this month
+                                                    const dayEvents = yearEvents.filter(e => e.monthId === month.id && e.day === day);
+                                                    return (
+                                                        <div key={day} className="relative min-h-[28px]" style={{ minHeight: dayEvents.length > 0 ? '40px' : '28px' }}>
+                                                            <button
+                                                                onClick={() => onDayClick?.(year, month.name, day, month.id)}
+                                                                className={`text-center text-[11px] py-0.5 cursor-pointer transition-colors ${dayNumCls} relative ${dayEvents.length > 0 ? 'font-bold' : ''}`}
+                                                                title={dayEvents.length > 0 ? dayEvents.map(e => e.name).join('\n') : `Click to add event on ${month.name} ${day}`}
+                                                            >
+                                                                {day}
+                                                            </button>
+                                                            {dayEvents.length > 0 && (
+                                                                <div className="absolute top-[20px] left-1/2 -translate-x-1/2 flex flex-wrap gap-0.5 justify-center max-w-full">
+                                                                    {dayEvents.slice(0, 3).map((evt, ei) => (
+                                                                        <button
+                                                                            key={evt.id}
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                onEventClick?.(evt.id);
+                                                                            }}
+                                                                            className="w-1.5 h-1.5 rounded-full border border-white/50 shadow-sm hover:scale-125 transition-transform cursor-pointer"
+                                                                            style={{ backgroundColor: evt.color }}
+                                                                            title={`${evt.name}${evt.eventType ? ` (${evt.eventType})` : ''} — Click to open`}
+                                                                        />
+                                                                    ))}
+                                                                    {dayEvents.length > 3 && (
+                                                                        <span className="text-[7px] font-mono text-white/70 bg-black/50 px-0.5 rounded">
+                                                                            +{dayEvents.length - 3}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                                 {week.length < displayCols && Array.from({ length: displayCols - week.length }).map((_, pi) => (
                                                     <div key={`pad-${pi}`} />
                                                 ))}

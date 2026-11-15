@@ -2,6 +2,79 @@
   "version": 1,
   "bugs": [
     {
+      "id": "BUG-018",
+      "timestamp": "2026-11-15T07:40:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-15T07:45:00Z",
+      "error_message": "WorldMap/Atlas view elements (pins, ley-lines, dossier, filters, HUDs) overlayed top toolbar (Jump, Scratchpad, Keybinds, Theme Picker) due to incorrect z-index hierarchy — map elements at z-50+ while toolbar at z-10",
+      "file": "src/App.tsx, src/views/WorldMap.tsx, src/components/ui/ThemeSwitcher.tsx",
+      "root_cause": "App.tsx top toolbar used z-10. WorldMap pins used z-50 (zIndex: 60), dossier z-40, ley-lines z-10, filters z-40, HUDs z-30. ThemeSwitcher dropdown z-50. All WorldMap elements sat above the toolbar.",
+      "fix": "Raised App.tsx top toolbar to z-[100] with data-interactive-ui=true. Restructured WorldMap z-index: ley-lines z-[15], pins z-[10]-z-[50] (hovered), dossier/filters/search z-[35], HUDs z-[25]. ThemeSwitcher dropdown raised to z-[110]. All verified with build/typecheck/tests.",
+      "tags": [
+        "worldmap",
+        "z-index",
+        "ui",
+        "toolbar",
+        "glassmorphism"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-15"
+    },
+    {
+      "id": "BUG-015",
+      "timestamp": "2026-11-15T07:10:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-15T07:30:00Z",
+      "error_message": "Timeline events forced to minimum 2-year visual span; point-in-time events (battles, coronations) incorrectly rendered as long ribbons",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "TimelineView rawItems extraction defaulted all events to `end = start + 3` years and enforced `Math.max(end, start + 2)` minimum span, regardless of whether event had endDate set. No distinction between point events (single date) and span events (start + end).",
+      "fix": "Added `isPointEvent` field to ProcessedTimelineItem. Events with only startDate/date (no endDate) now render as diamond markers at exact year position. Span events with both startDate and endDate render as ribbons. Updated quick-create to only set startDate.",
+      "tags": [
+        "timeline",
+        "events",
+        "rendering",
+        "data-model"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-15"
+    },
+    {
+      "id": "BUG-016",
+      "timestamp": "2026-11-15T07:10:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-15T07:30:00Z",
+      "error_message": "Annual Calendar View completely disconnected from events — shows months/festivals but zero event markers, no navigation to timeline",
+      "file": "src/components/timeline/AnnualCalendarView.tsx, src/views/TimelineView.tsx",
+      "root_cause": "AnnualCalendarView accepted only calendar prop. No events passed, no event rendering on day grid, no onEventClick/onDayClick callbacks. TimelineView rendered AnnualCalendarView without displayYear sync, events, or callbacks.",
+      "fix": "Extended AnnualCalendarViewProps with events[], onEventClick, onDayClick. Added yearEvents memo to extract events for displayed year. Day grid now shows event dots with click-to-navigate. Added onDayClick for quick-create. TimelineView now passes displayYear (synced to camera), events, onEventClick=onNavigate, onDayClick=handleQuickCreateEventAtDate.",
+      "tags": [
+        "timeline",
+        "calendar",
+        "integration",
+        "ux"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-15"
+    },
+    {
+      "id": "BUG-017",
+      "timestamp": "2026-11-15T07:10:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-15T07:30:00Z",
+      "error_message": "Timeline Chronos camera and Annual Calendar year not synchronized — clicking Annual tab shows Year 1 hardcoded, no sync with viewport position",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "TimelineView rendered AnnualCalendarView with no displayYear prop (defaulted to 1). No onYearChange to jump timeline camera. No events passed for rendering.",
+      "fix": "TimelineView now computes displayYear from viewport scroll position: `Math.round(minYear + ((viewport.scrollLeft + viewport.clientWidth / 2 - 24) / canvasWidth) * yearSpan)`. Passes onYearChange=handleJumpToYear to sync camera when user navigates years in Annual Calendar.",
+      "tags": [
+        "timeline",
+        "calendar",
+        "sync",
+        "navigation"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-15"
+    },
+    {
       "id": "BUG-001",
       "timestamp": "2026-09-29T23:00:00Z",
       "status": "resolved",
@@ -10,7 +83,12 @@
       "file": "src/utils/backlinkUtils.ts",
       "root_cause": "backlinkUtils.ts references field names that don't exist on the actual entity types: `placeOfResidenceId` (actual: `pairedCurrentLocationNew`), `placeOfOriginId` (actual: `pairedOriginLocationNew`), `placeOfDemiseId` (actual: `pairedDemiseLocationNew`), `speciesIds` (actual: `pairedRace`), `occupationIds` (actual: `pairedProfession`), `skillIds` (actual: `pairedSkills`), etc. Also `parentsOfCharacter` / `childOfCharacter` were ignored.",
       "fix": "Updated backlinkUtils.ts to scan both modern `paired*` and relationship arrays as well as legacy fields. Also synced `allies` alias and group affiliations.",
-      "tags": ["backlinks", "character", "refactoring", "data-integrity"],
+      "tags": [
+        "backlinks",
+        "character",
+        "refactoring",
+        "data-integrity"
+      ],
       "occurrences": 1,
       "last_seen": "2026-09-29"
     },
@@ -23,7 +101,11 @@
       "file": "src/views/DashboardView.tsx",
       "root_cause": "`insights` is computed inside a `useMemo` that depends on `world.entities` and `world.trash`, but calls `Math.random()` internally. Any state change that updates these (e.g., adding a tag) re-rolls all insight text. The memo does not capture a stable random seed.",
       "fix": "Added a `seed` state (integer), deterministic index math (`seed * prime + offset % len`), and a 'Consult the Oracle' reroll button that increments the seed manually.",
-      "tags": ["dashboard", "ux", "rendering"],
+      "tags": [
+        "dashboard",
+        "ux",
+        "rendering"
+      ],
       "occurrences": 1,
       "last_seen": "2026-09-29"
     },
@@ -36,7 +118,11 @@
       "file": "src/views/NexusTreeView.tsx",
       "root_cause": "TreeNode component has a guard `depth < 5` that stops rendering children beyond depth 5. No UI indicator was shown when truncation occurred.",
       "fix": "Added visual truncation indicator badge `+N descendants (depth limit)` when depth >= 5. Also updated root & child discovery to check bidirectional parent/child relations and fixed isDead check.",
-      "tags": ["nexus-tree", "ux", "rendering"],
+      "tags": [
+        "nexus-tree",
+        "ux",
+        "rendering"
+      ],
       "occurrences": 1,
       "last_seen": "2026-09-29"
     },
@@ -49,7 +135,11 @@
       "file": "src/views/WorldMap.tsx",
       "root_cause": "Adding a location marker calls `prompt('Location Anchor Name:')` and adding a connection calls `prompt('Connection Type (trade, magic, diplomatic, war):', 'trade')`. window.prompt() is synchronous, blocks the UI, is inaccessible to screen readers, and is suppressed in iframes/embedded environments.",
       "fix": "Replaced with state-driven React modals: `pendingMarkerPos` triggers anchor modal with text input; `pendingConnection` triggers ley-line type picker modal. Both route through `handleCreate` for schema defaults.",
-      "tags": ["worldmap", "accessibility", "ux"],
+      "tags": [
+        "worldmap",
+        "accessibility",
+        "ux"
+      ],
       "occurrences": 1,
       "last_seen": "2026-09-29"
     },
@@ -62,7 +152,12 @@
       "file": "src/views/TimelineView.tsx",
       "root_cause": "TimelineView reads `char.dateOfBirth` and `char.dateOfDeath`, but the actual Character type uses `birthDate` and `deathDate`. Also Event type uses `startDate` / `endDate` instead of `date`.",
       "fix": "Updated TimelineView.tsx to read `char.birthDate || char.dateOfBirth`, `char.deathDate || char.dateOfDeath`, and `evt.startDate || evt.date`.",
-      "tags": ["timeline", "character", "event", "field-mismatch"],
+      "tags": [
+        "timeline",
+        "character",
+        "event",
+        "field-mismatch"
+      ],
       "occurrences": 1,
       "last_seen": "2026-09-29"
     },
@@ -74,7 +169,11 @@
       "file": ".git",
       "root_cause": "Phase 0 cleanup commit (a42247f) was created locally but not pushed to GitHub. The remote repo is behind.",
       "fix": "Run `git push` from the project root to publish the Phase 0 cleanup commit.",
-      "tags": ["git", "github", "deployment"],
+      "tags": [
+        "git",
+        "github",
+        "deployment"
+      ],
       "occurrences": 1,
       "last_seen": "2026-09-29"
     },
@@ -87,7 +186,12 @@
       "file": "src/views/WorldMap.tsx",
       "root_cause": "Clicking the map in WorldMap only allowed typing a text name for a newly created location, with no option to choose an existing unanchored/anchored location, and no duplicate name validation.",
       "fix": "Added two-tab anchor modal ('Pin Existing Location' with search and relocation confirmation warning, and 'Create New Location' with live and submit-time case-insensitive duplicate checks across all entity types). Auto-incremented default entity names in store handleCreate.",
-      "tags": ["worldmap", "atlas", "data-integrity", "ux"],
+      "tags": [
+        "worldmap",
+        "atlas",
+        "data-integrity",
+        "ux"
+      ],
       "occurrences": 1,
       "last_seen": "2026-09-30"
     },
@@ -100,7 +204,11 @@
       "file": "src/views/TrashView.tsx",
       "root_cause": "Replaced opening <div> with <ThemeCard> but left closing </div> instead of </ThemeCard>.",
       "fix": "Changed closing tag </div> to </ThemeCard> on line 32.",
-      "tags": ["jsx", "refactoring", "syntax"],
+      "tags": [
+        "jsx",
+        "refactoring",
+        "syntax"
+      ],
       "occurrences": 1,
       "last_seen": "2026-09-30"
     },
@@ -113,7 +221,13 @@
       "file": "src/utils/nativeFileBridge.ts",
       "root_cause": "Tauri desktop saveFileNative invoked plugin:dialog|save (dialog 1), but then attempted writing via plugin:fs commands which failed due to strict capability path scopes or IPC argument mismatches. Upon catch, it erroneously fell through to web fallback downloadBlobWeb, triggering window.showSaveFilePicker in WebView2 (dialog 2).",
       "fix": "Created native unrestricted write_file_to_disk and read_file_from_disk commands in src-tauri/src/lib.rs; updated nativeFileBridge.ts to use write_file_to_disk and ensure desktop mode never falls through to downloadBlobWeb.",
-      "tags": ["export", "tauri", "desktop", "nativeFileBridge", "file-saver"],
+      "tags": [
+        "export",
+        "tauri",
+        "desktop",
+        "nativeFileBridge",
+        "file-saver"
+      ],
       "occurrences": 1,
       "last_seen": "2026-10-11"
     },
@@ -126,7 +240,12 @@
       "file": "src/views/TimelineView.tsx",
       "root_cause": "ManageErasModal and AddMilestoneModal both check `if (!isOpen) return null;` internally. In TimelineView.tsx, both modals were rendered conditionally with `{isOpen && <Modal .../>}` without passing the `isOpen` prop, leaving `isOpen` undefined inside the modal components, causing them to immediately render null.",
       "fix": "Passed `isOpen={isManageErasOpen}` and `isOpen={isAddMilestoneOpen}` along with exact matching props (`onSaveEras`, `onSaveMilestone`, `initialMilestone`, `existingEntities`) to both modals in TimelineView.tsx.",
-      "tags": ["timeline", "modals", "props", "ux"],
+      "tags": [
+        "timeline",
+        "modals",
+        "props",
+        "ux"
+      ],
       "occurrences": 1,
       "last_seen": "2026-10-11"
     },
@@ -139,7 +258,13 @@
       "file": "src/components/editor/GroupRoleGroup.tsx",
       "root_cause": "GroupRoleGroup container rendered with hardcoded lg:col-span-3 inside a sub-grid and lacked min-w-0 and proper 12-column span configuration, while SmartSelect defaulted to gridSpan=12 inside narrow sub-columns, blowing out the container width on compact viewports.",
       "fix": "Refactored GroupRoleGroup into a flex-col container with min-w-0 and gridSpan={12} on internal SmartSelect calls. Wrapped the 5 group cards in CharacterSpecifics and LocationSpecifics in a responsive 12-column grid (`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4`). Added full theme support via useTheme().",
-      "tags": ["layout", "responsive", "GroupRoleGroup", "overflow", "css"],
+      "tags": [
+        "layout",
+        "responsive",
+        "GroupRoleGroup",
+        "overflow",
+        "css"
+      ],
       "occurrences": 1,
       "last_seen": "2026-10-11"
     },
@@ -152,7 +277,13 @@
       "file": "src/store/useWorldStore.ts",
       "root_cause": "Sidebar tree nesting writes to entity.parentId, whereas CharacterSpecifics and CharacterSpecificsViewer only read char.parentsOfCharacter / char.childOfCharacter. The two data representations were completely decoupled.",
       "fix": "Implemented dual-layer sync: (1) In CharacterSpecifics and CharacterSpecificsViewer, computed effectiveParentIds and effectiveChildIds via useMemo uniting parentId, parentsOfCharacter, and related entities. (2) In reorderAndReparentEntity (useWorldStore), automatically synchronize parentsOfCharacter and childOfCharacter when dragging characters. (3) Added entity.parentId check to backlinkUtils.ts.",
-      "tags": ["character", "tree", "lineage", "bidirectionalSync", "store"],
+      "tags": [
+        "character",
+        "tree",
+        "lineage",
+        "bidirectionalSync",
+        "store"
+      ],
       "occurrences": 1,
       "last_seen": "2026-10-11"
     },
@@ -165,7 +296,13 @@
       "file": "src/components/ui/SmartSelect.tsx",
       "root_cause": "SmartSelect chip note trigger had a hardcoded max-w-[70px] class on the note text span, capping visible text to ~10 characters regardless of parent input width.",
       "fix": "Removed max-w-[70px], gave chip and button min-w-0 max-w-full and shrink-0 on the target entity name, allowing the note to expand fluidly and use all available width before truncating gracefully at container edge.",
-      "tags": ["ui", "SmartSelect", "relationalNotes", "layout", "typography"],
+      "tags": [
+        "ui",
+        "SmartSelect",
+        "relationalNotes",
+        "layout",
+        "typography"
+      ],
       "occurrences": 1,
       "last_seen": "2026-10-11"
     },
@@ -178,9 +315,244 @@
       "file": "src/components/viewer/specifics/CharacterSpecificsViewer.tsx",
       "root_cause": "CharacterSpecificsViewer had a theme branch for Royal Codex that mapped entity IDs to static text strings (originNames, residenceNames, speciesNames, occupationNames) joined by commas and rendered them in a span without click handlers or onNavigate calls.",
       "fix": "Created renderEntityLinks helper rendering interactive buttons with deep crimson styling (text-[#70121e] hover:underline) calling onNavigate(id). Applied to Origin, Residence, Species, Occupation, and Demise in Royal Codex Vital Records. Also added Hierarchy click navigation in EntityViewer.",
-      "tags": ["royal-codex", "backlinks", "navigation", "CharacterSpecificsViewer", "EntityViewer"],
+      "tags": [
+        "royal-codex",
+        "backlinks",
+        "navigation",
+        "CharacterSpecificsViewer",
+        "EntityViewer"
+      ],
       "occurrences": 1,
       "last_seen": "2026-10-11"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-11-15T05:59:49.889Z",
+      "error_message": "CSS fix: rawEnd, end, entity",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "rawEnd: (start !== null ? start + 3 : null) → (start !== null ? (isPointEvent ? start : start + 1) : null); end: Math.max(end, start + 2), → isPointEvent ? start : Math.max(end, start + 1),; entity: e → e,",
+      "fix": "Changed rawEnd: (start !== null ? start + 3 : null) → (start !== null ? (isPointEvent ? start : start + 1) : null); end: Math.max(end, start + 2), → isPointEvent ? start : Math.max(end, start + 1),; entity: e → e,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-11-15T06:01:01.383Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-11-15T06:00:43.169Z",
+      "error_message": "Type error",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:00:43.232Z"
+    },
+    {
+      "error_message": "CSS fix: year, startDate",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "year: number) => { → number, monthName?: string, day?: number) => {; startDate: String(year) → fantasyDate",
+      "fix": "Changed year: number) => { → number, monthName?: string, day?: number) => {; startDate: String(year) → fantasyDate",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "status": "candidate",
+      "observed_worktree": "F:\\App Making\\- Lab -\\Nexus-Chronicle",
+      "id": "bug-017",
+      "timestamp": "2026-11-15T06:01:01.450Z",
+      "last_seen": "2026-11-15T06:01:01.450Z",
+      "occurrences": 1,
+      "related_bugs": []
+    },
+    {
+      "id": "bug-018",
+      "timestamp": "2026-11-15T06:01:23.323Z",
+      "error_message": "CSS fix: year",
+      "file": "src/components/timeline/AnnualCalendarView.tsx",
+      "root_cause": "year: number) => void → number, monthName: string, day: number, monthId: string) => void",
+      "fix": "Changed year: number) => void → number, monthName: string, day: number, monthId: string) => void",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:01:23.402Z"
+    },
+    {
+      "id": "bug-019",
+      "timestamp": "2026-11-15T06:02:25.868Z",
+      "error_message": "Null/undefined access in AnnualCalendarView.tsx",
+      "file": "src/components/timeline/AnnualCalendarView.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {week.map(day => {; // Find events for this day in this month | Also: <div className=\"absolute top-[20px] left-1/2 -translate-x-1/; <button",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-11-15T06:03:47.442Z"
+    },
+    {
+      "error_message": "Null/undefined access in AnnualCalendarView.tsx",
+      "file": "src/components/timeline/AnnualCalendarView.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "status": "candidate",
+      "observed_worktree": "F:\\App Making\\- Lab -\\Nexus-Chronicle",
+      "id": "bug-020",
+      "timestamp": "2026-11-15T06:02:48.288Z",
+      "last_seen": "2026-11-15T06:03:47.486Z",
+      "occurrences": 2,
+      "related_bugs": []
+    },
+    {
+      "id": "bug-024",
+      "timestamp": "2026-11-15T06:18:54.505Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/App.tsx",
+      "root_cause": "Had `flex items-center justify-between p-3 border-b ${",
+      "fix": "Changed to `flex items-center justify-between p-3 border-b ${",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:18:54.565Z"
+    },
+    {
+      "id": "bug-025",
+      "timestamp": "2026-11-15T06:19:20.863Z",
+      "error_message": "CSS fix: md, lg, sm",
+      "file": "src/App.tsx",
+      "root_cause": "md: inline\">Jump</span> → inline relative z-10\">Jump</span>; lg: inline text-[8px] font-mono opacity-60 ml-0.5 px-1 rounded bg-current/10\">Ctrl+K</kbd> → inline text-[8px] font-mono opacity-60 ml-0.5 px-1.5 rounded bg-current/10 relative z-10\">Ctrl+K</kbd>; sm: inline\">Keybinds</span> → inline relative z-10\">Keybinds</span>",
+      "fix": "Changed md: inline\">Jump</span> → inline relative z-10\">Jump</span>; lg: inline text-[8px] font-mono opacity-60 ml-0.5 px-1 rounded bg-current/10\">Ctrl+K</kbd> → inline text-[8px] font-mono opacity-60 ml-0.5 px-1.5 rounded bg-current/10 relative z-10\">Ctrl+K</kbd>; sm: inline\">Keybinds</span> → inline relative z-10\">Keybinds</span>",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:19:20.915Z"
+    },
+    {
+      "id": "bug-026",
+      "timestamp": "2026-11-15T06:19:30.993Z",
+      "error_message": "CSS fix: zIndex",
+      "file": "src/views/WorldMap.tsx",
+      "root_cause": "zIndex: isHovered ? 60 : isDossierOpen || isBeaconActive ? 40 : 10, → isHovered ? 50 : isDossierOpen || isBeaconActive ? 35 : 10,",
+      "fix": "Changed zIndex: isHovered ? 60 : isDossierOpen || isBeaconActive ? 40 : 10, → isHovered ? 50 : isDossierOpen || isBeaconActive ? 35 : 10,",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:19:31.043Z"
+    },
+    {
+      "id": "bug-027",
+      "timestamp": "2026-11-15T06:19:35.023Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/views/WorldMap.tsx",
+      "root_cause": "Had \"absolute inset-0 w-full h-full pointer-events-non",
+      "fix": "Changed to \"absolute inset-0 w-full h-full pointer-events-non",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:19:35.087Z"
+    },
+    {
+      "id": "bug-029",
+      "timestamp": "2026-11-15T06:27:39.618Z",
+      "error_message": "CSS fix: minWidth",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "minWidth: '220px', → `${minRibbonPx",
+      "fix": "Changed minWidth: '220px', → `${minRibbonPx",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:27:39.691Z"
+    },
+    {
+      "id": "bug-030",
+      "timestamp": "2026-11-15T06:28:32.627Z",
+      "error_message": "Significant refactor of App.tsx",
+      "file": "src/App.tsx",
+      "root_cause": "30 lines replaced/restructured",
+      "fix": "Rewrote 57→73 lines (30 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:28:32.673Z"
+    },
+    {
+      "id": "bug-031",
+      "timestamp": "2026-11-15T06:31:06.009Z",
+      "error_message": "Significant refactor of TimelineView.tsx",
+      "file": "src/views/TimelineView.tsx",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 11→6 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-15T06:31:06.060Z"
     }
-  ]
+  ],
+  "applied_observations": {
+    "fe3baaeb-d2a6-4ed4-897f-37f30dd64540": true,
+    "b524935f-d7c5-49b0-b48c-4c671ba068b0": true,
+    "bc9b4e74-a7ff-446f-bfe4-1d5f1acc1ee4": true,
+    "8738f17f-da9a-4387-8508-07c33115818f": true,
+    "798d67d2-bdce-4152-83f3-ceb709582e75": true,
+    "71e019aa-a821-4f2b-9382-4291d21ea26c": true,
+    "0d68ab50-9cce-4741-ae66-5552b6780551": true,
+    "120ebfe5-d87a-46ac-ba86-cfc38eb8a818": true,
+    "d6d23dab-fd96-4616-bc99-a1459365bb21": true,
+    "f51ed2dc-cb40-4acb-9f58-32fe98e1951d": true,
+    "c02a0dd2-e60b-44e3-add3-5376ccec1bf8": true,
+    "eac3b3c6-ff52-4749-9aef-6f2c0e764aaf": true,
+    "cc3f980f-1381-43e6-a8de-9f38540a8d43": true,
+    "6de12459-b948-4d7f-b2df-6e0593f48618": true
+  },
+  "next_id": 21
 }

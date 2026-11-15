@@ -42,3 +42,74 @@ description: chronological action log per session, consolidated weekly
 
 
 
+
+## Session: 2026-11-15 06:23
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-11-15 06:23
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 06:59 | Edited src/views/TimelineView.tsx | 13→14 lines | ~110 |
+| 06:59 | Edited src/views/TimelineView.tsx | 13→14 lines | ~110 |
+| 06:59 | Edited src/views/TimelineView.tsx | modified if() | ~490 |
+| 06:59 | Edited src/views/TimelineView.tsx | modified if() | ~490 |
+| 07:00 | Edited src/views/TimelineView.tsx | CSS: 20 | ~2643 |
+| 07:00 | Edited src/views/TimelineView.tsx | CSS: 20 | ~2643 |
+| 07:01 | Edited src/views/TimelineView.tsx | CSS: Note | ~463 |
+| 07:01 | Edited src/views/TimelineView.tsx | CSS: Note | ~463 |
+| 07:01 | Edited src/components/timeline/AnnualCalendarView.tsx | modified getSeasonCfg() | ~636 |
+| 07:01 | Edited src/components/timeline/AnnualCalendarView.tsx | modified getSeasonCfg() | ~636 |
+| 07:02 | Edited src/components/timeline/AnnualCalendarView.tsx | added nullish coalescing | ~898 |
+| 07:02 | Edited src/components/timeline/AnnualCalendarView.tsx | added nullish coalescing | ~898 |
+| 07:02 | Edited src/components/timeline/AnnualCalendarView.tsx | inline fix | ~18 |
+| 07:02 | Edited src/components/timeline/AnnualCalendarView.tsx | inline fix | ~18 |
+| 07:02 | Edited src/components/timeline/AnnualCalendarView.tsx | added optional chaining | ~1122 |
+| 07:02 | Edited src/components/timeline/AnnualCalendarView.tsx | added optional chaining | ~1122 |
+| 07:03 | Edited src/views/TimelineView.tsx | expanded (+7 lines) | ~196 |
+| 07:03 | Edited src/views/TimelineView.tsx | expanded (+7 lines) | ~196 |
+| 07:03 | Edited src/components/timeline/AnnualCalendarView.tsx | CSS: eventId | ~120 |
+| 07:03 | Edited src/components/timeline/AnnualCalendarView.tsx | CSS: eventId | ~120 |
+| 07:03 | Edited src/components/timeline/AnnualCalendarView.tsx | added optional chaining | ~604 |
+| 07:03 | Edited src/components/timeline/AnnualCalendarView.tsx | added optional chaining | ~604 |
+| 07:18 | Edited src/App.tsx | 2→2 lines | ~60 |
+| 07:18 | Edited src/App.tsx | 2→2 lines | ~60 |
+| 07:19 | Edited src/App.tsx | expanded (+28 lines) | ~1962 |
+| 07:19 | Edited src/App.tsx | expanded (+28 lines) | ~1962 |
+| 07:19 | Edited src/views/WorldMap.tsx | CSS: 50, 35 | ~370 |
+| 07:19 | Edited src/views/WorldMap.tsx | CSS: 50, 35 | ~370 |
+| 07:19 | Edited src/views/WorldMap.tsx | 2→2 lines | ~51 |
+| 07:19 | Edited src/views/WorldMap.tsx | 2→2 lines | ~51 |
+| 07:19 | Edited src/views/WorldMap.tsx | 5→5 lines | ~136 |
+| 07:19 | Edited src/views/WorldMap.tsx | 5→5 lines | ~136 |
+| 07:19 | Edited src/views/WorldMap.tsx | 5→5 lines | ~178 |
+| 07:19 | Edited src/views/WorldMap.tsx | 5→5 lines | ~178 |
+| 07:19 | Edited src/views/WorldMap.tsx | 4→4 lines | ~153 |
+| 07:19 | Edited src/views/WorldMap.tsx | 4→4 lines | ~153 |
+| 07:20 | Edited src/views/WorldMap.tsx | 4→4 lines | ~142 |
+| 07:20 | Edited src/views/WorldMap.tsx | 4→4 lines | ~142 |
+| 07:20 | Edited src/views/WorldMap.tsx | 5→5 lines | ~147 |
+| 07:20 | Edited src/views/WorldMap.tsx | 5→5 lines | ~147 |
+| 07:20 | Edited src/views/WorldMap.tsx | 9→9 lines | ~239 |
+| 07:20 | Edited src/views/WorldMap.tsx | 9→9 lines | ~239 |
+| 07:20 | Edited src/components/ui/ThemeSwitcher.tsx | 2→2 lines | ~46 |
+| 07:20 | Edited src/components/ui/ThemeSwitcher.tsx | 2→2 lines | ~46 |
+| 07:40 | Fixed WorldMap z-index overlap & redesigned top toolbar with premium glassmorphism | `App.tsx`, `WorldMap.tsx`, `ThemeSwitcher.tsx` | Top toolbar z-[100], WorldMap capped at z-[50]; glassmorphic buttons; build/typecheck/tests pass | ~6k |
+| 07:27 | Edited src/views/TimelineView.tsx | 13→18 lines | ~340 |
+| 07:27 | Edited src/views/TimelineView.tsx | 13→18 lines | ~340 |
+| 07:27 | Edited src/views/TimelineView.tsx | 7→7 lines | ~102 |
+| 07:27 | Edited src/views/TimelineView.tsx | 7→7 lines | ~102 |
+| 07:28 | Edited src/App.tsx | expanded (+16 lines) | ~3042 |
+| 07:28 | Edited src/App.tsx | expanded (+16 lines) | ~3042 |
+| 07:29 | Edited src/views/TimelineView.tsx | 10→10 lines | ~154 |
+| 07:29 | Edited src/views/TimelineView.tsx | 10→10 lines | ~154 |
+| 07:30 | Edited src/views/TimelineView.tsx | 9→10 lines | ~140 |
+| 07:30 | Edited src/views/TimelineView.tsx | 9→10 lines | ~140 |
+| 07:30 | Edited src/views/TimelineView.tsx | 6→7 lines | ~61 |
+| 07:30 | Edited src/views/TimelineView.tsx | 6→7 lines | ~61 |
+| 07:31 | Edited src/views/TimelineView.tsx | expanded (+6 lines) | ~132 |
+| 07:31 | Edited src/views/TimelineView.tsx | expanded (+6 lines) | ~132 |
+| 07:31 | Edited src/views/TimelineView.tsx | 11→6 lines | ~77 |
+| 07:31 | Edited src/views/TimelineView.tsx | 11→6 lines | ~77 |

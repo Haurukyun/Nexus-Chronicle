@@ -6,303 +6,72 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-10-12 (00:35)
+> Last updated: 2026-11-15 (07:45)
 
 ---
 
 ## ✅ Done
 
-- **Chronos Timeline — Zoom Flicker/Stutter & Edge Pill False-Positive — Final Fix** (`TimelineView.tsx`):
-  - Replaced `zoomFocalRatioRef` + `zoomTimeoutRef` debounce locking with a `wheelAccumulatorRef` that batches all raw `WheelEvent.deltaY` values arriving within a single animation frame into **one `requestAnimationFrame` callback** → one `zoomTimeline` call per frame = silky 60fps with zero stutter.
-  - Rewrote `zoomTimeline` with exact per-call anchor math: reads `canvasWidthRef.current` directly (not from a `prev => ...` functional updater), chains `pendingScrollLeftRef` across rapid zooms so successive calls never see stale scroll position. Calls `setCanvasWidth(n)` + `setViewport(...)` synchronously so React 18 batches them.
-  - Fixed `edgeItems` visibility: adds `CANVAS_PADDING_LEFT = 24px` offset to every item's pixel coords (`itemLeftInContainer = 24 + rawLeft`) before comparing vs `viewport.scrollLeft`. Previously items near the canvas left edge were wrongly flagged as off-screen when scroll was at 0.
-  - Fixed `handleGoToNearestEvent` and `scrollToEdgeItem` scroll targets with the same padding-corrected formula.
-  - Fixed two `TS2345` type errors (0 typecheck errors after fix).
+- **Chronos Timeline — Point vs Span Events & Annual Calendar Integration** (this session):
+  - **P0 Fix**: Events with only `startDate` (no `endDate`) now render as diamond markers at exact year position — point-in-time events (battles, coronations, festivals). Events with both `startDate` and `endDate` render as ribbons. Added `isPointEvent` to `ProcessedTimelineItem`. Updated quick-create to set only `startDate` (no legacy `date` field).
+  - **P0 Fix**: Annual Calendar View now fully integrated with events. Extended `AnnualCalendarViewProps` with `events[]`, `onEventClick`, `onDayClick`, `displayYear`, `onYearChange`. Day grid shows event dots; clicking navigates to timeline/codex; clicking empty day triggers quick-create with fantasy date.
+  - **P0 Fix**: Chronos ↔ Annual Calendar year sync. TimelineView computes `displayYear` from viewport camera center. `onYearChange=handleJumpToYear` syncs camera when user navigates years in Annual Calendar.
 
-- **Chronos Timeline Teleportation Fix & Rock-Solid Zoom Stabilization** (`TimelineView.tsx`):
-  - Fixed the root causes of zoom teleportation (exponential multiplier compounding on rapid wheel events, DOM scroll clamping before React commits canvas width, and stale ratio calculations across un-rendered frames).
-  - Implemented locked focal ratio tracking (`zoomFocalRatioRef`): at the start of a zoom gesture, the focal center ratio is captured and strictly locked for the entire duration of rapid wheel bursts, completely eliminating ratio drift.
-  - Added normalized exponential delta scaling (`Math.exp(-clampedDelta * 0.0016)`) to ensure steady, predictable, proportional scaling on both mouse wheels and high-precision trackpads without supersonic jumps.
-  - Added synchronous `useLayoutEffect` scroll adjustment to set `scrollLeft` the instant the DOM commits the new canvas width, preventing browser scroll clamping.
-- **Chronos Timeline Always Center-Anchored Dezoom** (`TimelineView.tsx`):
-  - Refactored canvas zoom logic into a centralized `zoomTimeline` controller that guarantees all dezooming operations (mouse wheel scroll down, toolbar Zoom Out button, range slider decrease, and preset shifts) strictly anchor to the exact center of the screen (`clientWidth / 2`), preventing asymmetric drift to the left or right.
-- **Chronos Timeline Drag-to-Pan & Canvas Traversal** (`TimelineView.tsx`):
-  - Implemented intuitive click-and-drag horizontal panning directly on the timeline canvas, lanes, and ruler rail. Dragging left or right smoothly scrolls the camera across eras with real-time feedback.
-  - Added dynamic `cursor-grab` (default) and `cursor-grabbing` (active drag) states with `select-none` text protection.
-  - Implemented drag threshold detection and capture-phase click suppression so panning never accidentally triggers ribbon inspection, milestone modals, or quick-add menus.
-- **Chronos Timeline Nearest Event & Edge Overflow Navigation** (`TimelineView.tsx`):
-  - Added a "Nearest" navigation button in the timeline toolbar (next to the search filter) with theme-adaptive styling that smoothly scrolls the viewport to the closest event or character lifespan relative to the current camera center, opening its inspector card.
-  - Implemented compact ghost-style Edge Overflow Indicator pills on the left and right edges of the timeline canvas when zoomed in. These pills dynamically compute the nearest off-screen events/lifespans before and after the visible viewport bounds, showing the item's name, type accent beacon, and off-screen count badge (`+N`).
-  - Clicking either edge pill smoothly scrolls the timeline directly to that off-screen event and opens its inspector, allowing effortless traversal across distant eras without manual panning.
-- **Chronos Timeline Ergonomics & Sidebar Theme Matching** (`TimelineView.tsx`, `Sidebar.tsx`):
-  - Enabled continuous mouse scroll zoom anywhere over the timeline canvas with cursor-centered scaling, preserving Shift-wheel horizontal panning and bypassing child modals/inputs.
-  - Replaced the invasive neon green playhead beam and oversized center cap with a sleek, minimalist bookmark chip (`Yr {currentYear}`) placed above the rail line with a delicate 1px hairline reference guide that no longer crowds Year 0 or tick labels.
-  - Raised the floating inspector card ("The Great Convergence" card) comfortably above the bottom canvas edge (`bottom-16 sm:bottom-20`) with clear breathing room above the legend bar.
-  - Removed the sharp outer rectangular ring contour (`ring-2 ring-white/60`) from clicked event/lifespan ribbons, applying smooth rounded borders and ambient aura glow directly to the inner ribbon elements.
-  - Made the sidebar active navigation buttons (specifically Chronos View) dynamically match each theme's signature color palette: golden yellow (`#fef08a`) for Sovereign, crimson red (`#70121e`) with warm ivory for Royal Codex, red (`#b91c1c`) for Wiki, and teal (`#2dd4bf`) for Grand Voyager.
-- **Phase 0 cleanup** — Removed dead deps (RN/GenAI, ~330 packages), removed Vite `GEMINI_API_KEY` injection, added `src/index.css`, fixed CDN double-React risk, bumped Vite to 6.4.3 (0 vulnerabilities)
-- **Phase P0 Core Fixes** —
-  - Fixed **BUG-001**: Synchronized backlink scanning across all `paired*` fields, relationships, group affiliations, and legacy aliases in `backlinkUtils.ts`.
-  - Fixed **BUG-005**: Synchronized Timeline date reading (`birthDate`/`deathDate` on Character, `startDate`/`endDate` on Event) in `TimelineView.tsx`.
-  - Fixed **BUG-003**: Added visual truncation warning badge on `NexusTreeView.tsx` when tree exceeds depth 5, improved root/child discovery bidirectionally, and fixed living/ancestral status.
-  - Fixed **Options World Reset**: Added missing `mapConnections` and `worldPhase` to reset payload in `OptionsView.tsx`.
-  - Fixed **Vite Port Conflict**: Changed default server port to 5173 with `host: true` in `vite.config.ts`.
-  - Fixed **TypeScript 0-Error Build**: Installed `@types/react` & `@types/react-dom`, resolved all interface inheritance errors (`TS2430`), added missing aliases (`tech`, `currency`, Location aliases). `npm run typecheck` and `npm run build` now pass with 0 errors.
-- **Phase P1 UX Fixes** —
-  - Fixed **BUG-004**: Replaced `window.prompt()` in `WorldMap.tsx` with full inline React modals for anchor placement and ley-line type selection. Marker creation routes through `handleCreate` for schema defaults.
-  - Fixed **BUG-002**: Stabilized `DashboardView` insights with `seed` state + deterministic prime math. Added "Consult the Oracle" reroll button.
-  - Fixed **BUG-003 UX**: Added collapse/expand chevron buttons on `NexusTreeView` nodes for navigating deep family trees.
-- **Phase P2 Features & Enhancements** —
-  - Implemented **P2 #8 Interactive Nexus Graph** (`NexusGraphView.tsx`) — Full SVG force-directed relationship graph supporting all 20 entity types. Features interactive force simulation, dynamic curved connection ribbons color-coded by connection kind (Family, Ally, Enemy, Member, Connected, Event, Location), Category Glow filters, category filters (Story, World, Groups, Details), zoom in/out, fit-to-view, pan, clickable node inspection card with deep backlink connections, double-click / "Open Entry" navigation, and multi-view toggle between Interactive Graph and Bloodline Tree in `NexusTreeView.tsx`.
-  - Fixed **Tree Missing Entries Bug (Aurelius the Great)** — Implemented `getSafeParentId()` with recursive circular reference guards and strict type validation in `Sidebar.tsx`. Ensured orphaned children whose parents were deleted or invalid are safely classified as root items and never lost. Added self-healing `useEffect` in `Sidebar.tsx` to automatically sanitize corrupt `parentId` values. Updated `handleSaveDraft` and `handleDeleteToTrash` in `useWorldStore.ts` to reparent surviving children and prevent self-parenting or circular loops. Updated `NexusTreeView.tsx` root detection to prevent any character from vanishing.
-  - Fixed **Permanent Locked Entry Bug** — Added `updateEntityLock(id, isReadOnly)` action to `useWorldStore.ts`. Updated `ViewerHeaders.tsx` (`CodexHeader`, `WikiHeader`, `RoyalHeader`) to render a prominent golden `Locked (Click to Unlock)` button on locked records and a discreet lock toggle on unlocked records, enabling users to unlock and edit protected records directly from the viewer with one click.
-  - Implemented **Markdown + Wikilinks** — New `MarkdownEditor` and `MarkdownRenderer` components. `[[Entity Name]]` wikilinks are auto-linked in both editor and viewer. Editor has a split Write/Preview/Split mode toolbar with bold/italic/heading/list/wikilink buttons and keyboard-driven autocomplete dropdown. Viewer renders markdown with full prose styling for both Sovereign and Wiki themes.
-  - Implemented **Keybinds System & Grimoire Modal** — Global keyboard shortcuts: `Ctrl+Enter` / `Cmd+Enter` to commit draft to chronicle, `Ctrl+S` to quick-save, `Ctrl+E` to toggle edit mode, `Escape` to abandon scrawl or dismiss modals, `Ctrl+K` to focus sidebar search, `Alt+1` to `Alt+7` to switch system realms, and `?` to summon the shortcuts grimoire. Added discreet "Keybinds" button in top header next to ThemeSwitcher. Created responsive `KeybindsModal` component supporting Sovereign, Wiki, and Royal Codex themes.
-  - Implemented **Sidebar Drag & Drop Tree Reparenting & Reordering** — Native HTML5 drag-and-drop on `Sidebar.tsx` `EntityItem`. Supports dragging an entry onto another entry to reparent as a nested child (`parentId = target.id`), dragging top or bottom edge to reorder as sibling before/after, and dragging onto category/type header to unparent to root level. Added circular dependency detection (`isDescendant` check) to prevent cycles. Added `reorderAndReparentEntity` action in `useWorldStore.ts`.
-  - Fixed **Belongs Under Self-Reference Bug** — Added `excludeIds` prop to `SmartSelect` and passed `excludeIds={[entity.id]}` in `EntityEditor` to prevent entities from selecting themselves as parent.
-  - Implemented **Atlas Anchor Smart Selection & Duplicate Prevention (BUG-007)** (`WorldMap.tsx`) — Click-to-anchor modal features two tabs: "Pin Existing Location" (searchable list of existing locations with anchored status badge, and two-step "Confirm Replace" relocation warning if already anchored) and "Create New Location" (with live warning hint and hard submit block against identical/duplicate names across the codex). Auto-incremented default entity names in `handleCreate` (`useWorldStore.ts`) to avoid identical name collisions across all creation paths.
-  - Implemented **P2 #11 Multi-World Management & Multiverse Registry** (`useWorldStore.ts`, `RealmSwitcher.tsx`, `NewRealmModal.tsx`, `OptionsView.tsx`) — Full multi-campaign world architecture allowing worldbuilders to create, clone, switch, and manage multiple independent realms. Features:
-    - **Sidebar Realm Switcher Header**: Interactive dropdown widget displaying active realm name, phase aura pill, entity count, and quick switch selector with search.
-    - **Found New Realm Modal**: Custom realm creation dialog with world name, synopsis/preface, starting World Phase selector with live visual color previews, and starting Atlas map preset selection (High Fantasy Cartography, Archaic Archipelago, Celestial Starchart, or custom URL).
-    - **Multiverse Registry in System Settings**: Dedicated management grid to enter realms, fork/duplicate campaigns with full entity preservation, rename and edit lore, export individual realm JSONs, or delete worlds (with protection against deleting the last remaining realm).
-    - **Universal Backup & Multiverse Archive**: Export single realms or the complete multiverse universe archive (`UniverseArchive`) into a single file. Smart JSON import automatically detects single realms vs universe archives, offering the option to import as a new separate realm or overwrite the active realm.
-    - **Zero-Loss Data Migration**: Backward-compatible persist rehydration that automatically encapsulates legacy single-world stores into the new multi-world schema without data loss.
-  - Implemented **P2 #11 3-Way Synergy Save System** (`assetStore.ts`, `nexusArchive.ts`, `nexusBeam.ts`, `NexusBeamModal.tsx`, `NexusImage.tsx`, `AssetImageUploader.tsx`, `OptionsView.tsx`) — Full cross-device portable save system:
-    - **IndexedDB Asset Vault** (`assetStore.ts`): Binary blob storage for 100+ uncompressed HD images bypassing localStorage 5MB cap.
-    - **.nexus Archive Format** (`nexusArchive.ts`): Single portable container bundling lore JSON + all asset binaries with exact byte offsets. Supports single realm and full universe export/import.
-    - **NexusBeam P2P Transfer** (`nexusBeam.ts`): WebRTC DataChannel-based direct device-to-device binary streaming (no cloud, global via STUN, no size limits).
-    - **NexusBeamModal** (`NexusBeamModal.tsx`): Full UI for Send/Receive/File modes including WebRTC offer/answer token exchange and real-time progress display.
-    - **System Settings Integration** (`OptionsView.tsx`): "Nexus Archive (.nexus)" section in System Settings with Active Realm (.nexus), Full Multiverse (.nexus), Restore .nexus, and NexusBeam (P2P) buttons alongside classic JSON backup section.
-  - Fixed **"Found a New Realm" Modal Squished in Sidebar Bug** (`NewRealmModal.tsx`, `NexusBeamModal.tsx`): Wrapped modals in `createPortal(..., document.body)` with `z-[9999]`. Previously, rendering inside `RealmSwitcher` placed the modal inside `<aside className="w-56 backdrop-blur-md">` where CSS `backdrop-filter` forced the sidebar to act as the containing block for `fixed` positioning, squishing the modal into the 224px sidebar. Portaling to `document.body` ensures it renders as a full-viewport centered overlay across the main page.
-  - Implemented **Dissolve Realm Confirmation Modal & Hardened Deletion** (`DeleteRealmModal.tsx`, `OptionsView.tsx`, `RealmSwitcher.tsx`, `useWorldStore.ts`): Replaced browser `confirm()` with custom in-app modal featuring warning text, entity obliteration count, and sole-realm protection. Added delete actions to both System Settings Multiverse Registry and Sidebar Realm Switcher dropdown.
-  - Fixed **Chromium/Edge Blob GUID Download Bug** (`nexusArchive.ts`, `useWorldStore.ts`): Created `downloadFileToDevice` using the native File System Access API (`showSaveFilePicker`) for desktop Chromium, Data URL fallback for files under 25MB, and native mobile share. Bypasses Edge/Chrome's bug where `blob:` URLs discard `a.download` attributes and save files as raw GUID strings (e.g. `278eaac1-...`). All downloads now save with proper file names and `.nexus` / `.json` extensions.
-  - Implemented **P1 WorldMap Custom Floating Modals & Full Schema Anchor Creation** (`WorldMap.tsx`): Completely replaced all `window.prompt()` usage with custom inline React modals portaled to `document.body` (`z-[9999]`). Creating new locations on the map routes through `handleCreate('location', name, false)` to ensure 100% complete schema defaults before applying coordinates. Also supports pinning existing locations with duplicate detection.
-  - Implemented **P1 Journey View Quick Pinning & Location Editor Shortcut** (`JourneyView.tsx`): Added direct "Pin" and "Re-pin" quick actions on Origin and Destination dropdowns as well as the Unanchored Warning banner. Worldbuilders can open an interactive full-map canvas modal (`createPortal`), click anywhere to set coordinates, and commit directly to `world.entities` with live percentage readouts without leaving The Grand Voyager. Also added a 1-click "Editor" button to navigate directly to the location and immediately enter edit mode.
-  - Fixed **EntityEditor Layout, Spacious Separate Cards & DM Notes Markdown** (`EntityEditor.tsx`, `AssetImageUploader.tsx`, `EntityViewer.tsx`): Kept "Portrait & Imagery" and "Description & History" as two distinct spacious `EditorGroup` cards. Portrait card uses `col-span-12 max-w-2xl mx-auto` for a centered, expanded dropzone/preview. Description card uses `col-span-12` for full-width MarkdownEditor. Fixed DM Confidential Notes in viewer: replaced raw `<p className="font-mono">` with `<MarkdownRenderer>` so headers, bold, strikethrough, and wikilinks render with full prose styling.
-  - Fixed **Royal Codex Contrast & Readability Pass**: Eliminated yellow `#fef08a` text on parchment/cream backgrounds across all views (`JourneyView`, `TimelineView`, `NexusTreeView`, `DashboardView`, `OptionsView`, `WorldMap`, `NexusGraphView`, `ViewerHeaders`, `WikiInfobox`, `CharacterStatBlock`, `KeybindsModal`). Swapped headings to dark crimson `#3d0a10`, accents to deep crimson `#70121e`, and button text on crimson backgrounds to warm ivory `#fff8e7`.
-  - Implemented **Extensible Theme Architecture & Primitives**: Built `src/theme/types.ts` (`ThemeDefinition`), `themeRegistry.ts`, `useTheme()`, and targeted UI primitives (`ThemeButton`, `ThemeCard`, `ThemeBadge`). Themes can now bundle completely different typography (serif, sans, mono), layout frames (book padding, wood grain, glassmorphism), color palettes, and ornate flourishes (`royal-filigree`, `tech-corners`), allowing new themes to be created in a single file without modifying views.
-  - Implemented **Universal Two-Way Bidirectional Relationship Sync**: Created `src/utils/bidirectionalSync.ts` with exhaustive pairwise rules across all 20 entity types. Saving an entity now automatically synchronizes reverse relation fields on all connected entities (e.g. Melly adding Bébé Tigre as child updates Bébé Tigre's parents; adding Curse of the Tigrito as a boon updates the condition's affected characters). Integrated deletion reference cleanup, active drafts synchronization, persist rehydration auto-healing for legacy records, and updated `CharacterSpecificsViewer.tsx` to display real inventory and boons/afflictions in Royal Codex mode.
-  - Implemented **CharacterStatBlock Theme Adaptation & Redundancy Removal** (`CharacterStatBlock.tsx`, `EntityViewer.tsx`): Completely overhauled the non-Royal character sidebar stat blocks. Removed all redundant duplicate fields (name, biography, vital records, boons/inventory, interpersonal links) already shown in the viewer cards. Sovereign theme now displays a dark glassmorphic card with a glowing pulse vitality badge, high-contrast `#fef08a` radar chart, and modern 3x2 attribute tiles with calculated modifiers. Wiki theme displays a clean, crisp parchment infobox with high-contrast radar chart and attribute grid. Royal Codex is 100% untouched and pixel-identical.
-  - Implemented **Universal Image Duplication & Living Entry Portraits** (`WikiInfobox.tsx`, `CharacterStatBlock.tsx`, `EntityViewer.tsx`): Images now appear inside sidebar cards and stat blocks across all themes. Replaced the empty grey globe placeholder in `WikiInfobox` with `NexusImage` when `entity.imageUri` is set. Added dedicated portrait illustration frames to `CharacterStatBlock` for living character entries across Wiki and Sovereign modes (matching `WikiInfobox` proportions with fallback placeholders when empty). Added portrait display to Sovereign and Royal Record Vitals cards.
-  - Implemented **Header Layout Balancing & Image Crop / Reposition System** (`ViewerHeaders.tsx`, `ImageCropModal.tsx`, `AssetImageUploader.tsx`):
-    - Removed redundant duplicate thumbnail images next to entry names in `ViewerHeaders.tsx` (`CodexHeader`, `WikiHeader`, `RoyalHeader`), keeping images focused in their dedicated sidebars, infoboxes, and vitals cards.
-    - Scaled down oversized `text-[7rem]` typography in `CodexHeader` to clean, balanced responsive sizing (`text-5xl md:text-6xl lg:text-7xl`) with `leading-[0.9]`.
-    - Created `ImageCropModal.tsx` (`createPortal` overlay) with HTML5 canvas export, interactive drag-to-pan with boundary clamping, zoom slider + mouse wheel zoom, aspect ratio modes (1:1 Card Standard, 4:5 portrait, 16:9 wide), rule-of-thirds composition grid, and direct integration with the IndexedDB asset store.
-    - Integrated crop modal into `AssetImageUploader.tsx` with automatic modal summon on file upload/drop, "Use Full Original" option, and a 1-click "Crop / Center" repositioning button on existing images.
-    - Synchronized **1:1 Visual Parity between Editor & Viewing Mode** (`AssetImageUploader.tsx`, `CharacterStatBlock.tsx`, `EntityViewer.tsx`, `WikiInfobox.tsx`, `ImageCropModal.tsx`): Replaced previously mismatched containers (`aspect-[16/10]` in editor vs `h-56` in viewer vs `4:5` in crop tool) with unified `aspect-square` (1:1) and `rounded-2xl` styling across the entire suite. Crop modal defaults to `1:1 (Card Standard)` so what is cropped in the modal matches the editor card preview and the viewing mode card pixel-for-pixel.
-- **Phase P3 Developer & Agent Workflow Stack** —
-  - **Vitest Test Suite** (`vitest` + `@vitest/ui`): Sub-second test runner (`npm run test`) validating bidirectional relations, SQLite recursive graph checks, WCAG contrast ratios, and `.nexus` container roundtrips (4 suites, 9 tests in ~200ms).
-  - **SQLite In-Memory Graph Verification** (`graphSqliteVerification.ts`): Better-sqlite3 engine validating 20-entity relationship graphs, detecting circular ancestry loops via Recursive CTEs, and catching dangling cross-entity pointers.
-  - **Automated WCAG Theme Contrast Suite** (`themeContrast.test.ts`): Algorithmic luminance and contrast calculations guaranteeing AA/AAA readability across Sovereign, Wiki, and Royal Codex modes and preventing illegible yellow-on-parchment regressions.
-  - **Lossless `.nexus` Container Archive Test** (`nexusArchive.test.ts`): Automated testing of `manifest.json` packaging, `STORE` uncompressed image bundling, and `fflate` binary unpack fidelity.
-  - **Zero-Friction Dev State Sync Engine** (`vite.config.ts`, `useWorldStore.ts`): Lightweight Vite dev plugin listening on `POST /__dev_state` coupled with debounced Zustand store subscriber in `import.meta.env.DEV`. Automatically updates `.dev-state.json` silently as worldbuilders edit lore without adding any production bundle size or backend dependencies.
-  - **Workspace-Scoped MCP Plugin (`nexus-chronicle-tools`)** (`.agents/plugins/nexus-chronicle-tools/`): Namespaced, workspace-scoped Antigravity MCP integration hosting `nexus-openwolf` (`tools/openwolf-mcp.mjs`) and `nexus-state-inspector` (`tools/state-inspector-mcp.mjs`). Guarantees zero global path collisions or pollution in other IDE projects.
-  - **State Inspector MCP & Dev Snapshot UI** (`tools/state-inspector-mcp.mjs`, `OptionsView.tsx`): 1-click `EXPORT DEV SNAPSHOT (.dev-state.json)` in System Settings and MCP inspection tools (`get_active_realm_summary`, `query_dev_entities`) for live campaign inspection.
-- **Phase P4 Tauri v2 Desktop Packaging** —
-  - **Tauri v2 Scaffold** (`src-tauri/`): Full `cargo tauri init` scaffold with `Cargo.toml` (nexus-chronicle, `tauri-plugin-fs`, `tauri-plugin-dialog`, `tauri-plugin-shell`, `tauri-plugin-log`), `build.rs`, and `src/main.rs` + `src/lib.rs` registering all plugins.
-  - **Window Configuration** (`tauri.conf.json`): App ID `com.haurukyun.nexuschronicle`, 1280×800 default, 900×600 minimum, centered, resizable. Asset protocol enabled (`assetProtocol.enable: true`, scope `**`) for local image display (portraits, maps). CSP permits `asset:`, `blob:`, `data:`, and Google Fonts.
-  - **Capabilities** (`src-tauri/capabilities/default.json`): Full `fs:*`, `dialog:allow-open/save`, `shell:allow-open` permission set using correct Tauri v2 identifiers. Scoped to `appdata`, `download`, and `document` directories.
-  - **PATH injection npm scripts**: `tauri:dev` and `tauri:build` scripts self-inject `~/.cargo/bin` into PATH at runtime so they work regardless of whether the terminal was opened before or after Rust was installed.
-  - **Desktop app confirmed working**: App launches with native chrome, displays all UI and data correctly in Tauri WebView (WebView2 on Windows).
-  - **CAS + Project Vault (Phase 2)** (`tauriAssetVault.ts`, `assetStore.ts`, `lib.rs`): Two-tier asset storage. L1 = IndexedDB (always); L2 = disk vault at `$APPDATA/.../assets/<hash>.<ext>`. Every `saveAsset()` write-throughs to disk. `resolveAssetUrl()` resolves via `convertFileSrc()` on desktop for zero-copy WebView2 streaming. Lazy `promoteAssetToDisk()` promotes IDB-only blobs on first render. Both tiers mirrored on delete and prune. Custom Rust command `get_app_data_dir` registered via `tauri::generate_handler!` without adding `tauri-plugin-path`.
-- **Initial Architecture** — Full entity type system (20 types), Zustand persist store, editor/viewer split per entity type
-- **Roleplay Theme V1** — `royal-codex` theme with parchment textures, quill pen overlay, woodgrain bg
-- **Multi-Theme system** — `sovereign` (dark), `wiki` (light), `royal-codex` (fantasy parchment)
-- **World Phase Aura** — 5 world phases (creation, golden, shadow, eclipse, ruin) each applying CSS filter + bg overlay
-- **Map + Marker System** — WorldMap with click-to-place location anchors and connection lines (trade/magic/diplomatic/war)
-- **Timeline View** — Chronos timeline renders character lifespans and dated events as horizontal ribbons
-- **Nexus Tree View** — Character family/lineage tree with recursive depth rendering
-- **Journey View (P2 #10)** — Travel distance calculator with interactive Atlas coordinate pickers in Location editor (`LocationSpecifics.tsx`), trajectory projection mini-map in `JourneyView.tsx`, auto-calculated league distance from pin coordinates, manual override, terrain multipliers, party logistics (rations/camps)
-- **Backlink System** — `backlinkUtils.ts` performs deep cross-entity backlink scanning
-- **Phase P5 Layout / Theme Decoupling** —
-  - **ThemeDefinition.layoutMode**: Added `LayoutMode = 'studio' | 'wiki' | 'manuscript'` and wired theme registry (`sovereign -> studio`, `wiki -> wiki`, `royal-codex -> manuscript`, `grand-voyager -> studio`).
-  - **useTheme() Hook Standardization**: Exposes `layoutMode` and `themeId`. Fully removed legacy boolean flags (`isWikiMode`, `isRoyal`, `isSovereign`, `isVoyager`) across all views and components.
-  - **Grand Voyager Palette & Tropical Scene**: Dark jungle canopy (`#090d08`), timber sidebar (`#180c04`), teal-jade accent (`#2dd4bf`), warm text (`#f0dca8`), and procedural SVG `TropicalSceneBackground.tsx`.
-- **Phase P6 Core Linkage & Data Integrity (Fantasia Archive Synergy)** —
-  - **Character Specifics Entity Selectors**: Added first-class `SmartSelect` fields for `pairedMagic` (Schools of Magic / Teachings) and `pairedTech` (Sciences & Technologies) to `CharacterSpecifics.tsx`. Organized legacy freeform notes under a designated quick-scrawl card.
-  - **Character Group Affiliations Completion**: Added missing `GroupRoleGroup` UI panels for Magic Circles (`roleKey="magic"`) and Sciences/Academies (`roleKey="science"`), restoring full leadership, membership, alliance, and rivalry controls for characters.
-  - **Exhaustive Bidirectional Sync**: Added Character `pairedMagic` $\leftrightarrow$ Magic `pairedCharacter`, Character `pairedTech` $\leftrightarrow$ Tech `pairedCharacter`, and historical group successions across all 5 group types (`political`, `organization`, `religious`, `magic`, `tech`/`science`) to `bidirectionalSync.ts`.
-  - **Deep Categorized Backlink Lineage**: Expanded `backlinkUtils.ts` with `predecessors`, `successors`, `prerequisites`, and `unlocks` tracking across locations, species evolution, language roots, cultures, group lineages, ability dependencies, and resource refining chains. Included magic/tech users in `practitioners`.
-  - **Codex Relations Inspector**: Updated `EntityViewer.tsx` to render "Preceding Roots / Ancestors", "Succeeding Branches / Descendants", "Prerequisites / Components", and "Enables / Refines Into" links for any entity.
-  - **Automated Test Validation**: Added unit test coverage in `bidirectionalSync.test.ts` validating magic user synchronization and political group historical succession.
-- **Phase P7 Document Modes & Codex Ergonomics** —
-- **Phase P8 Royal Codex & Wiki Mode Color Contrast & Visual Overhaul** —
-  - **Eliminated Canvas & Toolbar Voids**: Fixed `TimelineView.tsx` where Royal Codex previously rendered pitch-black void cards (`bg-[#100c08]`, `bg-[#18110b]`) on cream parchment. Replaced with illuminated parchment cards (`#fbf7eb`, `#f4efe4`) and 2px antique gold filigree borders (`#c8a96e`), matching the book manuscript design system. Wiki mode renders crisp white parchment surfaces with `#d4c8af` borders.
-  - **100% Readable Headers & Typography**: Replaced low-contrast gold gradients on light canvas (`bg-clip-text text-transparent`) with solid, bold crimson titles (`#3d0a10` in Royal Codex, `#881337` in Wiki mode). Restored crisp contrast on subtitles, capsules, and action buttons.
-  - **Overhauled Timeline Ribbons & Ticks**: Fixed invisible white text on pale ribbons by conditionally rendering dark text (`text-[#1c140d]`) on light canvases (`isLightCanvas`). Era bands, event ribbons, character lifespans, milestone pin tooltips, time-rail ticks, empty state altar, and footer legend are all 100% legible with crisp contrast.
-  - **Illuminated Manuscript Modal Dialogs**: Overhauled `ManageCalendarModal.tsx`, `ManageErasModal.tsx`, and `AddMilestoneModal.tsx` in Royal Codex and Wiki mode. Eliminated pitch-black dark mode modal boxes and dark brown inputs. Modals now render as illuminated parchment codex documents with antique gold borders, warm parchment surfaces, clean high-contrast inputs, and deep crimson primary buttons.
-  - **Docked Inspector Card Refinement**: Updated `TimelineInspectorCard.tsx` to match illuminated codex styling on Royal Codex and Wiki mode with bold titles, crisp era/calendar pills, and legible prose descriptions.
-  - **Unified Document State Utilities** (`src/utils/documentModeUtils.ts`): Implemented and tested canonical helpers `isEntityDeceased(e)`, `isEntityCategory(e)`, `isEntityFinished(e)`, `isEntityMinor(e)`, and `getEntityAliases(e)` to resolve field name divergence across Fantasia Archive v1 schema and Nexus Chronicle (`deadSwitch` / `deathDate` / `dateOfDeath` / `isDead`, `categorySwitch` / `isCategory`, `finishedSwitch` / `isFinished`, `minorSwitch` / `isMinorDocument`).
-  - **Standardized Document Settings Grid** (`EntityEditor.tsx`): Canonical 4-mode toggle grid in the Document Settings card. Bound `documentColor` / `textColor`, `tags`, and `otherNamesAndEpithets` / `otherNames`. Removed dead inputs for obsolete `extraHtmlClasses` and `orderNumber`.
-  - **Folder / Category Container Mode**: When `isEntityCategory(entity)` is enabled, `EntityEditor.tsx` suppresses the empty attribute specifics registry and renders an informative "Folder / Category Mode Active" banner. In `EntityViewer.tsx`, renders a "Folder Contents & Nested Entries" Directory card listing all children (`parentId === entity.id`) with type badges, deceased indicators, and 1-click navigation.
-  - **Deceased / Fallen Indicators**: Sidebar renders `†` dagger and line-through text styling for deceased characters/fallen kingdoms (`isEntityDeceased`). SmartSelect chips and dropdown options show `†` and folder icons. Viewer headers (`CodexHeader`, `WikiHeader`, `RoyalHeader`) render a `†` next to the name and a status badge pill.
-  - **Clean Codex Reader Mode (`finishedSwitch`)**: Sidebar renders an emerald dot for completed entries (`isEntityFinished`); viewer headers display a `● Completed` badge.
-  - **Minor Entry Ergonomics**: Sidebar dims and italicizes minor background entries (`isEntityMinor`). `SmartSelect.tsx` filters out minor entries by default with a `[+N Minor]` toggle button to reveal them on demand without search query clutter.
-  - **Phase P8 Relational Context, Annotated Notes & Lore Export (Fantasia Archive Synergy Phase 3)** —
-  - **Relational Context & Annotated Link Notes** (`relationalNotesUtils.ts`, `types.ts`): Added `relationalNotes: Record<string, string>` to `BaseEntity` keyed by composite field identifier (`field:targetId`). Cleanly tracks specific relationship notes (e.g. "Marcus betrayed Aurelius during the Siege of Sol") per linked entity.
-  - **Contextual Note Editing in SmartSelect** (`SmartSelect.tsx`): Added a note annotation pencil toggle to linked entity chips in `SmartSelect`, allowing worldbuilders to inspect and edit context notes in an inline modal without leaving the field editor.
-  - **Relational Notes Viewer Display** (`LinksDisplay.tsx`, `CharacterSpecificsViewer.tsx`): Updated `LinksDisplay` to accept `relationalNotes` and render subtle, styled contextual quotes beneath linked entity chips across viewer tabs.
-  - **Automatic Deletion Cleanup** (`bidirectionalSync.ts`): Updated `removeEntityRelationsOnDelete` to purge orphaned relational notes from remaining entities when any referenced entity is deleted to trash.
-  - **Single-Entry Lore Export** (`exportUtils.ts`, `ViewerHeaders.tsx`): Built single-entry Markdown (Obsidian frontmatter + sections) and styled HTML exports accessible via `ExportDropdown` in `CodexHeader`, `WikiHeader`, and `RoyalHeader`. Includes relational notes in exported markdown/html.
-  - **Batch Lore Sharing** (`OptionsView.tsx`): Added a "Lore Sharing — Markdown & HTML Export" section in System Settings with EntityType filtering and 1-click batch download for Markdown or styled standalone HTML.
-  - **Canonical Sidebar Advanced Search & Filtering** (`Sidebar.tsx`): Wired `filteredEntities` in `Sidebar.tsx` to canonical `documentModeUtils` helpers (`isEntityFinished`, `isEntityMinor`, `isEntityDeceased`, `isEntityCategory`, `getEntityAliases`). Supports `is:finished`, `is:minor`, `is:dead`/`is:deceased`/`is:fallen`, `is:alive`/`is:living`, `is:cat`/`is:folder`, `type:<type>`, `tag:<tag>`, aliases, and description tokens.
-  - **Direct Fantasia Archive Project Migration Tool** (`fantasiaArchiveMigration.ts`, `entityDefaults.ts`, `OptionsView.tsx`):
-    - Full importer supporting project ZIP archives (unpacked via `fflate.unzipSync`), multi-file PouchDB replication dump streams (`.txt` NDJSON), and CouchDB/FA JSON exports.
-    - Exhaustive mapping across all 20 blueprints, group affiliations, relational context notes (`addedValues`), and document flags (`categorySwitch`, `deadSwitch`, `finishedSwitch`, `minorSwitch`).
-    - Automated circular parent detection and break, with instant bidirectional relationship reconciliation across all imported entities.
-    - System Settings UI in `OptionsView.tsx` with "Import as New Realm" and "Merge into Active Realm" options, with native desktop file dialog bridge.
-  - **Chronos Timeline Overhaul & Custom Fantasy Eras** (`TimelineView.tsx`, `timelineUtils.ts`, `ManageErasModal.tsx`, `AddMilestoneModal.tsx`, `TimelineInspectorCard.tsx`):
-    - **Custom Fantasy Eras** (`FantasyEra`, `DEFAULT_ERA_PRESETS`): Configurable fantasy epochs with start/end years, aura colors, abbreviations, and descriptions. Built-in presets for Mythic Chronicle (Ages of Power), High Fantasy Tolkien Ages (1st–4th Age), and Classical Antiquity (B.C.E./C.E.).
-    - **Visual Era Bands**: Rendered along the top of the Chronos time axis with luminous gradients and click-to-jump navigation.
-    - **Milestone Pins** (`MilestonePin`, `AddMilestoneModal.tsx`): Pivotal epoch turning points with vertical light beams spanning the canvas, top diamond pin badges, and codex entity linking.
-    - **Interval Lane Packing** (`packTimelineLanes`): Greedy interval scheduling ensuring overlapping character lifespans and historical events stack cleanly into non-overlapping horizontal lanes.
-    - **Category & Sub-Type Filtering**: Quick toolbar filters for All Entries, Historical Events (with event type dropdown), Character Lifespans (with All / Living / Deceased toggles), and Milestones, plus real-time search.
-    - **Zoom Scale Controls**: 4 zoom presets (Compact 2k, Standard 3.4k, Epic 5.2k, Panoramic 8k) with smooth horizontal scrolling.
-    - **Timeline Inspector Card** (`TimelineInspectorCard.tsx`): Dockable floating inspector card showing formatted era dates, timespans, descriptions, and 1-click "Open in Codex" navigation.
-    - **100% Test Validation**: 7 dedicated unit tests in `timelineUtils.test.ts`. 43/43 tests passing across 9 test suites.
-  - **Interactive Nexus Graph Polish** (`NexusGraphView.tsx`):
-    - **Minor Entity Suppression**: Added `suppressMinor` toggle in Filter Panel under Document Scope; suppresses background/minor entities (`minorSwitch`) from the force simulation to focus on pivotal codex figures.
-    - **Interactive Hover Cards**: Smart floating card anchored in SVG canvas coordinates surfacing entity type badge, description snippet, and connected edge relationships with live preview quotes from `relationalNotes`.
-    - **Mid-Edge Relational Note Badges**: Rendered mid-edge SVG curved pills on highlighted edges displaying relational context notes (e.g. specific betrayal, treaty, or apprenticeship details) directly along connection ribbons.
-    - **Navigation Ergonomics**: Added `onDoubleClick` directly on graph node elements to instantly navigate to the entry in Codex view.
-  - **Global Spotlight & Command Palette (`Ctrl+K` / `Cmd+K`)** (`CommandPalette.tsx`, `App.tsx`):
-    - Universal floating command palette portaled to `document.body` with fuzzy search across all 20 entity types (names, aliases, tags, types).
-    - Quick jump to all System Realms (`/dashboard`, `/timeline`, `/nexus`, `/journey`, `/map`, `/trash`, `/options`).
-    - Quick creation actions (`+ New Character`, `+ New Location`, `+ New Event`, `+ New Chapter`, `+ New Note`, etc.).
-    - Keyboard arrow navigation, loop cycling, auto-scroll, Enter to execute, and Escape to dismiss.
-  - **DM Session Scratchpad & Floating Lore Journal (`Ctrl+J`)** (`ScratchpadDrawer.tsx`, `App.tsx`, `useWorldStore.ts`):
-    - Slide-over floating drawer accessible from top header and global `Ctrl+J` shortcut.
-    - Persisted `scratchpadNote` state in Zustand storage with live Write, Preview, and Split markdown modes.
-    - Integrated tabletop dice roller (`d4` through `d100`) and Mythic-inspired 3-tier GM Oracle (`Likely`, `50/50`, `Unlikely`) that auto-inserts formatted roll results.
-    - 1-click **Convert to Codex Entry** modal with title generation, type selector (Note, Chapter, Myth, Event), and automatic draft population.
-  - **Tauri Dev Flashing CMD Windows Fix** (`.taurignore`, `package.json`, `vite.config.ts`, `.vscode/settings.json`):
-    - Added root and `src-tauri` `.taurignore` rules excluding target builds, `.dev-state.json`, `.wolf/`, and logs to eliminate unintended Cargo rebuilds.
-    - Added `server.watch.ignored` in `vite.config.ts` for build caches and state files.
-    - Updated `package.json` scripts (`tauri:dev`, `tauri:build`) with `windowsHide: true` and direct `process.execPath` spawning to eliminate Windows `cmd.exe` console windows.
-    - Disabled background `git.autofetch` and added file watcher exclusions in `.vscode/settings.json` to stop 180s burst git polling.
-  - **Viewer Delete Prompt Centering Fix** (`ViewerHeaders.tsx`):
-    - Added `flex items-center justify-center` to `ConfirmDeleteButton` in `ViewerHeaders.tsx` so "Sure?" prompt text is perfectly centered both vertically and horizontally within the crimson confirmation button.
-  - **Chronos Timeline Visual Masterwork Overhaul** (`TimelineView.tsx`, `index.css`):
-    - **Atmospheric Celestial Header**: Luminous animated Chronos astrolabe icon with ambient aura glow, metallic gradient typography across all themes, and gem-embedded era color preview capsule.
-    - **Floating Island Control Bar**: Segmented filter pills with **live category item counters** (`All Entries (N)`, `Events (E)`, `Lifespans (L)`, `Milestones (M)`), event kind dropdown, living/deceased vitality filters with animated emerald pulse, and instant scale selectors (2K to 8K).
-    - **Interactive Temporal Scrubber**: Real-time laser line and floating year/epoch tooltip tracking mouse cursor across the canvas.
-    - **Luminous Era Aura Beams & Bands**: Commanding `h-14` glass era bands with glowing beacon dots, runic abbreviation chips, epoch date capsules, and translucent vertical aura wash columns projecting down across all timeline lanes.
-    - **Precision Chronos Rail**: Glowing 2px metallic rail with diamond tick markers and dual year/era labels.
-    - **Magnificent Altar Empty State**: Replaced the barren void with an ornate frosted lore altar featuring quick action buttons (`+ Record First Event`, `+ Inscribe Character`, `Show All Records`), eliminating desolate states when filtering.
-  - **Export Single-Prompt File Saver Fix (BUG-009)** (`src-tauri/src/lib.rs`, `nativeFileBridge.ts`, `tauriAssetVault.ts`):
-    - Resolved the double "where to save" dialog bug when exporting entries as Markdown or HTML. Registered native `write_file_to_disk` and `read_file_from_disk` commands in Tauri Rust runtime (`lib.rs`) for direct unrestricted filesystem persistence, and hardened `saveFileNative` so desktop mode never falls through to the browser's `showSaveFilePicker`. All single-entry and batch exports now prompt the user exactly once.
-  - **Groups & Affiliations Layout Fix (BUG-010)** (`GroupRoleGroup.tsx`, `CharacterSpecifics.tsx`, `LocationSpecifics.tsx`):
-    - Fixed horizontal overflow when window is narrow: `GroupRoleGroup` now uses `flex flex-col space-y-3.5 w-full min-w-0` internally and passes `gridSpan={12}` to SmartSelect. All 5 group cards are wrapped in `col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4` responsive grids in both `CharacterSpecifics` and `LocationSpecifics` (both governing and connected sets).
-    - `GroupRoleGroup` is now fully theme-aware (Sovereign/Wiki/Royal/Voyager styles).
-  - **Character Parent-Child Tree → Page Bidirectional Reflection (BUG-011)** (`CharacterSpecifics.tsx`, `CharacterSpecificsViewer.tsx`, `useWorldStore.ts`, `backlinkUtils.ts`):
-    - Nesting a character under another character in the sidebar (via drag-and-drop or "Belongs under") now automatically and immediately reflects in both character pages:
-      - **Editor**: `effectiveParentIds` and `effectiveChildIds` memos include `parentId` plus all related `parentIds`/`childrenIds` so the Parents/Children SmartSelect shows the tree relationship in real-time.
-      - **Viewer**: Same computation in `CharacterSpecificsViewer` — Parents and Children LinksDisplay use `effectiveParentIds`/`effectiveChildIds`.
-      - **`reorderAndReparentEntity`**: When reparenting characters in the sidebar, now also syncs `parentsOfCharacter` on the child and `childOfCharacter` on both old and new parent.
-      - **`backlinkUtils.ts`**: `parentId === targetId` for character-type entities now registers in `results.children`, completing the backlink coverage.
-  - **Relational Note Annotation Chip Width Fix (BUG-013)** (`SmartSelect.tsx`, `LinksDisplay.tsx`):
-    - Replaced hardcoded `max-w-[70px]` with fluid responsive sizing (`min-w-0 max-w-full` on button and `truncate` on note text with `shrink-0` on character name). Context note annotations now naturally utilize the entire available field space without premature truncation, while capping safely at the input border for extra-long notes. Also expanded viewer note display in `LinksDisplay.tsx` to `max-w-xl`.
-  - **Royal Codex Vital Records & Hierarchy Backlinks Interactivity (BUG-014)** (`CharacterSpecificsViewer.tsx`, `EntityViewer.tsx`):
-    - Replaced static text strings (`speciesNames`, `occupationNames`, `originNames`, `residenceNames`) in Royal Codex Vital Records with clickable crimson navigation links (`renderEntityLinks`), resolving the issue where location backlinks like "Dumbass Island" were unclickable on Royal Codex despite being clickable in Sovereign and Wiki modes.
-    - Added Place of Demise to Royal Codex when deceased, and added Schools of Magic (`pairedMagic`) and Sciences/Technologies (`pairedTech`) to both Royal and non-Royal inventory/connection sections.
-    - Made the Hierarchy parent link in Record Vitals sidebar clickable across all themes in `EntityViewer.tsx`.
-  - **Custom Fantasy Calendar System & Multi-Theme Glassmorphism Overhaul** (`types.ts`, `timelineUtils.ts`, `ManageCalendarModal.tsx`, `TimelineInspectorCard.tsx`, `TimelineView.tsx`, `ManageErasModal.tsx`, `AddMilestoneModal.tsx`):
-    - **Fantasy Calendar Engine** (`FantasyCalendar`, `FantasyMonth`, `FantasyLeapRule`): Fully custom reckoning supporting variable months, intercalary standalone holiday/festival days (outside normal month numbering), custom week lengths (e.g. Faerûn 10-day Tenday), named weekdays, and astronomical leap cycles with leap-day festivals. Built-in presets for Calendar of Harptos (Forgotten Realms), Shire Reckoning (Tolkien), and Barovian Lunar Cycle.
-    - **Manage Calendar Modal** (`ManageCalendarModal.tsx`): Multi-tab manager portaled to `document.body` (`z-[9999]`) featuring month up/down reordering, festival toggle, weekday naming, periodic leap rules, and an interactive conversion playground with live lore date output.
-    - **Timeline View Integration** (`TimelineView.tsx`): Dedicated calendar management button in header actions, real-time dynamic temporal scrubber laser beam and floating date capsule tracking mouse position with 4-theme styling, and timeline inspector date badges.
-    - **Premium Glassmorphism & Multi-Theme Fidelity**: High-contrast, layered visual presentation across all 4 themes (`sovereign`, `wiki`, `royal-codex`, `grand-voyager`) with `backdrop-blur-2xl`, luminous ring highlights, theme-tinted laser beams and badges, and strict compliance with Royal Codex crimson `#70121e` button rules.
-  - **Annual Calendar View & Dedicated Festivals System** (`AnnualCalendarView.tsx`, `TimelineView.tsx`):
-    - **Dedicated Annual Calendar View** (`AnnualCalendarView.tsx`): Full-year month grid with day numbers arranged in weekly rows matching custom week lengths (e.g. 10-day Tendays, 7-day weeks), season indicators with badges (Spring, Summer, Autumn, Winter), day-of-year footer ranges, and dynamic year navigation with leap year recognition.
-    - **Separated Festivals & Intercalary Days Tab**: Completely separate from the Months grid per user specifications. Highlights standalone festival cards with luminous accent bars, leap cycle indicators, position context (e.g. "Celebrated after Month X"), and weekday cycle interaction notes.
-    - **Interactive View Toggle in TimelineView** (`TimelineView.tsx`): Segmented "Chronos / Annual" toggle button group in the timeline header. Seamlessly switches between the macro-scale Chronos timeline canvas and the micro-scale Annual calendar grid. Gracefully handles unconfigured calendar states with empty state prompt.
-    - **Multi-Theme Fidelity**: High-contrast, theme-appropriate design across all 4 themes (`sovereign`, `wiki`, `royal-codex`, `grand-voyager`), strictly adhering to ivory-on-crimson and dark-crimson contrast standards for Royal Codex and red-accented crisp parchment for Wiki.
-    - **Zero-Error Build & Test Suite**: 48/48 unit tests passing across 9 test suites; 0 TypeScript errors.
-  - **Custom Calendar & Era System Polish (B.C./A.C. Default, Festivals Separation, Tamriel Preset, Reset Confirmation)** (`ManageCalendarModal.tsx`, `ManageErasModal.tsx`, `timelineUtils.ts`, `timelineUtils.test.ts`, `TimelineView.tsx`):
-    - **New Christian Era Preset (B.C. / A.C.) as Default**: Added B.C. (Before Christ, -4000 to 0) and A.C. (After Christ, 1 to 3000) as default era preset across `DEFAULT_ERA_PRESETS`, `TimelineView.tsx`, and `ManageErasModal.tsx`. Hardened `extractYear()` regex to parse B.C./BC/Before Christ as negative values.
-    - **Elder Scrolls (Tamriel) Preset & Solar Standard Default**: Added official Calendar of Tamriel (12 months from Morning Star to Evening Star, 7-day week from Sundas to Loredas, quadrennial Sun's Dawn leap day). Made Solar Standard (Gregorian) the default calendar preset.
-    - **Complete Separation of Festivals from Months in Calendar Configuration**: Overhauled `ManageCalendarModal.tsx` into 5 distinct tabs. "Months" tab edits only regular months without festival interference; dedicated "Festivals & Intercalary Days" tab allows configuring standalone sacred days with dynamic calendar placement ("Celebrated after [Month]") and leap cycle association.
-    - **Reset to Default with Confirmation Prompt**: Replaced "Reset to Faerûn" with "Reset to Default" button. Clicking it triggers an overlay confirmation dialog warning the user before resetting to the Gregorian default.
-    - **Premium Glassmorphism Across All 4 Themes**: Elevated aesthetics of `ManageCalendarModal` with translucent card frames, ambient glow rings, refined inputs, and strict theme token mapping for Sovereign, Wiki, Royal Codex, and Grand Voyager.
-  - **Chronos In-Canvas Inspector, 2K Ribbon Scaling, Default Camera to Year 0 & Custom Calendar Presets Manager** (`TimelineView.tsx`, `ManageCalendarModal.tsx`, `types.ts`, `timelineUtils.test.ts`):
-    - **In-Canvas Floating Inspector in Timeline Empty Void**: Clicked ribbons and milestones now summon the inspector card directly inside the timeline canvas's spacious bottom void as a horizontally centered overlay, rather than pushing down the layout and docking outside below the entire panel.
-    - **2K Zoom Ribbon Scaling (`minWidth: 220px`)**: Added a 220px minimum width constraint to event ribbons, ensuring event names like "The Great Convergence" and dates remain clearly readable even on the compact 2K zoom level instead of truncating into "The ...".
-    - **Camera Auto-Focus on Year 0 Across All Zoom Levels**: Chronos camera view now centers/starts from Year 0 by default on all zoom levels (2K, 3.4K, 5.2K, 8K) across all calendars, positioning Year 0 at ~15% from the left edge so positive history stretches out into view. Added a dedicated Year 0 / Epoch Origin diamond landmark marker on the timeline rail.
-    - **Custom Calendar Preset Creation, Deletion & JSON Import/Export**: Users can now save their active calendar configuration as a reusable custom preset with a name and description, delete custom presets with a single click, export any preset or active calendar to a standalone `.json` file (`downloadTextFile`), and import calendar presets directly from `.json` files. Presets are persisted to `WorldData.customCalendarPresets` and synced with `localStorage`.
-    - **Verified Quality**: 49/49 unit tests pass; 0 TypeScript errors.
+- **Chronos Timeline — Zoom Flicker/Stutter & Edge Pill Fix** (`TimelineView.tsx`):
+  - Frame-accumulated wheel delta via `wheelAccumulatorRef` + `requestAnimationFrame` for silky 60fps zoom.
+  - Locked focal anchor ratio (`zoomFocalAnchorRef`) eliminates ratio drift during rapid wheel bursts.
+  - Fixed `edgeItems` visibility with `CANVAS_PADDING_LEFT = 24px` offset.
+
+- **Chronos Timeline — Visual Masterwork** (`TimelineView.tsx`):
+  - Glassmorphic toolbar with 6 natural zoom presets (2K–40K), invariant button geometry.
+  - Luminous era bands, interactive temporal scrubber, precision Chronos rail.
+  - Magnificent empty-state altar with quick actions.
+
+- **Custom Fantasy Calendar System** (`ManageCalendarModal.tsx`, `AnnualCalendarView.tsx`):
+  - Harptos, Shire Reckoning, Tamriel presets; B.C./A.C. Christian Era default.
+  - Separate Festivals & Intercalary Days tab (never mixed into month grid).
+  - Custom preset creation, deletion, JSON import/export.
+
+- **Annual Calendar View** (`AnnualCalendarView.tsx`):
+  - Full-year month grid with custom week lengths (7-day, 10-day Tenday).
+  - Season indicators, day-of-year ranges, leap year recognition.
+  - Festival cards with leap cycle association.
+
+- **Phase P8 Relational Context & Lore Export**:
+  - `relationalNotes` on `BaseEntity` (composite keys `field:targetId`).
+  - SmartSelect contextual note editing, LinksDisplay viewer rendering.
+  - Single-entry & batch Markdown/HTML export (Obsidian-ready).
+
+- **Phase P7 Document Modes & Codex Ergonomics**:
+  - `documentModeUtils.ts` canonical helpers (`isEntityDeceased`, `isEntityFinished`, etc.).
+  - Sidebar advanced search: `is:dead`, `is:finished`, `is:minor`, `type:`, `tag:`.
+  - Fantasia Archive migration tool (ZIP, PouchDB, CouchDB).
+
+- **WorldMap/Atlas — Z-Index Fix & Top Toolbar Redesign** (this commit):
+  - Fixed z-index hierarchy: top toolbar now `z-[100]` with `data-interactive-ui=true`, WorldMap elements capped at `z-[50]` (pins), `z-[35]` (dossier/filters), `z-[25]` (HUDs), `z-[15]` (ley-lines)
+  - Redesigned top toolbar buttons (Jump, Scratchpad, Keybinds, Theme) with premium glassmorphism: gradient backgrounds, shine overlays, hover scale animations, enhanced shadows, theme-aware styling
+  - ThemeSwitcher dropdown raised to `z-[110]` to stay above toolbar
+  - All verified: `npm run build` ✅, `npm run typecheck` ✅, `npm run test` ✅ (51/51)
 
 ---
 
-## 🚀 Next phase
+## 🚀 Next Quest
 
 **Goal:** _Phase P10: Freeform Custom Lore Attributes_
+- Add `customAttributes: Record<string, string>` to `BaseEntity` in `types.ts`
+- Key-value editor card in `EntityEditor.tsx`
+- Structured badge/table display in `EntityViewer.tsx`
+- Zustand persist handles storage automatically
 
-### Scope
-1. **Custom Metadata / Freeform Key-Value Attributes**: Allow worldbuilders to add arbitrary custom key-value attributes (e.g. "Ruling Dynasty", "Elemental Alignment", "Aura Frequency") to any entity.
-2. **Schema & UI Integration**: Key-value editor card on `EntityEditor` and structured attributes badge/table display in `EntityViewer`.
-
-### Closed decisions
-- State management: **Zustand with `persist` middleware** (localStorage-based, no backend)
-- Styling: **TailwindCSS** (inline class strings)
-- Build tool: **Vite 6 + @vitejs/plugin-react**
-- React version: **19.2.3**
-- Relational notes storage: **`Record<string, string>` with composite keys (`field:targetId`) on `BaseEntity`**
-- Export formats: **Single-entry & Batch Markdown (Obsidian-ready) + Styled Standalone HTML**
-- No database — all data lives in browser/WebView localStorage via Zustand persist
-- Markdown rendering: **marked** + **DOMPurify**
-
-### Open decisions
-- Chronos timeline calendar: support custom calendar leap years / month definitions or maintain string/numeric year parsing?
-
+**Files to touch:** `src/types.ts`, `src/components/editor/EntityEditor.tsx`, `src/components/viewer/EntityViewer.tsx`, `src/components/editor/specifics/` (per-type specifics if needed)
 
 ---
 
-## 📁 Active architecture
+## Context
 
-- **Stack:** React 19, TypeScript 5.8, Vite 6, Zustand 5, TailwindCSS 3, Lucide React, **Tauri v2** (`tauri-plugin-fs`, `tauri-plugin-dialog`, `tauri-plugin-shell`, `tauri-plugin-log`)
-- **Entry:** `index.html` → `src/index.tsx` → `src/App.tsx`
-- **State:** `src/store/useWorldStore.ts` — single Zustand store, persisted to localStorage under key `nexus-world-storage`
-- **Types:** `src/types.ts` — `EntityType` union (20 types), `WorldEntity` = union of all specifics, `WorldData` = `{ name, entities[], trash[], mapImage, mapConnections[], worldPhase }`
-- **Sidebar:** `src/components/layout/Sidebar.tsx` — categorized entity list with search, create, delete-to-trash
-- **Entity flow:** Sidebar → `handleOpenEntity(id)` → tabs in `App.tsx` → `EntityViewer` (view) or `EntityEditor` (edit)
-- **Editor specifics:** `src/components/editor/specifics/` — one file per EntityType, registered in `EntitySpecificsRegistry.tsx`
-- **Viewer specifics:** `src/components/viewer/specifics/` — one file per EntityType, registered in `EntitySpecificsViewerRegistry.tsx`
-- **Themes:** `ThemeMode` = `'sovereign' | 'wiki' | 'royal-codex' | 'grand-voyager'`; theme in Zustand store; `useTheme()` hook exposes `{ t, themeId, layoutMode }`. All legacy boolean flags (`isWikiMode`, `isRoyal`, etc.) removed.
-- **Views:** Dashboard, Timeline, NexusTree, Journey, WorldMap, Trash, Options — all system tabs, never closed
-- **Patterns:**
-  - All entity-specific fields use `paired*` prefix convention for cross-entity link arrays
-  - All `paired*` arrays store **entity IDs** (strings), not names
-  - `groupConnections` object on every entity stores 5 group-type buckets (political/organization/religious/magic/science), each with 5 role arrays
-  - `handleCreate()` in store initializes all fields for the given type; do NOT create entities without going through this action
-
----
-
-## ⚠️ External blockers (don't block coding)
-
-- GitHub repo requires manual `git push` (1 commit pending: `a42247f`)
-- No CI/CD pipeline; deployment is manual
-- No backend — all data is localStorage; no multi-user or sync capability
-
----
-
-## 🔧 Useful commands
-
-```bash
-npm run tauri:dev    # Launch desktop app (starts Vite + Tauri window) ← PRIMARY DEV COMMAND
-npm run dev          # Vite only (browser, fast hot-reload for UI-only work)
-npm run build        # Production build to dist/
-npm run tauri:build  # Full desktop bundle (dist/ + Tauri installer)
-npm run typecheck    # Run tsc --noEmit
-npm run test         # Vitest unit tests
-git log --oneline    # Review commit history
-git push             # Push pending commits
-```
-
----
-
-## 📚 References (read IF needed)
-
-- `.wolf/cerebrum.md` — User Preferences + Do-Not-Repeat + Decision Log
-- `.wolf/anatomy.md` — token-efficient file index
-- `.wolf/buglog.json` — known bugs + fixes
-- `src/types.ts` — full type definitions (923 lines, ~14k tok)
-- `src/store/useWorldStore.ts` — full store + actions (1006 lines, ~13k tok)
+- **Branch:** main (clean working tree except .wolf/ auto-updates)
+- **Build:** `npm run build` ✅ (0 TS errors, 51/51 tests pass)
+- **Dev:** `npm run tauri:dev` — primary (Vite + Tauri window)
+- **OpenWolf hooks:** Active — anatomy, memory, buglog auto-maintained
+- **Tauri v2:** Desktop app confirmed working (WebView2 on Windows)
+- **No backend:** All data in localStorage via Zustand persist (`nexus-world-storage`)

@@ -44,6 +44,9 @@ budget_tokens: 2000
 - **Timeline requires date strings:** Characters need `dateOfBirth`/`dateOfDeath` fields and Events need a `date` field (as string; regex extracts first integer). Entities without these are omitted from the timeline entirely.
 - **DashboardView random insights bug:** `insights` memo depends on `world.entities` and `world.trash`, but `Math.random()` is called inside — insights will re-roll on any unrelated state change.
 - **Tailwind config:** No `tailwind.config.js` was found at the root. Tailwind may be loaded via the Vite plugin or PostCSS. Do not assume custom theme tokens exist; use arbitrary values (`text-[#fef08a]`) as the codebase already does.
+- **[2026-11-15] Timeline Event Model — Point vs Span Events:** Events can be either point-in-time (single date) or spans (start + end). Point events render as diamond markers; span events render as ribbons. The distinction is: `startDate` set but NO `endDate` = point event. Both `startDate` and `endDate` set = span event. Legacy `date` field should be deprecated.
+- **[2026-11-15] Annual Calendar ↔ Chronos Timeline Integration:** AnnualCalendarView now accepts `events`, `onEventClick`, `onDayClick`, `displayYear`, `onYearChange` props. Events are extracted for the displayed year and rendered as colored dots on day grids. Clicking a day event navigates to timeline/codex. Clicking empty day triggers quick-create. TimelineView syncs `displayYear` from viewport camera center and provides `handleJumpToYear` for reverse sync.
+- **[2026-11-15] Quick-create Event now only sets startDate:** The legacy `date` field is no longer set by TimelineView quick-create. This makes new events point events by default (diamond markers). To create a span event, user must manually set `endDate` in the editor.
 
 ## Do-Not-Repeat
 
