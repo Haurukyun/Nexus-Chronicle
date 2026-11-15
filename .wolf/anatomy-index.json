@@ -1,13 +1,13 @@
 {
   "version": 1,
   "meta": {
-    "lastScanned": "2026-11-15T07:01:01.127Z",
+    "lastScanned": "2026-11-15T07:22:32.835Z",
     "fileCount": 352,
     "hits": 0,
     "misses": 0,
-    "renderedHash": "ba27ac383081f970d7ba5c029f68c53a5cb48358dfcb6c0e50426c5637229ab3",
-    "storeUpdatedAt": "2026-11-15T07:01:01.137Z",
-    "rootHash": "2a5191fe2c819846"
+    "renderedHash": "500460f06f592bfa90142fecd3297ae81fbf33396f0a8773b928aad3551e91f0",
+    "storeUpdatedAt": "2026-11-15T07:22:32.843Z",
+    "rootHash": "1e98f61f490c363b"
   },
   "files": {
     ".eslintrc.js": {
@@ -7672,11 +7672,11 @@
     },
     "src/views/TimelineView.tsx": {
       "description": "ZOOM_PRESETS",
-      "tokens": 43978,
-      "hash": "d81c30af12ea124a",
-      "size": 154991,
-      "mtimeMs": 1794726060816.7751,
-      "updatedAt": "2026-11-15T07:01:01.126Z",
+      "tokens": 44061,
+      "hash": "9f9cfb85fb39502b",
+      "size": 155280,
+      "mtimeMs": 1794727352591.6033,
+      "updatedAt": "2026-11-15T07:22:32.835Z",
       "source": "hook",
       "symbols": [
         {
@@ -7697,8 +7697,8 @@
           "name": "ProcessedTimelineItem",
           "kind": "section",
           "startLine": 51,
-          "endLine": 2664,
-          "tokens": 43316
+          "endLine": 2669,
+          "tokens": 43399
         }
       ]
     },

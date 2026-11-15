@@ -1733,7 +1733,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     {/* 2. PRECISION CHRONOLOGICAL TIME AXIS & DYNAMIC TICK MARKS */}
                     <div
                         onClick={handleRailClick}
-                        className="chronos-ruler-track relative h-10 w-full mb-16 flex items-center z-10 cursor-pointer"
+                        className="chronos-ruler-track relative h-10 w-full mb-24 flex items-center z-10 cursor-pointer"
                         title="Chronos Time Axis — Click anywhere to Quick-Add, or scroll to zoom dynamically"
                     >
                         {/* Glowing Rail Line */}
@@ -2050,6 +2050,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 );
                             }
 
+                            // Use CSS variable for width so hover:width-auto can override it
+                            const ribbonStyle = {
+                                left: `${leftPct}%`,
+                                width: `var(--ribbon-width, ${widthPct}%)`,
+                                minWidth: `${minRibbonPx}px`,
+                                top: `${topPx}px`,
+                                height: '36px',
+                                // Set the CSS variable for base width
+                                '--ribbon-width': `${widthPct}%`
+                            } as React.CSSProperties;
+
                             return (
                                 <div
                                     key={item.id}
@@ -2069,14 +2080,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     }}
                                     className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
                                         isInspected ? 'z-30' : 'z-10'
-                                    } hover:min-w-[280px] hover:width-auto hover:scale-[1.02] hover:shadow-xl`}
-                                    style={{
-                                        left: `${leftPct}%`,
-                                        width: `${widthPct}%`,
-                                        minWidth: `${minRibbonPx}px`,
-                                        top: `${topPx}px`,
-                                        height: '36px'
-                                    }}
+                                    } hover:min-w-[320px] hover:width-auto hover:scale-[1.02] hover:shadow-xl`}
+                                    style={ribbonStyle}
                                 >
                                     {isEvent ? (
                                         /* Historical Event Ribbon (span events only) */
