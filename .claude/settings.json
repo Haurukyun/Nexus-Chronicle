@@ -7,7 +7,7 @@
           {
             "type": "command",
             "command": "node \"F:/App Making/- Lab -/Nexus-Chronicle/.wolf/hooks/session-start.js\"",
-            "timeout": 5
+            "timeout": 15
           }
         ]
       }
