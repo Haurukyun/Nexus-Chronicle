@@ -60,6 +60,7 @@ interface ProcessedTimelineItem {
     description?: string;
     color?: string;
     entity?: WorldEntity;
+    isPointEvent?: boolean; // true = point-in-time event (diamond marker), false = span event (ribbon)
 }
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ 
@@ -244,7 +245,17 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 const evt = e as Event;
                 const start = extractYear(evt.startDate || evt.date);
                 const rawEnd = extractYear(evt.endDate);
-                const end = rawEnd !== null ? rawEnd : (start !== null ? start + 3 : null);
+
+                // Determine if this is a point event (single date) or span event (start + end)
+                // Point event: only startDate/date is set, no endDate
+                // Span event: both startDate and endDate are set (and different)
+                const hasStartDate = !!(evt.startDate || evt.date);
+                const hasEndDate = !!evt.endDate && evt.endDate !== (evt.startDate || evt.date);
+                const isPointEvent = hasStartDate && !hasEndDate;
+
+                // For point events, use start as both start and end (will render as diamond marker)
+                // For span events, use the actual end date or default to start + 1 year minimum
+                const end = rawEnd !== null ? rawEnd : (start !== null ? (isPointEvent ? start : start + 1) : null);
 
                 if (start !== null && end !== null) {
                     items.push({
@@ -252,11 +263,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         name: e.name,
                         type: 'event',
                         start,
-                        end: Math.max(end, start + 2),
+                        end: isPointEvent ? start : Math.max(end, start + 1),
                         eventType: evt.eventType,
                         description: evt.description,
                         color: '#f59e0b',
-                        entity: e
+                        entity: e,
+                        isPointEvent
                     });
 
                     calculatedMin = Math.min(calculatedMin, start);
@@ -383,6 +395,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     // Dynamic timeline ribbon canvas height
     const laneHeightPx = 48;
     const ribbonCanvasHeight = Math.max((maxLane + 1) * laneHeightPx + 160, 360);
+
+    // Dynamic min-width for ribbons based on zoom level (pixel-per-year ratio)
+    const minRibbonPx = useMemo(() => {
+        const pxPerYear = canvasWidth / Math.max(yearSpan, 1);
+        return Math.max(60, Math.min(220, pxPerYear * 2)); // Scale with zoom, clamp 60-220px
+    }, [canvasWidth, yearSpan]);
 
     // Save Eras Handler
     const handleSaveEras = (newEras: FantasyEra[]) => {
@@ -529,7 +547,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         setIsEditingCurrentYear(false);
     };
 
-    // Quick-create an event at a given year
+    // Quick-create an event at a given year (point event by default)
     const handleQuickCreateEvent = (year: number) => {
         const id = handleCreate('event', `Event of Year ${year}`, true);
         if (id) {
@@ -539,8 +557,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     if (e.id === id) {
                         return {
                             ...e,
-                            date: String(year),
                             startDate: String(year)
+                            // Note: date field not set — this makes it a point event
+                            // endDate not set = point event (single date)
                         } as Event;
                     }
                     return e;
@@ -548,6 +567,26 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             }));
         }
         setQuickAddMenu(null);
+    };
+
+    // Quick-create an event at a specific fantasy date (from Annual Calendar)
+    const handleQuickCreateEventAtDate = (year: number, monthName?: string, day?: number) => {
+        const id = handleCreate('event', `Event of ${monthName ? `${day} ${monthName}, ` : ''}${year}`, true);
+        if (id) {
+            const fantasyDate = monthName && day ? `${day} ${monthName}, ${year}` : String(year);
+            setWorld(prev => ({
+                ...prev,
+                entities: prev.entities.map(e => {
+                    if (e.id === id) {
+                        return {
+                            ...e,
+                            startDate: fantasyDate
+                        } as Event;
+                    }
+                    return e;
+                })
+            }));
+        }
     };
 
     // Jump scroll to specific year with optional animated era traversal
@@ -1512,7 +1551,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             {/* ── Annual Calendar View (shown when mainViewMode === 'annual') ─── */}
             {mainViewMode === 'annual' && calendar && (
                 <div className="flex-1 min-h-0">
-                    <AnnualCalendarView calendar={calendar} />
+                    <AnnualCalendarView
+                        calendar={calendar}
+                        displayYear={Math.round(minYear + ((viewport.scrollLeft + viewport.clientWidth / 2 - 24) / canvasWidth) * yearSpan)}
+                        onYearChange={handleJumpToYear}
+                        events={world.entities}
+                        onEventClick={onNavigate}
+                        onDayClick={handleQuickCreateEventAtDate}
+                    />
                 </div>
             )}
 
@@ -1942,17 +1988,67 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     })}
 
                     {/* 4. PACKED MULTI-LANE RIBBONS */}
-                    <div 
+                    <div
                         className="relative w-full"
                         style={{ height: `${ribbonCanvasHeight}px` }}
                     >
                         {packedItems.map(({ item, lane }) => {
                             const leftPct = ((item.start - minYear) / yearSpan) * 100;
-                            const widthPct = Math.max(((item.end - item.start) / yearSpan) * 100, 1.0);
+                            const rawWidthPct = ((item.end - item.start) / yearSpan) * 100;
+                            const widthPct = Math.max(rawWidthPct, 0.1);
                             const topPx = lane * laneHeightPx + 14;
                             const isEvent = item.type === 'event';
+                            const isPointEvent = isEvent && item.isPointEvent;
                             const isInspected = inspectedItem?.id === item.id;
                             const itemColor = item.color || (isEvent ? '#f59e0b' : '#38bdf8');
+
+                            // Point events render as diamond markers at exact position, not ribbons
+                            if (isPointEvent) {
+                                const markerSize = isInspected ? 20 : 16;
+                                const markerLeft = leftPct - (markerSize / 2 / canvasWidth) * 100;
+                                return (
+                                    <div
+                                        key={item.id}
+                                        onClick={() => handleSelectRibbon(item)}
+                                        onMouseEnter={(e) => {
+                                            setHoveredRibbonItem({
+                                                item,
+                                                clientX: e.clientX,
+                                                clientY: e.clientY
+                                            });
+                                        }}
+                                        onMouseMove={(e) => {
+                                            setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY });
+                                        }}
+                                        onMouseLeave={() => {
+                                            setHoveredRibbonItem(null);
+                                        }}
+                                        className={`absolute cursor-pointer group hover:z-40 ${
+                                            isInspected ? 'z-30' : 'z-10'
+                                        }`}
+                                        style={{
+                                            left: `${markerLeft}%`,
+                                            top: `${topPx + 4}px`,
+                                            width: `${markerSize}px`,
+                                            height: `${markerSize}px`
+                                        }}
+                                    >
+                                        <div
+                                            className="w-full h-full rotate-45 border-2 flex items-center justify-center transition-all group-hover:scale-125 group-hover:rotate-90"
+                                            style={{
+                                                backgroundColor: isLightCanvas ? '#ffffff' : 'rgba(255,255,255,0.1)',
+                                                borderColor: itemColor,
+                                                boxShadow: isInspected
+                                                    ? `0 0 16px ${itemColor}80, inset 0 0 8px ${itemColor}40`
+                                                    : `0 0 12px ${itemColor}60`
+                                            }}
+                                            title={`${item.name} (${item.start})${item.eventType ? ` — ${item.eventType}` : ''}`}
+                                        >
+                                            <div className="w-1.5 h-1.5 rounded-full -rotate-45" style={{ backgroundColor: itemColor }} />
+                                        </div>
+                                    </div>
+                                );
+                            }
 
                             return (
                                 <div
@@ -1977,31 +2073,31 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     style={{
                                         left: `${leftPct}%`,
                                         width: `${widthPct}%`,
-                                        minWidth: '220px',
+                                        minWidth: `${minRibbonPx}px`,
                                         top: `${topPx}px`,
                                         height: '36px'
                                     }}
                                 >
                                     {isEvent ? (
-                                        /* Historical Event Ribbon */
-                                        <div 
+                                        /* Historical Event Ribbon (span events only) */
+                                        <div
                                             className="h-full rounded-xl border flex items-center px-3 gap-2 transition-[box-shadow,border-color,filter,transform] group-hover:scale-[1.01] group-hover:brightness-125 overflow-hidden backdrop-blur-md shadow-md"
                                             style={{
-                                                background: isLightCanvas 
-                                                    ? `linear-gradient(90deg, ${itemColor}25 0%, #ffffff 100%)` 
+                                                background: isLightCanvas
+                                                    ? `linear-gradient(90deg, ${itemColor}25 0%, #ffffff 100%)`
                                                     : `linear-gradient(90deg, ${itemColor}25 0%, ${itemColor}12 100%)`,
                                                 borderColor: isInspected
                                                     ? (isLightCanvas ? '#0f172a' : '#f8fafc')
                                                     : (isLightCanvas ? `${itemColor}` : `${itemColor}55`),
                                                 borderWidth: isInspected ? '1.5px' : '1px',
-                                                boxShadow: isInspected 
-                                                    ? `0 0 16px ${itemColor}60, inset 0 1px 0 0 rgba(255,255,255,0.4)` 
-                                                    : isLightCanvas 
+                                                boxShadow: isInspected
+                                                    ? `0 0 16px ${itemColor}60, inset 0 1px 0 0 rgba(255,255,255,0.4)`
+                                                    : isLightCanvas
                                                     ? `0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 0 rgba(255,255,255,0.8)`
                                                     : `0 2px 10px ${itemColor}15, inset 0 1px 0 0 rgba(255,255,255,0.08)`
                                             }}
                                         >
-                                            <div 
+                                            <div
                                                 className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
                                                 style={{ backgroundColor: itemColor, boxShadow: `0 0 8px ${itemColor}` }}
                                             />
@@ -2009,10 +2105,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                 {item.name}
                                             </span>
                                             {item.eventType && (
-                                                <span 
+                                                <span
                                                     className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0 shadow-sm"
-                                                    style={{ 
-                                                        backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`, 
+                                                    style={{
+                                                        backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
                                                         color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor,
                                                         border: isLightCanvas ? `1px solid ${itemColor}60` : undefined
                                                     }}
@@ -2021,7 +2117,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                 </span>
                                             )}
                                             <span className={`text-[10px] font-mono ml-auto shrink-0 font-bold ${isLightCanvas ? 'text-[#1c140d]/70' : 'opacity-60 text-white'}`}>
-                                                {item.start} {item.end > item.start + 2 ? `– ${item.end}` : ''}
+                                                {item.start} – {item.end}
                                             </span>
                                         </div>
                                     ) : (

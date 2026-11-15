@@ -242,60 +242,76 @@ const App = () => {
                             })}
                         </div>
 
-                        {/* Header Action Tools — Premium Glassmorphic Toolbar */}
+                        {/* Header Action Tools — Ultra-Premium Glassmorphic Toolbar */}
                         <div className="flex items-center gap-2 shrink-0" data-interactive-ui="true">
+                            {/* Jump / Command Palette */}
                             <button
                                 onClick={() => setShowCommandPalette(true)}
                                 title="Command Palette & Fast Search (Ctrl+K)"
-                                className={`group flex items-center gap-1.5 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all border relative overflow-hidden ${
+                                className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-[14px] text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-gradient-to-r from-[#fbf8ef]/90 to-[#f5ead0]/80 text-[#2b1810] border-[#c8a96e]/60 hover:from-[#fbf8ef] hover:border-[#c8a96e]/80 shadow-[0_4px_24px_rgba(112,18,30,0.15)] hover:shadow-[0_8px_32px_rgba(112,18,30,0.2)]'
+                                        ? 'bg-gradient-to-br from-[#fbf8ef]/95 via-[#f5ead0]/90 to-[#ede2cc]/85 text-[#2b1810] border border-[#c8a96e]/50 shadow-[0_2px_8px_rgba(112,18,30,0.08),0_8px_24px_rgba(112,18,30,0.06)] hover:shadow-[0_4px_16px_rgba(112,18,30,0.12),0_12px_32px_rgba(112,18,30,0.1),inset_0_1px_0_rgba(200,169,110,0.3)] active:shadow-[0_1px_4px_rgba(112,18,30,0.1)] active:scale-[0.98]'
                                         : theme === 'wiki'
-                                        ? 'bg-gradient-to-r from-white/90 to-[#fdfcf0]/80 text-[#1a1a1a] border-[#d4c8af]/60 hover:border-[#d4c8af]/80 shadow-[0_4px_24px_rgba(185,28,28,0.1)] hover:shadow-[0_8px_32px_rgba(185,28,28,0.15)]'
+                                        ? 'bg-gradient-to-br from-white/95 via-[#fdfcf0]/90 to-[#f5e6d3]/85 text-[#1a1a1a] border border-[#d4c8af]/50 shadow-[0_2px_8px_rgba(185,28,28,0.06),0_8px_24px_rgba(185,28,28,0.04)] hover:shadow-[0_4px_16px_rgba(185,28,28,0.1),0_12px_32px_rgba(185,28,28,0.08),inset_0_1px_0_rgba(212,200,175,0.4)] active:shadow-[0_1px_4px_rgba(185,28,28,0.08)] active:scale-[0.98]'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-gradient-to-r from-[#fef8e8]/90 to-[#fdf4dc]/80 text-[#1e0e04] border-[#c8a040]/60 hover:border-[#c8a040]/80 shadow-[0_4px_24px_rgba(0,120,136,0.15)] hover:shadow-[0_8px_32px_rgba(0,120,136,0.2)]'
-                                        : 'bg-gradient-to-r from-slate-900/80 to-slate-800/60 text-[#fef08a] border-slate-700/60 hover:border-slate-600/80 shadow-[0_4px_24px_rgba(254,240,138,0.1)] hover:shadow-[0_8px_32px_rgba(254,240,138,0.15)]'
-                                } backdrop-blur-xl`}
+                                        ? 'bg-gradient-to-br from-[#fef8e8]/95 via-[#fdf4dc]/90 to-[#f5e8b8]/85 text-[#1e0e04] border border-[#c8a040]/50 shadow-[0_2px_8px_rgba(0,120,136,0.08),0_8px_24px_rgba(0,120,136,0.06)] hover:shadow-[0_4px_16px_rgba(0,120,136,0.12),0_12px_32px_rgba(0,120,136,0.1),inset_0_1px_0_rgba(200,160,64,0.3)] active:shadow-[0_1px_4px_rgba(0,120,136,0.1)] active:scale-[0.98]'
+                                        : 'bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/70 text-[#fef08a] border border-slate-700/50 shadow-[0_2px_8px_rgba(254,240,138,0.06),0_8px_24px_rgba(254,240,138,0.04)] hover:shadow-[0_4px_16px_rgba(254,240,138,0.1),0_12px_32px_rgba(254,240,138,0.08),inset_0_1px_0_rgba(254,240,138,0.15)] active:shadow-[0_1px_4px_rgba(254,240,138,0.08)] active:scale-[0.98]'
+                                } backdrop-blur-2xl`}
                             >
-                                {/* Premium glass shine overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <Search size={13} className="relative z-10 transition-transform group-hover:scale-110" />
-                                <span className="hidden md:inline relative z-10">Jump</span>
-                                <kbd className="hidden lg:inline text-[8px] font-mono opacity-60 ml-0.5 px-1.5 rounded bg-current/10 relative z-10">Ctrl+K</kbd>
+                                {/* Multi-layer glass depth */}
+                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-t from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                {/* Animated border highlight */}
+                                <div className="absolute inset-0 rounded-[14px] border border-transparent pointer-events-none group-hover:border-white/30 transition-colors duration-300" />
+                                <div className="relative flex items-center gap-2 z-10">
+                                    <Search size={13} className="transition-transform duration-200 group-hover:scale-110 drop-shadow-sm" />
+                                    <span className="hidden md:inline">Jump</span>
+                                    <kbd className="hidden lg:inline text-[7px] font-mono opacity-50 ml-0.5 px-1.5 py-0.5 rounded bg-black/5 backdrop-blur-sm border border-current/10 transition-all group-hover:bg-current/10 group-hover:border-current/20">Ctrl+K</kbd>
+                                </div>
                             </button>
+                            {/* Scratchpad / Lore Journal */}
                             <button
                                 onClick={() => setShowScratchpad(true)}
                                 title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                className={`group flex items-center gap-1.5 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all border relative overflow-hidden ${
+                                className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-[14px] text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-gradient-to-r from-[#fbf8ef]/90 to-[#f5ead0]/80 text-[#2b1810] border-[#c8a96e]/60 hover:from-[#fbf8ef] hover:border-[#c8a96e]/80 shadow-[0_4px_24px_rgba(112,18,30,0.15)] hover:shadow-[0_8px_32px_rgba(112,18,30,0.2)]'
+                                        ? 'bg-gradient-to-br from-[#fbf8ef]/95 via-[#f5ead0]/90 to-[#ede2cc]/85 text-[#2b1810] border border-[#c8a96e]/50 shadow-[0_2px_8px_rgba(112,18,30,0.08),0_8px_24px_rgba(112,18,30,0.06)] hover:shadow-[0_4px_16px_rgba(112,18,30,0.12),0_12px_32px_rgba(112,18,30,0.1),inset_0_1px_0_rgba(200,169,110,0.3)] active:shadow-[0_1px_4px_rgba(112,18,30,0.1)] active:scale-[0.98]'
                                         : theme === 'wiki'
-                                        ? 'bg-gradient-to-r from-white/90 to-[#fdfcf0]/80 text-[#1a1a1a] border-[#d4c8af]/60 hover:border-[#d4c8af]/80 shadow-[0_4px_24px_rgba(185,28,28,0.1)] hover:shadow-[0_8px_32px_rgba(185,28,28,0.15)]'
+                                        ? 'bg-gradient-to-br from-white/95 via-[#fdfcf0]/90 to-[#f5e6d3]/85 text-[#1a1a1a] border border-[#d4c8af]/50 shadow-[0_2px_8px_rgba(185,28,28,0.06),0_8px_24px_rgba(185,28,28,0.04)] hover:shadow-[0_4px_16px_rgba(185,28,28,0.1),0_12px_32px_rgba(185,28,28,0.08),inset_0_1px_0_rgba(212,200,175,0.4)] active:shadow-[0_1px_4px_rgba(185,28,28,0.08)] active:scale-[0.98]'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-gradient-to-r from-[#fef8e8]/90 to-[#fdf4dc]/80 text-[#1e0e04] border-[#c8a040]/60 hover:border-[#c8a040]/80 shadow-[0_4px_24px_rgba(0,120,136,0.15)] hover:shadow-[0_8px_32px_rgba(0,120,136,0.2)]'
-                                        : 'bg-gradient-to-r from-slate-900/80 to-slate-800/60 text-[#fef08a] border-slate-700/60 hover:border-slate-600/80 shadow-[0_4px_24px_rgba(254,240,138,0.1)] hover:shadow-[0_8px_32px_rgba(254,240,138,0.15)]'
-                                } backdrop-blur-xl`}
+                                        ? 'bg-gradient-to-br from-[#fef8e8]/95 via-[#fdf4dc]/90 to-[#f5e8b8]/85 text-[#1e0e04] border border-[#c8a040]/50 shadow-[0_2px_8px_rgba(0,120,136,0.08),0_8px_24px_rgba(0,120,136,0.06)] hover:shadow-[0_4px_16px_rgba(0,120,136,0.12),0_12px_32px_rgba(0,120,136,0.1),inset_0_1px_0_rgba(200,160,64,0.3)] active:shadow-[0_1px_4px_rgba(0,120,136,0.1)] active:scale-[0.98]'
+                                        : 'bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/70 text-[#fef08a] border border-slate-700/50 shadow-[0_2px_8px_rgba(254,240,138,0.06),0_8px_24px_rgba(254,240,138,0.04)] hover:shadow-[0_4px_16px_rgba(254,240,138,0.1),0_12px_32px_rgba(254,240,138,0.08),inset_0_1px_0_rgba(254,240,138,0.15)] active:shadow-[0_1px_4px_rgba(254,240,138,0.08)] active:scale-[0.98]'
+                                } backdrop-blur-2xl`}
                             >
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <BookMarked size={13} className="relative z-10 transition-transform group-hover:scale-110" />
-                                <span className="hidden sm:inline relative z-10">Scratchpad</span>
+                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-t from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="absolute inset-0 rounded-[14px] border border-transparent pointer-events-none group-hover:border-white/30 transition-colors duration-300" />
+                                <div className="relative flex items-center gap-2 z-10">
+                                    <BookMarked size={13} className="transition-transform duration-200 group-hover:scale-110 drop-shadow-sm" />
+                                    <span className="hidden sm:inline">Scratchpad</span>
+                                </div>
                             </button>
+                            {/* Keybinds / Grimoire */}
                             <button
                                 onClick={() => setShowKeybindsModal(true)}
                                 title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                className={`group flex items-center gap-1.5 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all border relative overflow-hidden ${
+                                className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-[14px] text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-gradient-to-r from-[#fbf8ef]/90 to-[#f5ead0]/80 text-[#2b1810] border-[#c8a96e]/60 hover:from-[#fbf8ef] hover:border-[#c8a96e]/80 shadow-[0_4px_24px_rgba(112,18,30,0.15)] hover:shadow-[0_8px_32px_rgba(112,18,30,0.2)]'
+                                        ? 'bg-gradient-to-br from-[#fbf8ef]/95 via-[#f5ead0]/90 to-[#ede2cc]/85 text-[#2b1810] border border-[#c8a96e]/50 shadow-[0_2px_8px_rgba(112,18,30,0.08),0_8px_24px_rgba(112,18,30,0.06)] hover:shadow-[0_4px_16px_rgba(112,18,30,0.12),0_12px_32px_rgba(112,18,30,0.1),inset_0_1px_0_rgba(200,169,110,0.3)] active:shadow-[0_1px_4px_rgba(112,18,30,0.1)] active:scale-[0.98]'
                                         : theme === 'wiki'
-                                        ? 'bg-gradient-to-r from-white/90 to-[#fdfcf0]/80 text-[#1a1a1a] border-[#d4c8af]/60 hover:border-[#d4c8af]/80 shadow-[0_4px_24px_rgba(185,28,28,0.1)] hover:shadow-[0_8px_32px_rgba(185,28,28,0.15)]'
+                                        ? 'bg-gradient-to-br from-white/95 via-[#fdfcf0]/90 to-[#f5e6d3]/85 text-[#1a1a1a] border border-[#d4c8af]/50 shadow-[0_2px_8px_rgba(185,28,28,0.06),0_8px_24px_rgba(185,28,28,0.04)] hover:shadow-[0_4px_16px_rgba(185,28,28,0.1),0_12px_32px_rgba(185,28,28,0.08),inset_0_1px_0_rgba(212,200,175,0.4)] active:shadow-[0_1px_4px_rgba(185,28,28,0.08)] active:scale-[0.98]'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-gradient-to-r from-[#fef8e8]/90 to-[#fdf4dc]/80 text-[#1e0e04] border-[#c8a040]/60 hover:border-[#c8a040]/80 shadow-[0_4px_24px_rgba(0,120,136,0.15)] hover:shadow-[0_8px_32px_rgba(0,120,136,0.2)]'
-                                        : 'bg-gradient-to-r from-slate-900/80 to-slate-800/60 text-[#fef08a] border-slate-700/60 hover:border-slate-600/80 shadow-[0_4px_24px_rgba(254,240,138,0.1)] hover:shadow-[0_8px_32px_rgba(254,240,138,0.15)]'
-                                } backdrop-blur-xl`}
+                                        ? 'bg-gradient-to-br from-[#fef8e8]/95 via-[#fdf4dc]/90 to-[#f5e8b8]/85 text-[#1e0e04] border border-[#c8a040]/50 shadow-[0_2px_8px_rgba(0,120,136,0.08),0_8px_24px_rgba(0,120,136,0.06)] hover:shadow-[0_4px_16px_rgba(0,120,136,0.12),0_12px_32px_rgba(0,120,136,0.1),inset_0_1px_0_rgba(200,160,64,0.3)] active:shadow-[0_1px_4px_rgba(0,120,136,0.1)] active:scale-[0.98]'
+                                        : 'bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/70 text-[#fef08a] border border-slate-700/50 shadow-[0_2px_8px_rgba(254,240,138,0.06),0_8px_24px_rgba(254,240,138,0.04)] hover:shadow-[0_4px_16px_rgba(254,240,138,0.1),0_12px_32px_rgba(254,240,138,0.08),inset_0_1px_0_rgba(254,240,138,0.15)] active:shadow-[0_1px_4px_rgba(254,240,138,0.08)] active:scale-[0.98]'
+                                } backdrop-blur-2xl`}
                             >
-                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <Keyboard size={13} className="relative z-10 transition-transform group-hover:scale-110" />
-                                <span className="hidden sm:inline relative z-10">Keybinds</span>
+                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-t from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="absolute inset-0 rounded-[14px] border border-transparent pointer-events-none group-hover:border-white/30 transition-colors duration-300" />
+                                <div className="relative flex items-center gap-2 z-10">
+                                    <Keyboard size={13} className="transition-transform duration-200 group-hover:scale-110 drop-shadow-sm" />
+                                    <span className="hidden sm:inline">Keybinds</span>
+                                </div>
                             </button>
                             <ThemeSwitcher theme={theme} setTheme={setTheme} />
                         </div>
