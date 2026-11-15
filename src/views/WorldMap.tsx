@@ -522,9 +522,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
                         {/* Search Suggestions Dropdown */}
                         {isSearchOpen && searchResults.length > 0 && (
-                            <div className={`absolute top-full left-0 w-72 mt-2 rounded-2xl border shadow-2xl z-50 overflow-hidden divide-y ${
+                            <div className={`absolute top-full left-0 w-72 mt-2 rounded-2xl border shadow-2xl z-[35] overflow-hidden divide-y ${
                                 isRoyal ? 'bg-[#fbf8ef] border-[#c8a96e] divide-[#c8a96e]/30' : isWiki ? 'bg-white border-[#d4c8af] divide-[#d4c8af]' : 'bg-slate-900 border-slate-700 divide-slate-800'
-                            }`}>
+                            }`} data-interactive-ui="true">
                                 <div className="max-h-60 overflow-y-auto">
                                     {searchResults.map(loc => {
                                         const hasCoords = Boolean(loc.coordinates);
@@ -633,7 +633,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
             {/* Ley-Line Filters Floating Dropdown */}
             {showFiltersMenu && (
-                <div data-interactive-ui="true" className={`absolute top-24 right-8 z-40 p-4 rounded-3xl border shadow-2xl space-y-3 w-72 animate-in slide-in-from-top-2 duration-200 ${
+                <div data-interactive-ui="true" className={`absolute top-24 right-8 z-[35] p-4 rounded-3xl border shadow-2xl space-y-3 w-72 animate-in slide-in-from-top-2 duration-200 ${
                     isRoyal ? 'bg-[#fbf8ef] border-2 border-[#c8a96e] text-[#2b1810]' : isWiki ? 'bg-white border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900/95 border-slate-700 text-slate-100'
                 }`}>
                     <div className="flex items-center justify-between border-b pb-2 border-current/15">
@@ -718,7 +718,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                 </div>
 
                 {/* Layer 2: Vector Crisp Ley-Lines SVG Layer (Connected directly to Pin Centers) */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-[15]">
                     <defs>
                         <filter id="leyline-glow" x="-20%" y="-20%" width="140%" height="140%">
                             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -796,7 +796,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                 </svg>
 
                 {/* Layer 3: Ultra-Crisp Native DOM Pins & Labels Layer */}
-                <div className="absolute inset-0 pointer-events-none z-20">
+                <div className="absolute inset-0 pointer-events-none z-[20]">
                     {anchoredLocations.map(loc => {
                         if (!loc.coordinates) return null;
                         const screenPos = getScreenCoords(loc.coordinates.x, loc.coordinates.y);
@@ -811,10 +811,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                                 data-pin-element="true"
                                 style={{
                                     transform: `translate3d(${screenPos.x}px, ${screenPos.y}px, 0)`,
-                                    zIndex: isHovered ? 60 : isDossierOpen || isBeaconActive ? 40 : 10,
+                                    zIndex: isHovered ? 50 : isDossierOpen || isBeaconActive ? 35 : 10,
                                 }}
                                 className={`absolute top-0 left-0 pointer-events-auto cursor-pointer group/pin ${
-                                    isHovered ? 'z-50' : 'z-10'
+                                    isHovered ? 'z-40' : 'z-10'
                                 }`}
                                 onClick={(e) => handlePinSingleClick(loc.id, e)}
                                 onDoubleClick={(e) => handlePinDoubleClick(loc, e)}
@@ -876,7 +876,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
                                 {/* Floating Hover Peek Card: Small rectangle directly above pin when hovered */}
                                 {isHovered && !isDossierOpen && (
-                                    <div className={`absolute bottom-9 left-1/2 -translate-x-1/2 pointer-events-none z-50 p-2.5 rounded-2xl border shadow-2xl flex items-center gap-2.5 whitespace-nowrap animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md ${
+                                    <div className={`absolute bottom-9 left-1/2 -translate-x-1/2 pointer-events-none z-[40] p-2.5 rounded-2xl border shadow-2xl flex items-center gap-2.5 whitespace-nowrap animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md ${
                                         isRoyal
                                             ? 'bg-[#fbf8ef]/95 border-[#c8a96e] text-[#2b1810]'
                                             : isWiki
@@ -910,7 +910,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                 </div>
 
                 {/* Floating Ornate Compass Rose HUD (Bottom-Left) */}
-                <div data-interactive-ui="true" className={`absolute bottom-8 left-8 z-30 p-4 rounded-3xl border shadow-2xl backdrop-blur-md flex items-center gap-3 pointer-events-auto ${
+                <div data-interactive-ui="true" className={`absolute bottom-8 left-8 z-[25] p-4 rounded-3xl border shadow-2xl backdrop-blur-md flex items-center gap-3 pointer-events-auto ${
                     isRoyal ? 'bg-[#fbf8ef]/90 border-2 border-[#c8a96e]/70 text-[#2b1810]' : isWiki ? 'bg-white/90 border-[#d4c8af] text-[#2b1810]' : isVoyager ? 'bg-[#0f172a]/90 border-[#2dd4bf]/40 text-[#2dd4bf]' : 'bg-slate-950/80 border-slate-700 text-[#fef08a]'
                 }`}>
                     <div className="relative w-12 h-12 flex items-center justify-center">
@@ -934,7 +934,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                 </div>
 
                 {/* Floating Zoom & Canvas Controls HUD (Bottom-Right, constrained to 100% min) */}
-                <div data-interactive-ui="true" className={`absolute bottom-8 right-8 z-30 flex items-center gap-1.5 p-2 rounded-2xl border shadow-2xl backdrop-blur-md pointer-events-auto ${
+                <div data-interactive-ui="true" className={`absolute bottom-8 right-8 z-[25] flex items-center gap-1.5 p-2 rounded-2xl border shadow-2xl backdrop-blur-md pointer-events-auto ${
                     isRoyal ? 'bg-[#fbf8ef]/90 border-2 border-[#c8a96e]/70 text-[#2b1810]' : isWiki ? 'bg-white/90 border-[#d4c8af] text-[#2b1810]' : 'bg-slate-950/85 border-slate-700 text-white'
                 }`}>
                     <button
@@ -971,7 +971,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
                 {/* Full Location Dossier Inspector Tab (Top-Left Corner - Opens strictly on Pin Click) */}
                 {dossierEntity && dossierEntity.coordinates && (
-                    <div data-interactive-ui="true" className={`absolute top-6 left-6 z-40 max-w-sm w-full p-5 rounded-3xl border shadow-2xl space-y-4 animate-in slide-in-from-left-4 duration-200 backdrop-blur-md pointer-events-auto ${
+                    <div data-interactive-ui="true" className={`absolute top-6 left-6 z-[35] max-w-sm w-full p-5 rounded-3xl border shadow-2xl space-y-4 animate-in slide-in-from-left-4 duration-200 backdrop-blur-md pointer-events-auto ${
                         isRoyal ? 'bg-[#fbf8ef]/95 border-2 border-[#c8a96e] text-[#2b1810]' : isWiki ? 'bg-white/95 border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900/95 border-slate-700 text-slate-100'
                     }`}>
                         <div className="flex items-start justify-between gap-3 border-b pb-3 border-current/15">

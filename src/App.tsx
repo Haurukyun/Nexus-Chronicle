@@ -213,7 +213,7 @@ const App = () => {
                     {isGrandVoyager && <TropicalSceneBackground />}
                     
                     {/* Top Header & Tabs Bar */}
-                    <div className={`flex items-center justify-between p-3 border-b ${t.layout.headerBg} backdrop-blur-md sticky top-0 z-10 gap-4`}>
+                    <div className={`flex items-center justify-between p-3 border-b ${t.layout.headerBg} backdrop-blur-md sticky top-0 z-[100] gap-4`} data-interactive-ui="true">
                         <div className="flex items-center gap-2 overflow-x-auto flex-1">
                             {openTabIds.map(id => {
                                 const e = world.entities.find(ent => ent.id === id);
@@ -242,32 +242,60 @@ const App = () => {
                             })}
                         </div>
 
-                        {/* Header Action Tools */}
-                        <div className="flex items-center gap-2 shrink-0">
+                        {/* Header Action Tools — Premium Glassmorphic Toolbar */}
+                        <div className="flex items-center gap-2 shrink-0" data-interactive-ui="true">
                             <button
                                 onClick={() => setShowCommandPalette(true)}
                                 title="Command Palette & Fast Search (Ctrl+K)"
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${t.button.secondary}`}
+                                className={`group flex items-center gap-1.5 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all border relative overflow-hidden ${
+                                    theme === 'royal-codex'
+                                        ? 'bg-gradient-to-r from-[#fbf8ef]/90 to-[#f5ead0]/80 text-[#2b1810] border-[#c8a96e]/60 hover:from-[#fbf8ef] hover:border-[#c8a96e]/80 shadow-[0_4px_24px_rgba(112,18,30,0.15)] hover:shadow-[0_8px_32px_rgba(112,18,30,0.2)]'
+                                        : theme === 'wiki'
+                                        ? 'bg-gradient-to-r from-white/90 to-[#fdfcf0]/80 text-[#1a1a1a] border-[#d4c8af]/60 hover:border-[#d4c8af]/80 shadow-[0_4px_24px_rgba(185,28,28,0.1)] hover:shadow-[0_8px_32px_rgba(185,28,28,0.15)]'
+                                        : theme === 'grand-voyager'
+                                        ? 'bg-gradient-to-r from-[#fef8e8]/90 to-[#fdf4dc]/80 text-[#1e0e04] border-[#c8a040]/60 hover:border-[#c8a040]/80 shadow-[0_4px_24px_rgba(0,120,136,0.15)] hover:shadow-[0_8px_32px_rgba(0,120,136,0.2)]'
+                                        : 'bg-gradient-to-r from-slate-900/80 to-slate-800/60 text-[#fef08a] border-slate-700/60 hover:border-slate-600/80 shadow-[0_4px_24px_rgba(254,240,138,0.1)] hover:shadow-[0_8px_32px_rgba(254,240,138,0.15)]'
+                                } backdrop-blur-xl`}
                             >
-                                <Search size={13} />
-                                <span className="hidden md:inline">Jump</span>
-                                <kbd className="hidden lg:inline text-[8px] font-mono opacity-60 ml-0.5 px-1 rounded bg-current/10">Ctrl+K</kbd>
+                                {/* Premium glass shine overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <Search size={13} className="relative z-10 transition-transform group-hover:scale-110" />
+                                <span className="hidden md:inline relative z-10">Jump</span>
+                                <kbd className="hidden lg:inline text-[8px] font-mono opacity-60 ml-0.5 px-1.5 rounded bg-current/10 relative z-10">Ctrl+K</kbd>
                             </button>
                             <button
                                 onClick={() => setShowScratchpad(true)}
                                 title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${t.button.secondary}`}
+                                className={`group flex items-center gap-1.5 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all border relative overflow-hidden ${
+                                    theme === 'royal-codex'
+                                        ? 'bg-gradient-to-r from-[#fbf8ef]/90 to-[#f5ead0]/80 text-[#2b1810] border-[#c8a96e]/60 hover:from-[#fbf8ef] hover:border-[#c8a96e]/80 shadow-[0_4px_24px_rgba(112,18,30,0.15)] hover:shadow-[0_8px_32px_rgba(112,18,30,0.2)]'
+                                        : theme === 'wiki'
+                                        ? 'bg-gradient-to-r from-white/90 to-[#fdfcf0]/80 text-[#1a1a1a] border-[#d4c8af]/60 hover:border-[#d4c8af]/80 shadow-[0_4px_24px_rgba(185,28,28,0.1)] hover:shadow-[0_8px_32px_rgba(185,28,28,0.15)]'
+                                        : theme === 'grand-voyager'
+                                        ? 'bg-gradient-to-r from-[#fef8e8]/90 to-[#fdf4dc]/80 text-[#1e0e04] border-[#c8a040]/60 hover:border-[#c8a040]/80 shadow-[0_4px_24px_rgba(0,120,136,0.15)] hover:shadow-[0_8px_32px_rgba(0,120,136,0.2)]'
+                                        : 'bg-gradient-to-r from-slate-900/80 to-slate-800/60 text-[#fef08a] border-slate-700/60 hover:border-slate-600/80 shadow-[0_4px_24px_rgba(254,240,138,0.1)] hover:shadow-[0_8px_32px_rgba(254,240,138,0.15)]'
+                                } backdrop-blur-xl`}
                             >
-                                <BookMarked size={13} />
-                                <span className="hidden sm:inline">Scratchpad</span>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <BookMarked size={13} className="relative z-10 transition-transform group-hover:scale-110" />
+                                <span className="hidden sm:inline relative z-10">Scratchpad</span>
                             </button>
                             <button
                                 onClick={() => setShowKeybindsModal(true)}
                                 title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border ${t.button.secondary}`}
+                                className={`group flex items-center gap-1.5 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-wider transition-all border relative overflow-hidden ${
+                                    theme === 'royal-codex'
+                                        ? 'bg-gradient-to-r from-[#fbf8ef]/90 to-[#f5ead0]/80 text-[#2b1810] border-[#c8a96e]/60 hover:from-[#fbf8ef] hover:border-[#c8a96e]/80 shadow-[0_4px_24px_rgba(112,18,30,0.15)] hover:shadow-[0_8px_32px_rgba(112,18,30,0.2)]'
+                                        : theme === 'wiki'
+                                        ? 'bg-gradient-to-r from-white/90 to-[#fdfcf0]/80 text-[#1a1a1a] border-[#d4c8af]/60 hover:border-[#d4c8af]/80 shadow-[0_4px_24px_rgba(185,28,28,0.1)] hover:shadow-[0_8px_32px_rgba(185,28,28,0.15)]'
+                                        : theme === 'grand-voyager'
+                                        ? 'bg-gradient-to-r from-[#fef8e8]/90 to-[#fdf4dc]/80 text-[#1e0e04] border-[#c8a040]/60 hover:border-[#c8a040]/80 shadow-[0_4px_24px_rgba(0,120,136,0.15)] hover:shadow-[0_8px_32px_rgba(0,120,136,0.2)]'
+                                        : 'bg-gradient-to-r from-slate-900/80 to-slate-800/60 text-[#fef08a] border-slate-700/60 hover:border-slate-600/80 shadow-[0_4px_24px_rgba(254,240,138,0.1)] hover:shadow-[0_8px_32px_rgba(254,240,138,0.15)]'
+                                } backdrop-blur-xl`}
                             >
-                                <Keyboard size={13} />
-                                <span className="hidden sm:inline">Keybinds</span>
+                                <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <Keyboard size={13} className="relative z-10 transition-transform group-hover:scale-110" />
+                                <span className="hidden sm:inline relative z-10">Keybinds</span>
                             </button>
                             <ThemeSwitcher theme={theme} setTheme={setTheme} />
                         </div>
