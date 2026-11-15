@@ -6,7 +6,7 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-15 (07:45)
+> Last updated: 2026-11-15 (08:30)
 
 ---
 
@@ -51,6 +51,11 @@ budget_tokens: 1000
   - Fixed z-index hierarchy: top toolbar now `z-[100]` with `data-interactive-ui=true`, WorldMap elements capped at `z-[50]` (pins), `z-[35]` (dossier/filters), `z-[25]` (HUDs), `z-[15]` (ley-lines)
   - Redesigned top toolbar buttons (Jump, Scratchpad, Keybinds, Theme) with premium glassmorphism: gradient backgrounds, shine overlays, hover scale animations, enhanced shadows, theme-aware styling
   - ThemeSwitcher dropdown raised to `z-[110]` to stay above toolbar
+  - All verified: `npm run build` ✅, `npm run typecheck` ✅, `npm run test` ✅ (51/51)
+
+- **Chronos Timeline — 1-Year Event Ribbon Text + Timeline Bar Overlap Fix** (this commit):
+  - **Fix**: 1-year span events (e.g., 2015–2016) now show full name on hover. Used CSS variable (`--ribbon-width`) for base width so Tailwind's `hover:width-auto` can override inline style (inline styles have higher specificity). Increased hover min-width from 280px → 320px.
+  - **Fix**: Timeline bar (`chronos-ruler-track`) no longer overlaps scrubber hover tooltip. Increased `mb-16` → `mb-24` (16px → 24px gap) so tooltip at `top-16` has breathing room before ribbon canvas starts.
   - All verified: `npm run build` ✅, `npm run typecheck` ✅, `npm run test` ✅ (51/51)
 
 ---

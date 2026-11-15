@@ -2050,14 +2050,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 );
                             }
 
-                            // Use CSS variable for width so hover:width-auto can override it
+                            // Width via CSS variable + Tailwind arbitrary values (not inline style) so hover can override
                             const ribbonStyle = {
                                 left: `${leftPct}%`,
-                                width: `var(--ribbon-width, ${widthPct}%)`,
                                 minWidth: `${minRibbonPx}px`,
                                 top: `${topPx}px`,
                                 height: '36px',
-                                // Set the CSS variable for base width
                                 '--ribbon-width': `${widthPct}%`
                             } as React.CSSProperties;
 
@@ -2078,9 +2076,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     onMouseLeave={() => {
                                         setHoveredRibbonItem(null);
                                     }}
-                                    className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
+                                    className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 [width:var(--ribbon-width)] hover:[width:auto] ${
                                         isInspected ? 'z-30' : 'z-10'
-                                    } hover:min-w-[320px] hover:width-auto hover:scale-[1.02] hover:shadow-xl`}
+                                    } hover:min-w-[320px] hover:scale-[1.02] hover:shadow-xl`}
                                     style={ribbonStyle}
                                 >
                                     {isEvent ? (

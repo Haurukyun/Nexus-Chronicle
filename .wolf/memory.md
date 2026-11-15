@@ -123,3 +123,6 @@ description: chronological action log per session, consolidated weekly
 | 08:22 | Edited src/views/TimelineView.tsx | 28→33 lines | ~576 |
 | 08:22 | Edited src/views/TimelineView.tsx | "chronos-ruler-track relat" → "chronos-ruler-track relat" | ~28 |
 | 08:22 | Edited src/views/TimelineView.tsx | "chronos-ruler-track relat" → "chronos-ruler-track relat" | ~28 |
+| 08:25 | Fixed 1-year event ribbon text cutoff + timeline bar hover overlap | TimelineView.tsx | CSS variable for width (hover:width-auto works), hover min-w 320px, chronos-ruler-track mb-24 | ~500 |
+| 08:30 | Edited src/views/TimelineView.tsx | 33→31 lines | ~551 |
+| 08:30 | Edited src/views/TimelineView.tsx | 33→31 lines | ~551 |
