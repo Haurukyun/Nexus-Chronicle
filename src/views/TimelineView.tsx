@@ -1731,9 +1731,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     </div>
 
                     {/* 2. PRECISION CHRONOLOGICAL TIME AXIS & DYNAMIC TICK MARKS */}
-                    <div 
+                    <div
                         onClick={handleRailClick}
-                        className="chronos-ruler-track relative h-10 w-full mb-10 flex items-center z-10 cursor-pointer"
+                        className="chronos-ruler-track relative h-10 w-full mb-16 flex items-center z-10 cursor-pointer"
                         title="Chronos Time Axis — Click anywhere to Quick-Add, or scroll to zoom dynamically"
                     >
                         {/* Glowing Rail Line */}
@@ -2067,9 +2067,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                     onMouseLeave={() => {
                                         setHoveredRibbonItem(null);
                                     }}
-                                    className={`absolute cursor-pointer group hover:z-40 ${
+                                    className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
                                         isInspected ? 'z-30' : 'z-10'
-                                    }`}
+                                    } hover:min-w-[280px] hover:width-auto hover:scale-[1.02] hover:shadow-xl`}
                                     style={{
                                         left: `${leftPct}%`,
                                         width: `${widthPct}%`,
@@ -2101,24 +2101,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                 className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
                                                 style={{ backgroundColor: itemColor, boxShadow: `0 0 8px ${itemColor}` }}
                                             />
-                                            <span className={`font-bold text-xs truncate ${isLightCanvas ? 'text-[#1c140d]' : 'text-white drop-shadow-sm'}`}>
-                                                {item.name}
-                                            </span>
-                                            {item.eventType && (
-                                                <span
-                                                    className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0 shadow-sm"
-                                                    style={{
-                                                        backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
-                                                        color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor,
-                                                        border: isLightCanvas ? `1px solid ${itemColor}60` : undefined
-                                                    }}
-                                                >
-                                                    {item.eventType}
+                                            {/* Responsive layout: vertical stack for narrow ribbons (< 180px min-width or < 2% width) */}
+                                            <div className={`flex min-w-0 ${widthPct < 2 || minRibbonPx < 180 ? 'flex-col items-start gap-0.5 px-1' : 'flex-row items-center gap-2'}`}>
+                                                <span className={`font-bold text-xs truncate ${isLightCanvas ? 'text-[#1c140d]' : 'text-white drop-shadow-sm'} ${widthPct < 2 || minRibbonPx < 180 ? 'w-full' : ''}`}>
+                                                    {item.name}
                                                 </span>
-                                            )}
-                                            <span className={`text-[10px] font-mono ml-auto shrink-0 font-bold ${isLightCanvas ? 'text-[#1c140d]/70' : 'opacity-60 text-white'}`}>
-                                                {item.start} – {item.end}
-                                            </span>
+                                                {item.eventType && (
+                                                    <span
+                                                        className="text-[8px] uppercase px-1 py-0.5 rounded font-bold shrink-0 shadow-sm"
+                                                        style={{
+                                                            backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
+                                                            color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor,
+                                                            border: isLightCanvas ? `1px solid ${itemColor}60` : undefined
+                                                        }}
+                                                    >
+                                                        {item.eventType}
+                                                    </span>
+                                                )}
+                                                <span className={`text-[9px] font-mono shrink-0 font-bold ${isLightCanvas ? 'text-[#1c140d]/70' : 'opacity-60 text-white'} ${widthPct < 2 || minRibbonPx < 180 ? 'mt-0.5' : 'ml-auto'}`}>
+                                                    {item.start} – {item.end}
+                                                </span>
+                                            </div>
                                         </div>
                                     ) : (
                                         /* Character Lifespan Ribbon */
