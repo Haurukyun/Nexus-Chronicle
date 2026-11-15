@@ -126,3 +126,15 @@ description: chronological action log per session, consolidated weekly
 | 08:25 | Fixed 1-year event ribbon text cutoff + timeline bar hover overlap | TimelineView.tsx | CSS variable for width (hover:width-auto works), hover min-w 320px, chronos-ruler-track mb-24 | ~500 |
 | 08:30 | Edited src/views/TimelineView.tsx | 33→31 lines | ~551 |
 | 08:30 | Edited src/views/TimelineView.tsx | 33→31 lines | ~551 |
+| 08:34 | Edited src/types.ts | 4→7 lines | ~82 |
+| 08:34 | Edited src/types.ts | 4→7 lines | ~82 |
+| 08:34 | Edited src/components/editor/EntityEditor.tsx | CSS: customAttributes | ~154 |
+| 08:34 | Edited src/components/editor/EntityEditor.tsx | CSS: customAttributes | ~154 |
+| 08:35 | Edited src/components/editor/EntityEditor.tsx | added 2 condition(s) | ~2787 |
+| 08:35 | Edited src/components/editor/EntityEditor.tsx | added 2 condition(s) | ~2787 |
+| 08:35 | Edited src/components/editor/EntityEditor.tsx | 7→8 lines | ~122 |
+| 08:35 | Edited src/components/editor/EntityEditor.tsx | 7→8 lines | ~122 |
+| 08:38 | Edited src/components/viewer/EntityViewer.tsx | 15→15 lines | ~263 |
+| 08:38 | Edited src/components/viewer/EntityViewer.tsx | 15→15 lines | ~263 |
+| 08:38 | Edited src/components/viewer/EntityViewer.tsx | expanded (+30 lines) | ~623 |
+| 08:38 | Edited src/components/viewer/EntityViewer.tsx | expanded (+30 lines) | ~623 |

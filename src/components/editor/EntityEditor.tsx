@@ -1,10 +1,11 @@
-import React from 'react';
-import { 
+import React, { useState } from 'react';
+import {
     Settings, Info, BookOpen, Heart, Globe, Swords, Scroll, Ghost, Zap,
-    Scale, FolderTree, Type, PaintBucket, CheckSquare, Search, Skull, 
-    Box, Hash, Tag, FileText, Code, UserCircle, MapPin, Calendar, Hourglass, 
-    Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe, 
-    Gem, User, Leaf, Sun, Moon, Tent, Pencil, ImageIcon
+    Scale, FolderTree, Type, PaintBucket, CheckSquare, Search, Skull,
+    Box, Hash, Tag, FileText, Code, UserCircle, MapPin, Calendar, Hourglass,
+    Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe,
+    Gem, User, Leaf, Sun, Moon, Tent, Pencil, ImageIcon, Plus, Trash2, GripVertical,
+    Check, X
 } from 'lucide-react';
 import { AssetImageUploader } from '../ui/AssetImageUploader';
 import { EditorGroup } from './EditorGroup';
@@ -14,6 +15,172 @@ import { EntityEditorProps, Location } from '../../types';
 import { EntitySpecificsRegistry } from './specifics/EntitySpecificsRegistry';
 import { useTheme } from '../../theme';
 import { isEntityCategory } from '../../utils/documentModeUtils';
+
+// Custom Attributes Editor Component
+const CustomAttributesEditor = ({
+    attributes,
+    onChange,
+    themeId
+}: {
+    attributes: Record<string, string>;
+    onChange: (attrs: Record<string, string>) => void;
+    themeId: string;
+}) => {
+    const [editKey, setEditKey] = useState<string | null>(null);
+    const [editValue, setEditValue] = useState<string>('');
+    const [newKey, setNewKey] = useState<string>('');
+    const [newValue, setNewValue] = useState<string>('');
+
+    const isRoyal = themeId === 'royal-codex';
+    const isWiki = themeId === 'wiki';
+
+    const handleSaveEdit = (key: string) => {
+        const updated = { ...attributes, [key]: editValue };
+        onChange(updated);
+        setEditKey(null);
+    };
+
+    const handleDelete = (key: string) => {
+        const updated = { ...attributes };
+        delete updated[key];
+        onChange(updated);
+    };
+
+    const handleAddNew = () => {
+        if (newKey.trim()) {
+            const updated = { ...attributes, [newKey.trim()]: newValue };
+            onChange(updated);
+            setNewKey('');
+            setNewValue('');
+        }
+    };
+
+    const entries = Object.entries(attributes);
+
+    if (entries.length === 0 && !newKey && !newValue) {
+        return (
+            <div className="col-span-12">
+                <button
+                    onClick={() => {}} // Just to show the add form
+                    className={`w-full text-left p-4 rounded-xl border-2 border-dashed transition-all ${
+                        isRoyal ? 'border-[#c8a96e]/40 hover:border-[#c8a96e] bg-[#ede2cc]/30' : 'border-slate-500/10 hover:border-slate-400/30 bg-black/5'
+                    }`}
+                >
+                    <div className="flex items-center gap-3 text-center text-sm">
+                        <Plus size={18} className={`mx-auto ${isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#b91c1c]' : 'text-[#fef08a]'}`} />
+                        <span className={`font-bold ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#854d0e]' : 'text-[#fef08a]'}`}>
+                            Add Custom Attribute
+                        </span>
+                    </div>
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="col-span-12 space-y-3">
+            {/* Existing attributes */}
+            {entries.map(([key, value]) => (
+                <div key={key} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                    isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/60' : isWiki ? 'border-rose-300/30 bg-rose-50/50' : 'border-slate-500/10 bg-black/5'
+                }`}>
+                    <GripVertical size={16} className="opacity-30 cursor-grab" />
+                    <div className="flex-1 min-w-0">
+                        {editKey === key ? (
+                            <input
+                                type="text"
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(key)}
+                                onBlur={() => handleSaveEdit(key)}
+                                autoFocus
+                                className={`w-full px-3 py-2 rounded-lg border text-sm font-mono focus:outline-none ${
+                                    isRoyal ? 'border-[#c8a96e] bg-white text-[#2b1810]' : isWiki ? 'border-rose-300 bg-white text-[#1a1a1a]' : 'border-slate-600 bg-slate-900 text-white'
+                                }`}
+                            />
+                        ) : (
+                            <span className={`font-mono text-sm ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#854d0e]' : 'text-[#fef08a]'}`}>
+                                {key}
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                        {editKey === key ? (
+                            <>
+                                <button
+                                    onClick={() => handleSaveEdit(key)}
+                                    className={`p-2 rounded-lg transition-colors ${isRoyal ? 'text-[#70121e] hover:bg-[#c8a96e]/30' : isWiki ? 'text-[#b91c1c] hover:bg-rose-200/30' : 'text-[#fef08a] hover:bg-yellow-500/20'}`}
+                                    title="Save"
+                                >
+                                    <Check size={14} />
+                                </button>
+                                <button
+                                    onClick={() => setEditKey(null)}
+                                    className={`p-2 rounded-lg transition-colors ${isRoyal ? 'text-[#881337] hover:bg-[#c8a96e]/30' : isWiki ? 'text-rose-600 hover:bg-rose-200/30' : 'text-red-400 hover:bg-yellow-500/20'}`}
+                                    title="Cancel"
+                                >
+                                    <X size={14} />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <span className={`font-mono text-sm text-slate-500 ${isRoyal ? 'text-[#5c2a12]' : ''}`}>{value}</span>
+                                <button
+                                    onClick={() => { setEditKey(key); setEditValue(value); }}
+                                    className={`p-1.5 rounded-lg transition-colors opacity-50 hover:opacity-100 ${isRoyal ? 'text-[#70121e] hover:bg-[#c8a96e]/20' : isWiki ? 'text-[#b91c1c] hover:bg-rose-200/30' : 'text-slate-400 hover:bg-white/10'}`}
+                                    title="Edit value"
+                                >
+                                    <Pencil size={12} />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(key)}
+                                    className={`p-1.5 rounded-lg transition-colors opacity-50 hover:opacity-100 ${isRoyal ? 'text-[#881337] hover:bg-[#881337]/10' : isWiki ? 'text-rose-600 hover:bg-rose-200/30' : 'text-red-400 hover:bg-red-500/10'}`}
+                                    title="Delete attribute"
+                                >
+                                    <Trash2 size={12} />
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            ))}
+
+            {/* Add new attribute form */}
+            <div className={`flex items-center gap-3 p-3 rounded-xl border-2 border-dashed transition-all ${
+                isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/30' : isWiki ? 'border-rose-300/30 bg-rose-50/30' : 'border-slate-500/10 bg-black/5'
+            }`}>
+                <Plus size={18} className={`shrink-0 ${isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#b91c1c]' : 'text-[#fef08a]'}`} />
+                <input
+                    type="text"
+                    value={newKey}
+                    onChange={(e) => setNewKey(e.target.value)}
+                    placeholder="Key (e.g., 'Crafting Rank')"
+                    className={`flex-1 min-w-0 px-3 py-2 rounded-lg border text-sm font-mono focus:outline-none ${
+                        isRoyal ? 'border-[#c8a96e] bg-white text-[#2b1810]' : isWiki ? 'border-rose-300 bg-white text-[#1a1a1a]' : 'border-slate-600 bg-slate-900 text-white'
+                    }`}
+                />
+                <input
+                    type="text"
+                    value={newValue}
+                    onChange={(e) => setNewValue(e.target.value)}
+                    placeholder="Value (e.g., 'Grandmaster')"
+                    className={`flex-1 min-w-0 px-3 py-2 rounded-lg border text-sm font-mono focus:outline-none ${
+                        isRoyal ? 'border-[#c8a96e] bg-white text-[#2b1810]' : isWiki ? 'border-rose-300 bg-white text-[#1a1a1a]' : 'border-slate-600 bg-slate-900 text-white'
+                    }`}
+                />
+                <button
+                    onClick={handleAddNew}
+                    disabled={!newKey.trim()}
+                    className={`px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                        isRoyal ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337]' : isWiki ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]' : 'bg-[#fef08a] text-black hover:bg-yellow-400'
+                    }`}
+                >
+                    Add
+                </button>
+            </div>
+        </div>
+    );
+};
 
 export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, onUpdate }: EntityEditorProps) => {
     const { themeId, layoutMode } = useTheme();
@@ -219,6 +386,15 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                     <SmartSelect label="Affected by Boons" icon={Sun} ids={entity.detailConditionIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
                     <SmartSelect label="Affected by Afflictions" icon={Moon} ids={entity.detailConditionIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
                     <SmartSelect label="Affected by Other conditions" icon={Sun} ids={entity.detailResourceIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailResourceIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                </EditorGroup>
+
+                {/* 4.5. CUSTOM ATTRIBUTES (UNIVERSAL) */}
+                <EditorGroup title="Custom Attributes" icon={Hash}>
+                    <CustomAttributesEditor
+                        attributes={entity.customAttributes || {}}
+                        onChange={(attrs) => onUpdate({ ...entity, customAttributes: attrs })}
+                        themeId={themeId}
+                    />
                 </EditorGroup>
 
                 {/* 5. SECRETS (UNIVERSAL) */}

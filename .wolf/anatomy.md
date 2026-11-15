@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T07:30:18.130Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T07:38:49.889Z
 > Files: 352 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
@@ -355,12 +355,12 @@
 - `constants.ts` — Exports TYPE_LABELS, HIERARCHY_CONFIG, CATEGORY_COLORS (~442 tok)
 - `index.css` — Styles: 68 rules, 1 animations (~2679 tok)
 - `index.tsx` — rootElement (~105 tok)
-- `types.ts` — Exports EntityType, WorldPhase, ThemeMode, MapConnection + 6 more (~15356 tok)
+- `types.ts` — Exports EntityType, WorldPhase, ThemeMode, MapConnection + 6 more (~15390 tok)
 
 ## src/components/editor/
 
 - `EditorGroup.tsx` — EditorGroup (~586 tok)
-- `EntityEditor.tsx` — EntityEditor — renders form (~4301 tok)
+- `EntityEditor.tsx` — CustomAttributesEditor — renders form (~6925 tok)
 - `GroupRoleGroup.tsx` — GroupRoleGroup (~910 tok)
 - `index.ts` (~28 tok)
 
@@ -439,7 +439,7 @@
 ## src/components/viewer/
 
 - `CharacterStatBlock.tsx` — CharacterStatBlock — renders chart (~6160 tok)
-- `EntityViewer.tsx` — EntityViewer — uses useMemo (~6150 tok)
+- `EntityViewer.tsx` — EntityViewer (~6745 tok)
 - `index.ts` (~39 tok)
 - `ViewerHeaders.tsx` — Two-click delete confirm. First click shows "Sure?", second confirms, blur cancels. (~4338 tok)
 - `ViewerSectionCard.tsx` — ViewerSectionCard (~1205 tok)

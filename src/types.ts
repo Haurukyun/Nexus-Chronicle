@@ -78,6 +78,9 @@ export interface BaseEntity {
   // Relational context & annotated link notes (stores `${field}:${targetId}`: note)
   relationalNotes?: Record<string, string>;
 
+  // Freeform custom attributes for flexible lore data (key-value pairs)
+  customAttributes?: Record<string, string>;
+
   // UI state & compatibility aliases
   isFinished?: boolean;
   isMinorDocument?: boolean;

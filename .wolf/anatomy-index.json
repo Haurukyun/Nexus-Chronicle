@@ -1,13 +1,13 @@
 {
   "version": 1,
   "meta": {
-    "lastScanned": "2026-11-15T07:30:18.130Z",
+    "lastScanned": "2026-11-15T07:38:49.889Z",
     "fileCount": 352,
     "hits": 0,
     "misses": 0,
-    "renderedHash": "2823cdbffb9c9490ce6137e691407df2171555c75f96db841e06396cae8a094c",
-    "storeUpdatedAt": "2026-11-15T07:30:18.137Z",
-    "rootHash": "46e037a8ddb158b7"
+    "renderedHash": "755ca6d3879c85412f68a193d5637deadd6bd18df86f408f930978dd9c0170ee",
+    "storeUpdatedAt": "2026-11-15T07:38:49.899Z",
+    "rootHash": "f40cba447769f606"
   },
   "files": {
     ".eslintrc.js": {
@@ -3077,35 +3077,22 @@
       "importance": 0.0631
     },
     "src/components/editor/EntityEditor.tsx": {
-      "description": "EntityEditor — renders form",
-      "tokens": 4301,
-      "hash": "8dcb1f76bffe0dcb",
-      "size": 15056,
-      "mtimeMs": 1791730714479.4756,
-      "updatedAt": "2026-11-15T06:31:07.115Z",
-      "source": "scan",
+      "description": "CustomAttributesEditor — renders form",
+      "tokens": 6925,
+      "hash": "1e2af7dd56a416cc",
+      "size": 24240,
+      "mtimeMs": 1794728135226.8523,
+      "updatedAt": "2026-11-15T07:35:35.508Z",
+      "source": "hook",
       "symbols": [
         {
           "name": "EntityEditor",
           "kind": "fn",
-          "startLine": 18,
-          "endLine": 244,
-          "tokens": 4045
+          "startLine": 185,
+          "endLine": 421,
+          "tokens": 4168
         }
-      ],
-      "symbolSource": "ts",
-      "skeleton": "export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, onUpdate }: EntityEditorProps) => {",
-      "imports": [
-        "src/components/ui/AssetImageUploader.tsx",
-        "src/components/editor/EditorGroup.tsx",
-        "src/components/editor/GroupRoleGroup.tsx",
-        "src/components/ui/index.ts",
-        "src/types.ts",
-        "src/components/editor/specifics/EntitySpecificsRegistry.tsx",
-        "src/theme/index.ts",
-        "src/utils/documentModeUtils.ts"
-      ],
-      "importance": 0.0173
+      ]
     },
     "src/components/editor/GroupRoleGroup.tsx": {
       "description": "GroupRoleGroup",
@@ -4978,40 +4965,22 @@
       "importance": 0.0164
     },
     "src/components/viewer/EntityViewer.tsx": {
-      "description": "EntityViewer — uses useMemo",
-      "tokens": 6150,
-      "hash": "fc34576e911e8720",
-      "size": 21524,
-      "mtimeMs": 1791730043582.6543,
-      "updatedAt": "2026-11-15T06:31:07.136Z",
-      "source": "scan",
+      "description": "EntityViewer",
+      "tokens": 6745,
+      "hash": "7d7b4ac6f74a33a6",
+      "size": 23608,
+      "mtimeMs": 1794728329566.809,
+      "updatedAt": "2026-11-15T07:38:49.888Z",
+      "source": "hook",
       "symbols": [
         {
           "name": "EntityViewer",
           "kind": "fn",
           "startLine": 17,
-          "endLine": 322,
-          "tokens": 5888
+          "endLine": 353,
+          "tokens": 6482
         }
-      ],
-      "symbolSource": "ts",
-      "skeleton": "export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap }: EntityViewerProps) => {",
-      "imports": [
-        "src/components/viewer/ViewerHeaders.tsx",
-        "src/components/viewer/CharacterStatBlock.tsx",
-        "src/components/viewer/WikiInfobox.tsx",
-        "src/components/ui/index.ts",
-        "src/components/ui/NexusImage.tsx",
-        "src/types.ts",
-        "src/constants.ts",
-        "src/utils/backlinkUtils.ts",
-        "src/components/viewer/specifics/EntitySpecificsViewerRegistry.tsx",
-        "src/components/viewer/ViewerSectionCard.tsx",
-        "src/store/useWorldStore.ts",
-        "src/theme/index.ts",
-        "src/utils/documentModeUtils.ts"
-      ],
-      "importance": 0.0164
+      ]
     },
     "src/components/viewer/index.ts": {
       "description": "",
@@ -6053,227 +6022,224 @@
     },
     "src/types.ts": {
       "description": "Exports EntityType, WorldPhase, ThemeMode, MapConnection + 6 more",
-      "tokens": 15356,
-      "hash": "0b6b2b6d51fecf47",
-      "size": 53746,
-      "mtimeMs": 1791762552319.062,
-      "updatedAt": "2026-11-15T06:31:07.147Z",
-      "source": "scan",
+      "tokens": 15390,
+      "hash": "462450ff9de60502",
+      "size": 53865,
+      "mtimeMs": 1794728046726.782,
+      "updatedAt": "2026-11-15T07:34:06.948Z",
+      "source": "hook",
       "symbols": [
-        {
-          "name": "EntityType",
-          "kind": "section",
-          "startLine": 3,
-          "endLine": 7,
-          "tokens": 83
-        },
-        {
-          "name": "WorldPhase",
-          "kind": "section",
-          "startLine": 9,
-          "endLine": 9,
-          "tokens": 23
-        },
-        {
-          "name": "ThemeMode",
-          "kind": "section",
-          "startLine": 10,
-          "endLine": 10,
-          "tokens": 23
-        },
         {
           "name": "MapConnection",
           "kind": "section",
           "startLine": 13,
-          "endLine": 19,
+          "endLine": 20,
           "tokens": 45
         },
         {
           "name": "GroupRoleLinks",
           "kind": "section",
           "startLine": 21,
-          "endLine": 27,
+          "endLine": 28,
           "tokens": 44
         },
         {
           "name": "BaseEntity",
           "kind": "section",
           "startLine": 29,
-          "endLine": 91,
-          "tokens": 598
+          "endLine": 97,
+          "tokens": 644
         },
         {
           "name": "Chapter",
           "kind": "section",
-          "startLine": 95,
-          "endLine": 100,
+          "startLine": 98,
+          "endLine": 104,
           "tokens": 67
         },
         {
           "name": "Character",
           "kind": "section",
-          "startLine": 102,
-          "endLine": 193,
+          "startLine": 105,
+          "endLine": 197,
           "tokens": 1482
         },
         {
           "name": "Condition",
           "kind": "section",
-          "startLine": 195,
-          "endLine": 237,
+          "startLine": 198,
+          "endLine": 241,
           "tokens": 827
         },
         {
           "name": "Culture",
           "kind": "section",
-          "startLine": 239,
-          "endLine": 266,
+          "startLine": 242,
+          "endLine": 270,
           "tokens": 459
         },
         {
           "name": "Currency",
           "kind": "section",
-          "startLine": 268,
-          "endLine": 281,
+          "startLine": 271,
+          "endLine": 285,
           "tokens": 203
         },
         {
           "name": "Event",
           "kind": "section",
-          "startLine": 283,
-          "endLine": 308,
+          "startLine": 286,
+          "endLine": 312,
           "tokens": 409
         },
         {
           "name": "Organization",
           "kind": "section",
-          "startLine": 310,
-          "endLine": 357,
+          "startLine": 313,
+          "endLine": 361,
           "tokens": 850
         },
         {
           "name": "Item",
           "kind": "section",
-          "startLine": 359,
-          "endLine": 394,
-          "tokens": 657
+          "startLine": 362,
+          "endLine": 398,
+          "tokens": 658
         },
         {
           "name": "Language",
           "kind": "section",
-          "startLine": 396,
-          "endLine": 415,
-          "tokens": 331
+          "startLine": 399,
+          "endLine": 419,
+          "tokens": 332
         },
         {
           "name": "Location",
           "kind": "section",
-          "startLine": 417,
-          "endLine": 483,
+          "startLine": 420,
+          "endLine": 487,
           "tokens": 986
         },
         {
           "name": "Note",
           "kind": "section",
-          "startLine": 485,
-          "endLine": 510,
-          "tokens": 468
+          "startLine": 488,
+          "endLine": 514,
+          "tokens": 469
         },
         {
           "name": "Magic",
           "kind": "section",
-          "startLine": 512,
-          "endLine": 564,
-          "tokens": 907
+          "startLine": 515,
+          "endLine": 568,
+          "tokens": 908
         },
         {
           "name": "Myth",
           "kind": "section",
-          "startLine": 566,
-          "endLine": 588,
+          "startLine": 569,
+          "endLine": 592,
           "tokens": 415
         },
         {
           "name": "PoliticalGroup",
           "kind": "section",
-          "startLine": 590,
-          "endLine": 640,
+          "startLine": 593,
+          "endLine": 644,
           "tokens": 896
         },
         {
           "name": "Occupation",
           "kind": "section",
-          "startLine": 642,
-          "endLine": 668,
-          "tokens": 461
+          "startLine": 645,
+          "endLine": 672,
+          "tokens": 462
         },
         {
           "name": "Species",
           "kind": "section",
-          "startLine": 670,
-          "endLine": 712,
+          "startLine": 673,
+          "endLine": 716,
           "tokens": 720
         },
         {
           "name": "Religion",
           "kind": "section",
-          "startLine": 714,
-          "endLine": 764,
+          "startLine": 717,
+          "endLine": 768,
           "tokens": 890
         },
         {
           "name": "Resource",
           "kind": "section",
-          "startLine": 766,
-          "endLine": 802,
+          "startLine": 769,
+          "endLine": 806,
           "tokens": 643
         },
         {
           "name": "Tech",
           "kind": "section",
-          "startLine": 804,
-          "endLine": 854,
-          "tokens": 894
+          "startLine": 807,
+          "endLine": 858,
+          "tokens": 895
         },
         {
           "name": "Ability",
           "kind": "section",
-          "startLine": 856,
-          "endLine": 892,
-          "tokens": 662
-        },
-        {
-          "name": "WorldEntity",
-          "kind": "section",
-          "startLine": 899,
-          "endLine": 899,
-          "tokens": 67
+          "startLine": 859,
+          "endLine": 903,
+          "tokens": 741
         },
         {
           "name": "FantasyEra",
           "kind": "section",
-          "startLine": 901,
-          "endLine": 909,
+          "startLine": 904,
+          "endLine": 913,
           "tokens": 49
         },
         {
           "name": "MilestonePin",
           "kind": "section",
-          "startLine": 911,
-          "endLine": 918,
+          "startLine": 914,
+          "endLine": 922,
           "tokens": 41
         },
         {
           "name": "FantasyMonth",
           "kind": "section",
-          "startLine": 920,
-          "endLine": 927,
+          "startLine": 923,
+          "endLine": 931,
           "tokens": 70
+        },
+        {
+          "name": "FantasyLeapRule",
+          "kind": "section",
+          "startLine": 932,
+          "endLine": 938,
+          "tokens": 81
+        },
+        {
+          "name": "FantasyCalendar",
+          "kind": "section",
+          "startLine": 939,
+          "endLine": 950,
+          "tokens": 106
+        },
+        {
+          "name": "WorldData",
+          "kind": "section",
+          "startLine": 951,
+          "endLine": 968,
+          "tokens": 128
+        },
+        {
+          "name": "UniverseArchive",
+          "kind": "section",
+          "startLine": 969,
+          "endLine": 1067,
+          "tokens": 736
         }
-      ],
-      "symbolSource": "ts",
-      "skeleton": "export type EntityType =\nexport type WorldPhase = 'creation' | 'golden' | 'shadow' | 'eclipse' | 'ruin';\nexport type ThemeMode = 'sovereign' | 'wiki' | 'royal-codex' | 'grand-voyager';\nexport interface MapConnection {\nexport interface GroupRoleLinks {\nexport interface BaseEntity {\nexport interface Chapter extends BaseEntity {\nexport interface Character extends BaseEntity {\nexport interface Condition extends BaseEntity {\nexport interface Culture extends BaseEntity {\nexport interface Currency extends BaseEntity {\nexport interface Event extends BaseEntity {\nexport interface Organization extends BaseEntity {\nexport interface Item extends BaseEntity {\nexport interface Language extends BaseEntity {\nexport interface Location extends BaseEntity {\nexport interface Note extends BaseEntity {\nexport interface Magic extends BaseEntity {\nexport interface Myth extends BaseEntity {\nexport interface PoliticalGroup extends BaseEntity {\nexport interface Occupation extends BaseEntity {\nexport interface Species extends BaseEntity {\nexport interface Religion extends BaseEntity {\nexport interface Resource extends BaseEntity {\nexport interface Tech extends BaseEntity {\nexport interface Ability extends BaseEntity {",
-      "importance": 1
+      ]
     },
     "src/utils/assetStore.test.ts": {
       "description": "Declares bytesA",

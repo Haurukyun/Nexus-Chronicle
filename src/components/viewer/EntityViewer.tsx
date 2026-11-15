@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Folder } from 'lucide-react';
+import { Folder, Hash } from 'lucide-react';
 import { CodexHeader, WikiHeader, RoyalHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
@@ -301,6 +301,36 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                 </div>
                             </div>
                         </div>
+
+                        {/* Custom Attributes */}
+                        {entity.customAttributes && Object.keys(entity.customAttributes).length > 0 && (
+                            <div className={`p-4 rounded-xl border space-y-2 ${
+                                themeId === 'royal-codex' ? 'bg-[#3f0d19] text-[#fef08a] border-[#c8a96e]/40' :
+                                isWiki ? 'bg-[#fdfcf0] text-[#2b1810] border-rose-300/40' :
+                                'bg-slate-900/40 text-slate-100 border-slate-800'
+                            }`}>
+                                <h4 className={`text-[10px] font-black uppercase tracking-widest border-b pb-2 ${
+                                    themeId === 'royal-codex' ? 'text-[#c8a96e]' :
+                                    isWiki ? 'text-[#b91c1c]' :
+                                    'text-[#fef08a]'
+                                }`}>
+                                    <Hash size={12} className="inline-block mr-1" /> Custom Attributes
+                                </h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {Object.entries(entity.customAttributes).map(([key, value]) => (
+                                        <div key={key} className="flex flex-col gap-0.5">
+                                            <span className={`text-[10px] font-mono font-bold ${themeId === 'royal-codex' ? 'text-[#e6c687]' : isWiki ? 'text-[#854d0e]' : 'text-[#fef08a]'}`}>
+                                                {key}
+                                            </span>
+                                            <span className={`text-[11px] ${themeId === 'royal-codex' ? 'text-[#fef08a]' : isWiki ? 'text-[#2b1810]' : 'text-slate-200'}`}>
+                                                {value}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                     </>
                 )}
             </aside>
