@@ -243,20 +243,20 @@ const App = () => {
                         </div>
 
                         {/* Header Action Tools — Ultra-Modern Sleek Glassmorphic Toolbar */}
-                        <div className="flex items-center gap-1 p-1 rounded-full border shrink-0 backdrop-blur-xl transition-all"
+                        <div className="flex items-center gap-0.5 p-1 rounded-full border shrink-0 backdrop-blur-2xl transition-all shadow-xl"
                             style={{
-                                backgroundColor: theme === 'royal-codex' ? 'rgba(251, 248, 239, 0.85)'
-                                               : theme === 'wiki' ? 'rgba(255, 255, 255, 0.9)'
-                                               : theme === 'grand-voyager' ? 'rgba(18, 10, 5, 0.75)'
-                                               : 'rgba(10, 15, 26, 0.65)',
-                                borderColor: theme === 'royal-codex' ? 'rgba(200, 169, 110, 0.45)'
-                                           : theme === 'wiki' ? 'rgba(212, 200, 175, 0.8)'
-                                           : theme === 'grand-voyager' ? 'rgba(45, 212, 191, 0.25)'
-                                           : 'rgba(255, 255, 255, 0.08)',
-                                boxShadow: theme === 'royal-codex' ? '0 4px 20px rgba(112, 18, 30, 0.06)'
-                                         : theme === 'wiki' ? '0 4px 16px rgba(0, 0, 0, 0.05)'
-                                         : theme === 'grand-voyager' ? '0 8px 32px rgba(0, 0, 0, 0.5)'
-                                         : '0 8px 30px rgba(0, 0, 0, 0.5)'
+                                backgroundColor: theme === 'royal-codex' ? 'rgba(251, 248, 239, 0.88)'
+                                               : theme === 'wiki' ? 'rgba(255, 255, 255, 0.92)'
+                                               : theme === 'grand-voyager' ? 'rgba(18, 10, 5, 0.82)'
+                                               : 'rgba(10, 15, 26, 0.75)',
+                                borderColor: theme === 'royal-codex' ? 'rgba(200, 169, 110, 0.5)'
+                                           : theme === 'wiki' ? 'rgba(212, 200, 175, 0.85)'
+                                           : theme === 'grand-voyager' ? 'rgba(45, 212, 191, 0.3)'
+                                           : 'rgba(255, 255, 255, 0.12)',
+                                boxShadow: theme === 'royal-codex' ? '0 4px 20px rgba(112, 18, 30, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
+                                         : theme === 'wiki' ? '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+                                         : theme === 'grand-voyager' ? '0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(45, 212, 191, 0.15)'
+                                         : '0 8px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
                             }}
                             data-interactive-ui="true"
                         >
@@ -264,33 +264,33 @@ const App = () => {
                             <button
                                 onClick={() => setShowCommandPalette(true)}
                                 title="Command Palette & Fast Search (Ctrl+K)"
-                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-200 border cursor-pointer active:scale-95 ${
+                                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-[#70121e]/5 hover:bg-[#70121e]/15 text-[#70121e] border-[#c8a96e]/40 hover:border-[#70121e] shadow-sm font-serif'
+                                        ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
                                         : theme === 'wiki'
-                                        ? 'bg-black/[0.03] hover:bg-black/[0.07] text-slate-700 hover:text-slate-950 border-[#d4c8af]/80 hover:border-red-400 shadow-sm'
+                                        ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-white/[0.03] hover:bg-[#2dd4bf]/15 text-[#2dd4bf] border-teal-500/20 hover:border-[#2dd4bf]/50'
-                                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.06] hover:border-[#fef08a]/30'
+                                        ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
+                                        : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
                                 }`}
                             >
                                 <Search size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                 <span className="hidden md:inline font-medium">Jump</span>
-                                <kbd className="hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 border border-white/[0.06]">Ctrl+K</kbd>
+                                <kbd className="hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.08] text-slate-400 border border-white/[0.06]">Ctrl+K</kbd>
                             </button>
 
                             {/* Scratchpad / Lore Journal */}
                             <button
                                 onClick={() => setShowScratchpad(true)}
                                 title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-200 border cursor-pointer active:scale-95 ${
+                                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-[#70121e]/5 hover:bg-[#70121e]/15 text-[#70121e] border-[#c8a96e]/40 hover:border-[#70121e] shadow-sm font-serif'
+                                        ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
                                         : theme === 'wiki'
-                                        ? 'bg-black/[0.03] hover:bg-black/[0.07] text-slate-700 hover:text-slate-950 border-[#d4c8af]/80 hover:border-red-400 shadow-sm'
+                                        ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-white/[0.03] hover:bg-[#2dd4bf]/15 text-[#2dd4bf] border-teal-500/20 hover:border-[#2dd4bf]/50'
-                                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.06] hover:border-[#fef08a]/30'
+                                        ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
+                                        : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
                                 }`}
                             >
                                 <BookMarked size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
@@ -301,22 +301,27 @@ const App = () => {
                             <button
                                 onClick={() => setShowKeybindsModal(true)}
                                 title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-200 border cursor-pointer active:scale-95 ${
+                                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-[#70121e]/5 hover:bg-[#70121e]/15 text-[#70121e] border-[#c8a96e]/40 hover:border-[#70121e] shadow-sm font-serif'
+                                        ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
                                         : theme === 'wiki'
-                                        ? 'bg-black/[0.03] hover:bg-black/[0.07] text-slate-700 hover:text-slate-950 border-[#d4c8af]/80 hover:border-red-400 shadow-sm'
+                                        ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-white/[0.03] hover:bg-[#2dd4bf]/15 text-[#2dd4bf] border-teal-500/20 hover:border-[#2dd4bf]/50'
-                                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.06] hover:border-[#fef08a]/30'
+                                        ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
+                                        : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
                                 }`}
                             >
                                 <Keyboard size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                 <span className="hidden sm:inline font-medium">Keybinds</span>
                             </button>
 
-                            {/* Subtle separator */}
-                            <div className="w-px h-3.5 mx-0.5 opacity-20 bg-current shrink-0" />
+                            {/* Sleek divider */}
+                            <div className={`w-px h-3.5 mx-0.5 ${
+                                theme === 'royal-codex' ? 'bg-[#70121e]/20'
+                                : theme === 'wiki' ? 'bg-black/10'
+                                : theme === 'grand-voyager' ? 'bg-[#2dd4bf]/25'
+                                : 'bg-white/10'
+                            }`} />
 
                             <ThemeSwitcher theme={theme} setTheme={setTheme} />
                         </div>

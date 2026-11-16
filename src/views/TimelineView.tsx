@@ -80,6 +80,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     type MainViewMode = 'chronos' | 'annual';
     const [mainViewMode, setMainViewMode] = useState<MainViewMode>('chronos');
 
+    // Dedicated display year for Annual Calendar view, initialized to in-world current year
+    const [annualDisplayYear, setAnnualDisplayYear] = useState<number>(() => world.timelineCurrentYear ?? 0);
+
     // View state
     const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
     const [selectedEventType, setSelectedEventType] = useState<string>('all');
@@ -615,6 +618,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
     // Jump scroll to specific year with optional animated era traversal
     const handleJumpToYear = (targetYear: number, eraId?: string) => {
+        setAnnualDisplayYear(targetYear);
         if (hasDraggedRef.current) return;
         if (!scrollContainerRef.current) return;
         const totalWidth = canvasWidth;
@@ -954,24 +958,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     useEffect(() => {
         if (!focusTimelineEventId) return;
 
-        if (focusTimelineMode === 'annual' && calendar) {
-            setMainViewMode('annual');
-        } else {
-            setMainViewMode('chronos');
-        }
-
+        let targetYear: number | null = null;
         const matchedItem = rawItems.find(i => i.id === focusTimelineEventId || i.entityId === focusTimelineEventId);
         if (matchedItem) {
-            handleJumpToYear(matchedItem.start);
+            targetYear = matchedItem.start;
             handleSelectRibbon(matchedItem);
         } else {
             const matchedEntity = world.entities.find(e => e.id === focusTimelineEventId);
             if (matchedEntity) {
-                const yr = extractYear((matchedEntity as any).startDate || (matchedEntity as any).date || (matchedEntity as any).birthDate);
-                if (yr !== null) {
-                    handleJumpToYear(yr);
-                }
+                targetYear = extractYear((matchedEntity as any).startDate || (matchedEntity as any).date || (matchedEntity as any).birthDate);
             }
+        }
+
+        if (targetYear !== null) {
+            setAnnualDisplayYear(targetYear);
+            handleJumpToYear(targetYear);
+        }
+
+        if (focusTimelineMode === 'annual' && calendar) {
+            setMainViewMode('annual');
+        } else {
+            setMainViewMode('chronos');
         }
 
         clearFocusTimelineEvent();
@@ -1281,7 +1288,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         isRoyal ? 'border-[#c8a96e]/50' : isWiki ? 'border-[#d4c8af]' : isVoyager ? 'border-[#3d2617]' : 'border-slate-700/60'
                     }`}>
                         <button
-                            onClick={() => setMainViewMode('chronos')}
+                            onClick={() => {
+                                setMainViewMode('chronos');
+                                setTimeout(() => {
+                                    handleJumpToYear(annualDisplayYear);
+                                }, 50);
+                            }}
                             title="Big-picture Chronos Timeline (eras, character lifespans, events)"
                             className={`flex items-center gap-1.5 px-3.5 py-2.5 transition-all ${
                                 mainViewMode === 'chronos'
@@ -1292,7 +1304,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             <History size={13} /> Chronos
                         </button>
                         <button
-                            onClick={() => setMainViewMode('annual')}
+                            onClick={() => {
+                                const currentCenterYear = Math.round(minYear + ((viewport.scrollLeft + viewport.clientWidth / 2 - 24) / Math.max(canvasWidth, 1)) * yearSpan);
+                                if (!isNaN(currentCenterYear) && isFinite(currentCenterYear)) {
+                                    setAnnualDisplayYear(currentCenterYear);
+                                }
+                                setMainViewMode('annual');
+                            }}
                             title="Annual Calendar — full-year month grid & festivals"
                             disabled={!calendar}
                             className={`flex items-center gap-1.5 px-3.5 py-2.5 transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
@@ -1604,7 +1622,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                 <div className="flex-1 min-h-0">
                     <AnnualCalendarView
                         calendar={calendar}
-                        displayYear={Math.round(minYear + ((viewport.scrollLeft + viewport.clientWidth / 2 - 24) / canvasWidth) * yearSpan)}
+                        displayYear={annualDisplayYear}
                         onYearChange={handleJumpToYear}
                         events={world.entities}
                         onEventClick={onNavigate}
@@ -1887,15 +1905,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             </div>
                         )}
 
-                        {/* ── CURRENT YEAR PLAYHEAD CAP MARKER (Elevated above rail) ── */}
+                        {/* ── CURRENT YEAR PLAYHEAD — elevated bookmark chip above rail ── */}
                         {currentYear >= minYear && currentYear <= maxYear && (
-                            <div 
-                                className="playhead-cap-marker absolute top-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-auto z-20 cursor-pointer group"
-                                style={{ 
-                                    left: `${((currentYear - minYear) / yearSpan) * 100}%`,
-                                    bottom: '50%',
-                                    marginBottom: '3px'
-                                }}
+                            <div
+                                className="playhead-cap-marker absolute -translate-x-1/2 flex flex-col items-center pointer-events-auto z-20 cursor-pointer group"
+                                style={{ left: `${((currentYear - minYear) / yearSpan) * 100}%`, bottom: 'calc(50% + 4px)' }}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setCurrentYearInput(String(currentYear));
@@ -1903,61 +1917,66 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 }}
                                 title={`Current In-World Year: ${currentYear} (Click to edit)`}
                             >
-                                <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full border text-[9px] font-mono font-bold tracking-tight shadow-md transition-all group-hover:scale-105 ${
+                                <div className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-tight shadow-md transition-all group-hover:scale-105 ${
                                     isLightCanvas
-                                        ? 'bg-emerald-500 text-white border-emerald-600'
-                                        : 'bg-emerald-500/90 text-white border-emerald-400 backdrop-blur-md shadow-[0_0_12px_rgba(16,185,129,0.5)]'
+                                        ? 'bg-emerald-500 text-white border border-emerald-600'
+                                        : 'bg-emerald-500 text-white border border-emerald-300/50 shadow-[0_0_12px_rgba(16,185,129,0.5)]'
                                 }`}>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0 animate-pulse" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-white/80 shrink-0 animate-pulse" />
                                     <span>Yr {currentYear}</span>
                                 </div>
-                                <div className="w-0.5 h-1.5 bg-emerald-400" />
+                                {/* Needle pointing to the rail line */}
+                                <div className="w-0.5 h-2 bg-emerald-400" />
                             </div>
                         )}
 
-                        {/* ── MILESTONE PIN MARKERS ON AXIS RAIL (Labels elevated proudly above diamond, NEVER overlapping rail line) ── */}
+                        {/* ── MILESTONE PIN MARKERS ON THE RAIL LINE (Diamond + Elevated Flag) ── */}
                         {milestonePins.map(pin => {
                             const leftPct = ((pin.year - minYear) / yearSpan) * 100;
                             if (leftPct < 0 || leftPct > 100) return null;
                             const pinColor = pin.color || '#f59e0b';
-
                             return (
                                 <div
-                                    key={pin.id}
-                                    className="milestone-pin-marker absolute top-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-auto z-25 cursor-pointer group"
+                                    key={`milestone-pin-${pin.id}`}
+                                    className="milestone-pin-marker absolute top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto z-25 cursor-pointer group flex flex-col items-center"
                                     style={{ left: `${leftPct}%` }}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleSelectMilestone(pin);
-                                    }}
-                                    title={`${pin.name} (${pin.year}) — Milestone (Click to inspect)`}
+                                    onClick={(e) => { e.stopPropagation(); handleSelectMilestone(pin); }}
+                                    title={`${pin.name} (${pin.year}) — Milestone (Click to edit)`}
                                 >
-                                    {/* Elevated Flag Label ABOVE the diamond badge (NEVER covers the rail or tick marks!) */}
-                                    <div 
-                                        className="absolute bottom-6 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider whitespace-nowrap shadow-lg border backdrop-blur-md transition-all group-hover:scale-105 pointer-events-none"
-                                        style={{ 
-                                            backgroundColor: isLightCanvas ? '#ffffff' : 'rgba(15, 23, 42, 0.92)', 
-                                            borderColor: isLightCanvas ? `${pinColor}90` : `${pinColor}80`,
-                                            color: isLightCanvas ? '#1c140d' : '#ffffff',
-                                            boxShadow: isLightCanvas ? '0 2px 8px rgba(0,0,0,0.1)' : `0 2px 10px ${pinColor}40`
-                                        }}
+                                    {/* Elevated Milestone Flag Label */}
+                                    <div
+                                        className="absolute bottom-6 flex flex-col items-center group-hover:-translate-y-0.5 transition-transform duration-200"
                                     >
-                                        {pin.name} ({pin.year})
+                                        <div
+                                            className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider whitespace-nowrap border backdrop-blur-xl shadow-lg flex items-center gap-1.5 transition-all group-hover:scale-105"
+                                            style={{
+                                                backgroundColor: isLightCanvas ? 'rgba(255,255,255,0.96)' : 'rgba(8, 8, 18, 0.92)',
+                                                borderColor: `${pinColor}80`,
+                                                color: isLightCanvas ? '#1c140d' : pinColor,
+                                                boxShadow: `0 2px 10px ${pinColor}30, inset 0 1px 0 rgba(255,255,255,0.15)`
+                                            }}
+                                        >
+                                            <Bookmark size={9} style={{ color: pinColor }} className="shrink-0" />
+                                            <span>{pin.name}</span>
+                                            <span className="opacity-60 font-mono text-[8px]">({pin.year})</span>
+                                        </div>
+                                        {/* Clean flagpole stem down to diamond top */}
+                                        <div
+                                            className="w-px h-3"
+                                            style={{ background: `linear-gradient(180deg, ${pinColor}90 0%, ${pinColor}40 100%)` }}
+                                        />
                                     </div>
 
-                                    {/* Thin flagpole stem */}
-                                    <div className="absolute bottom-2.5 w-px h-3" style={{ backgroundColor: pinColor }} />
-
-                                    {/* Diamond Badge centered right on the rail line */}
-                                    <div 
-                                        className="w-5 h-5 rotate-45 rounded-sm border-2 shadow-xl flex items-center justify-center transition-all group-hover:scale-125 group-hover:rotate-90 -translate-y-1/2"
-                                        style={{ 
+                                    {/* Diamond on the rail line */}
+                                    <div
+                                        className="w-4 h-4 rotate-45 rounded-sm border-2 shadow-lg flex items-center justify-center transition-all group-hover:scale-[1.25] group-hover:rotate-90"
+                                        style={{
                                             backgroundColor: pinColor,
-                                            borderColor: '#ffffff',
-                                            boxShadow: `0 0 12px ${pinColor}90`
+                                            borderColor: isLightCanvas ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.85)',
+                                            boxShadow: `0 0 10px ${pinColor}80, 0 2px 8px rgba(0,0,0,0.4)`
                                         }}
                                     >
-                                        <Bookmark size={10} className="text-black -rotate-45" />
+                                        <div className="w-1.5 h-1.5 rounded-full bg-white/90 -rotate-45" />
                                     </div>
                                 </div>
                             );
@@ -1981,23 +2000,21 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         </div>
                     )}
 
-                    {/* VERTICAL GUIDES FOR MILESTONE PINS */}
+                    {/* MILESTONE VERTICAL BEAMS (through ribbon canvas) */}
                     {milestonePins.map(pin => {
                         const leftPct = ((pin.year - minYear) / yearSpan) * 100;
                         if (leftPct < 0 || leftPct > 100) return null;
                         const pinColor = pin.color || '#f59e0b';
-
                         return (
                             <div
                                 key={`beam-${pin.id}`}
-                                className="absolute top-10 bottom-0 pointer-events-none z-10"
+                                className="absolute top-0 bottom-0 pointer-events-none z-5"
                                 style={{ left: `${leftPct}%` }}
                             >
-                                <div 
-                                    className="w-px h-full -translate-x-1/2 opacity-40"
-                                    style={{ 
-                                        background: `linear-gradient(180deg, ${pinColor}95 0%, ${pinColor}25 50%, transparent 100%)`,
-                                        filter: `drop-shadow(0 0 3px ${pinColor}60)`
+                                <div
+                                    className="w-px h-full -translate-x-1/2"
+                                    style={{
+                                        background: `linear-gradient(180deg, transparent 0%, ${pinColor}30 20%, ${pinColor}18 60%, transparent 100%)`
                                     }}
                                 />
                             </div>
@@ -2031,9 +2048,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 }}
                             />
 
-                            {/* Floating Cursor Tooltip at the top (Elevated in gap, well above rail markers) */}
+                            {/* Scrubber Year Tooltip — hovering gracefully in the sky zone between Era Bands and Ruler Track */}
                             <div 
-                                className="absolute top-[62px] -translate-x-1/2 flex flex-col items-center pointer-events-none select-none z-40 animate-in fade-in zoom-in-95 duration-100"
+                                className="absolute top-[68px] -translate-x-1/2 flex flex-col items-center pointer-events-none select-none z-50 animate-in fade-in zoom-in-95 duration-100"
                             >
                                 <div 
                                     className={`px-3.5 py-1 rounded-full text-[11px] font-mono font-bold whitespace-nowrap flex items-center gap-2 border backdrop-blur-2xl shadow-2xl transition-all ${
@@ -2145,88 +2162,78 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             }
 
                             const actualWidthPx = ((item.end - item.start) / yearSpan) * canvasWidth;
-                            const isShortSpan = actualWidthPx < 140 || (item.end - item.start) <= 4;
+                            const isShortSpan = actualWidthPx < 180 || (item.end - item.start) <= 5;
 
-                            // Short-span items (1-4 years or small pixel width): render true chronological bracket + attached callout tag
-                            // Never stretch duration bar across 100+ years!
+                            // Short-span events (< 180px or <= 5 years): render an honest, compact event chip at exact start position
                             if (isShortSpan) {
                                 return (
                                     <div
                                         key={item.id}
                                         onClick={() => handleSelectRibbon(item)}
                                         onMouseEnter={(e) => {
-                                            setHoveredRibbonItem({
-                                                item,
-                                                clientX: e.clientX,
-                                                clientY: e.clientY
-                                            });
+                                            setHoveredRibbonItem({ item, clientX: e.clientX, clientY: e.clientY });
                                         }}
                                         onMouseMove={(e) => {
                                             setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY });
                                         }}
-                                        onMouseLeave={() => {
-                                            setHoveredRibbonItem(null);
-                                        }}
+                                        onMouseLeave={() => setHoveredRibbonItem(null)}
                                         className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
                                             isInspected ? 'z-30' : 'z-10'
                                         }`}
-                                        style={{
-                                            left: `${leftPct}%`,
-                                            top: `${topPx + 2}px`,
-                                            height: '32px'
-                                        }}
+                                        style={{ left: `${leftPct}%`, top: `${topPx}px` }}
                                     >
-                                        <div className="flex items-center gap-1.5 h-full">
-                                            {/* 1. True Chronological Duration Bracket / Pip (Never spans 100 years!) */}
-                                            <div 
-                                                className="h-5 rounded-full border flex items-center justify-between px-1 shrink-0 transition-transform group-hover:scale-110 shadow-sm"
-                                                style={{
-                                                    width: `${Math.max(actualWidthPx, 10)}px`,
-                                                    backgroundColor: `${itemColor}35`,
-                                                    borderColor: isInspected ? '#ffffff' : itemColor,
-                                                    boxShadow: isInspected ? `0 0 10px ${itemColor}` : `0 0 4px ${itemColor}40`
-                                                }}
-                                                title={`Exact Span: ${item.start}–${item.end} (${Math.max(1, item.end - item.start)} yr)`}
-                                            >
-                                                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: itemColor }} />
-                                                {actualWidthPx >= 16 && (
-                                                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: itemColor }} />
-                                                )}
-                                            </div>
+                                        <div
+                                            className={`flex items-center gap-2 h-8 pl-3 pr-3.5 rounded-xl border whitespace-nowrap transition-all duration-200 group-hover:scale-[1.02] backdrop-blur-xl shadow-md ${
+                                                isInspected ? 'ring-2 ring-white/60 shadow-lg' : ''
+                                            }`}
+                                            style={{
+                                                backgroundColor: isLightCanvas
+                                                    ? 'rgba(255, 255, 255, 0.96)'
+                                                    : 'rgba(10, 15, 26, 0.92)',
+                                                borderColor: isInspected
+                                                    ? (isLightCanvas ? '#0f172a' : '#ffffff')
+                                                    : (isLightCanvas ? `${itemColor}` : `${itemColor}60`),
+                                                boxShadow: isInspected
+                                                    ? `0 0 16px ${itemColor}80`
+                                                    : `0 4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)`
+                                            }}
+                                        >
+                                            {/* Luminous start anchor beacon */}
+                                            <span className="relative flex items-center justify-center shrink-0 w-2.5 h-2.5">
+                                                <span
+                                                    className="w-2 h-2 rounded-sm rotate-45 shrink-0"
+                                                    style={{ backgroundColor: itemColor, boxShadow: `0 0 8px ${itemColor}` }}
+                                                />
+                                            </span>
 
-                                            {/* 2. Slender Connector Hairline */}
-                                            <div className="w-1.5 h-px shrink-0" style={{ backgroundColor: `${itemColor}80` }} />
+                                            {/* Title */}
+                                            <span className={`font-semibold text-xs truncate max-w-[200px] ${
+                                                isLightCanvas ? 'text-[#1c140d]' : 'text-white/95'
+                                            }`}>
+                                                {item.name}
+                                            </span>
 
-                                            {/* 3. Anchored Event Callout Tag (Clear, non-misleading title tag) */}
-                                            <div 
-                                                className={`h-7 px-2.5 rounded-full border flex items-center gap-2 whitespace-nowrap shadow-md backdrop-blur-md transition-all group-hover:scale-105 shrink-0 ${
-                                                    isInspected ? 'ring-2 ring-white/80' : ''
-                                                }`}
-                                                style={{
-                                                    backgroundColor: isLightCanvas ? '#ffffff' : `${itemColor}18`,
-                                                    borderColor: isInspected ? (isLightCanvas ? '#0f172a' : '#f8fafc') : (isLightCanvas ? `${itemColor}` : `${itemColor}55`),
-                                                    boxShadow: isInspected ? `0 0 14px ${itemColor}60` : `0 2px 8px rgba(0,0,0,0.15)`
-                                                }}
-                                            >
-                                                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: itemColor, boxShadow: `0 0 6px ${itemColor}` }} />
-                                                <span className={`font-semibold text-xs truncate max-w-[200px] ${isLightCanvas ? 'text-[#1c140d]' : 'text-white'}`}>
-                                                    {item.name}
+                                            {/* Event Type Badge if present */}
+                                            {item.eventType && (
+                                                <span
+                                                    className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0"
+                                                    style={{
+                                                        backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
+                                                        color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor
+                                                    }}
+                                                >
+                                                    {item.eventType}
                                                 </span>
-                                                {item.eventType && (
-                                                    <span 
-                                                        className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0"
-                                                        style={{
-                                                            backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
-                                                            color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor
-                                                        }}
-                                                    >
-                                                        {item.eventType}
-                                                    </span>
-                                                )}
-                                                <span className={`text-[9px] font-mono shrink-0 font-bold ${isLightCanvas ? 'text-[#1c140d]/70' : 'text-white/70'}`}>
-                                                    {item.start === item.end ? `Yr ${item.start}` : `${item.start}–${item.end}`}
-                                                </span>
-                                            </div>
+                                            )}
+
+                                            {/* Chronological span pill: clearly communicating short duration without misleading 100yr bar */}
+                                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md border shrink-0 ${
+                                                isLightCanvas
+                                                    ? 'bg-amber-50/80 border-amber-200 text-[#1c140d]'
+                                                    : 'bg-white/5 border-white/10 text-white/80'
+                                            }`}>
+                                                {item.start === item.end ? `Yr ${item.start}` : `${item.start}–${item.end}`}
+                                            </span>
                                         </div>
                                     </div>
                                 );

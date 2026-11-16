@@ -61,14 +61,14 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-200 border cursor-pointer active:scale-95 ${
+                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
                     theme === 'royal-codex'
-                        ? 'bg-[#70121e]/5 hover:bg-[#70121e]/15 text-[#70121e] border-[#c8a96e]/40 hover:border-[#70121e] shadow-sm font-serif'
+                        ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
                         : theme === 'wiki'
-                        ? 'bg-black/[0.03] hover:bg-black/[0.07] text-slate-700 hover:text-slate-950 border-[#d4c8af]/80 hover:border-red-400 shadow-sm'
+                        ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
                         : theme === 'grand-voyager'
-                        ? 'bg-white/[0.03] hover:bg-[#2dd4bf]/15 text-[#2dd4bf] border-teal-500/20 hover:border-[#2dd4bf]/50'
-                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.06] hover:border-[#fef08a]/30'
+                        ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
+                        : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
                 }`}
                 title="Switch Application Theme"
             >
