@@ -209,9 +209,12 @@ const TreeNode = ({ entity, all, onNavigate, accent, bg, depth = 0, visitedIds =
     const hasChildren = children.length > 0;
     const isAncestral = Boolean(entity.deathDate?.trim() || entity.deadSwitch || entity.isDead);
     const [collapsed, setCollapsed] = useState(false);
+    const [forceShowDeeper, setForceShowDeeper] = useState(false);
 
     const nextVisited = new Set(visitedIds);
     nextVisited.add(entity.id);
+
+    const isBranchVisible = hasChildren && (depth < 5 || forceShowDeeper);
 
     return (
         <div className="flex flex-col items-center relative">
@@ -233,14 +236,14 @@ const TreeNode = ({ entity, all, onNavigate, accent, bg, depth = 0, visitedIds =
                 </div>
             </div>
 
-            {/* Expand / Collapse Toggle for Branches */}
-            {hasChildren && depth < 5 && (
+            {/* Expand / Collapse Toggle for Active Branches */}
+            {isBranchVisible && (
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
                         setCollapsed(!collapsed);
                     }}
-                    className={`mt-3 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 z-20 border transition-all ${
+                    className={`mt-3 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 z-20 border transition-all cursor-pointer ${
                         (themeId === 'royal-codex')
                             ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#70121e] hover:bg-[#ede0c4] shadow-sm'
                             : (layoutMode === 'wiki') 
@@ -260,15 +263,31 @@ const TreeNode = ({ entity, all, onNavigate, accent, bg, depth = 0, visitedIds =
                 </button>
             )}
 
-            {/* Truncation Indicator if Depth Limit Reached */}
-            {hasChildren && depth >= 5 && (
-                <div className={`mt-4 px-3 py-1 rounded-full text-[9px] font-bold border border-dashed opacity-60 ${accent}`}>
-                    +{children.length} descendant{children.length > 1 ? 's' : ''} (depth limit)
-                </div>
+            {/* On-Demand Expansion Button if Depth Threshold Reached */}
+            {hasChildren && depth >= 5 && !forceShowDeeper && (
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setForceShowDeeper(true);
+                        setCollapsed(false);
+                    }}
+                    className={`mt-3 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-dashed flex items-center gap-1.5 cursor-pointer transition-all hover:scale-105 shadow-sm ${
+                        (themeId === 'royal-codex')
+                            ? 'bg-[#f5ead0] border-[#c8a96e] text-[#70121e]'
+                            : (layoutMode === 'wiki')
+                            ? 'bg-white border-[#d4c8af] text-[#b91c1c]'
+                            : 'bg-slate-900 border-yellow-500/60 text-[#fef08a]'
+                    }`}
+                    title="Deep branch threshold reached. Click to explore deeper lineage."
+                >
+                    <ChevronDown size={11} />
+                    <span>Show Deeper (+{children.length} descendant{children.length > 1 ? 's' : ''})</span>
+                </button>
             )}
 
             {/* Connecting Lines */}
-            {hasChildren && !collapsed && depth < 5 && (
+            {isBranchVisible && !collapsed && (
                 <div className="flex flex-col items-center mt-6 w-full">
                     <div className={`w-px h-10 ${(themeId === 'royal-codex') ? 'bg-[#c8a96e]/50' : (layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-800'}`} />
                     <div className="flex gap-12 relative">

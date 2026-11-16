@@ -6,10 +6,11 @@ import {
     BookMarked, CornerDownLeft, Sparkles, FileText, ArrowRight,
     User, MapPin, Calendar, Shield, Feather, Sparkle
 } from 'lucide-react';
-import { WorldData, EntityType } from '../../types';
+import { WorldData, EntityType, WorldEntity } from '../../types';
 import { useTheme } from '../../theme';
 import { HIERARCHY_CONFIG, TYPE_LABELS, CATEGORY_COLORS } from '../../constants';
 import { getEntityAliases } from '../../utils/documentModeUtils';
+import { useWorldStore } from '../../store/useWorldStore';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -184,15 +185,82 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             });
         }
 
-        // 3. Codex Entities (scored by match relevance)
+        // 3. Smart Quick-Creation Syntax (e.g. "+character Gandalf", "new location Rivendell", "+item Narsil")
+        if (q.startsWith('+') || q.startsWith('new ')) {
+            const raw = q.startsWith('+') ? q.slice(1).trim() : q.slice(4).trim();
+            const spaceIdx = raw.indexOf(' ');
+            const rawType = spaceIdx > 0 ? raw.slice(0, spaceIdx).toLowerCase() : raw.toLowerCase();
+            const prefilledName = spaceIdx > 0 ? raw.slice(spaceIdx + 1).trim() : '';
+
+            const matchedTypeObj = quickCreationTypes.find(c => 
+                c.type.toLowerCase() === rawType || 
+                c.label.toLowerCase() === rawType ||
+                c.type.toLowerCase().startsWith(rawType)
+            );
+
+            if (matchedTypeObj) {
+                results.unshift({
+                    id: `smart-create-${matchedTypeObj.type}`,
+                    group: 'actions',
+                    label: prefilledName 
+                        ? `Create ${matchedTypeObj.label} "${prefilledName}"`
+                        : `Create New ${matchedTypeObj.label}`,
+                    sublabel: prefilledName 
+                        ? `Spawn and open fresh ${matchedTypeObj.type} named "${prefilledName}"`
+                        : `Spawn fresh ${matchedTypeObj.type} draft`,
+                    badge: 'Instant Create',
+                    icon: Plus,
+                    onSelect: () => {
+                        useWorldStore.getState().handleCreate(matchedTypeObj.type, prefilledName || undefined, true);
+                        onClose();
+                    }
+                });
+            }
+        }
+
+        // 4. Codex Entities (scored by match relevance & advanced prefix filters)
         if (q) {
-            const matchedEntities = world.entities.filter(e => {
-                const nameMatch = e.name.toLowerCase().includes(q);
-                const aliasMatch = getEntityAliases(e).some(a => a.toLowerCase().includes(q));
-                const tagMatch = (e.tags || []).some(t => t.toLowerCase().includes(q));
-                const typeMatch = e.type.toLowerCase().includes(q);
-                return nameMatch || aliasMatch || tagMatch || typeMatch;
-            }).slice(0, 20); // Top 20 for instant rendering
+            let filterFn: (e: WorldEntity) => boolean;
+
+            if (q.startsWith('tag:')) {
+                const tagTerm = q.slice(4).trim();
+                filterFn = (e) => (e.tags || []).some(t => t.toLowerCase().includes(tagTerm));
+            } else if (q.startsWith('type:')) {
+                const typeTerm = q.slice(5).trim();
+                filterFn = (e) => e.type.toLowerCase().includes(typeTerm);
+            } else if (q.startsWith('attr:')) {
+                const attrTerm = q.slice(5).trim();
+                if (attrTerm.includes('=')) {
+                    const [k, v] = attrTerm.split('=').map(s => s.trim().toLowerCase());
+                    filterFn = (e) => {
+                        if (!e.customAttributes) return false;
+                        return Object.entries(e.customAttributes).some(([key, val]) => 
+                            key.toLowerCase().includes(k) && String(val).toLowerCase().includes(v)
+                        );
+                    };
+                } else {
+                    filterFn = (e) => {
+                        if (!e.customAttributes) return false;
+                        return Object.entries(e.customAttributes).some(([key, val]) => 
+                            key.toLowerCase().includes(attrTerm) || String(val).toLowerCase().includes(attrTerm)
+                        );
+                    };
+                }
+            } else {
+                filterFn = (e) => {
+                    const nameMatch = e.name.toLowerCase().includes(q);
+                    const aliasMatch = getEntityAliases(e).some(a => a.toLowerCase().includes(q));
+                    const tagMatch = (e.tags || []).some(t => t.toLowerCase().includes(q));
+                    const typeMatch = e.type.toLowerCase().includes(q);
+                    const descMatch = (e.description || '').toLowerCase().includes(q);
+                    const attrMatch = e.customAttributes 
+                        ? Object.entries(e.customAttributes).some(([k, v]) => k.toLowerCase().includes(q) || String(v).toLowerCase().includes(q))
+                        : false;
+                    return nameMatch || aliasMatch || tagMatch || typeMatch || descMatch || attrMatch;
+                };
+            }
+
+            const matchedEntities = world.entities.filter(filterFn).slice(0, 25);
 
             matchedEntities.forEach(entity => {
                 const cat = HIERARCHY_CONFIG.find(c => c.types.includes(entity.type));
@@ -299,7 +367,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                             setSelectedIndex(0);
                         }}
                         onKeyDown={handleKeyDown}
-                        placeholder="Search entities, summon realms, or type an action... (e.g. 'Aurelius', '/timeline', 'character')"
+                        placeholder="Search entities, +character <name>, tag:lore, attr:element=fire... (e.g. 'Aragorn', '+item Excalibur')"
                         className={`w-full bg-transparent border-0 outline-none text-sm font-medium ${isRoyal ? 'placeholder-[#c8a96e]/50' : 'placeholder-current/40'}`}
                     />
                     <kbd className={`text-[10px] uppercase font-mono px-2 py-0.5 rounded border shrink-0 opacity-60 ${isRoyal ? 'border-[#c8a96e]/40 bg-[#3b2315]' : isWiki ? 'border-[#d4c8af] bg-white' : 'border-slate-700 bg-slate-800'}`}>

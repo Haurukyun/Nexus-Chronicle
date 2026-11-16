@@ -12,6 +12,12 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **P1 Fixes — Tree Depth Expansion, Viewer Tags Display & Command Palette Supercharged Search** (this commit):
+  - **NexusTreeView On-Demand Depth Expansion**: Replaced static depth-5 cutoff with an interactive on-demand expansion button (`Show deeper (+N descendants)`), allowing users to explore deep lineage branches beyond depth 5 without losing tree structure.
+  - **Viewer Headers Tags Display**: Added dedicated `#tag` badges across `CodexHeader`, `WikiHeader`, and `RoyalHeader` in `ViewerHeaders.tsx`, surfacing entity tags across all three themes and linking them to sidebar `tag:...` filtering.
+  - **Command Palette Advanced Filters & Instant Create**: Added support for `tag:<name>`, `type:<type>`, `attr:<key>=<val>`, and full-text description/attribute search in `CommandPalette.tsx`. Implemented instant creation syntax (`+<type> <name>` or `new <type> <name>`, e.g. `+character Aragorn`) that spawns and opens named drafts in one stroke.
+  - **WorldMap Validation**: Confirmed marker placement and ley-line connections use theme-aware portaled modals with zero `window.prompt()` usage.
+
 - **P0 Fixes — Backlinks Symmetry & Dual Event Date Surface De-duplication** (this commit):
   - **Backlinks Symmetry**: Updated `backlinkUtils.ts` to properly scan and categorize Character relations (`pairedCurrentLocationNew`, `pairedOriginLocationNew`, `pairedDemiseLocationNew`, `pairedRace`, `pairedProfession`, `pairedSkills`), Location (`livingCharacterIds`, `originatedCharacterIds`, `deceasedCharacterIds`, `succeedingLocationIds`, `precedingLocationIds`), Species (`pairedCharacter`), Occupation (`pairedCharacter`), Ability (`pairedCharacterSkills`), and Item.
   - **Type Isolation**: Fixed critical bug where non-event entities with `pairedCharacter` were erroneously pushed into `results.events`.

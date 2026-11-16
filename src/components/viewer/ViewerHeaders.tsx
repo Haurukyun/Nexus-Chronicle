@@ -120,6 +120,18 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                         {isDead && <span className="text-rose-500/80 select-none font-normal" title="Fallen / Deceased">†</span>}
                     </h1>
                     {entity.otherNames && <p className="text-slate-500 text-2xl font-serif italic opacity-60">"{entity.otherNames}"</p>}
+                    {entity.tags && entity.tags.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                            {entity.tags.map((tag, idx) => (
+                                <span
+                                    key={idx}
+                                    className="px-2 py-0.5 rounded-md text-[9px] font-mono font-bold tracking-wider bg-slate-800/80 border border-slate-700/60 text-slate-300"
+                                >
+                                    #{tag}
+                                </span>
+                            ))}
+                        </div>
+                    )}
                 </div>
                 <div className="flex items-center gap-4 shrink-0">
                     <ExportDropdown entity={entity} allEntities={allEntities} theme="sovereign" />
@@ -177,6 +189,18 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
                     {isDead && <span className="text-rose-600/70 select-none" title="Deceased">†</span>}
                 </h1>
                 {entity.otherNames && <p className="text-[#854d0e] text-lg font-serif italic mt-1">"{entity.otherNames}"</p>}
+                {entity.tags && entity.tags.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1 mt-2">
+                        {entity.tags.map((tag, idx) => (
+                            <span
+                                key={idx}
+                                className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-[#eae4d3] border border-[#d4c8af] text-[#475569]"
+                            >
+                                #{tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
             </div>
             <div className="flex items-center gap-3 pb-2 shrink-0">
                 <ExportDropdown
@@ -237,6 +261,18 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                     {isDead && <span className="text-[#70121e]/80 select-none" title="Fallen / Deceased">†</span>}
                 </h1>
                 {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1">"{entity.otherNames}"</p>}
+                {entity.tags && entity.tags.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                        {entity.tags.map((tag, idx) => (
+                            <span
+                                key={idx}
+                                className="px-2 py-0.5 rounded text-[9px] font-serif font-bold tracking-wider bg-[#ede0c4] border border-[#c8a96e]/50 text-[#70121e]"
+                            >
+                                #{tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
             </div>
             <div className="flex items-center gap-3">
                 <ExportDropdown
