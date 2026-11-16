@@ -85,9 +85,9 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <LinksDisplay label="Characters Born Here" ids={loc.originatedCharacterIds} all={allEntities} onNav={onNavigate} />
-                <LinksDisplay label="Current Residents" ids={[...new Set([...(loc.livingCharacterIds || []), ...(backlinks?.residents || [])])]} all={allEntities} onNav={onNavigate} />
-                <LinksDisplay label="Historical Figures (Lost Here)" ids={[...new Set([...(loc.deceasedCharacterIds || []), ...(backlinks?.passedHere || [])])]} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Characters Born Here" ids={[...new Set([...(loc.originatedCharacterIds || []), ...(loc.pairedOriginCharactersNew || []), ...(backlinks?.natives || [])])]} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Current Residents" ids={[...new Set([...(loc.livingCharacterIds || []), ...(loc.pairedCurrentCharactersNew || []), ...(backlinks?.residents || [])])]} all={allEntities} onNav={onNavigate} />
+                <LinksDisplay label="Historical Figures (Lost Here)" ids={[...new Set([...(loc.deceasedCharacterIds || []), ...(loc.pairedDemiseCharactersNew || []), ...(backlinks?.passedHere || [])])]} all={allEntities} onNav={onNavigate} />
                 <LinksDisplay label="Neighbouring Lands" ids={loc.neighbouringLocationIds} all={allEntities} onNav={onNavigate} />
                 <LinksDisplay label="Internal Points of Interest" ids={backlinks?.containedIn || []} all={allEntities} onNav={onNavigate} />
                 <LinksDisplay label="Governing Authorities" ids={Object.values(loc.governingGroupConnections || {}).flatMap((g: any) => g.connectedTo || [])} all={allEntities} onNav={onNavigate} wikiStyle="tag" />

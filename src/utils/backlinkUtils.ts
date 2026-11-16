@@ -63,23 +63,23 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
         if (entity.relativeIds?.includes(targetId) || asAny.relativesOfCharacter?.includes(targetId)) results.relatives.push(entity.id);
         if (entity.complicatedWithIds?.includes(targetId) || asAny.complicatedResCharacter?.includes(targetId)) results.complicated.push(entity.id);
         
-        if (entity.loreNoteIds?.includes(targetId) || asAny.pairedConnectedNotes?.includes(targetId)) results.lore.push(entity.id);
-        if (entity.mythIds?.includes(targetId) || asAny.pairedConnectedMyths?.includes(targetId) || asAny.pairedMyths?.includes(targetId)) results.myths.push(entity.id);
-        if (entity.eventIds?.includes(targetId) || asAny.pairedEvent?.includes(targetId) || asAny.pairedEvents?.includes(targetId)) results.events.push(entity.id);
-        if (entity.locationIds?.includes(targetId) || asAny.pairedConnectedPlaces?.includes(targetId) || asAny.pairedLocations?.includes(targetId)) results.locations.push(entity.id);
-        if (entity.cultureIds?.includes(targetId) || asAny.relatedCultures?.includes(targetId)) results.cultures.push(entity.id);
+        if (entity.loreNoteIds?.includes(targetId) || asAny.pairedConnectedNotes?.includes(targetId) || asAny.pairedConnectedNote?.includes(targetId)) results.lore.push(entity.id);
+        if (entity.mythIds?.includes(targetId) || asAny.pairedConnectedMyths?.includes(targetId) || asAny.pairedMyths?.includes(targetId) || asAny.pairedOtherMyths?.includes(targetId)) results.myths.push(entity.id);
+        if (entity.eventIds?.includes(targetId) || asAny.pairedEvent?.includes(targetId) || asAny.pairedEvents?.includes(targetId) || asAny.connectedEvents?.includes(targetId)) results.events.push(entity.id);
+        if (entity.locationIds?.includes(targetId) || asAny.pairedConnectedPlaces?.includes(targetId) || asAny.pairedLocations?.includes(targetId) || asAny.connectedLocations?.includes(targetId) || asAny.neighbourLocations?.includes(targetId) || asAny.neighbouringLocationIds?.includes(targetId) || asAny.otherConnectedLocationIds?.includes(targetId)) results.locations.push(entity.id);
+        if (entity.cultureIds?.includes(targetId) || asAny.relatedCultures?.includes(targetId) || asAny.localCultureIds?.includes(targetId)) results.cultures.push(entity.id);
 
         if (entity.parentId === targetId || entity.belongsUnderId === targetId || entity.parentDoc?.includes(targetId)) results.containedIn.push(entity.id);
 
         // Lineage & Historical Succession
-        if (asAny.succedingLocations?.includes(targetId)) results.predecessors.push(entity.id);
-        if (asAny.preceedingLocations?.includes(targetId)) results.successors.push(entity.id);
+        if (asAny.succedingLocations?.includes(targetId) || asAny.succeedingLocationIds?.includes(targetId) || asAny.succeedingLocations?.includes(targetId)) results.predecessors.push(entity.id);
+        if (asAny.preceedingLocations?.includes(targetId) || asAny.precedingLocationIds?.includes(targetId) || asAny.precedingLocations?.includes(targetId)) results.successors.push(entity.id);
         if (asAny.evolvedIntoRaces?.includes(targetId)) results.predecessors.push(entity.id);
         if (asAny.evolvedFromRaces?.includes(targetId)) results.successors.push(entity.id);
         if (asAny.followingLanguages?.includes(targetId)) results.predecessors.push(entity.id);
         if (asAny.predecessorLanguages?.includes(targetId)) results.successors.push(entity.id);
-        if (asAny.succedingCultures?.includes(targetId)) results.predecessors.push(entity.id);
-        if (asAny.preceedingCultures?.includes(targetId)) results.successors.push(entity.id);
+        if (asAny.succedingCultures?.includes(targetId) || asAny.succeedingCultures?.includes(targetId)) results.predecessors.push(entity.id);
+        if (asAny.preceedingCultures?.includes(targetId) || asAny.precedingCultures?.includes(targetId)) results.successors.push(entity.id);
         if (asAny.succedingPolGroup?.includes(targetId) || asAny.succedingOtherGroup?.includes(targetId) || asAny.succedingRelGroup?.includes(targetId) || asAny.succedingMagicGroup?.includes(targetId) || asAny.succedingTechGroup?.includes(targetId)) {
             results.predecessors.push(entity.id);
         }
@@ -166,6 +166,47 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
             if (charConnected.includes(targetId)) results.referencedIn.push(entity.id);
         }
 
+        // Location specific connections
+        if (entity.type === 'location') {
+            const loc = entity as any;
+            if (loc.livingCharacterIds?.includes(targetId) || loc.pairedCurrentCharactersNew?.includes(targetId)) results.residents.push(entity.id);
+            if (loc.originatedCharacterIds?.includes(targetId) || loc.pairedOriginCharactersNew?.includes(targetId)) results.natives.push(entity.id);
+            if (loc.deceasedCharacterIds?.includes(targetId) || loc.pairedDemiseCharactersNew?.includes(targetId)) results.passedHere.push(entity.id);
+            if (loc.connectedCharacterIds?.includes(targetId) || loc.pairedConnectedCharacter?.includes(targetId)) results.referencedIn.push(entity.id);
+            if (loc.localSpeciesIds?.includes(targetId) || loc.pairedConnectedRaces?.includes(targetId)) results.members.push(entity.id);
+            if (loc.commonOccupationIds?.includes(targetId) || loc.connectedProfessions?.includes(targetId)) results.practitioners.push(entity.id);
+        }
+
+        // Species specific connections
+        if (entity.type === 'species') {
+            const spec = entity as any;
+            if (spec.pairedCharacter?.includes(targetId)) results.members.push(entity.id);
+            if (spec.relatedRaces?.includes(targetId)) results.relatives.push(entity.id);
+            if (spec.pairedConnectedPlaces?.includes(targetId)) results.locations.push(entity.id);
+            if (spec.commonProfessions?.includes(targetId)) results.practitioners.push(entity.id);
+        }
+
+        // Occupation specific connections
+        if (entity.type === 'occupation') {
+            const occ = entity as any;
+            if (occ.pairedCharacter?.includes(targetId)) results.practitioners.push(entity.id);
+            if (occ.relatedProfessions?.includes(targetId)) results.relatives.push(entity.id);
+            if (occ.connectedLocations?.includes(targetId)) results.locations.push(entity.id);
+            if (occ.commonRaces?.includes(targetId)) results.members.push(entity.id);
+        }
+
+        // Ability / Skill specific connections
+        if (entity.type === 'ability') {
+            const ab = entity as any;
+            if (ab.pairedCharacterSkills?.includes(targetId) || ab.pairedCharacter?.includes(targetId)) results.practitioners.push(entity.id);
+        }
+
+        // Item specific connections
+        if (entity.type === 'item') {
+            const item = entity as any;
+            if (item.pairedConnectedCharacter?.includes(targetId) || item.pairedCharacter?.includes(targetId)) results.referencedIn.push(entity.id);
+        }
+
         // Group Connections (Deep scan across standard structure)
         if (entity.groupConnections && typeof entity.groupConnections === 'object') {
             try {
@@ -187,8 +228,11 @@ export function getCategorizedBacklinks(targetId: string, allEntities: WorldEnti
         }
 
         // Event specific
-        if ((entity as any).involvedEntityIds?.includes(targetId) || (entity as any).pairedCharacter?.includes(targetId)) results.events.push(entity.id);
-        if ((entity as any).locationId === targetId || (entity as any).pairedLocations?.includes(targetId)) results.locations.push(entity.id);
+        if (entity.type === 'event') {
+            const ev = entity as any;
+            if (ev.involvedEntityIds?.includes(targetId) || ev.pairedCharacter?.includes(targetId)) results.events.push(entity.id);
+            if (ev.locationId === targetId || ev.pairedLocations?.includes(targetId)) results.locations.push(entity.id);
+        }
     });
 
     results.allies = [...results.friends];

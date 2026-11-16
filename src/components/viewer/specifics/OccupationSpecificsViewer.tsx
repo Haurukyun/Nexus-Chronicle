@@ -21,7 +21,7 @@ export const OccupationSpecificsViewer: React.FC<Props> = ({ entity, allEntities
                     <FieldRow label="Description & History" value={entity.description} />
                     <div className="col-span-full mt-4 space-y-4 border-t border-slate-800/60 pt-4">
                         <LinksDisplay label="Related Occupations/Classes" ids={entity.relatedProfessions || []} all={allEntities} onNav={onNavigate} />
-                        <LinksDisplay label="Characters of the Occupation/Class" ids={entity.pairedCharacter || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Characters of the Occupation/Class" ids={[...new Set([...(entity.pairedCharacter || []), ...(backlinks?.practitioners || [])])]} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Common Species/Races/Flora/Fauna" ids={entity.commonRaces || []} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Connected to Lore notes/Other notes" ids={entity.pairedConnectedNotes || []} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Connected to Locations/Geography" ids={entity.connectedLocations || []} all={allEntities} onNav={onNavigate} />

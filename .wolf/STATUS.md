@@ -12,6 +12,14 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **P0 Fixes — Backlinks Symmetry & Dual Event Date Surface De-duplication** (this commit):
+  - **Backlinks Symmetry**: Updated `backlinkUtils.ts` to properly scan and categorize Character relations (`pairedCurrentLocationNew`, `pairedOriginLocationNew`, `pairedDemiseLocationNew`, `pairedRace`, `pairedProfession`, `pairedSkills`), Location (`livingCharacterIds`, `originatedCharacterIds`, `deceasedCharacterIds`, `succeedingLocationIds`, `precedingLocationIds`), Species (`pairedCharacter`), Occupation (`pairedCharacter`), Ability (`pairedCharacterSkills`), and Item.
+  - **Type Isolation**: Fixed critical bug where non-event entities with `pairedCharacter` were erroneously pushed into `results.events`.
+  - **Viewer Integration**: Updated `LocationSpecificsViewer`, `SpeciesSpecificsViewer`, and `OccupationSpecificsViewer` to merge backlinks into their respective displays (natives, residents, passed here, members, and practitioners).
+  - **Event Date Surface De-duplication**: Removed redundant `FormInput` rows in `EventSpecifics.tsx`. Added direct text input with one-click clear button (`X`) directly in `FantasyDatePicker.tsx` for the active target, allowing seamless point/span toggling and date editing without duplicated inputs.
+  - **Loop Immunity**: Hardened `detectCalendarForDate` in `FantasyDatePicker.tsx` to prioritize `defaultCal` when already matching, eliminating any oscillation risk.
+  - **Test Suite**: Added `src/utils/backlinkUtils.test.ts` (4 new tests, 55/55 passing).
+
 - **Chronos Timeline — Point vs Span Events & Annual Calendar Integration** (this session):
   - **P0 Fix**: Events with only `startDate` (no `endDate`) now render as diamond markers at exact year position — point-in-time events (battles, coronations, festivals). Events with both `startDate` and `endDate` render as ribbons. Added `isPointEvent` to `ProcessedTimelineItem`. Updated quick-create to set only `startDate` (no legacy `date` field).
   - **P0 Fix**: Annual Calendar View now fully integrated with events. Extended `AnnualCalendarViewProps` with `events[]`, `onEventClick`, `onDayClick`, `displayYear`, `onYearChange`. Day grid shows event dots; clicking navigates to timeline/codex; clicking empty day triggers quick-create with fantasy date.

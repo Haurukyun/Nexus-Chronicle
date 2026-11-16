@@ -34,18 +34,6 @@ export const EventSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate,
         <>
             <EditorGroup title="Basic" icon={Info}>
                 <FormInput label="Event type" value={entity.eventType || ""} onChange={(v: string) => onUpdate({ ...entity, eventType: v })} />
-                <FormInput 
-                    label="Start date" 
-                    value={entity.startDate || ""} 
-                    onChange={(v: string) => onUpdate({ ...entity, startDate: v })}
-                    placeholder={calendar?.months?.[0] ? `e.g. 15 ${calendar.months[0].name}, 1492` : "e.g. 1492"}
-                />
-                <FormInput 
-                    label="End date" 
-                    value={entity.endDate || ""} 
-                    onChange={(v: string) => onUpdate({ ...entity, endDate: v })}
-                    placeholder={calendar?.months?.[0] ? `e.g. 20 ${calendar.months[0].name}, 1495` : "e.g. 1495"}
-                />
 
                 {/* ── DEDICATED DATE COMPOSER & CALENDAR SYSTEM CONVERTER ── */}
                 <FantasyDatePicker

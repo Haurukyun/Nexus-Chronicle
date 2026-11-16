@@ -25,7 +25,7 @@ export const SpeciesSpecificsViewer: React.FC<Props> = ({ entity, allEntities, o
                         <LinksDisplay label="Related Species/Races/Flora/Fauna" ids={entity.relatedRaces || []} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Evolved into Species/Races/Flora/Fauna" ids={entity.evolvedIntoRaces || []} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Evolved from Species/Races/Flora/Fauna" ids={entity.evolvedFromRaces || []} all={allEntities} onNav={onNavigate} />
-                        <LinksDisplay label="Characters of Species/Races/Flora/Fauna" ids={entity.pairedCharacter || []} all={allEntities} onNav={onNavigate} />
+                        <LinksDisplay label="Characters of Species/Races/Flora/Fauna" ids={[...new Set([...(entity.pairedCharacter || []), ...(backlinks?.members || [])])]} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Inhabited Locations" ids={entity.pairedConnectedPlaces || []} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Common Occupations/Classes" ids={entity.commonProfessions || []} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />

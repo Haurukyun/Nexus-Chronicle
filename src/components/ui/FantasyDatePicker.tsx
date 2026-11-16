@@ -121,9 +121,20 @@ function detectCalendarForDate(
     calendars: CalendarOption[],
     defaultCal: FantasyCalendar
 ): FantasyCalendar {
-    if (!dateStr || !dateStr.trim()) return defaultCal;
+    if (!dateStr || !dateStr.trim() || !defaultCal) return defaultCal;
     const lower = dateStr.toLowerCase();
 
+    // 1. If currently selected/default calendar already matches, do NOT switch away
+    if (defaultCal.months) {
+        for (const m of defaultCal.months) {
+            if (lower.includes(m.name.toLowerCase()) || 
+                (m.abbreviation && new RegExp(`\\b${m.abbreviation}\\b`, 'i').test(lower))) {
+                return defaultCal;
+            }
+        }
+    }
+
+    // 2. Otherwise search across other calendars
     for (const opt of calendars) {
         for (const m of opt.calendar.months) {
             if (lower.includes(m.name.toLowerCase()) || 
@@ -478,6 +489,36 @@ export const FantasyDatePicker: React.FC<FantasyDatePickerProps> = ({
                             </button>
                         </div>
                     )}
+                </div>
+
+                {/* ── Active Target Date Direct Input / Clear Bar ── */}
+                <div className="flex items-center gap-2 px-1">
+                    <span className="text-[10px] uppercase font-bold tracking-wider opacity-60 shrink-0">
+                        {isDualDate ? (activeTarget === 'start' ? 'Start Date:' : 'End Date:') : 'Date:'}
+                    </span>
+                    <div className="relative flex-1 flex items-center">
+                        <input
+                            type="text"
+                            value={effectiveTargetDate}
+                            placeholder={isDualDate && activeTarget === 'end' ? "e.g. 20 Morning Star, 1495 (leave blank for single-point event)" : "e.g. 15 Morning Star, 1492"}
+                            onChange={(e) => handleUpdateTargetDate(e.target.value)}
+                            className="w-full text-xs font-mono font-semibold px-3 py-1.5 pr-8 rounded-xl border bg-black/10 focus:outline-none transition-all"
+                            style={{
+                                borderColor: `${accentColor}30`,
+                                color: isLight ? '#1c140d' : '#f8fafc'
+                            }}
+                        />
+                        {effectiveTargetDate && (
+                            <button
+                                type="button"
+                                onClick={() => handleUpdateTargetDate('')}
+                                className="absolute right-2 text-slate-400 hover:text-rose-400 p-0.5 rounded cursor-pointer transition-colors"
+                                title={isDualDate && activeTarget === 'end' ? "Clear end date (converts back to single point event)" : "Clear date"}
+                            >
+                                <X size={13} />
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* ── Middle Controls: Day Stepper + Year Stepper + Month Chips ── */}
