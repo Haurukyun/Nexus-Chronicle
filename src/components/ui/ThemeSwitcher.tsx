@@ -61,20 +61,20 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 border ${
+                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-200 border cursor-pointer active:scale-95 ${
                     theme === 'royal-codex'
-                        ? 'bg-[#f3ebd9] text-[#881337] border-[#d97706]/40 hover:bg-[#ebdcb9]'
+                        ? 'bg-[#70121e]/5 hover:bg-[#70121e]/15 text-[#70121e] border-[#c8a96e]/40 hover:border-[#70121e] shadow-sm font-serif'
                         : theme === 'wiki'
-                        ? 'bg-[#f5e6d3] text-[#b91c1c] border-[#d4c8af] hover:bg-[#ead9c1]'
+                        ? 'bg-black/[0.03] hover:bg-black/[0.07] text-slate-700 hover:text-slate-950 border-[#d4c8af]/80 hover:border-red-400 shadow-sm'
                         : theme === 'grand-voyager'
-                        ? 'bg-[#0a2033] text-[#2dd4bf] border-[#1d4866] hover:bg-[#0e2c45] shadow-teal-950/40'
-                        : 'bg-slate-900/80 text-yellow-400 border-slate-700 hover:bg-slate-800'
+                        ? 'bg-white/[0.03] hover:bg-[#2dd4bf]/15 text-[#2dd4bf] border-teal-500/20 hover:border-[#2dd4bf]/50'
+                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.06] hover:border-[#fef08a]/30'
                 }`}
                 title="Switch Application Theme"
             >
-                <Palette size={14} className="animate-pulse" />
-                {!compact && <span>{currentOption.label}</span>}
-                <span className="text-[9px] opacity-60">▼</span>
+                <Palette size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                {!compact && <span className="font-medium">{currentOption.label}</span>}
+                <span className="text-[8px] opacity-40 group-hover:opacity-80 transition-opacity ml-0.5">▼</span>
             </button>
 
             {isOpen && (

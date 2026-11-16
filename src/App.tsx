@@ -242,77 +242,82 @@ const App = () => {
                             })}
                         </div>
 
-                        {/* Header Action Tools — Ultra-Premium Glassmorphic Toolbar */}
-                        <div className="flex items-center gap-2 shrink-0" data-interactive-ui="true">
+                        {/* Header Action Tools — Ultra-Modern Sleek Glassmorphic Toolbar */}
+                        <div className="flex items-center gap-1 p-1 rounded-full border shrink-0 backdrop-blur-xl transition-all"
+                            style={{
+                                backgroundColor: theme === 'royal-codex' ? 'rgba(251, 248, 239, 0.85)'
+                                               : theme === 'wiki' ? 'rgba(255, 255, 255, 0.9)'
+                                               : theme === 'grand-voyager' ? 'rgba(18, 10, 5, 0.75)'
+                                               : 'rgba(10, 15, 26, 0.65)',
+                                borderColor: theme === 'royal-codex' ? 'rgba(200, 169, 110, 0.45)'
+                                           : theme === 'wiki' ? 'rgba(212, 200, 175, 0.8)'
+                                           : theme === 'grand-voyager' ? 'rgba(45, 212, 191, 0.25)'
+                                           : 'rgba(255, 255, 255, 0.08)',
+                                boxShadow: theme === 'royal-codex' ? '0 4px 20px rgba(112, 18, 30, 0.06)'
+                                         : theme === 'wiki' ? '0 4px 16px rgba(0, 0, 0, 0.05)'
+                                         : theme === 'grand-voyager' ? '0 8px 32px rgba(0, 0, 0, 0.5)'
+                                         : '0 8px 30px rgba(0, 0, 0, 0.5)'
+                            }}
+                            data-interactive-ui="true"
+                        >
                             {/* Jump / Command Palette */}
                             <button
                                 onClick={() => setShowCommandPalette(true)}
                                 title="Command Palette & Fast Search (Ctrl+K)"
-                                className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-[14px] text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
+                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-200 border cursor-pointer active:scale-95 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-gradient-to-br from-[#fbf8ef]/95 via-[#f5ead0]/90 to-[#ede2cc]/85 text-[#2b1810] border border-[#c8a96e]/50 shadow-[0_2px_8px_rgba(112,18,30,0.08),0_8px_24px_rgba(112,18,30,0.06)] hover:shadow-[0_4px_16px_rgba(112,18,30,0.12),0_12px_32px_rgba(112,18,30,0.1),inset_0_1px_0_rgba(200,169,110,0.3)] active:shadow-[0_1px_4px_rgba(112,18,30,0.1)] active:scale-[0.98]'
+                                        ? 'bg-[#70121e]/5 hover:bg-[#70121e]/15 text-[#70121e] border-[#c8a96e]/40 hover:border-[#70121e] shadow-sm font-serif'
                                         : theme === 'wiki'
-                                        ? 'bg-gradient-to-br from-white/95 via-[#fdfcf0]/90 to-[#f5e6d3]/85 text-[#1a1a1a] border border-[#d4c8af]/50 shadow-[0_2px_8px_rgba(185,28,28,0.06),0_8px_24px_rgba(185,28,28,0.04)] hover:shadow-[0_4px_16px_rgba(185,28,28,0.1),0_12px_32px_rgba(185,28,28,0.08),inset_0_1px_0_rgba(212,200,175,0.4)] active:shadow-[0_1px_4px_rgba(185,28,28,0.08)] active:scale-[0.98]'
+                                        ? 'bg-black/[0.03] hover:bg-black/[0.07] text-slate-700 hover:text-slate-950 border-[#d4c8af]/80 hover:border-red-400 shadow-sm'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-gradient-to-br from-[#fef8e8]/95 via-[#fdf4dc]/90 to-[#f5e8b8]/85 text-[#1e0e04] border border-[#c8a040]/50 shadow-[0_2px_8px_rgba(0,120,136,0.08),0_8px_24px_rgba(0,120,136,0.06)] hover:shadow-[0_4px_16px_rgba(0,120,136,0.12),0_12px_32px_rgba(0,120,136,0.1),inset_0_1px_0_rgba(200,160,64,0.3)] active:shadow-[0_1px_4px_rgba(0,120,136,0.1)] active:scale-[0.98]'
-                                        : 'bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/70 text-[#fef08a] border border-slate-700/50 shadow-[0_2px_8px_rgba(254,240,138,0.06),0_8px_24px_rgba(254,240,138,0.04)] hover:shadow-[0_4px_16px_rgba(254,240,138,0.1),0_12px_32px_rgba(254,240,138,0.08),inset_0_1px_0_rgba(254,240,138,0.15)] active:shadow-[0_1px_4px_rgba(254,240,138,0.08)] active:scale-[0.98]'
-                                } backdrop-blur-2xl`}
+                                        ? 'bg-white/[0.03] hover:bg-[#2dd4bf]/15 text-[#2dd4bf] border-teal-500/20 hover:border-[#2dd4bf]/50'
+                                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.06] hover:border-[#fef08a]/30'
+                                }`}
                             >
-                                {/* Multi-layer glass depth */}
-                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
-                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-t from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                {/* Animated border highlight */}
-                                <div className="absolute inset-0 rounded-[14px] border border-transparent pointer-events-none group-hover:border-white/30 transition-colors duration-300" />
-                                <div className="relative flex items-center gap-2 z-10">
-                                    <Search size={13} className="transition-transform duration-200 group-hover:scale-110 drop-shadow-sm" />
-                                    <span className="hidden md:inline">Jump</span>
-                                    <kbd className="hidden lg:inline text-[7px] font-mono opacity-50 ml-0.5 px-1.5 py-0.5 rounded bg-black/5 backdrop-blur-sm border border-current/10 transition-all group-hover:bg-current/10 group-hover:border-current/20">Ctrl+K</kbd>
-                                </div>
+                                <Search size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                <span className="hidden md:inline font-medium">Jump</span>
+                                <kbd className="hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400 border border-white/[0.06]">Ctrl+K</kbd>
                             </button>
+
                             {/* Scratchpad / Lore Journal */}
                             <button
                                 onClick={() => setShowScratchpad(true)}
                                 title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-[14px] text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
+                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-200 border cursor-pointer active:scale-95 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-gradient-to-br from-[#fbf8ef]/95 via-[#f5ead0]/90 to-[#ede2cc]/85 text-[#2b1810] border border-[#c8a96e]/50 shadow-[0_2px_8px_rgba(112,18,30,0.08),0_8px_24px_rgba(112,18,30,0.06)] hover:shadow-[0_4px_16px_rgba(112,18,30,0.12),0_12px_32px_rgba(112,18,30,0.1),inset_0_1px_0_rgba(200,169,110,0.3)] active:shadow-[0_1px_4px_rgba(112,18,30,0.1)] active:scale-[0.98]'
+                                        ? 'bg-[#70121e]/5 hover:bg-[#70121e]/15 text-[#70121e] border-[#c8a96e]/40 hover:border-[#70121e] shadow-sm font-serif'
                                         : theme === 'wiki'
-                                        ? 'bg-gradient-to-br from-white/95 via-[#fdfcf0]/90 to-[#f5e6d3]/85 text-[#1a1a1a] border border-[#d4c8af]/50 shadow-[0_2px_8px_rgba(185,28,28,0.06),0_8px_24px_rgba(185,28,28,0.04)] hover:shadow-[0_4px_16px_rgba(185,28,28,0.1),0_12px_32px_rgba(185,28,28,0.08),inset_0_1px_0_rgba(212,200,175,0.4)] active:shadow-[0_1px_4px_rgba(185,28,28,0.08)] active:scale-[0.98]'
+                                        ? 'bg-black/[0.03] hover:bg-black/[0.07] text-slate-700 hover:text-slate-950 border-[#d4c8af]/80 hover:border-red-400 shadow-sm'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-gradient-to-br from-[#fef8e8]/95 via-[#fdf4dc]/90 to-[#f5e8b8]/85 text-[#1e0e04] border border-[#c8a040]/50 shadow-[0_2px_8px_rgba(0,120,136,0.08),0_8px_24px_rgba(0,120,136,0.06)] hover:shadow-[0_4px_16px_rgba(0,120,136,0.12),0_12px_32px_rgba(0,120,136,0.1),inset_0_1px_0_rgba(200,160,64,0.3)] active:shadow-[0_1px_4px_rgba(0,120,136,0.1)] active:scale-[0.98]'
-                                        : 'bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/70 text-[#fef08a] border border-slate-700/50 shadow-[0_2px_8px_rgba(254,240,138,0.06),0_8px_24px_rgba(254,240,138,0.04)] hover:shadow-[0_4px_16px_rgba(254,240,138,0.1),0_12px_32px_rgba(254,240,138,0.08),inset_0_1px_0_rgba(254,240,138,0.15)] active:shadow-[0_1px_4px_rgba(254,240,138,0.08)] active:scale-[0.98]'
-                                } backdrop-blur-2xl`}
+                                        ? 'bg-white/[0.03] hover:bg-[#2dd4bf]/15 text-[#2dd4bf] border-teal-500/20 hover:border-[#2dd4bf]/50'
+                                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.06] hover:border-[#fef08a]/30'
+                                }`}
                             >
-                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
-                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-t from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <div className="absolute inset-0 rounded-[14px] border border-transparent pointer-events-none group-hover:border-white/30 transition-colors duration-300" />
-                                <div className="relative flex items-center gap-2 z-10">
-                                    <BookMarked size={13} className="transition-transform duration-200 group-hover:scale-110 drop-shadow-sm" />
-                                    <span className="hidden sm:inline">Scratchpad</span>
-                                </div>
+                                <BookMarked size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                <span className="hidden sm:inline font-medium">Scratchpad</span>
                             </button>
+
                             {/* Keybinds / Grimoire */}
                             <button
                                 onClick={() => setShowKeybindsModal(true)}
                                 title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                className={`group relative flex items-center gap-2 px-4 py-2.5 rounded-[14px] text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${
+                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-200 border cursor-pointer active:scale-95 ${
                                     theme === 'royal-codex'
-                                        ? 'bg-gradient-to-br from-[#fbf8ef]/95 via-[#f5ead0]/90 to-[#ede2cc]/85 text-[#2b1810] border border-[#c8a96e]/50 shadow-[0_2px_8px_rgba(112,18,30,0.08),0_8px_24px_rgba(112,18,30,0.06)] hover:shadow-[0_4px_16px_rgba(112,18,30,0.12),0_12px_32px_rgba(112,18,30,0.1),inset_0_1px_0_rgba(200,169,110,0.3)] active:shadow-[0_1px_4px_rgba(112,18,30,0.1)] active:scale-[0.98]'
+                                        ? 'bg-[#70121e]/5 hover:bg-[#70121e]/15 text-[#70121e] border-[#c8a96e]/40 hover:border-[#70121e] shadow-sm font-serif'
                                         : theme === 'wiki'
-                                        ? 'bg-gradient-to-br from-white/95 via-[#fdfcf0]/90 to-[#f5e6d3]/85 text-[#1a1a1a] border border-[#d4c8af]/50 shadow-[0_2px_8px_rgba(185,28,28,0.06),0_8px_24px_rgba(185,28,28,0.04)] hover:shadow-[0_4px_16px_rgba(185,28,28,0.1),0_12px_32px_rgba(185,28,28,0.08),inset_0_1px_0_rgba(212,200,175,0.4)] active:shadow-[0_1px_4px_rgba(185,28,28,0.08)] active:scale-[0.98]'
+                                        ? 'bg-black/[0.03] hover:bg-black/[0.07] text-slate-700 hover:text-slate-950 border-[#d4c8af]/80 hover:border-red-400 shadow-sm'
                                         : theme === 'grand-voyager'
-                                        ? 'bg-gradient-to-br from-[#fef8e8]/95 via-[#fdf4dc]/90 to-[#f5e8b8]/85 text-[#1e0e04] border border-[#c8a040]/50 shadow-[0_2px_8px_rgba(0,120,136,0.08),0_8px_24px_rgba(0,120,136,0.06)] hover:shadow-[0_4px_16px_rgba(0,120,136,0.12),0_12px_32px_rgba(0,120,136,0.1),inset_0_1px_0_rgba(200,160,64,0.3)] active:shadow-[0_1px_4px_rgba(0,120,136,0.1)] active:scale-[0.98]'
-                                        : 'bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/70 text-[#fef08a] border border-slate-700/50 shadow-[0_2px_8px_rgba(254,240,138,0.06),0_8px_24px_rgba(254,240,138,0.04)] hover:shadow-[0_4px_16px_rgba(254,240,138,0.1),0_12px_32px_rgba(254,240,138,0.08),inset_0_1px_0_rgba(254,240,138,0.15)] active:shadow-[0_1px_4px_rgba(254,240,138,0.08)] active:scale-[0.98]'
-                                } backdrop-blur-2xl`}
+                                        ? 'bg-white/[0.03] hover:bg-[#2dd4bf]/15 text-[#2dd4bf] border-teal-500/20 hover:border-[#2dd4bf]/50'
+                                        : 'bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.06] hover:border-[#fef08a]/30'
+                                }`}
                             >
-                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
-                                <div className="absolute inset-0 rounded-[14px] bg-gradient-to-t from-white/10 via-transparent to-white/5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                <div className="absolute inset-0 rounded-[14px] border border-transparent pointer-events-none group-hover:border-white/30 transition-colors duration-300" />
-                                <div className="relative flex items-center gap-2 z-10">
-                                    <Keyboard size={13} className="transition-transform duration-200 group-hover:scale-110 drop-shadow-sm" />
-                                    <span className="hidden sm:inline">Keybinds</span>
-                                </div>
+                                <Keyboard size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                <span className="hidden sm:inline font-medium">Keybinds</span>
                             </button>
+
+                            {/* Subtle separator */}
+                            <div className="w-px h-3.5 mx-0.5 opacity-20 bg-current shrink-0" />
+
                             <ThemeSwitcher theme={theme} setTheme={setTheme} />
                         </div>
                     </div>
