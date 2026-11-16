@@ -2070,44 +2070,117 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             const isItemHovered = hoveredRibbonItem?.item.id === item.id;
                             const isItemInspected = inspectedItem?.id === item.id;
                             const itemColor = item.color || '#f59e0b';
+                            const isSpanEvent = !item.isPointEvent && item.end > item.start;
+                            const endPct = isSpanEvent ? Math.min(((item.end - minYear) / yearSpan) * 100, 100) : leftPct;
+                            const durationYears = item.end - item.start;
                             return (
-                                <div
-                                    key={`rail-anchor-${item.id}`}
-                                    className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer group z-20 flex flex-col items-center"
-                                    style={{ left: `${leftPct}%` }}
-                                    onClick={(e) => { e.stopPropagation(); handleSelectRibbon(item); }}
-                                    title={`${item.name} (${item.start}${item.end !== item.start ? `–${item.end}` : ''}) — Click to focus`}
-                                >
-                                    {/* Luminous Axis Pip */}
-                                    <div
-                                        className={`transition-all duration-200 ${
-                                            isItemHovered || isItemInspected
-                                                ? 'w-3 h-3 rounded-sm rotate-45 ring-2 ring-white shadow-lg scale-125'
-                                                : 'w-2 h-2 rounded-full opacity-60 group-hover:opacity-100 group-hover:scale-125'
-                                        }`}
-                                        style={{
-                                            backgroundColor: itemColor,
-                                            boxShadow: isItemHovered || isItemInspected
-                                                ? `0 0 12px ${itemColor}, 0 0 20px ${itemColor}80`
-                                                : `0 0 6px ${itemColor}60`
-                                        }}
-                                    />
-
-                                    {/* Dynamic Event Label on the Rail when Hovered or Inspected */}
-                                    {(isItemHovered || isItemInspected) && (
+                                <React.Fragment key={`rail-anchor-${item.id}`}>
+                                    {/* ── Range highlight bar between start and end pips ── */}
+                                    {isSpanEvent && (
                                         <div
-                                            className="absolute -top-7 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold whitespace-nowrap border shadow-xl pointer-events-none animate-in fade-in zoom-in-95 duration-100 z-30"
+                                            className="absolute top-1/2 -translate-y-1/2 pointer-events-none z-10 transition-all duration-200"
                                             style={{
-                                                backgroundColor: isLightCanvas ? '#ffffff' : '#080a14',
-                                                borderColor: itemColor,
-                                                color: isLightCanvas ? '#1c140d' : '#ffffff',
-                                                boxShadow: `0 4px 16px rgba(0,0,0,0.5), 0 0 10px ${itemColor}50`
+                                                left: `${leftPct}%`,
+                                                width: `${endPct - leftPct}%`,
+                                                height: isItemHovered || isItemInspected ? '5px' : '3px',
+                                                background: isItemHovered || isItemInspected
+                                                    ? `linear-gradient(90deg, ${itemColor} 0%, ${itemColor}dd 50%, ${itemColor} 100%)`
+                                                    : `linear-gradient(90deg, ${itemColor}90 0%, ${itemColor}60 50%, ${itemColor}90 100%)`,
+                                                borderRadius: '99px',
+                                                boxShadow: isItemHovered || isItemInspected
+                                                    ? `0 0 10px ${itemColor}cc, 0 0 20px ${itemColor}60`
+                                                    : `0 0 6px ${itemColor}50`,
+                                                opacity: isItemHovered || isItemInspected ? 1 : 0.6
                                             }}
+                                        />
+                                    )}
+
+                                    {/* ── Start pip ── */}
+                                    <div
+                                        className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer group z-20 flex flex-col items-center"
+                                        style={{ left: `${leftPct}%` }}
+                                        onClick={(e) => { e.stopPropagation(); handleSelectRibbon(item); }}
+                                        title={`${item.name} (${item.start}${isSpanEvent ? `–${item.end}` : ''}) — Click to focus`}
+                                    >
+                                        <div
+                                            className={`transition-all duration-200 ${
+                                                isItemHovered || isItemInspected
+                                                    ? 'w-3 h-3 rounded-sm rotate-45 ring-2 ring-white shadow-lg scale-125'
+                                                    : 'w-2 h-2 rounded-full opacity-70 group-hover:opacity-100 group-hover:scale-125'
+                                            }`}
+                                            style={{
+                                                backgroundColor: itemColor,
+                                                boxShadow: isItemHovered || isItemInspected
+                                                    ? `0 0 12px ${itemColor}, 0 0 20px ${itemColor}80`
+                                                    : `0 0 6px ${itemColor}60`
+                                            }}
+                                        />
+                                        {(isItemHovered || isItemInspected) && (
+                                            <div
+                                                className="absolute -top-7 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold whitespace-nowrap border shadow-xl pointer-events-none animate-in fade-in zoom-in-95 duration-100 z-30"
+                                                style={{
+                                                    backgroundColor: isLightCanvas ? '#ffffff' : '#080a14',
+                                                    borderColor: itemColor,
+                                                    color: isLightCanvas ? '#1c140d' : '#ffffff',
+                                                    boxShadow: `0 4px 16px rgba(0,0,0,0.5), 0 0 10px ${itemColor}50`
+                                                }}
+                                            >
+                                                {isSpanEvent ? `${item.start}` : `📍 Yr ${item.start} · ${item.name}`}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* ── End pip (span events only) ── */}
+                                    {isSpanEvent && (
+                                        <div
+                                            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer group z-20 flex flex-col items-center"
+                                            style={{ left: `${endPct}%` }}
+                                            onClick={(e) => { e.stopPropagation(); handleSelectRibbon(item); }}
+                                            title={`${item.name} — End: ${item.end}`}
                                         >
-                                            📍 Yr {item.start} · {item.name}
+                                            <div
+                                                className={`transition-all duration-200 ${
+                                                    isItemHovered || isItemInspected
+                                                        ? 'w-3 h-3 rounded-sm rotate-45 ring-2 ring-white shadow-lg scale-125'
+                                                        : 'w-2 h-2 rounded-full opacity-70 group-hover:opacity-100 group-hover:scale-125'
+                                                }`}
+                                                style={{
+                                                    backgroundColor: itemColor,
+                                                    boxShadow: isItemHovered || isItemInspected
+                                                        ? `0 0 12px ${itemColor}, 0 0 20px ${itemColor}80`
+                                                        : `0 0 6px ${itemColor}60`
+                                                }}
+                                            />
+                                            {(isItemHovered || isItemInspected) && (
+                                                <div
+                                                    className="absolute -top-7 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold whitespace-nowrap border shadow-xl pointer-events-none animate-in fade-in zoom-in-95 duration-100 z-30"
+                                                    style={{
+                                                        backgroundColor: isLightCanvas ? '#ffffff' : '#080a14',
+                                                        borderColor: itemColor,
+                                                        color: isLightCanvas ? '#1c140d' : '#ffffff',
+                                                        boxShadow: `0 4px 16px rgba(0,0,0,0.5), 0 0 10px ${itemColor}50`
+                                                    }}
+                                                >
+                                                    {`${item.end}`}
+                                                </div>
+                                            )}
+                                            {/* Duration micro-badge between the two pips */}
+                                            {(isItemHovered || isItemInspected) && (
+                                                <div
+                                                    className="absolute -bottom-6 text-[8px] font-mono font-bold px-1.5 py-0.5 rounded whitespace-nowrap pointer-events-none"
+                                                    style={{
+                                                        left: `${-(endPct - leftPct) * canvasWidth / 200}px`,
+                                                        backgroundColor: `${itemColor}25`,
+                                                        color: itemColor,
+                                                        border: `1px solid ${itemColor}50`
+                                                    }}
+                                                >
+                                                    {durationYears === 1 ? '1 an' : `${durationYears} ans`}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
-                                </div>
+                                </React.Fragment>
                             );
                         })}
                     </div>
@@ -2292,92 +2365,155 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                             const actualWidthPx = ((item.end - item.start) / yearSpan) * canvasWidth;
                             const isShortSpan = actualWidthPx < 180 || (item.end - item.start) <= 5;
+                            const durationYears = item.end - item.start;
 
-                            // Short-span events (< 180px or <= 5 years): render an honest, compact event chip at exact start position
+                            // Short-span events: Gantt-style true span bar + attached callout tag
                             if (isShortSpan) {
                                 const isItemHovered = hoveredRibbonItem?.item.id === item.id;
+                                const spanBarPx = Math.max(actualWidthPx, durationYears > 0 ? 14 : 0);
+                                const endPct = ((item.end - minYear) / yearSpan) * 100;
+                                const isSpan = durationYears > 0;
+
                                 return (
                                     <React.Fragment key={item.id}>
-                                        {/* Vertical Dropline Guideline connecting event start to the Axis Rail */}
+                                        {/* ── Dropline START (always visible) ── */}
                                         <div
-                                            className="absolute pointer-events-none transition-all duration-150 z-0"
+                                            className="absolute pointer-events-none z-0 transition-all duration-150"
                                             style={{
                                                 left: `${leftPct}%`,
-                                                top: '-96px', // spans up through the mb-24 gap into the ruler track
-                                                height: `${topPx + 96}px`,
+                                                top: '-96px',
+                                                height: `${topPx + 96 + 32}px`,
                                                 width: isInspected || isItemHovered ? '2px' : '1px',
                                                 background: isInspected || isItemHovered
-                                                    ? `linear-gradient(180deg, ${itemColor} 0%, ${itemColor} 100%)`
-                                                    : isLightCanvas
-                                                    ? `linear-gradient(180deg, ${itemColor}60 0%, ${itemColor}20 100%)`
-                                                    : `linear-gradient(180deg, ${itemColor}50 0%, ${itemColor}15 100%)`,
-                                                boxShadow: isInspected || isItemHovered
-                                                    ? `0 0 12px ${itemColor}`
-                                                    : undefined,
-                                                opacity: isInspected || isItemHovered ? 1 : 0.35
+                                                    ? `linear-gradient(180deg, ${itemColor}ee 0%, ${itemColor}aa 100%)`
+                                                    : `linear-gradient(180deg, ${itemColor}60 0%, ${itemColor}18 100%)`,
+                                                boxShadow: isInspected || isItemHovered ? `0 0 10px ${itemColor}` : undefined,
+                                                opacity: isInspected || isItemHovered ? 1 : 0.4
                                             }}
                                         />
 
+                                        {/* ── Dropline END + corridor fill (span events only) ── */}
+                                        {isSpan && (
+                                            <>
+                                                {/* Translucent corridor between start and end droplines */}
+                                                <div
+                                                    className="absolute pointer-events-none z-0 transition-all duration-150"
+                                                    style={{
+                                                        left: `${leftPct}%`,
+                                                        width: `${endPct - leftPct}%`,
+                                                        top: `${topPx + 8}px`,
+                                                        height: '20px',
+                                                        background: isInspected || isItemHovered
+                                                            ? `${itemColor}18`
+                                                            : `${itemColor}08`,
+                                                        borderTop: `1px dashed ${itemColor}30`,
+                                                        borderBottom: `1px dashed ${itemColor}30`,
+                                                    }}
+                                                />
+                                                {/* End dropline */}
+                                                <div
+                                                    className="absolute pointer-events-none z-0 transition-all duration-150"
+                                                    style={{
+                                                        left: `${endPct}%`,
+                                                        top: '-96px',
+                                                        height: `${topPx + 96 + 32}px`,
+                                                        width: isInspected || isItemHovered ? '2px' : '1px',
+                                                        background: isInspected || isItemHovered
+                                                            ? `linear-gradient(180deg, ${itemColor}ee 0%, ${itemColor}aa 100%)`
+                                                            : `linear-gradient(180deg, ${itemColor}50 0%, ${itemColor}15 100%)`,
+                                                        boxShadow: isInspected || isItemHovered ? `0 0 10px ${itemColor}` : undefined,
+                                                        opacity: isInspected || isItemHovered ? 1 : 0.35
+                                                    }}
+                                                />
+                                            </>
+                                        )}
+
+                                        {/* ── Interactive layer (span bar + callout tag) ── */}
                                         <div
                                             onClick={() => handleSelectRibbon(item)}
-                                            onMouseEnter={(e) => {
-                                                setHoveredRibbonItem({ item, clientX: e.clientX, clientY: e.clientY });
-                                            }}
-                                            onMouseMove={(e) => {
-                                                setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY });
-                                            }}
+                                            onMouseEnter={(e) => setHoveredRibbonItem({ item, clientX: e.clientX, clientY: e.clientY })}
+                                            onMouseMove={(e) => setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY })}
                                             onMouseLeave={() => setHoveredRibbonItem(null)}
-                                            className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
+                                            className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 flex items-center ${
                                                 isInspected ? 'z-30' : 'z-10'
                                             }`}
                                             style={{ left: `${leftPct}%`, top: `${topPx}px` }}
                                         >
-                                            {/* Upward pointer connecting chip into the vertical dropline */}
-                                            <div
-                                                className="absolute -top-1 left-3 -translate-x-1/2 w-2 h-2 rotate-45 border-t border-l pointer-events-none transition-colors"
-                                                style={{
-                                                    borderColor: isInspected || isItemHovered ? itemColor : `${itemColor}80`,
-                                                    backgroundColor: isLightCanvas ? '#ffffff' : '#0a0f1a'
-                                                }}
-                                            />
+                                            {/* ── True Chronological Span Bar ── */}
+                                            {isSpan ? (
+                                                <div
+                                                    className="relative flex items-center shrink-0 overflow-visible"
+                                                    style={{ width: `${spanBarPx}px`, height: '32px' }}
+                                                >
+                                                    {/* Filled duration bar */}
+                                                    <div
+                                                        className="absolute inset-0 rounded-sm transition-all duration-200"
+                                                        style={{
+                                                            background: isInspected || isItemHovered
+                                                                ? `linear-gradient(90deg, ${itemColor}cc 0%, ${itemColor}88 100%)`
+                                                                : `linear-gradient(90deg, ${itemColor}70 0%, ${itemColor}40 100%)`,
+                                                            border: `1px solid ${itemColor}${isInspected || isItemHovered ? 'dd' : '60'}`,
+                                                            boxShadow: isInspected || isItemHovered
+                                                                ? `0 0 14px ${itemColor}80, inset 0 1px 0 rgba(255,255,255,0.15)`
+                                                                : `0 0 6px ${itemColor}30`
+                                                        }}
+                                                    />
+                                                    {/* Start cap tick */}
+                                                    <div className="absolute left-0 top-0 bottom-0 w-[2px] rounded-l-sm" style={{ backgroundColor: itemColor }} />
+                                                    {/* End cap tick */}
+                                                    <div className="absolute right-0 top-0 bottom-0 w-[2px] rounded-r-sm" style={{ backgroundColor: itemColor }} />
+                                                    {/* Duration label inside bar (if wide enough) */}
+                                                    {spanBarPx >= 32 && (
+                                                        <span
+                                                            className="relative z-10 text-[9px] font-mono font-bold w-full text-center truncate px-1 select-none"
+                                                            style={{ color: isLightCanvas ? '#1c140d' : 'rgba(255,255,255,0.9)' }}
+                                                        >
+                                                            {durationYears === 1 ? '1a' : `${durationYears}a`}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                /* Point event: single anchor diamond */
+                                                <span
+                                                    className="w-3 h-3 rounded-sm rotate-45 shrink-0 transition-all duration-200 group-hover:scale-125"
+                                                    style={{
+                                                        backgroundColor: itemColor,
+                                                        boxShadow: `0 0 10px ${itemColor}`,
+                                                        marginRight: '6px'
+                                                    }}
+                                                />
+                                            )}
 
+                                            {/* ── Callout Tag: title + badges, attached after span bar ── */}
                                             <div
-                                                className={`flex items-center gap-2 h-8 pl-3 pr-3.5 rounded-xl border whitespace-nowrap transition-all duration-200 group-hover:scale-[1.02] backdrop-blur-xl shadow-md ${
-                                                    isInspected ? 'ring-2 ring-white/60 shadow-lg' : ''
+                                                className={`flex items-center gap-1.5 h-8 pl-2 pr-3 rounded-r-xl rounded-l-none border-y border-r whitespace-nowrap transition-all duration-200 group-hover:scale-[1.01] backdrop-blur-xl shadow-md ${
+                                                    isInspected ? 'ring-1 ring-white/50' : ''
                                                 }`}
                                                 style={{
                                                     backgroundColor: isLightCanvas
-                                                        ? 'rgba(255, 255, 255, 0.96)'
-                                                        : 'rgba(10, 15, 26, 0.92)',
+                                                        ? 'rgba(255,255,255,0.95)'
+                                                        : 'rgba(8,12,22,0.93)',
                                                     borderColor: isInspected || isItemHovered
-                                                        ? (isLightCanvas ? '#0f172a' : '#ffffff')
-                                                        : (isLightCanvas ? `${itemColor}` : `${itemColor}60`),
+                                                        ? (isLightCanvas ? '#0f172a' : 'rgba(255,255,255,0.7)')
+                                                        : (isLightCanvas ? `${itemColor}` : `${itemColor}55`),
                                                     boxShadow: isInspected || isItemHovered
-                                                        ? `0 0 18px ${itemColor}90`
-                                                        : `0 4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)`
+                                                        ? `0 0 16px ${itemColor}80`
+                                                        : `0 3px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)`
                                                 }}
                                             >
-                                                {/* Luminous start anchor beacon */}
-                                                <span className="relative flex items-center justify-center shrink-0 w-2.5 h-2.5">
-                                                    <span
-                                                        className="w-2 h-2 rounded-sm rotate-45 shrink-0"
-                                                        style={{ backgroundColor: itemColor, boxShadow: `0 0 8px ${itemColor}` }}
-                                                    />
-                                                </span>
-
                                                 {/* Title */}
-                                                <span className={`font-semibold text-xs truncate max-w-[200px] ${
+                                                <span className={`font-semibold text-xs truncate max-w-[180px] ${
                                                     isLightCanvas ? 'text-[#1c140d]' : 'text-white/95'
                                                 }`}>
                                                     {item.name}
                                                 </span>
 
-                                                {/* Event Type Badge if present */}
+                                                {/* Event type badge */}
                                                 {item.eventType && (
                                                     <span
-                                                        className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0"
+                                                        className="text-[7px] uppercase px-1 py-0.5 rounded font-bold shrink-0 tracking-wide"
                                                         style={{
-                                                            backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
+                                                            backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}25`,
                                                             color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor
                                                         }}
                                                     >
@@ -2385,16 +2521,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                     </span>
                                                 )}
 
-                                                {/* Chronological span pill: clearly communicating start and duration */}
+                                                {/* Year range badge */}
                                                 <span
-                                                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border shrink-0 flex items-center gap-1 shadow-sm"
+                                                    className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border shrink-0"
                                                     style={{
-                                                        borderColor: `${itemColor}60`,
-                                                        backgroundColor: `${itemColor}18`,
-                                                        color: isLightCanvas ? '#1c140d' : '#fef08a'
+                                                        borderColor: `${itemColor}50`,
+                                                        backgroundColor: `${itemColor}15`,
+                                                        color: isLightCanvas ? '#374151' : '#fef08a'
                                                     }}
                                                 >
-                                                    <span>Yr {item.start === item.end ? `${item.start}` : `${item.start}–${item.end}`}</span>
+                                                    {isSpan ? `${item.start}–${item.end}` : `${item.start}`}
                                                 </span>
                                             </div>
                                         </div>

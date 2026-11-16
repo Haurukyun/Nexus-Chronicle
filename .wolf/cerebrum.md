@@ -23,6 +23,7 @@ budget_tokens: 2000
   5. *Native Extensions:* Encapsulate any custom OS/native file routines in `src-tauri/src/lib.rs` commands.
 - **TailwindCSS inline classes:** All styling is done via inline Tailwind classes. There is no separate CSS file for component styles. Do not create `*.module.css` or non-index CSS files.
 - **Commit execution rule (Updated 2026-11-16):** The user explicitly requested the AI to execute `git commit` directly with a detailed description each time, rather than only proposing the name.
+- **No standalone .wolf commits rule (Updated 2026-11-16):** NEVER create a git commit that contains ONLY `.wolf` files (such as `.wolf/STATUS.md`, `.wolf/cerebrum.md`, `.wolf/memory.md`, etc.). Documentation in `.wolf/` must ALWAYS be bundled and committed together with the corresponding application code changes. If only `.wolf` files are modified, do NOT commit.
 
 ## Key Learnings
 
