@@ -34,21 +34,25 @@ export const EventSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate,
         <>
             <EditorGroup title="Basic" icon={Info}>
                 <FormInput label="Event type" value={entity.eventType || ""} onChange={(v: string) => onUpdate({ ...entity, eventType: v })} />
-
-                {/* ── Start Date Picker ── */}
-                <FantasyDatePicker
-                    label="Start Date"
-                    value={entity.startDate || ''}
-                    onChange={(v) => onUpdate({ ...entity, startDate: v })}
-                    activeCalendar={calendar ?? undefined}
-                    customPresets={customPresets ?? undefined}
+                <FormInput 
+                    label="Start date" 
+                    value={entity.startDate || ""} 
+                    onChange={(v: string) => onUpdate({ ...entity, startDate: v })}
+                    placeholder={calendar?.months?.[0] ? `e.g. 15 ${calendar.months[0].name}, 1492` : "e.g. 1492"}
+                />
+                <FormInput 
+                    label="End date" 
+                    value={entity.endDate || ""} 
+                    onChange={(v: string) => onUpdate({ ...entity, endDate: v })}
+                    placeholder={calendar?.months?.[0] ? `e.g. 20 ${calendar.months[0].name}, 1495` : "e.g. 1495"}
                 />
 
-                {/* ── End Date Picker ── */}
+                {/* ── DEDICATED DATE COMPOSER & CALENDAR SYSTEM CONVERTER ── */}
                 <FantasyDatePicker
-                    label="End Date"
-                    value={entity.endDate || ''}
-                    onChange={(v) => onUpdate({ ...entity, endDate: v })}
+                    startDate={entity.startDate || ""}
+                    endDate={entity.endDate || ""}
+                    onChangeStartDate={(v: string) => onUpdate({ ...entity, startDate: v })}
+                    onChangeEndDate={(v: string) => onUpdate({ ...entity, endDate: v })}
                     activeCalendar={calendar ?? undefined}
                     customPresets={customPresets ?? undefined}
                 />

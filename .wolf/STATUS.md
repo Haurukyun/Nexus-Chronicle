@@ -47,6 +47,20 @@ budget_tokens: 1000
   - Sidebar advanced search: `is:dead`, `is:finished`, `is:minor`, `type:`, `tag:`.
   - Fantasia Archive migration tool (ZIP, PouchDB, CouchDB).
 
+- **Event Specifics — Fantasy Date Composer & Universal Calendar Switcher** (this commit):
+  - **P0 Redesign**: Replaced the legacy month-chip container with a compact, modern, sleek single-container `FantasyDatePicker` positioned directly below the Start Date and End Date inputs.
+  - **Dual Target Date Controls**: Instant segmented toggle (`Target: Start` / `Target: End`) with active pill highlighting, allowing authors to compose either start date or end date from the same sleek console.
+  - **Unified Day, Year, and Month Ribbon**:
+    - Compact day and year stepper inputs with decrement/increment controls, wheel scroll, and direct numeric input.
+    - Responsive month pill ribbon with active month illumination and season details.
+    - Dedicated intercalary festival pills (`✦ Midwinter`, `✦ Greengrass`, etc.) for calendars with seasonal holidays.
+  - **Spacious Calendar System & Format Converter Modal**:
+    - Replaced cramped 180px dropdown with a full-width, detailed modal (`createPortal` to body).
+    - Features rich cards for all default calendars (Tamrielic / Skyrim, Harptos / Faerûn, Solar Gregorian, Kings' Reckoning / Middle-earth, Absalom / Pathfinder) and custom user presets.
+    - Each card displays universe lore tag, era suffix (`4E`, `DR`, `CE`, `TA`), month structure, and a live "Converts To: ..." preview showing how the active date is translated into that calendar's reckoning.
+    - Includes a toggle to also update the world's active timeline calendar.
+  - All verified: `npm run build` ✅, `npm run typecheck` ✅, `npm run test` ✅ (51/51).
+
 - **WorldMap/Atlas — Z-Index Fix & Top Toolbar Redesign** (this commit):
   - Fixed z-index hierarchy: top toolbar now `z-[100]` with `data-interactive-ui=true`, WorldMap elements capped at `z-[50]` (pins), `z-[35]` (dossier/filters), `z-[25]` (HUDs), `z-[15]` (ley-lines)
   - Redesigned top toolbar buttons (Jump, Scratchpad, Keybinds, Theme) with premium glassmorphism: gradient backgrounds, shine overlays, hover scale animations, enhanced shadows, theme-aware styling
