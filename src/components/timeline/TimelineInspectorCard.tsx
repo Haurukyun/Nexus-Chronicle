@@ -1,6 +1,6 @@
 import React from 'react';
-import { X, ExternalLink, Calendar, Bookmark, User, Clock, Edit2 } from 'lucide-react';
-import { FantasyEra, MilestonePin, FantasyCalendar } from '../../types';
+import { X, ExternalLink, Calendar, Bookmark, User, Clock, Edit2, Link as LinkIcon, Sparkles } from 'lucide-react';
+import { FantasyEra, MilestonePin, FantasyCalendar, WorldEntity } from '../../types';
 import { formatYearWithEra, parseFantasyDate, formatFantasyDate } from '../../utils/timelineUtils';
 import { useTheme } from '../../theme';
 
@@ -23,18 +23,24 @@ interface TimelineInspectorCardProps {
     item: InspectedTimelineItem | null;
     eras?: FantasyEra[];
     calendar?: FantasyCalendar;
+    existingEntities?: WorldEntity[];
     onClose: () => void;
     onNavigate: (id: string) => void;
     onEditMilestone?: (milestone: MilestonePin) => void;
+    onCreateLinkedEvent?: (milestone: MilestonePin) => void;
+    onLinkEntity?: (milestone: MilestonePin, entityId: string) => void;
 }
 
 export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
     item,
     eras = [],
     calendar,
+    existingEntities = [],
     onClose,
     onNavigate,
-    onEditMilestone
+    onEditMilestone,
+    onCreateLinkedEvent,
+    onLinkEntity
 }) => {
     const { themeId, layoutMode } = useTheme();
     const isSovereign = themeId === 'sovereign';
@@ -147,17 +153,102 @@ export const TimelineInspectorCard: React.FC<TimelineInspectorCardProps> = ({
                 </div>
             )}
 
+            {/* Linked Entity Info for Milestones */}
+            {item.type === 'milestone' && (() => {
+                const linkedEntity = item.entityId ? existingEntities.find(e => e.id === item.entityId) : null;
+                const nameMatchedEntity = !item.entityId ? existingEntities.find(e => e.name.toLowerCase() === item.name.toLowerCase()) : null;
+
+                if (linkedEntity) {
+                    return (
+                        <div className={`flex items-center gap-2 p-2 rounded-xl mb-3 text-xs border ${
+                            isLightCanvas ? 'bg-amber-50/70 border-amber-300 text-[#1c140d]' : 'bg-white/5 border-white/10 text-slate-300'
+                        }`}>
+                            <LinkIcon size={13} className="text-amber-500 shrink-0" />
+                            <span className="opacity-70">Linked to:</span>
+                            <span className="font-bold truncate">{linkedEntity.name}</span>
+                            <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded opacity-60 bg-current/10 ml-auto shrink-0">
+                                {linkedEntity.type}
+                            </span>
+                        </div>
+                    );
+                }
+
+                if (nameMatchedEntity) {
+                    return (
+                        <div className={`flex items-center gap-2 p-2 rounded-xl mb-3 text-xs border ${
+                            isLightCanvas ? 'bg-amber-50/70 border-amber-300 text-[#1c140d]' : 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+                        }`}>
+                            <Sparkles size={13} className="text-amber-400 shrink-0 animate-pulse" />
+                            <span className="truncate">Matches existing Codex event: <strong>"{nameMatchedEntity.name}"</strong></span>
+                        </div>
+                    );
+                }
+
+                return null;
+            })()}
+
             {/* Action Buttons */}
-            <div className={`flex items-center gap-2 pt-2 border-t ${
+            <div className={`flex items-center gap-2 pt-2 border-t flex-wrap ${
                 isLightCanvas ? 'border-black/10' : 'border-current/10'
             }`}>
-                {/* Navigate to Entity */}
-                {(item.type !== 'milestone' || item.entityId) && (
+                {/* Milestone Smart Link or Open */}
+                {item.type === 'milestone' && (() => {
+                    const linkedEntity = item.entityId ? existingEntities.find(e => e.id === item.entityId) : null;
+                    const nameMatchedEntity = !item.entityId ? existingEntities.find(e => e.name.toLowerCase() === item.name.toLowerCase()) : null;
+
+                    if (item.entityId) {
+                        return (
+                            <button
+                                onClick={() => onNavigate(item.entityId!)}
+                                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+                                    isVoyager ? 'bg-[#2dd4bf] text-[#180c04] hover:bg-[#2dd4bf]/90 shadow-[0_0_12px_rgba(45,212,191,0.3)]'
+                                    : isRoyal ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#851624]'
+                                    : isWiki  ? 'bg-red-700 text-white hover:bg-red-800'
+                                    :           'bg-[#fef08a] text-slate-950 hover:bg-yellow-300 shadow-[0_0_14px_rgba(254,240,138,0.25)]'
+                                }`}
+                            >
+                                <ExternalLink size={13} /> Open in Codex
+                            </button>
+                        );
+                    }
+
+                    if (nameMatchedEntity) {
+                        return (
+                            <button
+                                onClick={() => {
+                                    if (item.rawMilestone && onLinkEntity) {
+                                        onLinkEntity(item.rawMilestone, nameMatchedEntity.id);
+                                    } else {
+                                        onNavigate(nameMatchedEntity.id);
+                                    }
+                                }}
+                                className="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-amber-500 text-slate-950 hover:bg-amber-400 shadow-md transition-all cursor-pointer"
+                                title="Link this milestone to the existing Codex event"
+                            >
+                                <LinkIcon size={13} /> Link & Open in Codex
+                            </button>
+                        );
+                    }
+
+                    return (
+                        <button
+                            onClick={() => {
+                                if (item.rawMilestone && onCreateLinkedEvent) {
+                                    onCreateLinkedEvent(item.rawMilestone);
+                                }
+                            }}
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-amber-500 text-slate-950 hover:bg-amber-400 shadow-md transition-all cursor-pointer"
+                            title="Create a new historical event entry in the Codex and link it to this milestone pin"
+                        >
+                            <Sparkles size={13} /> Create Event in Codex & Link
+                        </button>
+                    );
+                })()}
+
+                {/* Character or Event Open in Codex */}
+                {item.type !== 'milestone' && (
                     <button
-                        onClick={() => {
-                            const targetId = item.type === 'milestone' ? item.entityId! : item.id;
-                            onNavigate(targetId);
-                        }}
+                        onClick={() => onNavigate(item.id)}
                         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
                             isVoyager ? 'bg-[#2dd4bf] text-[#180c04] hover:bg-[#2dd4bf]/90 shadow-[0_0_12px_rgba(45,212,191,0.3)]'
                             : isRoyal ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#851624]'

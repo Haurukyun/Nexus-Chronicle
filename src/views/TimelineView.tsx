@@ -458,19 +458,99 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         }
     };
 
-    // Save Milestone Handler
-    const handleSaveMilestone = (milestone: MilestonePin) => {
+    // Save Milestone Handler with Smart Link auto-creation
+    const handleSaveMilestone = (milestone: MilestonePin, createEventIfNotLinked?: boolean) => {
+        let finalEntityId = milestone.entityId;
+
+        if (!finalEntityId && createEventIfNotLinked) {
+            // Check if an entity already matches name case-insensitively
+            const existing = world.entities.find(e => e.name.toLowerCase() === milestone.name.toLowerCase());
+            if (existing) {
+                finalEntityId = existing.id;
+            } else {
+                // Create a real historical event in the world store
+                const newId = handleCreate('event', milestone.name, false);
+                if (newId) {
+                    finalEntityId = newId;
+                    setWorld(prev => ({
+                        ...prev,
+                        entities: prev.entities.map(e => e.id === newId ? {
+                            ...e,
+                            startDate: String(milestone.year),
+                            description: milestone.description || e.description
+                        } as Event : e)
+                    }));
+                }
+            }
+        }
+
+        const pinToSave = {
+            ...milestone,
+            entityId: finalEntityId
+        };
+
         setWorld(prev => {
             const currentPins = prev.milestonePins || [];
-            const exists = currentPins.some(p => p.id === milestone.id);
+            const exists = currentPins.some(p => p.id === pinToSave.id);
             const updatedPins = exists
-                ? currentPins.map(p => p.id === milestone.id ? milestone : p)
-                : [...currentPins, milestone];
+                ? currentPins.map(p => p.id === pinToSave.id ? pinToSave : p)
+                : [...currentPins, pinToSave];
             return {
                 ...prev,
                 milestonePins: updatedPins
             };
         });
+
+        // Update inspectedItem if open
+        if (inspectedItem?.id === milestone.id) {
+            setInspectedItem(prev => prev ? {
+                ...prev,
+                name: pinToSave.name,
+                startYear: pinToSave.year,
+                description: pinToSave.description,
+                color: pinToSave.color,
+                entityId: pinToSave.entityId,
+                rawMilestone: pinToSave
+            } : null);
+        }
+    };
+
+    // 1-Click Smart Link creator for existing milestone pins
+    const handleCreateLinkedEventForMilestone = (milestone: MilestonePin) => {
+        const existing = world.entities.find(e => e.name.toLowerCase() === milestone.name.toLowerCase());
+        if (existing) {
+            handleLinkEntityToMilestone(milestone, existing.id);
+            return;
+        }
+
+        const newId = handleCreate('event', milestone.name, true);
+        if (newId) {
+            setWorld(prev => ({
+                ...prev,
+                entities: prev.entities.map(e => e.id === newId ? {
+                    ...e,
+                    startDate: String(milestone.year),
+                    description: milestone.description || e.description
+                } as Event : e),
+                milestonePins: (prev.milestonePins || []).map(p => 
+                    p.id === milestone.id ? { ...p, entityId: newId } : p
+                )
+            }));
+            setInspectedItem(null);
+            onNavigate(newId);
+        }
+    };
+
+    // Link existing entity to milestone pin
+    const handleLinkEntityToMilestone = (milestone: MilestonePin, entityId: string) => {
+        setWorld(prev => ({
+            ...prev,
+            milestonePins: (prev.milestonePins || []).map(p => 
+                p.id === milestone.id ? { ...p, entityId } : p
+            )
+        }));
+        setInspectedItem(null);
+        onNavigate(entityId);
     };
 
     // Delete Milestone Handler
@@ -1981,6 +2061,55 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 </div>
                             );
                         })}
+
+                        {/* ── HISTORICAL EVENT ANCHORS ON THE AXIS RAIL ── */}
+                        {packedItems.map(({ item }) => {
+                            if (item.type !== 'event') return null;
+                            const leftPct = ((item.start - minYear) / yearSpan) * 100;
+                            if (leftPct < 0 || leftPct > 100) return null;
+                            const isItemHovered = hoveredRibbonItem?.item.id === item.id;
+                            const isItemInspected = inspectedItem?.id === item.id;
+                            const itemColor = item.color || '#f59e0b';
+                            return (
+                                <div
+                                    key={`rail-anchor-${item.id}`}
+                                    className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer group z-20 flex flex-col items-center"
+                                    style={{ left: `${leftPct}%` }}
+                                    onClick={(e) => { e.stopPropagation(); handleSelectRibbon(item); }}
+                                    title={`${item.name} (${item.start}${item.end !== item.start ? `–${item.end}` : ''}) — Click to focus`}
+                                >
+                                    {/* Luminous Axis Pip */}
+                                    <div
+                                        className={`transition-all duration-200 ${
+                                            isItemHovered || isItemInspected
+                                                ? 'w-3 h-3 rounded-sm rotate-45 ring-2 ring-white shadow-lg scale-125'
+                                                : 'w-2 h-2 rounded-full opacity-60 group-hover:opacity-100 group-hover:scale-125'
+                                        }`}
+                                        style={{
+                                            backgroundColor: itemColor,
+                                            boxShadow: isItemHovered || isItemInspected
+                                                ? `0 0 12px ${itemColor}, 0 0 20px ${itemColor}80`
+                                                : `0 0 6px ${itemColor}60`
+                                        }}
+                                    />
+
+                                    {/* Dynamic Event Label on the Rail when Hovered or Inspected */}
+                                    {(isItemHovered || isItemInspected) && (
+                                        <div
+                                            className="absolute -top-7 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold whitespace-nowrap border shadow-xl pointer-events-none animate-in fade-in zoom-in-95 duration-100 z-30"
+                                            style={{
+                                                backgroundColor: isLightCanvas ? '#ffffff' : '#080a14',
+                                                borderColor: itemColor,
+                                                color: isLightCanvas ? '#1c140d' : '#ffffff',
+                                                boxShadow: `0 4px 16px rgba(0,0,0,0.5), 0 0 10px ${itemColor}50`
+                                            }}
+                                        >
+                                            📍 Yr {item.start} · {item.name}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
 
                     {/* CURRENT YEAR SUBTLE VERTICAL REFERENCE LINE */}
@@ -2166,80 +2295,115 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
 
                             // Short-span events (< 180px or <= 5 years): render an honest, compact event chip at exact start position
                             if (isShortSpan) {
+                                const isItemHovered = hoveredRibbonItem?.item.id === item.id;
                                 return (
-                                    <div
-                                        key={item.id}
-                                        onClick={() => handleSelectRibbon(item)}
-                                        onMouseEnter={(e) => {
-                                            setHoveredRibbonItem({ item, clientX: e.clientX, clientY: e.clientY });
-                                        }}
-                                        onMouseMove={(e) => {
-                                            setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY });
-                                        }}
-                                        onMouseLeave={() => setHoveredRibbonItem(null)}
-                                        className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
-                                            isInspected ? 'z-30' : 'z-10'
-                                        }`}
-                                        style={{ left: `${leftPct}%`, top: `${topPx}px` }}
-                                    >
+                                    <React.Fragment key={item.id}>
+                                        {/* Vertical Dropline Guideline connecting event start to the Axis Rail */}
                                         <div
-                                            className={`flex items-center gap-2 h-8 pl-3 pr-3.5 rounded-xl border whitespace-nowrap transition-all duration-200 group-hover:scale-[1.02] backdrop-blur-xl shadow-md ${
-                                                isInspected ? 'ring-2 ring-white/60 shadow-lg' : ''
-                                            }`}
+                                            className="absolute pointer-events-none transition-all duration-150 z-0"
                                             style={{
-                                                backgroundColor: isLightCanvas
-                                                    ? 'rgba(255, 255, 255, 0.96)'
-                                                    : 'rgba(10, 15, 26, 0.92)',
-                                                borderColor: isInspected
-                                                    ? (isLightCanvas ? '#0f172a' : '#ffffff')
-                                                    : (isLightCanvas ? `${itemColor}` : `${itemColor}60`),
-                                                boxShadow: isInspected
-                                                    ? `0 0 16px ${itemColor}80`
-                                                    : `0 4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)`
+                                                left: `${leftPct}%`,
+                                                top: '-96px', // spans up through the mb-24 gap into the ruler track
+                                                height: `${topPx + 96}px`,
+                                                width: isInspected || isItemHovered ? '2px' : '1px',
+                                                background: isInspected || isItemHovered
+                                                    ? `linear-gradient(180deg, ${itemColor} 0%, ${itemColor} 100%)`
+                                                    : isLightCanvas
+                                                    ? `linear-gradient(180deg, ${itemColor}60 0%, ${itemColor}20 100%)`
+                                                    : `linear-gradient(180deg, ${itemColor}50 0%, ${itemColor}15 100%)`,
+                                                boxShadow: isInspected || isItemHovered
+                                                    ? `0 0 12px ${itemColor}`
+                                                    : undefined,
+                                                opacity: isInspected || isItemHovered ? 1 : 0.35
                                             }}
+                                        />
+
+                                        <div
+                                            onClick={() => handleSelectRibbon(item)}
+                                            onMouseEnter={(e) => {
+                                                setHoveredRibbonItem({ item, clientX: e.clientX, clientY: e.clientY });
+                                            }}
+                                            onMouseMove={(e) => {
+                                                setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY });
+                                            }}
+                                            onMouseLeave={() => setHoveredRibbonItem(null)}
+                                            className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
+                                                isInspected ? 'z-30' : 'z-10'
+                                            }`}
+                                            style={{ left: `${leftPct}%`, top: `${topPx}px` }}
                                         >
-                                            {/* Luminous start anchor beacon */}
-                                            <span className="relative flex items-center justify-center shrink-0 w-2.5 h-2.5">
-                                                <span
-                                                    className="w-2 h-2 rounded-sm rotate-45 shrink-0"
-                                                    style={{ backgroundColor: itemColor, boxShadow: `0 0 8px ${itemColor}` }}
-                                                />
-                                            </span>
+                                            {/* Upward pointer connecting chip into the vertical dropline */}
+                                            <div
+                                                className="absolute -top-1 left-3 -translate-x-1/2 w-2 h-2 rotate-45 border-t border-l pointer-events-none transition-colors"
+                                                style={{
+                                                    borderColor: isInspected || isItemHovered ? itemColor : `${itemColor}80`,
+                                                    backgroundColor: isLightCanvas ? '#ffffff' : '#0a0f1a'
+                                                }}
+                                            />
 
-                                            {/* Title */}
-                                            <span className={`font-semibold text-xs truncate max-w-[200px] ${
-                                                isLightCanvas ? 'text-[#1c140d]' : 'text-white/95'
-                                            }`}>
-                                                {item.name}
-                                            </span>
+                                            <div
+                                                className={`flex items-center gap-2 h-8 pl-3 pr-3.5 rounded-xl border whitespace-nowrap transition-all duration-200 group-hover:scale-[1.02] backdrop-blur-xl shadow-md ${
+                                                    isInspected ? 'ring-2 ring-white/60 shadow-lg' : ''
+                                                }`}
+                                                style={{
+                                                    backgroundColor: isLightCanvas
+                                                        ? 'rgba(255, 255, 255, 0.96)'
+                                                        : 'rgba(10, 15, 26, 0.92)',
+                                                    borderColor: isInspected || isItemHovered
+                                                        ? (isLightCanvas ? '#0f172a' : '#ffffff')
+                                                        : (isLightCanvas ? `${itemColor}` : `${itemColor}60`),
+                                                    boxShadow: isInspected || isItemHovered
+                                                        ? `0 0 18px ${itemColor}90`
+                                                        : `0 4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)`
+                                                }}
+                                            >
+                                                {/* Luminous start anchor beacon */}
+                                                <span className="relative flex items-center justify-center shrink-0 w-2.5 h-2.5">
+                                                    <span
+                                                        className="w-2 h-2 rounded-sm rotate-45 shrink-0"
+                                                        style={{ backgroundColor: itemColor, boxShadow: `0 0 8px ${itemColor}` }}
+                                                    />
+                                                </span>
 
-                                            {/* Event Type Badge if present */}
-                                            {item.eventType && (
+                                                {/* Title */}
+                                                <span className={`font-semibold text-xs truncate max-w-[200px] ${
+                                                    isLightCanvas ? 'text-[#1c140d]' : 'text-white/95'
+                                                }`}>
+                                                    {item.name}
+                                                </span>
+
+                                                {/* Event Type Badge if present */}
+                                                {item.eventType && (
+                                                    <span
+                                                        className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0"
+                                                        style={{
+                                                            backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
+                                                            color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor
+                                                        }}
+                                                    >
+                                                        {item.eventType}
+                                                    </span>
+                                                )}
+
+                                                {/* Chronological span pill: clearly communicating start and duration */}
                                                 <span
-                                                    className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0"
+                                                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border shrink-0 flex items-center gap-1 shadow-sm"
                                                     style={{
-                                                        backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
-                                                        color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor
+                                                        borderColor: `${itemColor}60`,
+                                                        backgroundColor: `${itemColor}18`,
+                                                        color: isLightCanvas ? '#1c140d' : '#fef08a'
                                                     }}
                                                 >
-                                                    {item.eventType}
+                                                    <span>Yr {item.start === item.end ? `${item.start}` : `${item.start}–${item.end}`}</span>
                                                 </span>
-                                            )}
-
-                                            {/* Chronological span pill: clearly communicating short duration without misleading 100yr bar */}
-                                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md border shrink-0 ${
-                                                isLightCanvas
-                                                    ? 'bg-amber-50/80 border-amber-200 text-[#1c140d]'
-                                                    : 'bg-white/5 border-white/10 text-white/80'
-                                            }`}>
-                                                {item.start === item.end ? `Yr ${item.start}` : `${item.start}–${item.end}`}
-                                            </span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </React.Fragment>
                                 );
                             }
 
                             // Proportional ribbon for genuine long-span events (actualWidthPx >= 140px)
+                            const isItemHovered = hoveredRibbonItem?.item.id === item.id;
                             const ribbonStyle = {
                                 left: `${leftPct}%`,
                                 width: `${widthPct}%`,
@@ -2248,27 +2412,42 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             } as React.CSSProperties;
 
                             return (
-                                <div
-                                    key={item.id}
-                                    onClick={() => handleSelectRibbon(item)}
-                                    onMouseEnter={(e) => {
-                                        setHoveredRibbonItem({
-                                            item,
-                                            clientX: e.clientX,
-                                            clientY: e.clientY
-                                        });
-                                    }}
-                                    onMouseMove={(e) => {
-                                        setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY });
-                                    }}
-                                    onMouseLeave={() => {
-                                        setHoveredRibbonItem(null);
-                                    }}
-                                    className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
-                                        isInspected ? 'z-30' : 'z-10'
-                                    } hover:scale-[1.01] hover:shadow-xl`}
-                                    style={ribbonStyle}
-                                >
+                                <React.Fragment key={item.id}>
+                                    {/* Active Dropline Guideline connecting long-span ribbon start to Axis Rail */}
+                                    {(isInspected || isItemHovered) && (
+                                        <div
+                                            className="absolute pointer-events-none transition-all duration-150 z-0 animate-in fade-in"
+                                            style={{
+                                                left: `${leftPct}%`,
+                                                top: '-96px',
+                                                height: `${topPx + 96}px`,
+                                                width: '2px',
+                                                background: `linear-gradient(180deg, ${itemColor} 0%, ${itemColor} 100%)`,
+                                                boxShadow: `0 0 12px ${itemColor}`
+                                            }}
+                                        />
+                                    )}
+
+                                    <div
+                                        onClick={() => handleSelectRibbon(item)}
+                                        onMouseEnter={(e) => {
+                                            setHoveredRibbonItem({
+                                                item,
+                                                clientX: e.clientX,
+                                                clientY: e.clientY
+                                            });
+                                        }}
+                                        onMouseMove={(e) => {
+                                            setHoveredRibbonItem(prev => prev ? { ...prev, clientX: e.clientX, clientY: e.clientY } : { item, clientX: e.clientX, clientY: e.clientY });
+                                        }}
+                                        onMouseLeave={() => {
+                                            setHoveredRibbonItem(null);
+                                        }}
+                                        className={`absolute cursor-pointer group hover:z-40 transition-all duration-150 ${
+                                            isInspected ? 'z-30' : 'z-10'
+                                        } hover:scale-[1.01] hover:shadow-xl`}
+                                        style={ribbonStyle}
+                                    >
                                     {isEvent ? (
                                         /* Historical Event Ribbon (span events only) */
                                         <div
@@ -2351,8 +2530,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                         </div>
                                     )}
                                 </div>
-                            );
-                        })}
+                            </React.Fragment>
+                        );
+                    })}
 
                         {/* ── Magnificent Empty State (When no records match) ──── */}
                         {packedItems.length === 0 && (
@@ -2516,12 +2696,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                             item={inspectedItem}
                             eras={eras}
                             calendar={calendar}
+                            existingEntities={world.entities}
                             onClose={() => setInspectedItem(null)}
                             onNavigate={onNavigate}
                             onEditMilestone={milestone => {
                                 setEditingMilestone(milestone);
                                 setIsAddMilestoneOpen(true);
                             }}
+                            onCreateLinkedEvent={handleCreateLinkedEventForMilestone}
+                            onLinkEntity={handleLinkEntityToMilestone}
                         />
                     </div>
                 </div>

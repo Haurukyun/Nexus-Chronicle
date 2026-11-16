@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Bookmark, Trash2, Calendar, Link as LinkIcon, Check, Palette } from 'lucide-react';
+import { X, Bookmark, Trash2, Calendar, Link as LinkIcon, Check, Palette, Sparkles } from 'lucide-react';
 import { MilestonePin, WorldEntity } from '../../types';
 import { extractYear } from '../../utils/timelineUtils';
 import { useTheme } from '../../theme';
@@ -8,7 +8,7 @@ import { useTheme } from '../../theme';
 interface AddMilestoneModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSaveMilestone: (milestone: MilestonePin) => void;
+    onSaveMilestone: (milestone: MilestonePin, createEventIfNotLinked?: boolean) => void;
     onDeleteMilestone?: (id: string) => void;
     initialMilestone?: MilestonePin | null;
     initialYear?: number;
@@ -44,6 +44,7 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
     const [entityId, setEntityId] = useState<string>('');
     const [filterSearch, setFilterSearch] = useState('');
     const [showEntityPicker, setShowEntityPicker] = useState(false);
+    const [autoCreateEvent, setAutoCreateEvent] = useState(true);
 
     useEffect(() => {
         if (initialMilestone) {
@@ -52,12 +53,14 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
             setDescription(initialMilestone.description || '');
             setColor(initialMilestone.color || PRESET_COLORS[0]);
             setEntityId(initialMilestone.entityId || '');
+            setAutoCreateEvent(!initialMilestone.entityId);
         } else {
             setName('');
             setYearInput(initialYear !== undefined ? initialYear.toString() : '1000');
             setDescription('');
             setColor(PRESET_COLORS[0]);
             setEntityId('');
+            setAutoCreateEvent(true);
         }
         setShowEntityPicker(false);
         setFilterSearch('');
@@ -80,7 +83,7 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
             entityId: entityId || undefined
         };
 
-        onSaveMilestone(milestone);
+        onSaveMilestone(milestone, !entityId && autoCreateEvent);
         onClose();
     };
 
@@ -240,11 +243,32 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
                                 />
                             </div>
 
-                    {/* Linked Entity Picker */}
+                    {/* Linked Entity Picker & Smart Link */}
                     <div>
                         <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider opacity-75 mb-1.5">
-                            <LinkIcon size={13} /> Link to Codex Entry (Optional)
+                            <LinkIcon size={13} /> Smart Link to Codex Entry
                         </label>
+
+                        {/* Name match hint if typing an event that exists */}
+                        {!selectedEntity && name.trim().length > 1 && (() => {
+                            const matched = existingEntities.find(e => e.name.toLowerCase() === name.trim().toLowerCase());
+                            if (!matched) return null;
+                            return (
+                                <div className="mb-2 p-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 flex items-center justify-between gap-2 text-xs">
+                                    <div className="flex items-center gap-1.5 truncate text-amber-300">
+                                        <Sparkles size={13} className="shrink-0" />
+                                        <span className="truncate">Found matching Codex entry: <strong>{matched.name}</strong> ({matched.type})</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setEntityId(matched.id)}
+                                        className="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold uppercase tracking-wider text-[10px] shrink-0 hover:bg-amber-400 transition-colors"
+                                    >
+                                        Auto-Link
+                                    </button>
+                                </div>
+                            );
+                        })()}
 
                         {selectedEntity ? (
                             <div className="flex items-center justify-between p-2.5 rounded-xl border border-current/15 bg-current/5">
@@ -263,7 +287,7 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
                                 </button>
                             </div>
                         ) : (
-                            <div>
+                            <div className="space-y-2">
                                 <button
                                     type="button"
                                     onClick={() => setShowEntityPicker(!showEntityPicker)}
@@ -271,6 +295,19 @@ export const AddMilestoneModal: React.FC<AddMilestoneModalProps> = ({
                                 >
                                     {showEntityPicker ? 'Hide Codex List' : '+ Link an Event, Myth, or Character'}
                                 </button>
+
+                                {/* Auto-create event toggle */}
+                                <label className="flex items-center gap-2 p-2.5 rounded-xl border border-current/10 bg-current/5 cursor-pointer text-xs select-none hover:bg-current/10 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={autoCreateEvent}
+                                        onChange={e => setAutoCreateEvent(e.target.checked)}
+                                        className="rounded border-current/30 text-amber-500 focus:ring-0 cursor-pointer"
+                                    />
+                                    <span className="font-medium">
+                                        Create a linked <strong>Historical Event</strong> in Codex automatically
+                                    </span>
+                                </label>
 
                                 {showEntityPicker && (
                                     <div className="mt-2 p-2 rounded-xl border border-current/10 bg-current/5 space-y-2">
