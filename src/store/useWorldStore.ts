@@ -48,6 +48,11 @@ interface WorldStore {
     focusMapLocation: (id: string) => void;
     clearFocusMapLocation: () => void;
 
+    focusTimelineEventId: string | null;
+    focusTimelineMode: 'chronos' | 'annual' | null;
+    focusTimelineEvent: (id: string, mode?: 'chronos' | 'annual') => void;
+    clearFocusTimelineEvent: () => void;
+
     theme: ThemeMode;
     setTheme: (theme: ThemeMode) => void;
 
@@ -120,6 +125,11 @@ export const useWorldStore = create<WorldStore>()(
             focusMapLocationId: null,
             focusMapLocation: (id) => set({ activeTabId: 'map', focusMapLocationId: id }),
             clearFocusMapLocation: () => set({ focusMapLocationId: null }),
+
+            focusTimelineEventId: null,
+            focusTimelineMode: null,
+            focusTimelineEvent: (id, mode = 'chronos') => set({ activeTabId: 'timeline', focusTimelineEventId: id, focusTimelineMode: mode }),
+            clearFocusTimelineEvent: () => set({ focusTimelineEventId: null, focusTimelineMode: null }),
 
             theme: 'sovereign',
             setTheme: (theme) => set({ theme }),

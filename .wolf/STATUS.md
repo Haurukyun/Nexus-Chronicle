@@ -6,7 +6,7 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-15 (08:30)
+> Last updated: 2026-11-15 (08:45)
 
 ---
 
@@ -58,17 +58,30 @@ budget_tokens: 1000
   - **Fix**: Timeline bar (`chronos-ruler-track`) no longer overlaps scrubber hover tooltip. Increased `mb-16` → `mb-24` (16px → 24px gap) so tooltip at `top-16` has breathing room before ribbon canvas starts.
   - All verified: `npm run build` ✅, `npm run typecheck` ✅, `npm run test` ✅ (51/51)
 
+- **Chronos Timeline & Annual Calendar — Visual Masterwork, Short-Span Fix & Smart Links** (this commit):
+  - **P0 Fix (1-3 Year Events Cut Off)**: Root cause was twofold: (1) `minRibbonPx` dropped to small values at overview zooms, crushing text, and (2) `packTimelineLanes` packed adjacent short events into the same lane almost immediately because item duration was only 1-3 years while rendered ribbons occupy ~200px. Fixed by setting `minRibbonPx = Math.max(200, Math.min(280, pxPerYear * 3))` and extending each item's effective duration in `packedItems` using `visualMinYears`, guaranteeing adjacent events are assigned to separate lanes and never overlap or cut each other off.
+  - **P0 Fix (Timeline Bar Lowering & Marker Room)**: Increased top Era bands bottom margin from `mb-6` (24px) to `mb-16` (64px), lowering the ruler track and pins. Realigned milestone pin beams and diamond caps so they sit cleanly above the rail line.
+  - **P0 Fix (Masterwork Glassmorphism Tooltip at Top)**: Redesigned the scrubber hover date tooltip into a jewel-like floating pill at `top-[60px]` with double-ring specular shine, theme-specific glowing gradient backdrop (Sovereign gold, Voyager teal, Royal gilded ivory, Wiki crisp parchment), animated pulsing crystal beacon dot, and a micro-pointer arrow directing towards the temporal laser beam. Positioned safely in the 64px clearance between Era bands and ruler markers with zero overlap.
+  - **P0 Fix (Smart Navigation Links between Calendar & Events)**: Added `focusTimelineEvent` to `useWorldStore` allowing 1-click deep-linking from any event page into Timeline or Annual Calendar. Built a smart navigation banner in `EventSpecificsViewer` with "View on Timeline" (jump camera + open inspector) and "Annual Calendar" shortcuts. Added a Fantasy Date Composer in `EventSpecifics` editor with calendar month insertion. Added an Annual Chronicle banner and interactive day popover modal in `AnnualCalendarView` for viewing and managing events on any given day.
+  - All verified: `npm run build` ✅, `npm run typecheck` ✅, `npm run test` ✅ (51/51)
+
+- **Phase P10: Freeform Custom Lore Attributes**:
+  - **types.ts**: Added `customAttributes?: Record<string, string>` to `BaseEntity`
+  - **EntityEditor.tsx**: Built `CustomAttributesEditor` component with drag-reorderable rows, inline edit on click, add/delete buttons, theme-aware styling (Royal/Wiki/Sovereign/Voyager)
+  - **EntityViewer.tsx**: Added Custom Attributes display in right sidebar — responsive 2-column grid with key/value pairs, theme-aware colors
+  - Zustand persist handles storage automatically via existing `nexus-world-storage`
+  - All verified: `npm run build` ✅, `npm run typecheck` ✅, `npm run test` ✅ (51/51)
+
 ---
 
 ## 🚀 Next Quest
 
-**Goal:** _Phase P10: Freeform Custom Lore Attributes_
-- Add `customAttributes: Record<string, string>` to `BaseEntity` in `types.ts`
-- Key-value editor card in `EntityEditor.tsx`
-- Structured badge/table display in `EntityViewer.tsx`
-- Zustand persist handles storage automatically
+**Goal:** _Phase P11: Lore Search & Global Command Palette Enhancements_
+- Extend CommandPalette with custom attribute search (`attr:key=value`)
+- Add quick-create from palette with pre-filled custom attributes
+- Fuzzy search across all entity fields including custom attributes
 
-**Files to touch:** `src/types.ts`, `src/components/editor/EntityEditor.tsx`, `src/components/viewer/EntityViewer.tsx`, `src/components/editor/specifics/` (per-type specifics if needed)
+**Files to touch:** `src/components/CommandPalette.tsx`, `src/utils/searchUtils.ts`
 
 ---
 

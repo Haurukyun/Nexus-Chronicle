@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
     CalendarDays, Star, Sun, Cloud, Leaf, Snowflake,
-    Sparkles, Info, ChevronLeft, ChevronRight, Plus, ExternalLink
+    Sparkles, Info, ChevronLeft, ChevronRight, Plus, ExternalLink, X, History
 } from 'lucide-react';
 import { FantasyCalendar, FantasyMonth, WorldEntity, Event } from '../../types';
 import { getEffectiveMonthsForYear, isLeapYear, EffectiveMonth, extractYear } from '../../utils/timelineUtils';
@@ -68,6 +68,13 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
     const { themeId, layoutMode } = useTheme();
     const [activeTab, setActiveTab] = useState<CalTab>('months');
     const [localYear, setLocalYear] = useState(displayYear);
+    const [selectedDayPopover, setSelectedDayPopover] = useState<{
+        year: number;
+        monthName: string;
+        day: number;
+        monthId: string;
+        events: CalendarEventMarker[];
+    } | null>(null);
 
     // Sync localYear with displayYear prop when it changes externally
     useEffect(() => {
@@ -81,7 +88,21 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
     const festivals = useMemo(() => effectiveMonths.filter(m => m.isIntercalary), [effectiveMonths]);
     const leapFestivalId = calendar.leapRule?.targetMonthId;
 
-    // Process events for this year - extract events that fall within the displayed year
+    // All events overlapping this year (including those without specific month/day)
+    const allYearEvents = useMemo(() => {
+        return events.filter(e => {
+            if (e.type !== 'event') return false;
+            const evt = e as Event;
+            const startYear = extractYear(evt.startDate || evt.date);
+            const endYear = extractYear(evt.endDate);
+            if (startYear === null) return false;
+            const eventStart = startYear;
+            const eventEnd = endYear ?? startYear;
+            return eventStart <= year && eventEnd >= year;
+        }) as Event[];
+    }, [events, year]);
+
+    // Process events for this year - extract events that fall within specific days of the displayed year
     const yearEvents = useMemo((): CalendarEventMarker[] => {
         const markers: CalendarEventMarker[] = [];
         for (const entity of events) {
@@ -295,6 +316,39 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
             {/* ── Content ────────────────────────────────────────────────── */}
             <div className="flex-1 overflow-y-auto p-4 md:p-5">
 
+                {/* ── Annual Chronicle Banner (All events recorded in this year) ── */}
+                {allYearEvents.length > 0 && (
+                    <div className={`mb-5 p-3.5 rounded-2xl border backdrop-blur-md flex flex-col gap-2 shadow-sm ${
+                        isLight ? 'bg-amber-50/70 border-amber-200 text-[#2b1810]' : 'bg-amber-950/20 border-amber-500/30 text-amber-200'
+                    }`}>
+                        <div className="flex items-center justify-between gap-2">
+                            <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                <History size={13} className="text-amber-500" />
+                                <span>Recorded Lore Events for Year {year} ({allYearEvents.length})</span>
+                            </span>
+                            <span className="text-[10px] opacity-60 font-mono">Click to inspect in Codex</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {allYearEvents.map(evt => (
+                                <button
+                                    key={evt.id}
+                                    onClick={() => onEventClick?.(evt.id)}
+                                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold border border-current/20 hover:border-current/60 hover:scale-105 active:scale-95 transition-all bg-current/5 cursor-pointer"
+                                    title={`Click to open ${evt.name}`}
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                                    <span className="truncate max-w-[180px]">{evt.name}</span>
+                                    {evt.eventType && (
+                                        <span className="text-[9px] uppercase px-1 py-0.2 rounded bg-black/20 opacity-75 font-mono">
+                                            {evt.eventType}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* MONTHS TAB */}
                 {activeTab === 'months' && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -302,6 +356,7 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
                             const seasonCfg = getSeasonCfg(month.season);
                             const weekGrid = buildWeekGrid(month, daysPerWeek);
                             const displayCols = Math.min(daysPerWeek, 10);
+                            const monthEvents = yearEvents.filter(e => e.monthId === month.id);
 
                             return (
                                 <div key={month.id}
@@ -319,6 +374,16 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-1.5 shrink-0">
+                                                {monthEvents.length > 0 && (
+                                                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
+                                                        isVoyager ? 'bg-[#2dd4bf]/20 border-[#2dd4bf]/50 text-[#2dd4bf]'
+                                                        : isRoyal ? 'bg-[#70121e]/15 border-[#70121e]/40 text-[#70121e]'
+                                                        : isWiki ? 'bg-red-100 border-red-300 text-red-800'
+                                                        : 'bg-[#fef08a]/20 border-[#fef08a]/50 text-[#fef08a]'
+                                                    }`}>
+                                                        {monthEvents.length} {monthEvents.length === 1 ? 'event' : 'events'}
+                                                    </span>
+                                                )}
                                                 {seasonCfg && (
                                                     <span className={`flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border font-semibold ${seasonTagCls}`}>
                                                         {seasonCfg.icon}
@@ -358,14 +423,37 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
                                                     return (
                                                         <div key={day} className="relative min-h-[28px]" style={{ minHeight: dayEvents.length > 0 ? '40px' : '28px' }}>
                                                             <button
-                                                                onClick={() => onDayClick?.(year, month.name, day, month.id)}
-                                                                className={`text-center text-[11px] py-0.5 cursor-pointer transition-colors ${dayNumCls} relative ${dayEvents.length > 0 ? 'font-bold' : ''}`}
-                                                                title={dayEvents.length > 0 ? dayEvents.map(e => e.name).join('\n') : `Click to add event on ${month.name} ${day}`}
+                                                                onClick={() => {
+                                                                    if (dayEvents.length > 0) {
+                                                                        setSelectedDayPopover({
+                                                                            year,
+                                                                            monthName: month.name,
+                                                                            day,
+                                                                            monthId: month.id,
+                                                                            events: dayEvents
+                                                                        });
+                                                                    } else {
+                                                                        onDayClick?.(year, month.name, day, month.id);
+                                                                    }
+                                                                }}
+                                                                className={`text-center text-[11px] py-0.5 cursor-pointer transition-all ${dayNumCls} relative ${
+                                                                    dayEvents.length > 0 ? 'font-bold ring-1 ring-amber-400/50 rounded-md shadow-sm' : ''
+                                                                }`}
+                                                                title={dayEvents.length > 0 ? `${dayEvents.map(e => e.name).join('\n')}\n(Click to view events on this day)` : `Click to add event on ${month.name} ${day}`}
                                                             >
                                                                 {day}
                                                             </button>
                                                             {dayEvents.length > 0 && (
-                                                                <div className="absolute top-[20px] left-1/2 -translate-x-1/2 flex flex-wrap gap-0.5 justify-center max-w-full">
+                                                                <div 
+                                                                    className="absolute top-[20px] left-1/2 -translate-x-1/2 flex flex-wrap gap-0.5 justify-center max-w-full cursor-pointer"
+                                                                    onClick={() => setSelectedDayPopover({
+                                                                        year,
+                                                                        monthName: month.name,
+                                                                        day,
+                                                                        monthId: month.id,
+                                                                        events: dayEvents
+                                                                    })}
+                                                                >
                                                                     {dayEvents.slice(0, 3).map((evt, ei) => (
                                                                         <button
                                                                             key={evt.id}
@@ -373,9 +461,9 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
                                                                                 e.stopPropagation();
                                                                                 onEventClick?.(evt.id);
                                                                             }}
-                                                                            className="w-1.5 h-1.5 rounded-full border border-white/50 shadow-sm hover:scale-125 transition-transform cursor-pointer"
+                                                                            className="w-1.5 h-1.5 rounded-full border border-white/50 shadow-sm hover:scale-150 transition-transform cursor-pointer"
                                                                             style={{ backgroundColor: evt.color }}
-                                                                            title={`${evt.name}${evt.eventType ? ` (${evt.eventType})` : ''} — Click to open`}
+                                                                            title={`${evt.name}${evt.eventType ? ` (${evt.eventType})` : ''} — Click to open in Codex`}
                                                                         />
                                                                     ))}
                                                                     {dayEvents.length > 3 && (
@@ -536,6 +624,80 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
                     </div>
                 )}
             </div>
+
+            {/* ── Day Event Inspector Popover Modal ───────────────────────── */}
+            {selectedDayPopover && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+                    onClick={() => setSelectedDayPopover(null)}
+                >
+                    <div 
+                        className={`w-full max-w-sm p-5 rounded-2xl border shadow-2xl backdrop-blur-2xl animate-in zoom-in-95 duration-150 ${
+                            isLight ? 'bg-white border-[#c8a96e] text-[#2b1810]' : 'bg-slate-900 border-slate-700 text-white'
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between pb-3 border-b border-current/15 mb-3">
+                            <div className="flex items-center gap-2">
+                                <CalendarDays size={16} className={isVoyager ? 'text-[#2dd4bf]' : isRoyal ? 'text-[#70121e]' : isWiki ? 'text-red-700' : 'text-[#fef08a]'} />
+                                <h3 className="font-serif font-black text-sm uppercase tracking-wider">
+                                    {selectedDayPopover.day} {selectedDayPopover.monthName}, {selectedDayPopover.year}
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setSelectedDayPopover(null)}
+                                className="p-1 rounded-lg hover:bg-current/10 transition-colors opacity-60 hover:opacity-100 cursor-pointer"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-2 mb-4">
+                            <span className="text-[10px] font-bold uppercase tracking-wider opacity-60 block">
+                                Events on this day ({selectedDayPopover.events.length}):
+                            </span>
+                            {selectedDayPopover.events.map(evt => (
+                                <div 
+                                    key={evt.id}
+                                    className="p-3 rounded-xl border border-current/15 bg-current/5 flex items-center justify-between gap-2 hover:bg-current/10 transition-colors"
+                                >
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: evt.color }} />
+                                            <h4 className="font-bold text-xs truncate">{evt.name}</h4>
+                                        </div>
+                                        {evt.eventType && (
+                                            <span className="text-[9px] uppercase opacity-70 font-mono block mt-0.5 ml-4">
+                                                {evt.eventType}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setSelectedDayPopover(null);
+                                            onEventClick?.(evt.id);
+                                        }}
+                                        className="shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-current/30 hover:border-current/80 transition-all flex items-center gap-1 cursor-pointer"
+                                    >
+                                        <ExternalLink size={10} /> View
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => {
+                                const { year: y, monthName: mn, day: d, monthId: mi } = selectedDayPopover;
+                                setSelectedDayPopover(null);
+                                onDayClick?.(y, mn, d, mi);
+                            }}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border border-current/20 hover:bg-current/10 transition-all cursor-pointer opacity-80 hover:opacity-100"
+                        >
+                            <Plus size={13} /> Add another event on this day
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

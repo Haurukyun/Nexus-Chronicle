@@ -4,7 +4,8 @@ import { FormInput, SmartSelect, FormToggle } from '../../ui';
 import { EditorGroup } from '../EditorGroup';
 import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
-import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap } from 'lucide-react';
+import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap, Calendar, Sparkles } from 'lucide-react';
+import { useWorldStore } from '../../../store/useWorldStore';
 
 interface Props {
     entity: Event;
@@ -15,6 +16,8 @@ interface Props {
 
 export const EventSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew }) => {
     const { layoutMode, themeId } = useTheme();
+    const calendar = useWorldStore(state => state.world.timelineCalendar);
+    const [selectedTarget, setSelectedTarget] = React.useState<'start' | 'end'>('start');
     const isWiki = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
 
@@ -31,8 +34,61 @@ export const EventSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate,
         <>
             <EditorGroup title="Basic" icon={Info}>
                 <FormInput label="Event type" value={entity.eventType || ""} onChange={(v: string) => onUpdate({ ...entity, eventType: v })} />
-                <FormInput label="Start date" value={entity.startDate || ""} onChange={(v: string) => onUpdate({ ...entity, startDate: v })} />
-                <FormInput label="End date" value={entity.endDate || ""} onChange={(v: string) => onUpdate({ ...entity, endDate: v })} />
+                <FormInput 
+                    label="Start date" 
+                    value={entity.startDate || ""} 
+                    onChange={(v: string) => onUpdate({ ...entity, startDate: v })}
+                    placeholder={calendar?.months?.[0] ? `e.g. 15 ${calendar.months[0].name}, 1492` : "e.g. 1492"}
+                />
+                <FormInput 
+                    label="End date" 
+                    value={entity.endDate || ""} 
+                    onChange={(v: string) => onUpdate({ ...entity, endDate: v })}
+                    placeholder={calendar?.months?.[0] ? `e.g. 20 ${calendar.months[0].name}, 1495` : "e.g. 1495"}
+                />
+                {calendar && calendar.months && calendar.months.length > 0 && (
+                    <div className="col-span-full -mt-2 mb-2 p-2.5 rounded-xl border border-current/10 bg-current/5 text-xs">
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider opacity-60 flex items-center gap-1">
+                                <Calendar size={11} /> {calendar.name} Months (Click to insert):
+                            </span>
+                            <div className="flex items-center gap-1 text-[9px] font-bold uppercase">
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedTarget('start')}
+                                    className={`px-1.5 py-0.5 rounded transition-all ${selectedTarget === 'start' ? 'bg-current text-white font-black' : 'opacity-50 hover:opacity-100'}`}
+                                >
+                                    Target: Start
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedTarget('end')}
+                                    className={`px-1.5 py-0.5 rounded transition-all ${selectedTarget === 'end' ? 'bg-current text-white font-black' : 'opacity-50 hover:opacity-100'}`}
+                                >
+                                    Target: End
+                                </button>
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                            {calendar.months.slice(0, 12).map(m => (
+                                <button
+                                    key={m.id}
+                                    type="button"
+                                    onClick={() => {
+                                        const field = selectedTarget === 'start' ? 'startDate' : 'endDate';
+                                        const currentVal = entity[field] || '';
+                                        const yearMatch = currentVal.match(/\b\d{1,6}\b/);
+                                        const yr = yearMatch ? yearMatch[0] : '1492';
+                                        onUpdate({ ...entity, [field]: `1 ${m.name}, ${yr}` });
+                                    }}
+                                    className="px-2 py-0.5 rounded-md border border-current/20 hover:border-current/60 text-[10px] font-medium hover:bg-current/10 transition-colors cursor-pointer"
+                                >
+                                    {m.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
                 <SmartSelect label="Connected to Myths, legends and stories" ids={entity.pairedMyths || []} type="myth" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedMyths: ids })} onCreate={onCreateNew} />
             </EditorGroup>
             <EditorGroup title="Details" icon={Scroll}>

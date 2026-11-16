@@ -138,3 +138,4 @@ description: chronological action log per session, consolidated weekly
 | 08:38 | Edited src/components/viewer/EntityViewer.tsx | 15→15 lines | ~263 |
 | 08:38 | Edited src/components/viewer/EntityViewer.tsx | expanded (+30 lines) | ~623 |
 | 08:38 | Edited src/components/viewer/EntityViewer.tsx | expanded (+30 lines) | ~623 |
+| 08:32 | Phase P10 Freeform Custom Lore Attributes — types.ts, EntityEditor.tsx, EntityViewer.tsx | 3 files | Added customAttributes to BaseEntity, built CustomAttributesEditor (drag-reorder, inline edit, add/delete), viewer display grid | ~1200 |

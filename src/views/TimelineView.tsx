@@ -71,6 +71,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     const { themeId, layoutMode } = useTheme();
     const storeSetWorld = useWorldStore(state => state.setWorld);
     const handleCreate = useWorldStore(state => state.handleCreate);
+    const focusTimelineEventId = useWorldStore(state => state.focusTimelineEventId);
+    const focusTimelineMode = useWorldStore(state => state.focusTimelineMode);
+    const clearFocusTimelineEvent = useWorldStore(state => state.clearFocusTimelineEvent);
     const setWorld = propSetWorld || storeSetWorld;
 
     // View mode: 'chronos' = big-picture timeline, 'annual' = full-year calendar
@@ -382,10 +385,37 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
         });
     }, [rawItems, categoryFilter, selectedEventType, lifeStatusFilter, searchQuery]);
 
-    // Pack filtered items into visual lanes so ribbons never overlap
+    // Dynamic min-width for ribbons based on zoom level (pixel-per-year ratio)
+    // Ensures short 1-3yr span events always have a legible, generous minimum footprint (at least 200px)
+    const minRibbonPx = useMemo(() => {
+        const pxPerYear = canvasWidth / Math.max(yearSpan, 1);
+        return Math.max(200, Math.min(280, pxPerYear * 3));
+    }, [canvasWidth, yearSpan]);
+
+    // Pack filtered items into visual lanes so ribbons (including 1-3yr events) never collide or cut each other off
     const packedItems = useMemo(() => {
-        return packTimelineLanes(filteredItems, 4);
-    }, [filteredItems]);
+        // Pixel-to-year ratio: calculate how many years of horizontal canvas space minRibbonPx occupies
+        const visualMinYears = Math.ceil((minRibbonPx / Math.max(canvasWidth, 1)) * yearSpan);
+        const laneGapYears = Math.max(3, Math.ceil((16 / Math.max(canvasWidth, 1)) * yearSpan));
+
+        // Use effective visual bounds for lane packing collision detection
+        const itemsForPacking = filteredItems.map(item => ({
+            ...item,
+            // If the item's year duration is shorter than its rendered width in years, extend end for packing
+            end: Math.max(item.end, item.start + visualMinYears)
+        }));
+
+        const packed = packTimelineLanes(itemsForPacking, laneGapYears);
+
+        // Restore original item so actual start/end years and durations render accurately
+        return packed.map(p => {
+            const original = filteredItems.find(f => f.id === p.item.id);
+            return {
+                ...p,
+                item: original || p.item
+            };
+        });
+    }, [filteredItems, minRibbonPx, canvasWidth, yearSpan]);
 
     // Calculate maximum lane number
     const maxLane = useMemo(() => {
@@ -395,12 +425,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
     // Dynamic timeline ribbon canvas height
     const laneHeightPx = 48;
     const ribbonCanvasHeight = Math.max((maxLane + 1) * laneHeightPx + 160, 360);
-
-    // Dynamic min-width for ribbons based on zoom level (pixel-per-year ratio)
-    const minRibbonPx = useMemo(() => {
-        const pxPerYear = canvasWidth / Math.max(yearSpan, 1);
-        return Math.max(60, Math.min(220, pxPerYear * 2)); // Scale with zoom, clamp 60-220px
-    }, [canvasWidth, yearSpan]);
 
     // Save Eras Handler
     const handleSaveEras = (newEras: FantasyEra[]) => {
@@ -925,6 +949,33 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
             }
         });
     }, [canvasWidth, minYear, maxYear, yearSpan, currentYear]);
+
+    // Handle deep-link focus from Codex/Events page
+    useEffect(() => {
+        if (!focusTimelineEventId) return;
+
+        if (focusTimelineMode === 'annual' && calendar) {
+            setMainViewMode('annual');
+        } else {
+            setMainViewMode('chronos');
+        }
+
+        const matchedItem = rawItems.find(i => i.id === focusTimelineEventId || i.entityId === focusTimelineEventId);
+        if (matchedItem) {
+            handleJumpToYear(matchedItem.start);
+            handleSelectRibbon(matchedItem);
+        } else {
+            const matchedEntity = world.entities.find(e => e.id === focusTimelineEventId);
+            if (matchedEntity) {
+                const yr = extractYear((matchedEntity as any).startDate || (matchedEntity as any).date || (matchedEntity as any).birthDate);
+                if (yr !== null) {
+                    handleJumpToYear(yr);
+                }
+            }
+        }
+
+        clearFocusTimelineEvent();
+    }, [focusTimelineEventId, focusTimelineMode, rawItems, calendar, world.entities]);
 
     // Scroll to the nearest visible timeline item to current viewport center
     const handleGoToNearestEvent = () => {
@@ -1639,7 +1690,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                     </div>
 
                     {/* 1. ERA BANDS ALONG TOP AXIS WITH ANIMATED JUMP TRANSITION */}
-                    <div className="relative h-14 w-full mb-6 flex items-center z-10">
+                    <div className="relative h-14 w-full mb-16 flex items-center z-10">
                         {sortedEras.map((era, idx) => {
                             const { clampedStart, clampedEnd } = getEraVisualBounds(era, idx, sortedEras);
 
@@ -1906,29 +1957,52 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                 }}
                             />
 
-                            {/* Floating Cursor Tooltip */}
+                            {/* Floating Cursor Tooltip at the top — Masterwork Glassmorphism */}
                             <div 
-                                className="absolute top-16 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-mono font-bold whitespace-nowrap shadow-2xl border backdrop-blur-2xl ring-1"
-                                style={{
-                                    backgroundColor: isSovereign ? 'rgba(15, 23, 42, 0.92)' 
-                                                   : isVoyager ? 'rgba(24, 12, 4, 0.95)' 
-                                                   : isRoyal ? 'rgba(28, 20, 13, 0.95)' 
-                                                   : isWiki ? 'rgba(255, 255, 255, 0.96)' 
-                                                   : 'rgba(2, 6, 23, 0.92)',
-                                    borderColor: isSovereign ? 'rgba(254, 240, 138, 0.5)' 
-                                               : isVoyager ? 'rgba(45, 212, 191, 0.5)' 
-                                               : isRoyal ? 'rgba(200, 169, 110, 0.5)' 
-                                               : isWiki ? 'rgba(212, 200, 175, 1)' 
-                                               : 'rgba(56, 189, 248, 0.5)',
-                                    color: isSovereign ? '#fef08a' 
-                                         : isVoyager ? '#2dd4bf' 
-                                         : isRoyal ? '#fff8e7' 
-                                         : isWiki ? '#881337' 
-                                         : '#38bdf8',
-                                    boxShadow: isWiki ? '0 4px 16px rgba(0,0,0,0.12)' : '0 8px 24px rgba(0,0,0,0.75)'
-                                }}
+                                className="absolute top-[60px] -translate-x-1/2 flex flex-col items-center pointer-events-none select-none z-40 animate-in fade-in zoom-in-95 duration-100"
                             >
-                                {formatHoveredYearWithCalendar(hoveredYear, eras, calendar)}
+                                <div 
+                                    className={`px-3.5 py-1 rounded-full text-[11px] font-mono font-bold whitespace-nowrap flex items-center gap-2 border backdrop-blur-2xl shadow-2xl transition-all ${
+                                        isSovereign
+                                            ? 'bg-slate-950/90 border-[#fef08a]/60 text-[#fef08a] shadow-[0_8px_32px_rgba(0,0,0,0.8),0_0_20px_rgba(254,240,138,0.3),inset_0_1px_0_rgba(255,255,255,0.25)]'
+                                            : isVoyager
+                                            ? 'bg-[#180c04]/90 border-[#2dd4bf]/60 text-[#2dd4bf] shadow-[0_8px_32px_rgba(0,0,0,0.85),0_0_20px_rgba(45,212,191,0.35),inset_0_1px_0_rgba(45,212,191,0.25)]'
+                                            : isRoyal
+                                            ? 'bg-[#fffdf7]/95 border-2 border-[#c8a96e] text-[#3d0a10] shadow-[0_6px_22px_rgba(61,10,16,0.2),inset_0_1px_0_rgba(255,255,255,0.9)] font-serif'
+                                            : isWiki
+                                            ? 'bg-white/95 border border-red-600/70 text-[#881337] shadow-lg font-bold'
+                                            : 'bg-slate-950/90 border-sky-400/60 text-sky-300 shadow-[0_8px_32px_rgba(0,0,0,0.8),0_0_18px_rgba(56,189,248,0.3)]'
+                                    }`}
+                                >
+                                    {/* Pulse dot beacon */}
+                                    <span className="relative flex items-center justify-center shrink-0 w-2 h-2">
+                                        <span 
+                                            className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                                            style={{
+                                                backgroundColor: isSovereign ? '#fef08a' : isVoyager ? '#2dd4bf' : isRoyal ? '#70121e' : isWiki ? '#b91c1c' : '#38bdf8'
+                                            }}
+                                        />
+                                        <span 
+                                            className="relative inline-flex rounded-full w-1.5 h-1.5"
+                                            style={{
+                                                backgroundColor: isSovereign ? '#fef08a' : isVoyager ? '#2dd4bf' : isRoyal ? '#70121e' : isWiki ? '#b91c1c' : '#38bdf8'
+                                            }}
+                                        />
+                                    </span>
+
+                                    <span className="tracking-wide">
+                                        {formatHoveredYearWithCalendar(hoveredYear, eras, calendar)}
+                                    </span>
+                                </div>
+
+                                {/* Micro arrow tip pointing downwards into the laser rail beam */}
+                                <div 
+                                    className="w-1.5 h-1.5 rotate-45 -mt-0.5 border-r border-b"
+                                    style={{
+                                        backgroundColor: isSovereign ? '#020617' : isVoyager ? '#180c04' : isRoyal ? '#fffdf7' : isWiki ? '#ffffff' : '#020617',
+                                        borderColor: isSovereign ? 'rgba(254, 240, 138, 0.6)' : isVoyager ? 'rgba(45, 212, 191, 0.6)' : isRoyal ? '#c8a96e' : isWiki ? 'rgba(185, 28, 28, 0.7)' : 'rgba(56, 189, 248, 0.6)'
+                                    }}
+                                />
                             </div>
                         </div>
                     )}
@@ -1942,7 +2016,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         return (
                             <div
                                 key={pin.id}
-                                className="absolute top-14 bottom-0 pointer-events-auto z-20 group"
+                                className="absolute top-[116px] bottom-0 pointer-events-auto z-20 group"
                                 style={{ left: `${leftPct}%` }}
                             >
                                 {/* Vertical Light Beam */}
@@ -2104,14 +2178,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                 className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm"
                                                 style={{ backgroundColor: itemColor, boxShadow: `0 0 8px ${itemColor}` }}
                                             />
-                                            {/* Responsive layout: vertical stack for narrow ribbons (< 180px min-width or < 2% width) */}
-                                            <div className={`flex min-w-0 ${widthPct < 2 || minRibbonPx < 180 ? 'flex-col items-start gap-0.5 px-1' : 'flex-row items-center gap-2'}`}>
-                                                <span className={`font-bold text-xs truncate ${isLightCanvas ? 'text-[#1c140d]' : 'text-white drop-shadow-sm'} ${widthPct < 2 || minRibbonPx < 180 ? 'w-full' : ''}`}>
+                                            {/* Ribbon content: clean horizontal row ensuring title and dates never get cut off */}
+                                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                                                <span className={`font-bold text-xs truncate shrink min-w-0 ${isLightCanvas ? 'text-[#1c140d]' : 'text-white drop-shadow-sm'}`}>
                                                     {item.name}
                                                 </span>
                                                 {item.eventType && (
                                                     <span
-                                                        className="text-[8px] uppercase px-1 py-0.5 rounded font-bold shrink-0 shadow-sm"
+                                                        className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold shrink-0 shadow-sm"
                                                         style={{
                                                             backgroundColor: isLightCanvas ? `${itemColor}20` : `${itemColor}30`,
                                                             color: isLightCanvas ? (isRoyal ? '#70121e' : '#881337') : itemColor,
@@ -2121,8 +2195,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                                                         {item.eventType}
                                                     </span>
                                                 )}
-                                                <span className={`text-[9px] font-mono shrink-0 font-bold ${isLightCanvas ? 'text-[#1c140d]/70' : 'opacity-60 text-white'} ${widthPct < 2 || minRibbonPx < 180 ? 'mt-0.5' : 'ml-auto'}`}>
-                                                    {item.start} – {item.end}
+                                                <span className={`text-[9px] font-mono shrink-0 font-bold ml-auto pl-1 ${isLightCanvas ? 'text-[#1c140d]/70' : 'opacity-60 text-white'}`}>
+                                                    {item.start === item.end ? `Yr ${item.start}` : `${item.start}–${item.end}`}
                                                 </span>
                                             </div>
                                         </div>

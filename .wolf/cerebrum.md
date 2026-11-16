@@ -22,7 +22,7 @@ budget_tokens: 2000
   4. *Mobile Debugging:* Use Chrome Remote Inspector (`chrome://inspect`) for Android and Safari Web Inspector for macOS/iOS.
   5. *Native Extensions:* Encapsulate any custom OS/native file routines in `src-tauri/src/lib.rs` commands.
 - **TailwindCSS inline classes:** All styling is done via inline Tailwind classes. There is no separate CSS file for component styles. Do not create `*.module.css` or non-index CSS files.
-- **Commit name convention:** Conclude every answer with a proposed conventional commit message (do not execute `git commit` directly, provide the name only), e.g. `feat(scope): description`.
+- **Commit execution rule (Updated 2026-11-16):** The user explicitly requested the AI to execute `git commit` directly with a detailed description each time, rather than only proposing the name.
 
 ## Key Learnings
 
@@ -47,6 +47,7 @@ budget_tokens: 2000
 - **[2026-11-15] Timeline Event Model — Point vs Span Events:** Events can be either point-in-time (single date) or spans (start + end). Point events render as diamond markers; span events render as ribbons. The distinction is: `startDate` set but NO `endDate` = point event. Both `startDate` and `endDate` set = span event. Legacy `date` field should be deprecated.
 - **[2026-11-15] Annual Calendar ↔ Chronos Timeline Integration:** AnnualCalendarView now accepts `events`, `onEventClick`, `onDayClick`, `displayYear`, `onYearChange` props. Events are extracted for the displayed year and rendered as colored dots on day grids. Clicking a day event navigates to timeline/codex. Clicking empty day triggers quick-create. TimelineView syncs `displayYear` from viewport camera center and provides `handleJumpToYear` for reverse sync.
 - **[2026-11-15] Quick-create Event now only sets startDate:** The legacy `date` field is no longer set by TimelineView quick-create. This makes new events point events by default (diamond markers). To create a span event, user must manually set `endDate` in the editor.
+- **[2026-11-16] Short-Span Event Lane Packing Collision:** When an event is 1 to 3 years long, its visual width on screen is governed by `minRibbonPx` (at least 200px), which corresponds to many years of timeline space (`(minRibbonPx / canvasWidth) * yearSpan`). If `packTimelineLanes` uses the bare `item.end`, subsequent events within that visual window will be placed in the same lane and overlap/cut off the short event. Always pass `Math.max(item.end, item.start + visualMinYears)` into `packTimelineLanes` so nearby short events are placed on separate lanes.
 
 ## Do-Not-Repeat
 
