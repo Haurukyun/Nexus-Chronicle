@@ -65,6 +65,10 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
     } = useWorldStore();
 
     const { t, layoutMode, themeId } = useTheme();
+    const isRoyal = themeId === 'royal-codex';
+    const isWiki = layoutMode === 'wiki';
+    const isLight = isRoyal || isWiki;
+
     const [healDone, setHealDone] = useState(false);
     const handleHeal = () => {
         handleHealRelations();
@@ -364,7 +368,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
     };
 
     return (
-        <div className="p-16 max-w-5xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-40">
+        <div className="p-6 sm:p-10 md:p-14 max-w-6xl xl:max-w-7xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-40">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 className={`text-6xl font-serif font-black uppercase tracking-tighter ${accent}`}>System Settings</h2>
@@ -434,6 +438,8 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                             : (layoutMode === 'wiki')
                                             ? 'bg-[#b91c1c]/10 border-[#b91c1c] ring-1 ring-[#b91c1c]'
                                             : 'bg-yellow-400/10 border-yellow-400/50 ring-1 ring-yellow-400/50 shadow-lg'
+                                        : isLight
+                                        ? 'bg-[#ede2cb]/70 border-[#c8a96e]/40 hover:border-[#c8a96e] text-[#2b1810]'
                                         : 'bg-black/20 border-white/5 hover:border-white/20'
                                 }`}
                             >
@@ -450,7 +456,9 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                                     type="text"
                                                     value={editName}
                                                     onChange={(e) => setEditName(e.target.value)}
-                                                    className="px-2 py-1 rounded bg-black/40 border border-white/20 text-xs font-bold w-full outline-none"
+                                                    className={`px-2 py-1 rounded text-xs font-bold w-full outline-none ${
+                                                        isLight ? 'bg-white border border-[#c8a96e] text-[#2b1810]' : 'bg-black/40 border border-white/20 text-white'
+                                                    }`}
                                                     autoFocus
                                                 />
                                             ) : (
@@ -469,7 +477,9 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                         ) : (
                                             <button
                                                 onClick={() => switchWorld(w.id || activeWorldId)}
-                                                className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20 transition-all flex items-center gap-1 opacity-70 hover:opacity-100"
+                                                className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-xl transition-all flex items-center gap-1 ${
+                                                    isLight ? 'bg-[#70121e]/15 hover:bg-[#70121e] text-[#70121e] hover:text-[#fff8e7] border border-[#c8a96e]/50' : 'bg-white/10 hover:bg-white/20 text-white'
+                                                }`}
                                             >
                                                 <span>Enter</span> <ArrowRight size={11} />
                                             </button>
@@ -482,7 +492,9 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                             value={editDescription}
                                             onChange={(e) => setEditDescription(e.target.value)}
                                             placeholder="Realm synopsis..."
-                                            className="w-full px-2 py-1.5 rounded bg-black/40 border border-white/20 text-xs outline-none resize-none"
+                                            className={`w-full px-2 py-1.5 rounded text-xs outline-none resize-none ${
+                                                isLight ? 'bg-white border border-[#c8a96e] text-[#2b1810]' : 'bg-black/40 border border-white/20 text-white'
+                                            }`}
                                         />
                                     ) : (
                                         <p className="text-xs opacity-60 font-serif italic line-clamp-2 min-h-[2rem]">
@@ -500,7 +512,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 </div>
 
                                 {/* Actions Footer */}
-                                <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs">
+                                <div className="flex items-center justify-between pt-3 border-t border-current/10 text-xs">
                                     <div className="flex items-center gap-1.5">
                                         {isEditingThis ? (
                                             <button
@@ -570,7 +582,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                         <div className="h-[1px] w-full bg-slate-800/40 my-2" />
                         <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-2">
                             {Object.entries(stats.byType).map(([type, count]) => (
-                                <div key={type} className="flex flex-col p-2 bg-black/20 rounded border border-white/5">
+                                <div key={type} className={`flex flex-col p-2 rounded border ${isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'}`}>
                                     <span className="text-[8px] uppercase font-black opacity-30">{TYPE_LABELS[type as EntityType] || type}</span>
                                     <span className="text-sm font-bold">{count as number}</span>
                                 </div>
@@ -591,11 +603,12 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Visual Codex Theme</span>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <button
-                                    onClick={() => {                                        setTheme('sovereign');
-                                    }}
+                                    onClick={() => setTheme('sovereign')}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'sovereign'
                                             ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/60 shadow-lg'
+                                            : isLight
+                                            ? 'bg-[#f7efe0] text-[#2b1810] border-[#c8a96e]/40 hover:border-[#c8a96e]'
                                             : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
                                     }`}
                                 >
@@ -603,11 +616,12 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <div className="text-[9px] opacity-60 mt-1">Dark Obsidian & Warm Gold</div>
                                 </button>
                                 <button
-                                    onClick={() => {                                        setTheme('wiki');
-                                    }}
+                                    onClick={() => setTheme('wiki')}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'wiki'
                                             ? 'bg-rose-500/20 text-rose-300 border-rose-500/60 shadow-lg'
+                                            : isLight
+                                            ? 'bg-[#f7efe0] text-[#2b1810] border-[#c8a96e]/40 hover:border-[#c8a96e]'
                                             : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
                                     }`}
                                 >
@@ -615,11 +629,12 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <div className="text-[9px] opacity-60 mt-1">Classic Parchment & Red</div>
                                 </button>
                                 <button
-                                    onClick={() => {                                        setTheme('royal-codex');
-                                    }}
+                                    onClick={() => setTheme('royal-codex')}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'royal-codex'
-                                            ? 'bg-[#70121e]/25 text-[#fff8e7] border-[#c8a96e] shadow-lg'
+                                            ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e] shadow-lg'
+                                            : isLight
+                                            ? 'bg-[#f7efe0] text-[#2b1810] border-[#c8a96e]/40 hover:border-[#c8a96e]'
                                             : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
                                     }`}
                                 >
@@ -627,11 +642,12 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <div className="text-[9px] opacity-60 mt-1">Illuminated Parchment & Gold</div>
                                 </button>
                                 <button
-                                    onClick={() => {                                        setTheme('grand-voyager');
-                                    }}
+                                    onClick={() => setTheme('grand-voyager')}
                                     className={`p-4 rounded-xl border text-left transition-all ${
                                         theme === 'grand-voyager'
                                             ? 'bg-[#0d9488]/20 text-[#2dd4bf] border-[#2dd4bf]/70 shadow-lg shadow-teal-950/40'
+                                            : isLight
+                                            ? 'bg-[#f7efe0] text-[#2b1810] border-[#c8a96e]/40 hover:border-[#c8a96e]'
                                             : 'bg-black/20 text-slate-400 border-white/5 hover:border-white/20'
                                     }`}
                                 >
@@ -644,7 +660,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                         {/* Universe Backup & Restore */}
                         <div className="pt-2 space-y-4">
                             {/* Classic JSON Backups */}
-                            <div className="p-5 rounded-2xl bg-black/20 border border-white/5 space-y-4">
+                            <div className={`p-5 rounded-2xl border space-y-4 ${isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'}`}>
                                 <div>
                                     <span className="text-[10px] font-black uppercase tracking-wider opacity-60 block">Lore Archive (JSON)</span>
                                     <p className="text-[11px] opacity-40 font-serif italic mt-0.5">Export realm lore as plain JSON — no media assets included.</p>
@@ -653,21 +669,21 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                     <button
                                         onClick={() => exportWorld()}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-slate-700 hover:border-yellow-400 transition-all flex items-center justify-center gap-2"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 ${isLight ? 'border-[#c8a96e]/50 hover:border-[#70121e] hover:bg-[#70121e]/10 text-[#2b1810]' : 'border-slate-700 hover:border-yellow-400'}`}
                                     >
                                         <Download size={13} /> Active Realm (.json)
                                     </button>
 
                                     <button
                                         onClick={() => exportUniverse()}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-slate-700 hover:border-yellow-400 transition-all flex items-center justify-center gap-2 bg-yellow-400/5"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 ${isLight ? 'border-[#c8a96e]/50 hover:border-[#70121e] hover:bg-[#70121e]/10 text-[#2b1810] bg-[#70121e]/5' : 'border-slate-700 hover:border-yellow-400 bg-yellow-400/5'}`}
                                     >
                                         <Layers size={13} /> Full Multiverse (.json)
                                     </button>
 
                                     <button
                                         onClick={handleImportJsonClick}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-slate-700 hover:border-yellow-400 transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 cursor-pointer text-center ${isLight ? 'border-[#c8a96e]/50 hover:border-[#70121e] hover:bg-[#70121e]/10 text-[#2b1810]' : 'border-slate-700 hover:border-yellow-400'}`}
                                     >
                                         <Upload size={13} /> Import JSON
                                         <input ref={jsonImportRef} type="file" className="hidden" accept=".json" onChange={handleImportFile} />
@@ -676,22 +692,28 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                             </div>
 
                             {/* Nexus Archive - Full Asset Bundles */}
-                            <div className="p-5 rounded-2xl bg-purple-900/10 border border-purple-500/20 space-y-4">
+                            <div className={`p-5 rounded-2xl border space-y-4 ${
+                                isLight
+                                    ? 'bg-[#70121e]/5 border-[#c8a96e]/40'
+                                    : 'bg-purple-900/10 border-purple-500/20'
+                            }`}>
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <FileArchive size={14} className="text-purple-400" />
-                                            <span className="text-[10px] font-black uppercase tracking-wider text-purple-300">Nexus Archive (.nexus) — Full Asset Bundle</span>
+                                            <FileArchive size={14} className={isLight ? 'text-[#70121e]' : 'text-purple-400'} />
+                                            <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-[#70121e]' : 'text-purple-300'}`}>
+                                                Nexus Archive (.nexus) — Full Asset Bundle
+                                            </span>
                                         </div>
-                                        <p className="text-[11px] opacity-50 font-serif italic mt-1">Bundles lore + every HD image, map, and media file into one portable container. No compression — 100% fidelity.</p>
+                                        <p className="text-[11px] opacity-60 font-serif italic mt-1">Bundles lore + every HD image, map, and media file into one portable container. No compression — 100% fidelity.</p>
                                     </div>
                                 </div>
 
                                 {nexusNotice && (
                                     <div className={`p-3 rounded-xl border text-[10px] flex items-center justify-between gap-2 ${
                                         nexusNotice.isError
-                                            ? 'bg-red-500/10 border-red-500/30 text-red-300'
-                                            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                                            ? 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-300'
+                                            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
                                     }`}>
                                         <span>{nexusNotice.text}</span>
                                         <button onClick={() => setNexusNotice(null)} className="opacity-60 hover:opacity-100 font-bold">✕</button>
@@ -702,7 +724,11 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <button
                                         onClick={() => handleExportNexusArchive('world')}
                                         disabled={nexusExporting}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/10 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${
+                                            isLight
+                                                ? 'border-[#c8a96e]/50 hover:border-[#70121e] hover:bg-[#70121e]/10 text-[#2b1810]'
+                                                : 'border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/10'
+                                        }`}
                                     >
                                         <FileArchive size={13} />{nexusExporting ? 'Packing…' : 'Active Realm (.nexus)'}
                                     </button>
@@ -710,14 +736,22 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <button
                                         onClick={() => handleExportNexusArchive('universe')}
                                         disabled={nexusExporting}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/10 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${
+                                            isLight
+                                                ? 'border-[#c8a96e]/50 hover:border-[#70121e] hover:bg-[#70121e]/10 text-[#2b1810]'
+                                                : 'border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/10'
+                                        }`}
                                     >
                                         <Layers size={13} />{nexusExporting ? 'Packing…' : 'Full Multiverse (.nexus)'}
                                     </button>
 
                                     <button
                                         onClick={handleImportNexusClick}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer text-center"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 cursor-pointer text-center ${
+                                            isLight
+                                                ? 'border-[#c8a96e]/50 hover:border-[#70121e] hover:bg-[#70121e]/10 text-[#2b1810]'
+                                                : 'border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/10'
+                                        }`}
                                     >
                                         <Upload size={13} /> Restore .nexus
                                         <input
@@ -731,26 +765,36 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
 
                                     <button
                                         onClick={() => setIsBeamModalOpen(true)}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-purple-500/40 bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 hover:text-purple-100 transition-all flex items-center justify-center gap-2"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 ${
+                                            isLight
+                                                ? 'border-[#70121e]/30 bg-[#70121e]/10 hover:bg-[#70121e]/20 text-[#70121e]'
+                                                : 'border-purple-500/40 bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 hover:text-purple-100'
+                                        }`}
                                     >
                                         <Radio size={13} /> NexusBeam (P2P)
                                     </button>
                                 </div>
 
-                                <p className="text-[9px] opacity-30 font-mono">
+                                <p className="text-[9px] opacity-40 font-mono">
                                     NexusBeam transfers archives directly device-to-device via WebRTC — no cloud, no size limits, works globally via STUN relay.
                                 </p>
                             </div>
 
                             {/* Fantasia Archive Migration */}
-                            <div className="p-5 rounded-2xl bg-amber-950/20 border border-amber-500/25 space-y-4">
+                            <div className={`p-5 rounded-2xl border space-y-4 ${
+                                isLight
+                                    ? 'bg-[#c8a96e]/10 border-[#c8a96e]/40'
+                                    : 'bg-amber-950/20 border-amber-500/25'
+                            }`}>
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <Sparkles size={14} className="text-amber-400" />
-                                            <span className="text-[10px] font-black uppercase tracking-wider text-amber-300">Fantasia Archive Migration (.zip / .txt / .json)</span>
+                                            <Sparkles size={14} className={isLight ? 'text-[#8a5d1b]' : 'text-amber-400'} />
+                                            <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-[#8a5d1b]' : 'text-amber-300'}`}>
+                                                Fantasia Archive Migration (.zip / .txt / .json)
+                                            </span>
                                         </div>
-                                        <p className="text-[11px] opacity-50 font-serif italic mt-1">
+                                        <p className="text-[11px] opacity-60 font-serif italic mt-1">
                                             Migrate existing projects directly from Fantasia Archive v1. Translates all 20 blueprints, group affiliations, relational context notes, and automatically establishes two-way bidirectional sync.
                                         </p>
                                     </div>
@@ -759,8 +803,8 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 {faNotice && (
                                     <div className={`p-3 rounded-xl border text-[10px] flex items-center justify-between gap-2 ${
                                         faNotice.isError
-                                            ? 'bg-red-500/10 border-red-500/30 text-red-300'
-                                            : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                                            ? 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-300'
+                                            : 'bg-amber-500/10 border-amber-500/30 text-amber-800 dark:text-amber-300'
                                     }`}>
                                         <span>{faNotice.text}</span>
                                         <button onClick={() => setFaNotice(null)} className="opacity-60 hover:opacity-100 font-bold">✕</button>
@@ -771,7 +815,11 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <button
                                         onClick={() => handleFaClick('new')}
                                         disabled={faMigrating}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-100 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${
+                                            isLight
+                                                ? 'border-[#c8a96e] bg-[#c8a96e]/20 hover:bg-[#c8a96e]/35 text-[#593b0b]'
+                                                : 'border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-100'
+                                        }`}
                                     >
                                         <Upload size={13} /> {faMigrating ? 'Migrating Codex…' : 'Import as New Realm'}
                                     </button>
@@ -779,7 +827,11 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     <button
                                         onClick={() => handleFaClick('merge')}
                                         disabled={faMigrating}
-                                        className="py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border border-amber-500/20 hover:border-amber-400 hover:bg-amber-500/10 text-amber-200 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                                        className={`py-2.5 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 disabled:opacity-40 ${
+                                            isLight
+                                                ? 'border-[#c8a96e]/50 hover:border-[#8a5d1b] hover:bg-[#c8a96e]/15 text-[#593b0b]'
+                                                : 'border-amber-500/20 hover:border-amber-400 hover:bg-amber-500/10 text-amber-200'
+                                        }`}
                                     >
                                         <Layers size={13} /> {faMigrating ? 'Migrating…' : `Merge into "${world.name}"`}
                                     </button>
@@ -794,7 +846,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     />
                                 </div>
 
-                                <p className="text-[9px] opacity-35 font-mono">
+                                <p className="text-[9px] opacity-40 font-mono">
                                     Accepts a .zip export of a project folder, multiple .txt/.json database dumps selected together, or a single raw export file.
                                 </p>
                             </div>
@@ -802,41 +854,61 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                     </section>
 
                     {/* Lore Sharing — Batch Markdown / HTML Export */}
-                    <section className="pt-8 border-t border-slate-800/40 space-y-5">
+                    <section className={`pt-8 border-t space-y-5 ${isLight ? 'border-[#c8a96e]/30' : 'border-slate-800/40'}`}>
                         <div className="flex items-center gap-3">
-                            <FileText size={14} className="text-emerald-300" />
-                            <h3 className="text-xs font-black uppercase tracking-widest text-emerald-300">Lore Sharing — Markdown &amp; HTML Export</h3>
+                            <FileText size={14} className={isLight ? 'text-[#1e5436]' : 'text-emerald-300'} />
+                            <h3 className={`text-xs font-black uppercase tracking-widest ${isLight ? 'text-[#1e5436]' : 'text-emerald-300'}`}>
+                                Lore Sharing — Markdown &amp; HTML Export
+                            </h3>
                         </div>
-                        <p className="text-[11px] opacity-40 font-serif italic">
+                        <p className="text-[11px] opacity-60 font-serif italic">
                             Export codex entries as portable Markdown (Obsidian / Notion compatible) or standalone styled HTML. Relational context notes are included.
                         </p>
 
-                        <div className="p-5 rounded-2xl bg-emerald-900/10 border border-emerald-500/20 space-y-4">
+                        <div className={`p-5 rounded-2xl border space-y-4 ${
+                            isLight
+                                ? 'bg-[#ede2cb]/60 border-[#c8a96e]/40'
+                                : 'bg-emerald-900/10 border-emerald-500/20'
+                        }`}>
                             <div className="flex flex-wrap items-center gap-3">
                                 <div className="relative">
                                     <select
                                         value={batchExportType}
                                         onChange={e => setBatchExportType(e.target.value as EntityType | 'all')}
-                                        className="appearance-none pl-3 pr-8 py-2 rounded-xl bg-black/30 border border-emerald-500/25 text-xs font-bold text-emerald-100 outline-none cursor-pointer hover:border-emerald-400 transition-colors"
+                                        className={`appearance-none pl-3 pr-8 py-2 rounded-xl text-xs font-bold outline-none cursor-pointer transition-colors ${
+                                            isLight
+                                                ? 'bg-white border border-[#c8a96e] text-[#2b1810] hover:border-[#70121e]'
+                                                : 'bg-black/30 border border-emerald-500/25 text-emerald-100 hover:border-emerald-400'
+                                        }`}
                                     >
                                         <option value="all">All Types</option>
                                         {(Object.entries(TYPE_LABELS) as [EntityType, string][]).map(([type, label]) => (
                                             <option key={type} value={type}>{label}</option>
                                         ))}
                                     </select>
-                                    <ChevronDown size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none text-emerald-300" />
+                                    <ChevronDown size={12} className={`absolute right-2.5 top-1/2 -translate-y-1/2 opacity-60 pointer-events-none ${
+                                        isLight ? 'text-[#2b1810]' : 'text-emerald-300'
+                                    }`} />
                                 </div>
                                 <button
                                     onClick={() => handleBatchExport('markdown')}
                                     disabled={batchExporting}
-                                    className="py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-wider border border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-500/10 text-emerald-200 transition-all flex items-center gap-1.5 disabled:opacity-40"
+                                    className={`py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center gap-1.5 disabled:opacity-40 ${
+                                        isLight
+                                            ? 'border-[#1e5436]/40 bg-[#1e5436]/10 hover:bg-[#1e5436]/20 text-[#1e5436]'
+                                            : 'border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-500/10 text-emerald-200'
+                                    }`}
                                 >
                                     <FileText size={12} /> {batchExporting ? 'Exporting…' : 'Export as Markdown'}
                                 </button>
                                 <button
                                     onClick={() => handleBatchExport('html')}
                                     disabled={batchExporting}
-                                    className="py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-wider border border-sky-500/30 hover:border-sky-400 hover:bg-sky-500/10 text-sky-200 transition-all flex items-center gap-1.5 disabled:opacity-40"
+                                    className={`py-2 px-4 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center gap-1.5 disabled:opacity-40 ${
+                                        isLight
+                                            ? 'border-[#0369a1]/40 bg-[#0369a1]/10 hover:bg-[#0369a1]/20 text-[#0369a1]'
+                                            : 'border-sky-500/30 hover:border-sky-400 hover:bg-sky-500/10 text-sky-200'
+                                    }`}
                                 >
                                     <FileCode2 size={12} /> {batchExporting ? 'Exporting…' : 'Export as HTML'}
                                 </button>
@@ -844,8 +916,8 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                             {batchNotice && (
                                 <div className={`text-[10px] px-3 py-2 rounded-lg border ${
                                     batchNotice.isError
-                                        ? 'bg-red-500/10 border-red-500/30 text-red-300'
-                                        : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                                        ? 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-300'
+                                        : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
                                 }`}>
                                     {batchNotice.text}
                                 </div>
@@ -854,15 +926,23 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                     </section>
 
                     {/* Data Integrity */}
-                    <section className="pt-8 border-t border-slate-800/40 space-y-6">
+                    <section className={`pt-8 border-t space-y-6 ${isLight ? 'border-[#c8a96e]/30' : 'border-slate-800/40'}`}>
                         <div className="flex items-center gap-3">
-                            <Heart size={14} className="text-emerald-400" />
-                            <h3 className="text-xs font-black uppercase tracking-widest text-emerald-400">Data Integrity</h3>
+                            <Heart size={14} className={isLight ? 'text-[#1e5436]' : 'text-emerald-400'} />
+                            <h3 className={`text-xs font-black uppercase tracking-widest ${isLight ? 'text-[#1e5436]' : 'text-emerald-400'}`}>
+                                Data Integrity
+                            </h3>
                         </div>
-                        <div className="p-6 rounded-2xl bg-emerald-500/5 border border-emerald-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className={`p-6 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 ${
+                            isLight
+                                ? 'bg-[#ede2cb]/60 border-[#c8a96e]/40'
+                                : 'bg-emerald-500/5 border-emerald-900/20'
+                        }`}>
                             <div>
-                                <p className="text-xs font-bold text-emerald-200">Heal Bidirectional Relations</p>
-                                <p className="text-[10px] text-emerald-200/50 max-w-md">
+                                <p className={`text-xs font-bold ${isLight ? 'text-[#1e5436]' : 'text-emerald-200'}`}>
+                                    Heal Bidirectional Relations
+                                </p>
+                                <p className={`text-[10px] max-w-md ${isLight ? 'text-[#2b1810]/70' : 'text-emerald-200/50'}`}>
                                     Scans all entities and repairs any one-way links — e.g. if a Character lists a Condition as a boon but the Condition page doesn't show the Character back, this fixes it instantly.
                                 </p>
                             </div>
@@ -871,6 +951,8 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 className={`px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 ${
                                     healDone
                                         ? 'bg-emerald-600 text-white border-emerald-400'
+                                        : isLight
+                                        ? 'bg-[#1e5436]/15 hover:bg-[#1e5436] text-[#1e5436] hover:text-white border-[#1e5436]/40'
                                         : 'bg-emerald-900/40 hover:bg-emerald-700 text-emerald-200 border-emerald-500/30'
                                 }`}
                             >
@@ -880,17 +962,27 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                         </div>
 
                         {/* Asset & Media Vault Manager */}
-                        <div className="p-6 rounded-2xl bg-purple-500/5 border border-purple-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className={`p-6 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 ${
+                            isLight
+                                ? 'bg-[#ede2cb]/60 border-[#c8a96e]/40'
+                                : 'bg-purple-500/5 border-purple-900/20'
+                        }`}>
                             <div>
-                                <p className="text-xs font-bold text-purple-200">Asset & Media Vault Manager</p>
-                                <p className="text-[10px] text-purple-200/50 max-w-md">
+                                <p className={`text-xs font-bold ${isLight ? 'text-[#581c87]' : 'text-purple-200'}`}>
+                                    Asset & Media Vault Manager
+                                </p>
+                                <p className={`text-[10px] max-w-md ${isLight ? 'text-[#2b1810]/70' : 'text-purple-200/50'}`}>
                                     Browse, inspect, and manage all binary images, cartography maps, and media assets stored in Content-Addressable Storage (CAS). Inspect which entities reference each asset and clean up orphan files.
                                 </p>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => setIsVaultOpen(true)}
-                                    className="px-5 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white border-purple-400 shadow-md"
+                                    className={`px-5 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 shadow-md ${
+                                        isLight
+                                            ? 'bg-[#70121e] hover:bg-[#881337] text-white border-[#c8a96e]'
+                                            : 'bg-purple-600 hover:bg-purple-500 text-white border-purple-400'
+                                    }`}
                                 >
                                     <Layers size={12} />
                                     OPEN ASSET VAULT
@@ -901,6 +993,8 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     className={`px-4 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 ${
                                         pruneNotice
                                             ? 'bg-purple-600 text-white border-purple-400'
+                                            : isLight
+                                            ? 'bg-[#581c87]/15 hover:bg-[#581c87] text-[#581c87] hover:text-white border-[#581c87]/40 disabled:opacity-40'
                                             : 'bg-purple-900/40 hover:bg-purple-700 text-purple-200 border-purple-500/30 disabled:opacity-40'
                                     }`}
                                 >
@@ -912,15 +1006,23 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                     </section>
 
                     {/* Developer & Agent Diagnostics */}
-                    <section className="pt-8 border-t border-slate-800/40 space-y-6">
+                    <section className={`pt-8 border-t space-y-6 ${isLight ? 'border-[#c8a96e]/30' : 'border-slate-800/40'}`}>
                         <div className="flex items-center gap-3">
-                            <Zap size={14} className="text-yellow-400" />
-                            <h3 className="text-xs font-black uppercase tracking-widest text-yellow-400">Developer & Agent Diagnostics</h3>
+                            <Zap size={14} className={isLight ? 'text-[#854d0e]' : 'text-yellow-400'} />
+                            <h3 className={`text-xs font-black uppercase tracking-widest ${isLight ? 'text-[#854d0e]' : 'text-yellow-400'}`}>
+                                Developer & Agent Diagnostics
+                            </h3>
                         </div>
-                        <div className="p-6 rounded-2xl bg-yellow-500/5 border border-yellow-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className={`p-6 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 ${
+                            isLight
+                                ? 'bg-[#ede2cb]/60 border-[#c8a96e]/40'
+                                : 'bg-yellow-500/5 border-yellow-900/20'
+                        }`}>
                             <div>
-                                <p className="text-xs font-bold text-yellow-200">Export Live Agent Dev Snapshot</p>
-                                <p className="text-[10px] text-yellow-200/50 max-w-md">
+                                <p className={`text-xs font-bold ${isLight ? 'text-[#854d0e]' : 'text-yellow-200'}`}>
+                                    Export Live Agent Dev Snapshot
+                                </p>
+                                <p className={`text-[10px] max-w-md ${isLight ? 'text-[#2b1810]/70' : 'text-yellow-200/50'}`}>
                                     Downloads or updates a local developer snapshot for AI agent tools and the State Inspector MCP server to inspect active campaign status, entity breakdown, and relations.
                                 </p>
                             </div>
@@ -935,7 +1037,11 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                     const blob = new Blob([JSON.stringify(stateData, null, 2)], { type: 'application/json' });
                                     await downloadFileToDevice(blob, '.dev-state.json', 'application/json');
                                 }}
-                                className="px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 bg-yellow-400/20 hover:bg-yellow-400/30 text-yellow-200 border-yellow-400/40"
+                                className={`px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 ${
+                                    isLight
+                                        ? 'bg-[#854d0e]/15 hover:bg-[#854d0e] text-[#854d0e] hover:text-white border-[#854d0e]/40'
+                                        : 'bg-yellow-400/20 hover:bg-yellow-400/30 text-yellow-200 border-yellow-400/40'
+                                }`}
                             >
                                 <Download size={12} />
                                 EXPORT DEV SNAPSHOT (.dev-state.json)
@@ -944,20 +1050,32 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                     </section>
 
                     {/* Oblivion Protocol */}
-                    <section className="pt-8 border-t border-slate-800/40 space-y-6">
+                    <section className={`pt-8 border-t space-y-6 ${isLight ? 'border-[#c8a96e]/30' : 'border-slate-800/40'}`}>
                         <div className="flex items-center justify-between">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-rose-500 flex items-center gap-2">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-rose-600 dark:text-rose-500 flex items-center gap-2">
                                 <Skull size={14} /> Oblivion Protocol (Danger Zone)
                             </h3>
                         </div>
-                        <div className="p-6 rounded-2xl bg-rose-500/5 border border-rose-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className={`p-6 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 ${
+                            isLight
+                                ? 'bg-[#ede2cb]/60 border-rose-500/30'
+                                : 'bg-rose-500/5 border-rose-900/20'
+                        }`}>
                             <div>
-                                <p className="text-xs font-bold text-rose-200">Purge Active Realm Cache</p>
-                                <p className="text-[10px] text-rose-200/50">Permanently reset the entities and map markers of the active realm ("{world.name}").</p>
+                                <p className={`text-xs font-bold ${isLight ? 'text-rose-800' : 'text-rose-200'}`}>
+                                    Purge Active Realm Cache
+                                </p>
+                                <p className={`text-[10px] ${isLight ? 'text-[#2b1810]/70' : 'text-rose-200/50'}`}>
+                                    Permanently reset the entities and map markers of the active realm ("{world.name}").
+                                </p>
                             </div>
                             <button
                                 onClick={() => setIsWipeModalOpen(true)}
-                                className="px-6 py-2 bg-rose-900/40 hover:bg-rose-600 text-rose-200 text-[10px] font-black rounded-lg transition-all border border-rose-500/30 whitespace-nowrap"
+                                className={`px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap ${
+                                    isLight
+                                        ? 'bg-rose-700 hover:bg-rose-800 text-white border-rose-600'
+                                        : 'bg-rose-900/40 hover:bg-rose-600 text-rose-200 border-rose-500/30'
+                                }`}
                             >
                                 WIPE ACTIVE REALM
                             </button>

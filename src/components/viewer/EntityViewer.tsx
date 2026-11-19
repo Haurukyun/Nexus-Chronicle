@@ -42,7 +42,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const royalTabs = ['Overview', 'Biography', 'Relations', 'Inventory'];
 
     const MainView = () => (
-        <div className={`flex ${isWiki || (themeId === 'royal-codex') ? 'flex-row gap-8' : 'flex-col lg:flex-row gap-12'}`}>
+        <div className={`flex ${isWiki || (themeId === 'royal-codex') ? 'flex-row gap-8 xl:gap-12' : 'flex-col lg:flex-row gap-10 xl:gap-14'}`}>
             <div className="flex-1 min-w-0 space-y-6">
                 {/* Royal Codex Tab Bar */}
                 {(themeId === 'royal-codex') && (
@@ -207,7 +207,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
             </div>
 
             {/* Right Column Stat Block / Infobox */}
-            <aside className="lg:w-72 shrink-0 space-y-6">
+            <aside className="w-72 sm:w-80 lg:w-80 xl:w-96 2xl:w-[420px] shrink-0 space-y-6">
                 {(themeId === 'royal-codex') ? (
                     <>
                         {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}

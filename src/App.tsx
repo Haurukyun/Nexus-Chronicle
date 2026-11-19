@@ -212,13 +212,13 @@ const App = () => {
     return (
         <div 
             style={{ filter: auraStyles.filter }}
-            className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${isManuscript ? 'p-4 md:p-8 lg:p-12 items-center justify-center' : ''}`}>
+            className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${isManuscript ? 'p-1 sm:p-2 md:p-3 items-center justify-center' : ''}`}>
             
             {auraStyles.bg !== 'none' && (
                 <div className="absolute inset-0 pointer-events-none opacity-10 z-0" style={{ background: auraStyles.bg }} />
             )}
 
-            <div className={`flex w-full h-full ${isManuscript ? 'max-w-[1500px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
+            <div className={`flex w-full h-full ${isManuscript ? 'w-full max-w-none 2xl:max-w-[2400px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
                 <Sidebar 
                     world={world}
                     searchQuery={searchQuery}
@@ -466,7 +466,7 @@ const App = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="max-w-7xl mx-auto px-12 py-16 min-h-full">
+                            <div className="w-full max-w-none 2xl:max-w-7xl mx-auto px-6 md:px-12 py-8 md:py-12 min-h-full">
                                 <ErrorBoundary fallbackLabel="Error rendering character scroll or details. Click below to recover.">
                                     {editingTabIds.includes(activeTabId as string) ? (
                                         <EntityEditor
