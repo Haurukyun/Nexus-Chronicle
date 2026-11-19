@@ -19,6 +19,7 @@ import { pruneOrphanAssets, extractActiveAssetUris } from '../utils/assetStore';
 import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../utils/exportUtils';
 import { importFantasiaArchiveProject, FaInputFile } from '../utils/fantasiaArchiveMigration';
 import { reconcileAllBidirectionalRelations } from '../utils/bidirectionalSync';
+import { AssetVaultModal } from '../components/vault/AssetVaultModal';
 
 interface OptionsViewProps {
     world: WorldData;
@@ -59,7 +60,8 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
         setDrafts,
         setEditingTabIds,
         setActiveTabId,
-        handleHealRelations
+        handleHealRelations,
+        handleOpenEntity
     } = useWorldStore();
 
     const { t, layoutMode, themeId } = useTheme();
@@ -126,6 +128,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
 
     const [isPruning, setIsPruning] = useState(false);
     const [pruneNotice, setPruneNotice] = useState<string | null>(null);
+    const [isVaultOpen, setIsVaultOpen] = useState(false);
 
     const handlePruneMedia = async () => {
         setIsPruning(true);
@@ -876,26 +879,35 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                             </button>
                         </div>
 
-                        {/* Prune Unused Media (CAS Garbage Collection) */}
+                        {/* Asset & Media Vault Manager */}
                         <div className="p-6 rounded-2xl bg-purple-500/5 border border-purple-900/20 flex flex-col md:flex-row items-center justify-between gap-4">
                             <div>
-                                <p className="text-xs font-bold text-purple-200">Prune Unused Media (Vault Garbage Collection)</p>
+                                <p className="text-xs font-bold text-purple-200">Asset & Media Vault Manager</p>
                                 <p className="text-[10px] text-purple-200/50 max-w-md">
-                                    Audits the IndexedDB binary asset vault against all entities, maps, and lore notes. Safely purges orphaned images no longer referenced in any campaign.
+                                    Browse, inspect, and manage all binary images, cartography maps, and media assets stored in Content-Addressable Storage (CAS). Inspect which entities reference each asset and clean up orphan files.
                                 </p>
                             </div>
-                            <button
-                                onClick={handlePruneMedia}
-                                disabled={isPruning}
-                                className={`px-6 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 ${
-                                    pruneNotice
-                                        ? 'bg-purple-600 text-white border-purple-400'
-                                        : 'bg-purple-900/40 hover:bg-purple-700 text-purple-200 border-purple-500/30 disabled:opacity-40'
-                                }`}
-                            >
-                                <Sparkles size={12} />
-                                {pruneNotice || (isPruning ? 'Auditing Vault…' : 'PRUNE UNUSED MEDIA')}
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setIsVaultOpen(true)}
+                                    className="px-5 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white border-purple-400 shadow-md"
+                                >
+                                    <Layers size={12} />
+                                    OPEN ASSET VAULT
+                                </button>
+                                <button
+                                    onClick={handlePruneMedia}
+                                    disabled={isPruning}
+                                    className={`px-4 py-2 text-[10px] font-black rounded-lg transition-all border whitespace-nowrap flex items-center gap-2 ${
+                                        pruneNotice
+                                            ? 'bg-purple-600 text-white border-purple-400'
+                                            : 'bg-purple-900/40 hover:bg-purple-700 text-purple-200 border-purple-500/30 disabled:opacity-40'
+                                    }`}
+                                >
+                                    <Sparkles size={12} />
+                                    {pruneNotice || (isPruning ? 'Auditing…' : 'PRUNE ORPHANS')}
+                                </button>
+                            </div>
                         </div>
                     </section>
 
@@ -1005,6 +1017,13 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                 }}
                 onCancel={() => setIsWipeModalOpen(false)}
                 theme={theme}
+            />
+
+            <AssetVaultModal
+                isOpen={isVaultOpen}
+                onClose={() => setIsVaultOpen(false)}
+                worlds={worlds}
+                onNavigate={(id) => handleOpenEntity(id)}
             />
 
             <footer className="text-center opacity-20 hover:opacity-100 transition-opacity duration-1000">

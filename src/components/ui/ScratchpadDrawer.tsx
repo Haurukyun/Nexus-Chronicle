@@ -36,7 +36,8 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
     setDrafts,
 }) => {
     const { themeId, layoutMode } = useTheme();
-    const [viewMode, setViewMode] = useState<EditorViewMode>('write');
+    // Default to 'preview' (Live Preview Obsidian-style)
+    const [viewMode, setViewMode] = useState<EditorViewMode>('preview');
     const [lastRollMessage, setLastRollMessage] = useState<string | null>(null);
     const [showConvertModal, setShowConvertModal] = useState(false);
     const [convertType, setConvertType] = useState<EntityType>('note');
@@ -73,8 +74,14 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
 
     // Helper to insert markdown or text at cursor
     const insertAtCursor = (prefix: string, suffix: string = '') => {
+        if (viewMode === 'preview') {
+            setViewMode('write');
+        }
         const textarea = textareaRef.current;
-        if (!textarea) return;
+        if (!textarea) {
+            onUpdateNote(scratchpadNote ? `${scratchpadNote}\n${prefix}${suffix}` : `${prefix}${suffix}`);
+            return;
+        }
 
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
@@ -213,25 +220,27 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
                         {/* View mode toggle */}
                         <div className={`flex items-center rounded-lg border p-0.5 text-xs ${isRoyal ? 'border-[#c8a96e]/30 bg-[#29170e]' : isWiki ? 'border-[#d4c8af] bg-white' : 'border-slate-700 bg-slate-800'}`}>
                             <button
-                                onClick={() => setViewMode('write')}
-                                title="Write Mode"
-                                className={`p-1.5 rounded ${viewMode === 'write' ? 'bg-black/20 font-bold opacity-100' : 'opacity-50 hover:opacity-100'}`}
+                                onClick={() => setViewMode('preview')}
+                                title="Live Preview (Obsidian style · Default)"
+                                className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] ${viewMode === 'preview' ? 'bg-black/25 font-bold opacity-100 text-amber-300' : 'opacity-60 hover:opacity-100'}`}
                             >
-                                <Edit3 size={13} />
+                                <Eye size={12} />
+                                <span className="hidden sm:inline">Preview</span>
                             </button>
                             <button
                                 onClick={() => setViewMode('split')}
                                 title="Split View"
-                                className={`p-1.5 rounded hidden sm:block ${viewMode === 'split' ? 'bg-black/20 font-bold opacity-100' : 'opacity-50 hover:opacity-100'}`}
+                                className={`p-1.5 rounded hidden sm:block ${viewMode === 'split' ? 'bg-black/25 font-bold opacity-100 text-amber-300' : 'opacity-60 hover:opacity-100'}`}
                             >
-                                <Columns size={13} />
+                                <Columns size={12} />
                             </button>
                             <button
-                                onClick={() => setViewMode('preview')}
-                                title="Preview Mode"
-                                className={`p-1.5 rounded ${viewMode === 'preview' ? 'bg-black/20 font-bold opacity-100' : 'opacity-50 hover:opacity-100'}`}
+                                onClick={() => setViewMode('write')}
+                                title="Source Code (Raw Edit Mode)"
+                                className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] ${viewMode === 'write' ? 'bg-black/25 font-bold opacity-100 text-amber-300' : 'opacity-60 hover:opacity-100'}`}
                             >
-                                <Eye size={13} />
+                                <Edit3 size={12} />
+                                <span className="hidden sm:inline">Edit</span>
                             </button>
                         </div>
 
@@ -301,8 +310,8 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
                 </div>
 
                 {/* Markdown Formatting Toolbar */}
-                {viewMode !== 'preview' && (
-                    <div className={`px-4 py-1.5 border-b flex items-center gap-1 shrink-0 ${toolbarBg}`}>
+                <div className={`px-4 py-1.5 border-b flex items-center justify-between gap-1 shrink-0 ${toolbarBg}`}>
+                    <div className="flex items-center gap-1">
                         <button
                             onClick={() => insertAtCursor('**', '**')}
                             title="Bold"
@@ -347,22 +356,50 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
                             <span className="font-mono text-[9px]">[[link]]</span>
                         </button>
                     </div>
-                )}
+
+                    <div className="flex items-center gap-2">
+                        {viewMode === 'preview' ? (
+                            <span className="text-[10px] opacity-40 font-mono tracking-tight hidden sm:inline">
+                                Live Preview · Click text to edit
+                            </span>
+                        ) : (
+                            <span className="text-[10px] opacity-40 font-mono tracking-tight hidden sm:inline">
+                                Ctrl+Enter for Live Preview
+                            </span>
+                        )}
+                    </div>
+                </div>
 
                 {/* Main Content Area */}
                 <div className="flex-1 flex overflow-hidden p-4 gap-4">
                     {/* Write mode or Split left */}
                     {(viewMode === 'write' || viewMode === 'split') && (
-                        <div className="flex-1 flex flex-col h-full min-w-0">
+                        <div className="flex-1 flex flex-col h-full min-w-0 relative">
                             <textarea
                                 ref={textareaRef}
                                 value={scratchpadNote}
                                 onChange={(e) => onUpdateNote(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                                        e.preventDefault();
+                                        setViewMode('preview');
+                                    }
+                                }}
                                 placeholder="Jot down active session thoughts, spontaneous NPC dialogues, encounter seeds, or quick rolls here... (Markdown & [[Wikilinks]] supported)"
                                 className={`w-full h-full resize-none bg-transparent border-0 outline-none font-mono text-xs leading-relaxed p-2 ${
                                     isRoyal ? 'placeholder-[#c8a96e]/40' : 'placeholder-current/30'
                                 }`}
                             />
+                            {viewMode === 'write' && (
+                                <button
+                                    onClick={() => setViewMode('preview')}
+                                    className="absolute bottom-2 right-2 flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider opacity-60 hover:opacity-100 bg-black/30 backdrop-blur-xs border border-current/20 transition-all"
+                                    title="Switch to Live Preview (Ctrl+Enter)"
+                                >
+                                    <Eye size={11} />
+                                    <span>Live Preview</span>
+                                </button>
+                            )}
                         </div>
                     )}
 
@@ -373,19 +410,42 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
 
                     {/* Preview mode or Split right */}
                     {(viewMode === 'preview' || viewMode === 'split') && (
-                        <div className="flex-1 h-full overflow-y-auto p-2 min-w-0">
+                        <div
+                            className={`flex-1 h-full overflow-y-auto p-2 min-w-0 relative ${
+                                viewMode === 'preview' ? 'cursor-text group/preview' : ''
+                            }`}
+                            onClick={(e) => {
+                                // If clicking an interactive link inside MarkdownRenderer, don't trigger write mode
+                                if ((e.target as HTMLElement).closest('a, button')) return;
+                                if (viewMode === 'preview') {
+                                    setViewMode('write');
+                                }
+                            }}
+                        >
                             {scratchpadNote.trim() ? (
-                                <MarkdownRenderer
-                                    content={scratchpadNote}
-                                    allEntities={world.entities}
-                                    onNavigate={onNavigate}
-                                    isWikiMode={isWiki}
-                                    className="text-xs"
-                                />
+                                <>
+                                    <MarkdownRenderer
+                                        content={scratchpadNote}
+                                        allEntities={world.entities}
+                                        onNavigate={onNavigate}
+                                        isWikiMode={isWiki}
+                                        className="text-xs"
+                                    />
+                                    {viewMode === 'preview' && (
+                                        <div className="sticky bottom-2 flex justify-end pointer-events-none opacity-0 group-hover/preview:opacity-100 transition-opacity">
+                                            <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-black/40 text-amber-200 border border-amber-300/30 backdrop-blur-xs shadow-lg">
+                                                <Edit3 size={11} />
+                                                Click to edit · Live Preview
+                                            </span>
+                                        </div>
+                                    )}
+                                </>
                             ) : (
-                                <p className="opacity-30 italic text-xs py-8 text-center">
-                                    Scratchpad is empty. Switch to write mode to start scrawling.
-                                </p>
+                                <div className="h-full flex flex-col items-center justify-center p-8 text-center opacity-40 hover:opacity-80 transition-opacity">
+                                    <Edit3 size={24} className="mb-2 opacity-50" />
+                                    <p className="font-serif text-sm">Scratchpad is empty</p>
+                                    <p className="text-[10px] mt-1 opacity-70">Click anywhere to begin scrawling...</p>
+                                </div>
                             )}
                         </div>
                     )}

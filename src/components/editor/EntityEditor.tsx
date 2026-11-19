@@ -5,16 +5,18 @@ import {
     Box, Hash, Tag, FileText, Code, UserCircle, MapPin, Calendar, Hourglass,
     Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe,
     Gem, User, Leaf, Sun, Moon, Tent, Pencil, ImageIcon, Plus, Trash2, GripVertical,
-    Check, X
+    Check, X, Link2, GitMerge, ExternalLink
 } from 'lucide-react';
 import { AssetImageUploader } from '../ui/AssetImageUploader';
 import { EditorGroup } from './EditorGroup';
 import { GroupRoleGroup } from './GroupRoleGroup';
 import { FormInput, FormToggle, SmartSelect, MarkdownEditor } from '../ui';
-import { EntityEditorProps, Location } from '../../types';
+import { EntityEditorProps, Location, WorldEntity } from '../../types';
 import { EntitySpecificsRegistry } from './specifics/EntitySpecificsRegistry';
 import { useTheme } from '../../theme';
 import { isEntityCategory } from '../../utils/documentModeUtils';
+import { getCategorizedBacklinks } from '../../utils/backlinkUtils';
+import { useWorldStore } from '../../store/useWorldStore';
 
 // Custom Attributes Editor Component
 const CustomAttributesEditor = ({
@@ -188,6 +190,39 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
     const isRoyal = themeId === 'royal-codex';
     const isLocation = entity.type === 'location';
     const loc = entity as Location;
+
+    const handleOpenEntity = useWorldStore(s => s.handleOpenEntity);
+    const backlinks = React.useMemo(() => getCategorizedBacklinks(entity.id, allEntities), [entity.id, allEntities]);
+
+    const resolveEntities = (ids: string[]): WorldEntity[] => {
+        return ids.map(id => allEntities.find(e => e.id === id)).filter(Boolean) as WorldEntity[];
+    };
+
+    const backlinkSections = React.useMemo(() => {
+        const sections: { title: string; items: WorldEntity[] }[] = [];
+
+        const eventItems = resolveEntities(backlinks.events);
+        if (eventItems.length > 0) sections.push({ title: 'Featured in Events', items: eventItems });
+
+        const residentItems = resolveEntities([...new Set([...backlinks.residents, ...backlinks.natives, ...backlinks.passedHere])]);
+        if (residentItems.length > 0) sections.push({ title: 'Residents & Origins', items: residentItems });
+
+        const memberItems = resolveEntities([...new Set([...backlinks.members, ...backlinks.practitioners])]);
+        if (memberItems.length > 0) sections.push({ title: 'Members & Practitioners', items: memberItems });
+
+        const lineageItems = resolveEntities([...new Set([...backlinks.children, ...backlinks.successors])]);
+        if (lineageItems.length > 0) sections.push({ title: 'Children & Successors', items: lineageItems });
+
+        const relationItems = resolveEntities([...new Set([...backlinks.friends, ...backlinks.allies, ...backlinks.relatives, ...backlinks.complicated])]);
+        if (relationItems.length > 0) sections.push({ title: 'Allies & Kin', items: relationItems });
+
+        const otherItems = resolveEntities([...new Set([...backlinks.lore, ...backlinks.locations, ...backlinks.containedIn, ...backlinks.referencedIn])]);
+        if (otherItems.length > 0) sections.push({ title: 'Other References', items: otherItems });
+
+        return sections;
+    }, [backlinks, allEntities]);
+
+    const totalBacklinkCount = backlinkSections.reduce((acc, s) => acc + s.items.length, 0);
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -412,6 +447,57 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                             placeholder="Private ruminations only visible in the scroll of creation..."
                             minHeight="h-48"
                         />
+                    </div>
+                </EditorGroup>
+
+                {/* 6. INCOMING TIES & BACKLINKS (UNIVERSAL) */}
+                <EditorGroup title={`Incoming Ties & Backlinks (${totalBacklinkCount})`} icon={GitMerge}>
+                    <div className="col-span-12 space-y-4">
+                        {totalBacklinkCount === 0 ? (
+                            <div className="p-5 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] text-center">
+                                <p className="text-xs opacity-50 italic">
+                                    No other codex entries currently reference this record. As you link other characters, locations, events, or factions to "{entity.name}", their incoming connections will automatically be reflected here.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {backlinkSections.map(section => (
+                                    <div 
+                                        key={section.title}
+                                        className={`p-4 rounded-2xl border space-y-3 ${
+                                            isRoyal 
+                                                ? 'bg-[#f7efe0] border-[#c8a96e]/40 text-[#2b1810]' 
+                                                : isWikiMode 
+                                                ? 'bg-amber-50/60 border-amber-200 text-stone-800' 
+                                                : 'bg-black/20 border-white/10 text-slate-200'
+                                        }`}
+                                    >
+                                        <div className="flex items-center justify-between border-b border-current/10 pb-2">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider opacity-75">
+                                                {section.title}
+                                            </span>
+                                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/10 font-bold">
+                                                {section.items.length}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
+                                            {section.items.map(item => (
+                                                <button
+                                                    key={item.id}
+                                                    type="button"
+                                                    onClick={() => handleOpenEntity(item.id)}
+                                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium border border-current/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm group"
+                                                    title={`Open ${item.name} (${item.type}) in new tab`}
+                                                >
+                                                    <span className="truncate max-w-[130px]">{item.name}</span>
+                                                    <ExternalLink size={10} className="opacity-40 group-hover:opacity-100 shrink-0" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </EditorGroup>
             </fieldset>

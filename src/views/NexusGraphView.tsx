@@ -17,6 +17,9 @@ import {
   Info,
   Users,
   StickyNote,
+  Layers,
+  Compass,
+  Scan,
 } from 'lucide-react';
 import { WorldData, WorldEntity, EntityType } from '../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../constants';
@@ -235,7 +238,8 @@ function tickForces(
   edges: GraphEdge[],
   w: number,
   h: number,
-  alpha: number
+  alpha: number,
+  isClustered: boolean = false
 ): void {
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
@@ -271,13 +275,28 @@ function tickForces(
     }
   }
 
-  // Center gravity
-  const cx = w / 2, cy = h / 2;
-  const grav = 0.04 * alpha;
-  nodes.forEach((n) => {
-    if (!n.fx) n.vx += (cx - n.x) * grav;
-    if (!n.fy) n.vy += (cy - n.y) * grav;
-  });
+  // Center gravity vs Category Cluster Centers
+  if (isClustered) {
+    const clusterCenters: Record<string, { cx: number; cy: number }> = {
+      story:   { cx: w * 0.28, cy: h * 0.28 },
+      world:   { cx: w * 0.72, cy: h * 0.28 },
+      groups:  { cx: w * 0.28, cy: h * 0.72 },
+      details: { cx: w * 0.72, cy: h * 0.72 },
+    };
+    const clusterStrength = 0.07 * alpha;
+    nodes.forEach((n) => {
+      const center = clusterCenters[n.category] || { cx: w / 2, cy: h / 2 };
+      if (!n.fx) n.vx += (center.cx - n.x) * clusterStrength;
+      if (!n.fy) n.vy += (center.cy - n.y) * clusterStrength;
+    });
+  } else {
+    const cx = w / 2, cy = h / 2;
+    const grav = 0.04 * alpha;
+    nodes.forEach((n) => {
+      if (!n.fx) n.vx += (cx - n.x) * grav;
+      if (!n.fy) n.vy += (cy - n.y) * grav;
+    });
+  }
 
   // Integrate
   nodes.forEach((n) => {
@@ -338,6 +357,14 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
   const [showLegend, setShowLegend] = useState(true);
   const [dims, setDims] = useState({ w: 1200, h: 700 });
+  const [isClustered, setIsClustered] = useState(false);
+  const [isolateNeighbors, setIsolateNeighbors] = useState(false);
+  const isClusteredRef = useRef(isClustered);
+
+  useEffect(() => {
+    isClusteredRef.current = isClustered;
+    alphaRef.current = Math.max(alphaRef.current, 0.7);
+  }, [isClustered]);
 
   // Measure container
   useEffect(() => {
@@ -383,7 +410,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
   useEffect(() => {
     const tick = () => {
       if (alphaRef.current > 0.001) {
-        tickForces(nodesRef.current, edgesRef.current, dims.w, dims.h, alphaRef.current);
+        tickForces(nodesRef.current, edgesRef.current, dims.w, dims.h, alphaRef.current, isClusteredRef.current);
         alphaRef.current *= 1 - SIM_ALPHA_DECAY;
         forceRender((n) => n + 1);
       }
@@ -509,6 +536,33 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
   const resetCamera = () => { setZoom(1); setPan({ x: 0, y: 0 }); };
 
+  const zoomToFit = () => {
+    const nodes = nodesRef.current;
+    if (nodes.length === 0) {
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+      return;
+    }
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    nodes.forEach((n) => {
+      if (n.x < minX) minX = n.x;
+      if (n.x > maxX) maxX = n.x;
+      if (n.y < minY) minY = n.y;
+      if (n.y > maxY) maxY = n.y;
+    });
+    const padding = 120;
+    const graphW = maxX - minX + padding * 2;
+    const graphH = maxY - minY + padding * 2;
+    const targetZoom = Math.max(0.18, Math.min(2.0, Math.min(dims.w / graphW, dims.h / graphH)));
+    const graphCenterX = (minX + maxX) / 2;
+    const graphCenterY = (minY + maxY) / 2;
+    setZoom(targetZoom);
+    setPan({
+      x: dims.w / 2 - graphCenterX * targetZoom,
+      y: dims.h / 2 - graphCenterY * targetZoom,
+    });
+  };
+
   const nodes = nodesRef.current;
   const edgeList = edgesRef.current;
 
@@ -572,6 +626,35 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
         </defs>
 
         <g transform={`translate(${pan.x},${pan.y}) scale(${zoom})`}>
+          {/* ── Category Cluster Background Halos ─────────────────────────── */}
+          {isClustered && (
+            <g className="pointer-events-none select-none">
+              {[
+                { label: 'Story & Lore', color: CATEGORY_COLORS.story, x: dims.w * 0.28, y: dims.h * 0.28 },
+                { label: 'World & Inhabitants', color: CATEGORY_COLORS.world, x: dims.w * 0.72, y: dims.h * 0.28 },
+                { label: 'Orders & Circles', color: CATEGORY_COLORS.groups, x: dims.w * 0.28, y: dims.h * 0.72 },
+                { label: 'Details & Arcana', color: CATEGORY_COLORS.details, x: dims.w * 0.72, y: dims.h * 0.72 },
+              ].map((c) => (
+                <g key={c.label} transform={`translate(${c.x},${c.y})`}>
+                  <circle r={160} fill={c.color} fillOpacity={0.03} stroke={c.color} strokeWidth={1} strokeDasharray="6 6" strokeOpacity={0.25} />
+                  <text
+                    textAnchor="middle"
+                    y={-125}
+                    fontSize={11}
+                    fontWeight="bold"
+                    letterSpacing="0.25em"
+                    fill={c.color}
+                    fillOpacity={0.4}
+                    fontFamily="serif"
+                    style={{ textTransform: 'uppercase' }}
+                  >
+                    ✦ {c.label} ✦
+                  </text>
+                </g>
+              ))}
+            </g>
+          )}
+
           {/* ── Edges ─────────────────────────────────────────────────────── */}
           <g>
             {edgeList.map((edge, i) => {
@@ -581,6 +664,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
               const key = `${edge.source}|${edge.target}|${edge.kind}`;
               const isHighlighted = highlightedEdgeIds.has(key);
               const isDimmed = hasFocus && !isHighlighted;
+              const isEdgeHidden = isolateNeighbors && hasFocus && isDimmed;
               const color = EDGE_COLORS[edge.kind];
 
               // Offset so multiple edges don't fully overlap
@@ -596,7 +680,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                   d={`M${s.x},${s.y} Q${mx},${my} ${t.x},${t.y}`}
                   stroke={color}
                   strokeWidth={isHighlighted ? 2.5 : 1}
-                  strokeOpacity={isDimmed ? 0.06 : isHighlighted ? 0.9 : 0.3}
+                  strokeOpacity={isEdgeHidden ? 0 : isDimmed ? 0.06 : isHighlighted ? 0.9 : 0.3}
                   fill="none"
                   markerEnd={isHighlighted ? `url(#arrow-${edge.kind})` : undefined}
                   style={{ transition: 'stroke-opacity 0.2s' }}
@@ -612,6 +696,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
               const isSelected = node.id === selectedId;
               const isHovered = node.id === hoveredId;
               const isDimmed = hasFocus && !highlightedNodeIds.has(node.id);
+              const isNodeHidden = isolateNeighbors && hasFocus && isDimmed;
               const isFocused = highlightedNodeIds.has(node.id);
               const r = isSelected ? NODE_RADIUS + 6 : NODE_RADIUS;
 
@@ -619,7 +704,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                 <g
                   key={node.id}
                   transform={`translate(${node.x},${node.y})`}
-                  style={{ cursor: 'pointer', opacity: isDimmed ? 0.15 : 1, transition: 'opacity 0.2s' }}
+                  style={{ cursor: isNodeHidden ? 'default' : 'pointer', opacity: isNodeHidden ? 0.02 : isDimmed ? 0.15 : 1, pointerEvents: isNodeHidden ? 'none' : 'auto', transition: 'opacity 0.2s' }}
                   onPointerEnter={() => {
                     setHoveredId(node.id);
                     setHoveredPos({ svgX: node.x * zoom + pan.x, svgY: node.y * zoom + pan.y });
@@ -916,9 +1001,36 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
         <button
           className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10`}
           onClick={resetCamera}
-          title="Reset camera"
+          title="Reset camera (100% Origin)"
         >
           <Maximize2 size={14} />
+        </button>
+
+        {/* Zoom to fit */}
+        <button
+          className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10`}
+          onClick={zoomToFit}
+          title="Zoom to Fit (Fit all visible nodes)"
+        >
+          <Scan size={14} />
+        </button>
+
+        {/* Cluster by Category Islands */}
+        <button
+          className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10 ${isClustered ? ((themeId === 'royal-codex') ? 'ring-2 ring-[#70121e] bg-[#70121e]/20' : (layoutMode === 'wiki') ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c]/15' : 'ring-2 ring-yellow-400 bg-yellow-400/20 text-yellow-300') : ''}`}
+          onClick={() => setIsClustered(c => !c)}
+          title={isClustered ? "Disable Category Islands" : "Cluster by Category Islands"}
+        >
+          <Layers size={14} />
+        </button>
+
+        {/* Isolate Neighbors / Focus Mode */}
+        <button
+          className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10 ${isolateNeighbors ? ((themeId === 'royal-codex') ? 'ring-2 ring-[#70121e] bg-[#70121e]/20' : (layoutMode === 'wiki') ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c]/15' : 'ring-2 ring-yellow-400 bg-yellow-400/20 text-yellow-300') : ''}`}
+          onClick={() => setIsolateNeighbors(i => !i)}
+          title={isolateNeighbors ? "Focus Mode Active (Isolating active node & neighbors)" : "Enable Focus Mode (Isolate neighbors on click)"}
+        >
+          <Crosshair size={14} />
         </button>
 
         {/* Re-center on selected node */}

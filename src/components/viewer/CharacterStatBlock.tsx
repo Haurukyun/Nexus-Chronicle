@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Users, Maximize2 } from 'lucide-react';
+import { Users, Maximize2, Printer } from 'lucide-react';
 import { TaperedDivider, WikiStatRow, LinksDisplay, RadarChart, EmeraldGem } from '../ui';
 import { NexusImage } from '../ui/NexusImage';
 import { ExpandedImageModal } from '../ui/ExpandedImageModal';
 import { Character, WorldEntity } from '../../types';
 import { CategorizedBacklinks } from '../../utils/backlinkUtils';
+import { generateCharacterSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
 import { useWorldStore } from '../../store/useWorldStore';
 
 interface CharacterStatBlockProps {
@@ -50,56 +51,115 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
         const cha = stats.charisma || '15';
 
         return (
-            <div 
-                className="bg-gradient-to-b from-[#4a0d1b] via-[#300611] to-[#1b0207] border-4 border-[#c8a96e] rounded-t-2xl shadow-2xl p-5 pb-10 text-[#fff8e7] font-sans relative overflow-hidden"
-                style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 24px), 50% 100%, 0 calc(100% - 24px))' }}
-            >
-                {/* Inner Decorative Gold Filigree Border */}
-                <div className="absolute inset-1 border border-[#c8a96e]/30 pointer-events-none rounded-t-xl" />
+            <>
+                <div 
+                    className="bg-gradient-to-b from-[#4a0d1b] via-[#300611] to-[#1b0207] border-4 border-[#c8a96e] rounded-t-2xl shadow-2xl p-5 pb-10 text-[#fff8e7] font-sans relative overflow-hidden"
+                    style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 24px), 50% 100%, 0 calc(100% - 24px))' }}
+                >
+                    {/* Inner Decorative Gold Filigree Border */}
+                    <div className="absolute inset-1 border border-[#c8a96e]/30 pointer-events-none rounded-t-xl" />
 
-                {/* Banner Header */}
-                <div className="text-center border-b border-[#c8a96e]/40 pb-3 mb-3">
-                    <span className="text-[11px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] block drop-shadow">RPG Stat Chart</span>
-                </div>
-
-                {/* Radar Chart */}
-                <div className="py-1 flex items-center justify-center">
-                    <RadarChart stats={stats} />
-                </div>
-
-                {/* Attribute Score Header */}
-                <div className="border-t border-[#c8a96e]/40 pt-3 mt-2">
-                    <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] text-center mb-3">Attribute Score</div>
-
-                    {/* 6 Shield / Octagonal Badges in 2 Rows of 3 */}
-                    <div className="grid grid-cols-3 gap-2.5 text-center px-2">
-                        {[
-                            { label: 'INT', val: int },
-                            { label: 'WIS', val: wis },
-                            { label: 'CHA', val: cha },
-                            { label: 'INT', val: int },
-                            { label: 'WIS', val: wis },
-                            { label: 'CHA', val: '17' }
-                        ].map((st, idx) => (
-                            <div 
-                                key={idx} 
-                                className="bg-gradient-to-b from-[#4a1c1c] to-[#260e0e] border border-[#d4c8af] py-2 px-1 text-center shadow-[inset_0_2px_5px_rgba(0,0,0,0.9)] transition-all cursor-default relative h-16 flex flex-col justify-center"
-                                style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}
-                            >
-                                <div className="absolute inset-[2px] border border-[#d4c8af]/40 pointer-events-none" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }} />
-                                <span className="block font-serif font-bold text-[#e6c687] text-[10px] tracking-wider uppercase leading-none mb-1 z-10">{st.label}</span>
-                                <span className="text-xl font-serif font-medium text-white leading-none drop-shadow z-10">{st.val}</span>
+                    {/* Royal Portrait Frame */}
+                    <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-[#c8a96e] bg-[#24050b] shadow-2xl mb-4 group">
+                        {char.imageUri ? (
+                            <NexusImage
+                                src={char.imageUri}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                containerClassName="w-full h-full"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-[#3a0b15] to-[#1c0208] text-[#c8a96e]/40 p-4 text-center">
+                                <Users size={56} className="mb-2 opacity-50" />
+                                <span className="text-[10px] uppercase font-serif tracking-widest text-[#c8a96e]/60">Royal Record</span>
                             </div>
-                        ))}
+                        )}
+                        {/* Filigree Corner Accents */}
+                        <div className="absolute top-1.5 left-1.5 w-4 h-4 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
+                        <div className="absolute top-1.5 right-1.5 w-4 h-4 border-t-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+                        <div className="absolute bottom-1.5 left-1.5 w-4 h-4 border-b-2 border-l-2 border-[#c8a96e] pointer-events-none" />
+                        <div className="absolute bottom-1.5 right-1.5 w-4 h-4 border-b-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+
+                        {char.imageUri && (
+                            <button
+                                type="button"
+                                onClick={() => setExpandedImg(char.imageUri!)}
+                                className="absolute bottom-2.5 right-2.5 bg-black/60 hover:bg-[#70121e] text-[#fef08a] p-1.5 rounded-lg border border-[#c8a96e]/50 opacity-0 group-hover:opacity-100 transition-all cursor-pointer shadow-md"
+                                title="Inspect Royal Portrait"
+                            >
+                                <Maximize2 size={13} />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Banner Header */}
+                    <div className="text-center border-b border-[#c8a96e]/40 pb-3 mb-3">
+                        <span className="text-[11px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] block drop-shadow">RPG Stat Chart</span>
+                    </div>
+
+                    {/* Radar Chart */}
+                    <div className="py-1 flex items-center justify-center">
+                        <RadarChart stats={stats} />
+                    </div>
+
+                    {/* Attribute Score Header */}
+                    <div className="border-t border-[#c8a96e]/40 pt-3 mt-2">
+                        <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] text-center mb-3">Attribute Score</div>
+
+                        {/* 6 Shield Badges in 2 Rows of 3 */}
+                        <div className="grid grid-cols-3 gap-2.5 text-center px-2">
+                            {[
+                                { label: 'STR', val: str },
+                                { label: 'DEX', val: dex },
+                                { label: 'CON', val: con },
+                                { label: 'INT', val: int },
+                                { label: 'WIS', val: wis },
+                                { label: 'CHA', val: cha }
+                            ].map((st, idx) => (
+                                <div 
+                                    key={idx} 
+                                    className="bg-gradient-to-b from-[#4a1c1c] to-[#260e0e] border border-[#d4c8af] py-2 px-1 text-center shadow-[inset_0_2px_5px_rgba(0,0,0,0.9)] transition-all cursor-default relative h-16 flex flex-col justify-center"
+                                    style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}
+                                >
+                                    <div className="absolute inset-[2px] border border-[#d4c8af]/40 pointer-events-none" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }} />
+                                    <span className="block font-serif font-bold text-[#e6c687] text-[10px] tracking-wider uppercase leading-none mb-1 z-10">{st.label}</span>
+                                    <span className="text-xl font-serif font-medium text-white leading-none drop-shadow z-10">{st.val}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Living Status Header & Glowing Emerald Gem */}
+                    <div className="border-t border-[#c8a96e]/40 pt-3 mt-4 text-center">
+                        <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687]">{isDeceased ? 'DECEASED' : 'LIVING'}</div>
+                        <EmeraldGem active={!isDeceased} />
+                    </div>
+
+                    {/* Print Character Sheet Action */}
+                    <div className="mt-4 pt-3 border-t border-[#c8a96e]/30 flex justify-center">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const html = generateCharacterSheetHtml(char, allEntities, { includeDmNotes: true, theme });
+                                openPrintableDocument(html);
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#c8a96e]/60 bg-[#70121e]/80 hover:bg-[#70121e] text-[#fff8e7] text-[10px] font-serif font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer hover:scale-[1.02]"
+                            title="Print Character Sheet or Export as PDF"
+                        >
+                            <Printer size={12} className="text-[#fef08a]" />
+                            <span>Print Character Sheet</span>
+                        </button>
                     </div>
                 </div>
 
-                {/* Living Status Header & Glowing Emerald Gem */}
-                <div className="border-t border-[#c8a96e]/40 pt-3 mt-4 text-center">
-                    <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687]">{isDeceased ? 'DECEASED' : 'LIVING'}</div>
-                    <EmeraldGem active={!isDeceased} />
-                </div>
-            </div>
+                {expandedImg && (
+                    <ExpandedImageModal
+                        imageUri={expandedImg}
+                        entityName={char.name}
+                        onClose={() => setExpandedImg(null)}
+                        theme="royal-codex"
+                    />
+                )}
+            </>
         );
     }
 
@@ -240,6 +300,21 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                         )}
                     </div>
                 )}
+                {/* Print Action */}
+                <div className="p-2.5 bg-[#fef9c3]/40 border-t border-[#d4c8af] flex justify-center">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            const html = generateCharacterSheetHtml(char, allEntities, { includeDmNotes: true, theme });
+                            openPrintableDocument(html);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider border border-[#d4c8af] bg-white text-[#7a200d] hover:bg-[#fef9c3] transition-all cursor-pointer shadow-xs"
+                        title="Print Character Sheet or Export as PDF"
+                    >
+                        <Printer size={12} />
+                        <span>Print Character Sheet</span>
+                    </button>
+                </div>
             </div>
             {expandedImg && (
                 <ExpandedImageModal
@@ -382,6 +457,21 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                     )}
                 </div>
             )}
+            {/* Print Action */}
+            <div className="pt-2 border-t border-slate-800/80 flex justify-center">
+                <button
+                    type="button"
+                    onClick={() => {
+                        const html = generateCharacterSheetHtml(char, allEntities, { includeDmNotes: true, theme });
+                        openPrintableDocument(html);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-slate-700/80 bg-slate-800/60 text-slate-300 hover:text-white hover:border-[#fef08a]/50 transition-all cursor-pointer shadow-xs"
+                    title="Print Character Sheet or Export as PDF"
+                >
+                    <Printer size={12} className="text-[#fef08a]" />
+                    <span>Print Character Sheet</span>
+                </button>
+            </div>
         </div>
         {expandedImg && (
             <ExpandedImageModal

@@ -4,7 +4,10 @@ import {
     Sparkles, Info, ChevronLeft, ChevronRight, Plus, ExternalLink, X, History
 } from 'lucide-react';
 import { FantasyCalendar, FantasyMonth, WorldEntity, Event } from '../../types';
-import { getEffectiveMonthsForYear, isLeapYear, EffectiveMonth, extractYear } from '../../utils/timelineUtils';
+import { 
+    getEffectiveMonthsForYear, isLeapYear, getDaysInYear, EffectiveMonth, extractYear, 
+    DEFAULT_CALENDAR_PRESETS, parseFantasyDate, yearFractionToCalendar 
+} from '../../utils/timelineUtils';
 import { useTheme } from '../../theme';
 
 // ─── Season helpers ────────────────────────────────────────────────────────
@@ -102,9 +105,14 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
         }) as Event[];
     }, [events, year]);
 
-    // Process events for this year - extract events that fall within specific days of the displayed year
+    // Process events for this year - extract events that fall within specific days of the displayed year, with cross-calendar translation
     const yearEvents = useMemo((): CalendarEventMarker[] => {
         const markers: CalendarEventMarker[] = [];
+        const allKnownCalendars: FantasyCalendar[] = [
+            calendar,
+            ...Object.values(DEFAULT_CALENDAR_PRESETS).map(p => p.calendar)
+        ];
+
         for (const entity of events) {
             if (entity.type !== 'event') continue;
             const evt = entity as Event;
@@ -115,26 +123,62 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
             const eventStart = startYear ?? 0;
             const eventEnd = endYear ?? startYear ?? 0;
             if (eventStart <= year && eventEnd >= year) {
-                // Try to parse fantasy date for month/day
                 const dateStr = evt.startDate || evt.date;
-                if (dateStr) {
-                    // Simple check if the date string contains a month name from this calendar
-                    for (const month of calendar.months) {
-                        if (dateStr.toLowerCase().includes(month.name.toLowerCase()) ||
-                            (month.abbreviation && dateStr.toLowerCase().includes(month.abbreviation.toLowerCase()))) {
-                            // Extract day number
-                            const dayMatch = dateStr.match(/\b([1-9]|[12]\d|3[01])\b/);
-                            const day = dayMatch ? parseInt(dayMatch[1], 10) : 1;
-                            if (day <= month.days) {
-                                markers.push({
-                                    id: entity.id,
-                                    name: entity.name,
-                                    eventType: evt.eventType,
-                                    color: '#f59e0b',
-                                    day,
-                                    monthId: month.id,
-                                    monthName: month.name
-                                });
+                if (!dateStr) continue;
+
+                // 1. Direct match on active calendar
+                let matched = false;
+                for (const month of calendar.months) {
+                    if (
+                        dateStr.toLowerCase().includes(month.name.toLowerCase()) ||
+                        (month.abbreviation && new RegExp(`\\b${month.abbreviation}\\b`, 'i').test(dateStr))
+                    ) {
+                        const dayMatch = dateStr.match(/\b([1-9]|[12]\d|3[01])\b/);
+                        const day = dayMatch ? parseInt(dayMatch[1], 10) : 1;
+                        if (day <= month.days) {
+                            markers.push({
+                                id: entity.id,
+                                name: entity.name,
+                                eventType: evt.eventType,
+                                color: evt.color || '#f59e0b',
+                                day,
+                                monthId: month.id,
+                                monthName: month.name
+                            });
+                            matched = true;
+                            break;
+                        }
+                    }
+                }
+
+                // 2. If not directly matched on current calendar, test other fantasy calendars and project via year fraction
+                if (!matched) {
+                    for (const otherCal of allKnownCalendars) {
+                        if (otherCal.id === calendar.id) continue;
+                        const parsed = parseFantasyDate(dateStr, otherCal);
+                        if (parsed && parsed.monthName) {
+                            const effMonths = getEffectiveMonthsForYear(parsed.year, otherCal);
+                            const m = effMonths.find(em => em.name.toLowerCase() === parsed.monthName!.toLowerCase());
+                            if (m) {
+                                const dayInMonth = parsed.day ?? 1;
+                                const dayOfYear = m.startDayOfYear + dayInMonth - 1;
+                                const totalDays = getDaysInYear(parsed.year, otherCal);
+                                const frac = (dayOfYear - 0.5) / totalDays;
+                                const converted = yearFractionToCalendar(year + frac, calendar);
+                                if (converted && converted.monthName) {
+                                    const targetMonth = calendar.months.find(cm => cm.name.toLowerCase() === converted.monthName.toLowerCase()) || calendar.months[0];
+                                    markers.push({
+                                        id: entity.id,
+                                        name: entity.name,
+                                        eventType: evt.eventType,
+                                        color: evt.color || '#f59e0b',
+                                        day: Math.min(converted.day, targetMonth.days),
+                                        monthId: targetMonth.id,
+                                        monthName: targetMonth.name
+                                    });
+                                    matched = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -142,7 +186,7 @@ export const AnnualCalendarView: React.FC<AnnualCalendarViewProps> = ({
             }
         }
         return markers;
-    }, [events, year, calendar.months]);
+    }, [events, year, calendar]);
 
     // ── Theme tokens ──────────────────────────────────────────────────────
     const isRoyal   = themeId === 'royal-codex';

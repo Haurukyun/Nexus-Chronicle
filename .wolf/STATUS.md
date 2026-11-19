@@ -6,34 +6,39 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-15 (08:45)
+> Last updated: 2026-11-19 (05:00)
 
 ---
 
 ## ✅ Done
 
-- **P2 Fixes — Undo/Redo Engine, Per-Event Timeline Colors, Trash Bulk Operations, Sidebar Multi-Select, Character Date Composer & Scratchpad Persistence** (this commit):
-  - **Undo / Redo (P2 #12)**: Implemented in-memory history stack (`historyPast`, `historyFuture`, `undo`, `redo`, `canUndo`, `canRedo`) integrated with `syncWorld`. Hooked global keyboard shortcuts `Ctrl+Z` (undo) and `Ctrl+Y` / `Ctrl+Shift+Z` (redo) in `App.tsx` outside text inputs. Added jewel-styled top toolbar Undo/Redo buttons with disabled state awareness. Added to Grimoire of Shortcuts in `KeybindsModal`.
-  - **Per-Event Timeline Colors (P2 #9)**: Added `color?: string` to `Event` interface in `src/types.ts`. Built a palette swatch picker (Amber, Crimson, Emerald, Sky Blue, Violet, Rose, Slate + custom hex input) in `EventSpecifics.tsx`. Wired `TimelineView.tsx` to read `evt.color || '#f59e0b'`.
-  - **Trash Bulk Operations (P2 #11)**: Completely modernized `TrashView.tsx` with multi-select checkboxes, Select All / Deselect All, type filtering dropdown, bulk restore, bulk erase with confirmation, and empty whole archive with safety confirm.
-  - **Sidebar Multi-Select & Bulk Operations (P2 #14)**: Added multi-select mode and Ctrl/Cmd+click selection in `Sidebar.tsx`. Added docked bulk action panel with Move to Parent (with smart type filtering and Root option), Bulk Tag (with hashtag normalization), Bulk Markdown Export (Obsidian-ready formatted export), and Bulk Trash.
-  - **Character Lifecycle Date Composer (P2 #8)**: Replaced raw text inputs in `CharacterSpecifics.tsx` with `FantasyDatePicker` supporting customizable `startLabel="Birth Date"` and `endLabel="Death Date"` and synchronized legacy aliases.
-  - **Scratchpad Persistence (P2 #15)**: Added `scratchpadNote` to Zustand `partialize` configuration in `useWorldStore.ts` to ensure DM notes persist across page reloads and browser sessions.
+- **P3 Suite — Royal Portraits, Editor Backlinks, Calendar Reckoning Bridge, Scratchpad Live Preview, Printable Character Sheets, Asset Vault & NexusGraph Enhancements** (this commit):
+  - **Royal Codex Portraits**: Added ornate gold-filigreed portrait frame to `CharacterStatBlock.tsx` and 64×64 thumbnail portrait with inspect modal to `RoyalHeader` in `ViewerHeaders.tsx`.
+  - **Editor Inverse Link Visibility (P3 #18)**: Built "Incoming Ties & Backlinks" inspector into `EntityEditor.tsx`, categorizing incoming connections (Events, Residents, Members, Successors, Allies) into interactive chips.
+  - **Calendar Reckoning Bridge (P3 #20)**: Implemented cross-calendar projection in `AnnualCalendarView.tsx` converting dates between fantasy calendars (Harptos, Tamriel, Shire, Solar) via day-of-year fraction mapping.
+  - **Scratchpad Live Preview (Obsidian Style)**: Replaced write-first default with Live Preview by default in `ScratchpadDrawer.tsx`. Clicking rendered markdown opens edit mode; added `Ctrl+Enter` preview hotkey and mode buttons.
+  - **Printable Character Sheets & Lore PDF Export (P3 #16)**: Built `characterSheetUtils.ts` generating ornate RPG character sheets formatted for A4/Letter printing, PDF export, and archiving. Added print sheet action to `ViewerHeaders.tsx` (ExportDropdown) and `CharacterStatBlock.tsx` across all themes. Added tests (57/57 passing).
+  - **Asset & Image Vault Manager (P3 #17)**: Created `AssetVaultModal.tsx` displaying all CAS IndexedDB media assets with storage quotas, referenced entity chips, orphan filters, fullscreen previews, and batch orphan pruning. Wired into `OptionsView.tsx`.
+  - **NexusGraph Enhancements (P3 #19)**: Upgraded `NexusGraphView.tsx` with Zoom-to-Fit (`Scan`), Category Island Clustering (`Layers`) with quad-cluster attractor forces and quadrant halos, and Isolate Neighbors Focus Mode (`Crosshair`).
+
+- **P2 Fixes — Undo/Redo Engine, Per-Event Timeline Colors, Trash Bulk Operations, Sidebar Multi-Select, Character Date Composer & Scratchpad Persistence**:
+  - **Undo / Redo (P2 #12)**: Implemented in-memory history stack (`historyPast`, `historyFuture`, `undo`, `redo`, `canUndo`, `canRedo`) integrated with `syncWorld`.
+  - **Per-Event Timeline Colors (P2 #9)**: Added `color?: string` to `Event` interface in `src/types.ts`.
+  - **Trash Bulk Operations (P2 #11)**: Completely modernized `TrashView.tsx` with multi-select checkboxes and bulk restore/erase.
+  - **Sidebar Multi-Select & Bulk Operations (P2 #14)**: Added multi-select mode and Ctrl/Cmd+click selection in `Sidebar.tsx`.
+  - **Character Lifecycle Date Composer (P2 #8)**: Replaced raw text inputs in `CharacterSpecifics.tsx` with `FantasyDatePicker`.
+  - **Scratchpad Persistence (P2 #15)**: Added `scratchpadNote` to Zustand `partialize` configuration in `useWorldStore.ts`.
   - **Journey Coordinate Nudge (P2 #13)**: Validated existing quick-pin modal, coordinate readout, and unanchored warning callouts in `JourneyView.tsx`.
 
-- **P1 Fixes — Tree Depth Expansion, Viewer Tags Display & Command Palette Supercharged Search** (this commit):
-  - **NexusTreeView On-Demand Depth Expansion**: Replaced static depth-5 cutoff with an interactive on-demand expansion button (`Show deeper (+N descendants)`), allowing users to explore deep lineage branches beyond depth 5 without losing tree structure.
-  - **Viewer Headers Tags Display**: Added dedicated `#tag` badges across `CodexHeader`, `WikiHeader`, and `RoyalHeader` in `ViewerHeaders.tsx`, surfacing entity tags across all three themes and linking them to sidebar `tag:...` filtering.
-  - **Command Palette Advanced Filters & Instant Create**: Added support for `tag:<name>`, `type:<type>`, `attr:<key>=<val>`, and full-text description/attribute search in `CommandPalette.tsx`. Implemented instant creation syntax (`+<type> <name>` or `new <type> <name>`, e.g. `+character Aragorn`) that spawns and opens named drafts in one stroke.
-  - **WorldMap Validation**: Confirmed marker placement and ley-line connections use theme-aware portaled modals with zero `window.prompt()` usage.
+- **P1 Fixes — Tree Depth Expansion, Viewer Tags Display & Command Palette Supercharged Search**:
+  - **NexusTreeView On-Demand Depth Expansion**: Interactive expansion button (`Show deeper (+N descendants)`).
+  - **Viewer Headers Tags Display**: `#tag` badges across `CodexHeader`, `WikiHeader`, and `RoyalHeader`.
+  - **Command Palette Advanced Filters & Instant Create**: `tag:`, `type:`, `attr:`, and instant `+<type> <name>`.
 
-- **P0 Fixes — Backlinks Symmetry & Dual Event Date Surface De-duplication** (this commit):
-  - **Backlinks Symmetry**: Updated `backlinkUtils.ts` to properly scan and categorize Character relations (`pairedCurrentLocationNew`, `pairedOriginLocationNew`, `pairedDemiseLocationNew`, `pairedRace`, `pairedProfession`, `pairedSkills`), Location (`livingCharacterIds`, `originatedCharacterIds`, `deceasedCharacterIds`, `succeedingLocationIds`, `precedingLocationIds`), Species (`pairedCharacter`), Occupation (`pairedCharacter`), Ability (`pairedCharacterSkills`), and Item.
-  - **Type Isolation**: Fixed critical bug where non-event entities with `pairedCharacter` were erroneously pushed into `results.events`.
-  - **Viewer Integration**: Updated `LocationSpecificsViewer`, `SpeciesSpecificsViewer`, and `OccupationSpecificsViewer` to merge backlinks into their respective displays (natives, residents, passed here, members, and practitioners).
-  - **Event Date Surface De-duplication**: Removed redundant `FormInput` rows in `EventSpecifics.tsx`. Added direct text input with one-click clear button (`X`) directly in `FantasyDatePicker.tsx` for the active target, allowing seamless point/span toggling and date editing without duplicated inputs.
-  - **Loop Immunity**: Hardened `detectCalendarForDate` in `FantasyDatePicker.tsx` to prioritize `defaultCal` when already matching, eliminating any oscillation risk.
-  - **Test Suite**: Added `src/utils/backlinkUtils.test.ts` (4 new tests, 55/55 passing).
+- **P0 Fixes — Backlinks Symmetry & Dual Event Date Surface De-duplication**:
+  - **Backlinks Symmetry**: Updated `backlinkUtils.ts` to properly scan and categorize Character relations.
+  - **Type Isolation**: Fixed non-event entities being pushed into `results.events`.
+  - **Event Date Surface De-duplication**: Single unified `FantasyDatePicker` without duplicated text inputs.
 
 - **Chronos Timeline — Point vs Span Events & Annual Calendar Integration** (this session):
   - **P0 Fix**: Events with only `startDate` (no `endDate`) now render as diamond markers at exact year position — point-in-time events (battles, coronations, festivals). Events with both `startDate` and `endDate` render as ribbons. Added `isPointEvent` to `ProcessedTimelineItem`. Updated quick-create to set only `startDate` (no legacy `date` field).

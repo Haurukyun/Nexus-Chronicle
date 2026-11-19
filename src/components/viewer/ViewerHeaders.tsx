@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2 } from 'lucide-react';
-import { WorldEntity } from '../../types';
+import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2, Printer } from 'lucide-react';
+import { WorldEntity, Character } from '../../types';
 import { isEntityCategory, isEntityDeceased, isEntityFinished } from '../../utils/documentModeUtils';
 import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../../utils/exportUtils';
+import { generateCharacterSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
+import { NexusImage } from '../ui';
 
 interface HeaderProps {
     entity: WorldEntity;
@@ -52,6 +54,17 @@ const ExportDropdown: React.FC<{ entity: WorldEntity; allEntities: WorldEntity[]
         await downloadTextFile(html, `${cleanName}.html`, 'text/html');
     };
 
+    const handlePrintSheet = () => {
+        setOpen(false);
+        if (entity.type === 'character') {
+            const sheetHtml = generateCharacterSheetHtml(entity as Character, allEntities, { includeDmNotes: true, theme });
+            openPrintableDocument(sheetHtml);
+        } else {
+            const html = generateEntityHtml(entity, allEntities, theme);
+            openPrintableDocument(html);
+        }
+    };
+
     return (
         <div className={`relative ${className}`}>
             <button
@@ -64,11 +77,29 @@ const ExportDropdown: React.FC<{ entity: WorldEntity; allEntities: WorldEntity[]
             {open && (
                 <>
                     <div className="fixed inset-0 z-[200]" onClick={() => setOpen(false)} />
-                    <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border bg-slate-900 border-slate-700 shadow-2xl z-[201] overflow-hidden">
+                    <div className="absolute right-0 top-full mt-1 w-56 rounded-xl border bg-slate-900 border-slate-700 shadow-2xl z-[201] overflow-hidden">
                         <div className="px-3 pt-2.5 pb-1 text-[9px] font-black uppercase tracking-widest text-slate-500">Export Entry</div>
+                        {entity.type === 'character' && (
+                            <button
+                                onClick={handlePrintSheet}
+                                className="w-full text-left px-3 py-2.5 text-xs font-medium text-amber-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors bg-amber-500/10"
+                            >
+                                <Printer size={14} className="text-amber-400" />
+                                Printable Character Sheet
+                                <span className="text-[10px] text-amber-400/70 ml-auto">PDF/Print</span>
+                            </button>
+                        )}
+                        <button
+                            onClick={handlePrintSheet}
+                            className={`w-full text-left px-3 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors ${entity.type === 'character' ? 'border-t border-slate-800' : ''}`}
+                        >
+                            <Printer size={14} className="text-purple-400" />
+                            Print Dossier
+                            <span className="text-[10px] text-slate-500 ml-auto">PDF/Print</span>
+                        </button>
                         <button
                             onClick={handleExportMarkdown}
-                            className="w-full text-left px-3 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors"
+                            className="w-full text-left px-3 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors border-t border-slate-800"
                         >
                             <FileText size={14} className="text-emerald-400" />
                             Markdown (.md)
@@ -239,8 +270,15 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
 
     return (
         <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex justify-between items-center mb-6">
-            <div>
-                <div className="flex flex-wrap items-center gap-2 mb-1">
+            <div className="flex items-center gap-4">
+                {entity.imageUri && (
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#c8a96e] bg-[#24050b] shadow-xl shrink-0 relative group">
+                        <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
+                        <div className="absolute inset-0.5 border border-[#c8a96e]/30 rounded-xl pointer-events-none" />
+                    </div>
+                )}
+                <div>
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
                     <div className="flex items-center gap-2 text-[#70121e] uppercase tracking-[0.2em] font-serif font-bold text-xs">
                         {isCat ? <Folder size={14} className="text-[#a0522d]" /> : <Scroll size={14} />}
                         {isCat ? 'Folder Container' : 'Codex Record'}
@@ -273,6 +311,7 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                         ))}
                     </div>
                 )}
+            </div>
             </div>
             <div className="flex items-center gap-3">
                 <ExportDropdown
