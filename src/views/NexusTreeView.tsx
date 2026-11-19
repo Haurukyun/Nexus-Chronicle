@@ -89,30 +89,36 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, onNavigate 
         return { roots, all: characters };
     }, [world.entities]);
 
-    const accent = (themeId === 'royal-codex') ? 'text-[#70121e]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const bgCard = (themeId === 'royal-codex') ? 'bg-[#f5ead0] border-[#c8a96e]/50' : (layoutMode === 'wiki') ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
+    const isRoyal = themeId === 'royal-codex';
+    const isWiki = layoutMode === 'wiki';
+    const isLight = isRoyal || isWiki;
+
+    const accent = isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = isRoyal ? 'bg-[#f5ead0] border-[#c8a96e]/50' : isWiki ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-800/60';
 
     return (
         <div className="h-full flex flex-col overflow-hidden relative">
             {/* View Mode Switcher Header */}
             <div className={`p-4 border-b flex items-center justify-between z-20 ${
-                (themeId === 'royal-codex')
+                isRoyal
                     ? 'bg-[#eee2cb] border-[#c8a96e]/40'
-                    : (layoutMode === 'wiki') 
+                    : isWiki 
                     ? 'bg-[#f7f3ea] border-[#d4c8af]' 
                     : 'bg-[#0f172a]/90 border-slate-800 backdrop-blur-md'
             }`}>
                 <div className="flex items-center gap-4">
-                    <div className={`flex items-center gap-1.5 p-1 rounded-xl border ${(themeId === 'royal-codex') ? 'bg-[#d9c9a3]/30 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'}`}>
+                    <div className={`flex items-center gap-1.5 p-1 rounded-xl border ${isLight ? 'bg-[#d9c9a3]/30 border-[#c8a96e]/40' : 'bg-black/20 border-white/5'}`}>
                         <button
                             onClick={() => setViewMode('graph')}
                             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                                 viewMode === 'graph'
-                                    ? (themeId === 'royal-codex')
+                                    ? isRoyal
                                         ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
-                                        : (layoutMode === 'wiki')
+                                        : isWiki
                                         ? 'bg-[#b91c1c] text-white shadow-sm'
                                         : 'bg-[#fef08a] text-black shadow-md'
+                                    : isLight
+                                    ? 'text-[#2b1810]/70 hover:text-[#70121e] hover:bg-[#c8a96e]/20'
                                     : 'opacity-50 hover:opacity-100'
                             }`}
                         >
@@ -123,11 +129,13 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, onNavigate 
                             onClick={() => setViewMode('tree')}
                             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                                 viewMode === 'tree'
-                                    ? (themeId === 'royal-codex')
+                                    ? isRoyal
                                         ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
-                                        : (layoutMode === 'wiki')
+                                        : isWiki
                                         ? 'bg-[#b91c1c] text-white shadow-sm'
                                         : 'bg-[#fef08a] text-black shadow-md'
+                                    : isLight
+                                    ? 'text-[#2b1810]/70 hover:text-[#70121e] hover:bg-[#c8a96e]/20'
                                     : 'opacity-50 hover:opacity-100'
                             }`}
                         >
@@ -137,8 +145,10 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, onNavigate 
                     </div>
                 </div>
 
-                <div className="text-[10px] font-mono opacity-40 uppercase tracking-widest">
-                    {viewMode === 'graph' ? 'Multi-Entity Force Graph' : `${lineageData.all.length} Characters Catalogued`}
+                <div className={`text-[10px] font-mono uppercase tracking-widest font-bold ${
+                    isLight ? 'text-[#70121e]' : 'text-slate-400 opacity-60'
+                }`}>
+                    {viewMode === 'graph' ? '✦ Multi-Entity Force Graph' : `${lineageData.all.length} Characters Catalogued`}
                 </div>
             </div>
 

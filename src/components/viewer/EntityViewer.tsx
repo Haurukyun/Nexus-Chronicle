@@ -42,16 +42,16 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const royalTabs = ['Overview', 'Biography', 'Relations', 'Inventory'];
 
     const MainView = () => (
-        <div className={`flex ${isWiki || (themeId === 'royal-codex') ? 'flex-row gap-8 xl:gap-12' : 'flex-col lg:flex-row gap-10 xl:gap-14'}`}>
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 xl:gap-12">
             <div className="flex-1 min-w-0 space-y-6">
                 {/* Royal Codex Tab Bar */}
                 {(themeId === 'royal-codex') && (
-                    <div className="flex border-b-0 gap-1 mb-4">
+                    <div className="flex flex-wrap border-b-0 gap-1.5 mb-4">
                         {royalTabs.map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab.toLowerCase())}
-                                className={`relative px-5 py-2 text-[11px] font-serif font-bold uppercase tracking-widest rounded-t-md transition-all ${
+                                className={`relative px-3 sm:px-5 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-serif font-bold uppercase tracking-widest rounded-t-md transition-all ${
                                     activeTab === tab.toLowerCase()
                                         ? 'bg-[#f7f0e1] text-[#2b1810] border-2 border-b-0 border-[#c8a96e] shadow-sm z-10'
                                         : 'bg-[#e2ceb1] text-[#593d2b] border border-b-0 border-[#c8a96e]/60 hover:bg-[#ede0c9] mt-[2px]'
@@ -207,7 +207,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
             </div>
 
             {/* Right Column Stat Block / Infobox */}
-            <aside className="w-72 sm:w-80 lg:w-80 xl:w-96 2xl:w-[420px] shrink-0 space-y-6">
+            <aside className="w-full lg:w-80 xl:w-96 2xl:w-[420px] shrink-0 space-y-6">
                 {(themeId === 'royal-codex') ? (
                     <>
                         {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}

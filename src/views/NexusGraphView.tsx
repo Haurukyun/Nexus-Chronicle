@@ -566,13 +566,17 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
   const nodes = nodesRef.current;
   const edgeList = edgesRef.current;
 
-  const wikiText = (themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#3d2b1f]' : 'text-white';
-  const wikiPanel = (themeId === 'royal-codex')
-    ? 'bg-[#f5ead0] border-[#c8a96e]/50 text-[#3d0a10]'
-    : (layoutMode === 'wiki')
-    ? 'bg-[#f5f0e8] border-[#d4c8af] text-[#3d2b1f]'
+  const isRoyal = themeId === 'royal-codex';
+  const isWiki = layoutMode === 'wiki';
+  const isLight = isRoyal || isWiki;
+
+  const wikiText = isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#3d2b1f]' : 'text-white';
+  const wikiPanel = isRoyal
+    ? 'bg-[#f5ead0] border-[#c8a96e]/60 text-[#2b1810]'
+    : isWiki
+    ? 'bg-[#f5f0e8] border-[#d4c8af] text-[#2b1810]'
     : 'bg-slate-900/90 border-slate-700/60 text-white';
-  const accentColor = (themeId === 'royal-codex') ? '#70121e' : (layoutMode === 'wiki') ? '#b91c1c' : '#fef08a';
+  const accentColor = isRoyal ? '#70121e' : isWiki ? '#b91c1c' : '#fef08a';
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
@@ -740,9 +744,9 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                   <circle
                     r={r}
                     fill={color}
-                    fillOpacity={isSelected ? 0.95 : isHovered ? 0.85 : 0.6}
-                    stroke={isSelected ? accentColor : color}
-                    strokeWidth={isSelected ? 3 : 1.5}
+                    fillOpacity={isSelected ? 0.95 : isHovered ? 0.85 : 0.65}
+                    stroke={isSelected ? accentColor : (isLight ? '#5a3825' : color)}
+                    strokeWidth={isSelected ? 3 : 1.8}
                     filter={isSelected ? `url(#glow-selected)` : `url(#glow-${node.category})`}
                   />
 
@@ -750,10 +754,10 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                   <text
                     textAnchor="middle"
                     dominantBaseline="central"
-                    fontSize={10}
-                    fontWeight="bold"
-                    fill={color}
-                    fillOpacity={0.9}
+                    fontSize={11}
+                    fontWeight="900"
+                    fill={isLight ? '#1a1008' : '#ffffff'}
+                    fillOpacity={1}
                     style={{ pointerEvents: 'none', fontFamily: 'sans-serif' }}
                   >
                     {TYPE_LABELS[node.type]?.[0] || '?'}
@@ -764,12 +768,14 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                     y={r + 14}
                     textAnchor="middle"
                     fontSize={11}
-                    fontWeight={isSelected ? 'bold' : 'normal'}
-                    fill={isHovered || isSelected ? (themeId === 'wiki' || layoutMode === 'wiki' ? '#1c1917' : '#f8fafc') : (themeId === 'wiki' || layoutMode === 'wiki' ? '#44403c' : '#cbd5e1')}
+                    fontWeight={isSelected ? 'bold' : '600'}
+                    fill={isLight ? '#2b1810' : (isHovered || isSelected ? '#f8fafc' : '#cbd5e1')}
                     style={{
                       pointerEvents: 'none',
                       fontFamily: 'serif',
-                      textShadow: (themeId === 'wiki' || layoutMode === 'wiki') ? 'none' : '0 1px 4px rgba(0,0,0,0.8)',
+                      textShadow: isLight
+                        ? '0 0 3px #ffffff, 0 0 6px #ffffff, 0 1px 2px #fff9ed'
+                        : '0 1px 4px rgba(0,0,0,0.8)',
                     }}
                   >
                     {node.name.length > 16 ? node.name.slice(0, 14) + '…' : node.name}
@@ -955,88 +961,117 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
       {/* ── Top-left: title ─────────────────────────────────────────────────── */}
       <div className="absolute top-4 left-4 pointer-events-none">
         <h1
-          className={`text-5xl font-serif font-black uppercase tracking-tighter ${(themeId === 'royal-codex') ? 'text-[#3d0a10]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-white'}`}
+          className={`text-4xl sm:text-5xl font-serif font-black uppercase tracking-tighter ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#b91c1c]' : 'text-white'}`}
         >
           The Nexus
         </h1>
-        <p className="text-[10px] uppercase tracking-[0.35em] opacity-40 ml-1 mt-0.5 italic">
+        <p className={`text-[10px] uppercase tracking-[0.35em] ml-1 mt-0.5 italic font-bold ${isLight ? 'text-[#70121e]' : 'opacity-40'}`}>
           Interactive Relationship Graph
         </p>
         {nodes.length > 0 && (
-          <p className={`text-[10px] opacity-30 ml-1 mt-1 ${wikiText}`}>
+          <p className={`text-[10px] ml-1 mt-1 font-bold ${isLight ? 'text-[#2b1810]' : 'opacity-40 text-slate-400'}`}>
             {nodes.length} nodes · {edgeList.length} connections
           </p>
         )}
       </div>
 
       {/* ── Top-right: controls ─────────────────────────────────────────────── */}
-      <div className="absolute top-4 right-4 flex flex-col gap-2">
+      <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-20">
         {/* Filter panel toggle */}
         <button
           onClick={() => setFilterOpen((o) => !o)}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all ${wikiPanel} ${filterOpen ? ((themeId === 'royal-codex') ? 'ring-2 ring-[#70121e]' : (layoutMode === 'wiki') ? 'ring-2 ring-[#b91c1c]' : 'ring-2 ring-yellow-400/50') : ''}`}
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            filterOpen 
+              ? (isRoyal ? 'ring-2 ring-[#70121e] bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : isWiki ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c] text-white' : 'ring-2 ring-yellow-400/50 bg-yellow-400/20 text-yellow-300') 
+              : isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
         >
-          <Filter size={13} />
-          Filters
+          <Filter size={13} className={isLight && !filterOpen ? 'text-[#70121e]' : ''} />
+          <span>Filters</span>
         </button>
 
-        {/* Zoom controls */}
-        <div className={`flex flex-col rounded-xl border overflow-hidden ${wikiPanel}`}>
-          <button
-            className="p-2 hover:bg-white/10 transition-colors"
-            onClick={() => setZoom((z) => Math.min(4, z * 1.25))}
-          >
-            <ZoomIn size={14} />
-          </button>
-          <div className={`h-px ${(themeId === 'royal-codex') ? 'bg-[#c8a96e]/50' : (layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
-          <button
-            className="p-2 hover:bg-white/10 transition-colors"
-            onClick={() => setZoom((z) => Math.max(0.15, z * 0.8))}
-          >
-            <ZoomOut size={14} />
-          </button>
-        </div>
+        {/* Zoom In */}
+        <button
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
+          onClick={() => setZoom((z) => Math.min(4, z * 1.25))}
+          title="Zoom In"
+        >
+          <ZoomIn size={13} className={isLight ? 'text-[#70121e]' : ''} />
+          <span>Zoom In</span>
+        </button>
+
+        {/* Zoom Out */}
+        <button
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
+          onClick={() => setZoom((z) => Math.max(0.15, z * 0.8))}
+          title="Zoom Out"
+        >
+          <ZoomOut size={13} className={isLight ? 'text-[#70121e]' : ''} />
+          <span>Zoom Out</span>
+        </button>
 
         {/* Reset camera */}
         <button
-          className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10`}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
           onClick={resetCamera}
           title="Reset camera (100% Origin)"
         >
-          <Maximize2 size={14} />
+          <Maximize2 size={13} className={isLight ? 'text-[#70121e]' : ''} />
+          <span>Reset</span>
         </button>
 
         {/* Zoom to fit */}
         <button
-          className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10`}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
           onClick={zoomToFit}
           title="Zoom to Fit (Fit all visible nodes)"
         >
-          <Scan size={14} />
+          <Scan size={13} className={isLight ? 'text-[#70121e]' : ''} />
+          <span>Fit View</span>
         </button>
 
         {/* Cluster by Category Islands */}
         <button
-          className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10 ${isClustered ? ((themeId === 'royal-codex') ? 'ring-2 ring-[#70121e] bg-[#70121e]/20' : (layoutMode === 'wiki') ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c]/15' : 'ring-2 ring-yellow-400 bg-yellow-400/20 text-yellow-300') : ''}`}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isClustered
+              ? (isRoyal ? 'ring-2 ring-[#70121e] bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : isWiki ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c] text-white' : 'ring-2 ring-yellow-400 bg-yellow-400/20 text-yellow-300')
+              : isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
           onClick={() => setIsClustered(c => !c)}
           title={isClustered ? "Disable Category Islands" : "Cluster by Category Islands"}
         >
-          <Layers size={14} />
+          <Layers size={13} className={isLight && !isClustered ? 'text-[#70121e]' : ''} />
+          <span>{isClustered ? 'Islands (On)' : 'Islands'}</span>
         </button>
 
         {/* Isolate Neighbors / Focus Mode */}
         <button
-          className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10 ${isolateNeighbors ? ((themeId === 'royal-codex') ? 'ring-2 ring-[#70121e] bg-[#70121e]/20' : (layoutMode === 'wiki') ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c]/15' : 'ring-2 ring-yellow-400 bg-yellow-400/20 text-yellow-300') : ''}`}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isolateNeighbors
+              ? (isRoyal ? 'ring-2 ring-[#70121e] bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : isWiki ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c] text-white' : 'ring-2 ring-yellow-400 bg-yellow-400/20 text-yellow-300')
+              : isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
           onClick={() => setIsolateNeighbors(i => !i)}
           title={isolateNeighbors ? "Focus Mode Active (Isolating active node & neighbors)" : "Enable Focus Mode (Isolate neighbors on click)"}
         >
-          <Crosshair size={14} />
+          <Crosshair size={13} className={isLight && !isolateNeighbors ? 'text-[#70121e]' : ''} />
+          <span>{isolateNeighbors ? 'Focus (On)' : 'Focus'}</span>
         </button>
 
         {/* Re-center on selected node */}
         {selectedId && (
           <button
-            className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10`}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+              isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+            }`}
             onClick={() => {
               const n = nodesRef.current.find((n) => n.id === selectedId);
               if (!n) return;
@@ -1044,17 +1079,21 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
             }}
             title="Center on selected"
           >
-            <Crosshair size={14} />
+            <Crosshair size={13} className={isLight ? 'text-[#70121e]' : ''} />
+            <span>Center</span>
           </button>
         )}
 
         {/* Legend toggle */}
         <button
-          className={`p-2 rounded-xl border transition-all ${wikiPanel} hover:bg-white/10`}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
           onClick={() => setShowLegend((v) => !v)}
           title="Toggle legend"
         >
-          {showLegend ? <EyeOff size={14} /> : <Eye size={14} />}
+          {showLegend ? <EyeOff size={13} className={isLight ? 'text-[#70121e]' : ''} /> : <Eye size={13} className={isLight ? 'text-[#70121e]' : ''} />}
+          <span>{showLegend ? 'Hide Legend' : 'Legend'}</span>
         </button>
       </div>
 
@@ -1063,7 +1102,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
         <div
           className={`absolute top-16 right-4 w-64 rounded-2xl border p-4 shadow-2xl flex flex-col gap-3 z-30 ${wikiPanel}`}
         >
-          <p className="text-[10px] uppercase tracking-widest font-black opacity-60">
+          <p className={`text-[10px] uppercase tracking-widest font-black ${isLight ? 'text-[#2b1810]' : 'opacity-60'}`}>
             Entity Categories
           </p>
           <div className="flex flex-col gap-1.5">
@@ -1074,7 +1113,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                 <button
                   key={cat.id}
                   className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
-                    active ? 'opacity-100' : 'opacity-40'
+                    active ? (isLight ? 'text-[#2b1810] font-black' : 'opacity-100') : (isLight ? 'text-[#2b1810]/40' : 'opacity-40')
                   }`}
                   style={{ border: `1.5px solid ${color}40`, background: active ? `${color}18` : 'transparent' }}
                   onClick={() =>
@@ -1096,9 +1135,9 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
             })}
           </div>
 
-          <div className={`h-px ${(layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
+          <div className={`h-px ${isLight ? 'bg-[#c8a96e]/40' : 'bg-slate-700'}`} />
 
-          <p className="text-[10px] uppercase tracking-widest font-black opacity-60">
+          <p className={`text-[10px] uppercase tracking-widest font-black ${isLight ? 'text-[#2b1810]' : 'opacity-60'}`}>
             Connection Types
           </p>
           <div className="flex flex-col gap-1">
@@ -1109,7 +1148,7 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
                 <button
                   key={kind}
                   className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs transition-all ${
-                    active ? 'opacity-100' : 'opacity-40'
+                    active ? (isLight ? 'text-[#2b1810] font-bold' : 'opacity-100') : (isLight ? 'text-[#2b1810]/40' : 'opacity-40')
                   }`}
                   style={{ border: `1.5px solid ${color}40`, background: active ? `${color}15` : 'transparent' }}
                   onClick={() =>
@@ -1131,28 +1170,28 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
             })}
           </div>
 
-          <div className={`h-px ${(layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
+          <div className={`h-px ${isLight ? 'bg-[#c8a96e]/40' : 'bg-slate-700'}`} />
 
-          <p className="text-[10px] uppercase tracking-widest font-black opacity-60">
+          <p className={`text-[10px] uppercase tracking-widest font-black ${isLight ? 'text-[#2b1810]' : 'opacity-60'}`}>
             Document Scope
           </p>
           <button
             onClick={() => setSuppressMinor((prev) => !prev)}
             className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition-all border ${
               suppressMinor
-                ? (themeId === 'royal-codex'
+                ? (isRoyal
                     ? 'border-[#70121e] bg-[#70121e]/15 text-[#3d0a10]'
-                    : layoutMode === 'wiki'
+                    : isWiki
                     ? 'border-[#b91c1c] bg-[#b91c1c]/10 text-[#b91c1c]'
                     : 'border-amber-400/50 bg-amber-400/15 text-amber-200')
-                : 'border-current/15 opacity-60 hover:opacity-100'
+                : (isLight ? 'border-[#c8a96e]/40 text-[#2b1810]/70 hover:text-[#2b1810]' : 'border-current/15 opacity-60 hover:opacity-100')
             }`}
           >
             <div className="flex items-center gap-2">
-              <Users size={12} className="opacity-70" />
+              <Users size={12} className={isLight ? 'text-[#70121e]' : 'opacity-70'} />
               <span>Suppress Minor Entries</span>
             </div>
-            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-black/20">
+            <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${isLight ? 'bg-[#ede0c9] text-[#2b1810]' : 'bg-black/20'}`}>
               {suppressMinor ? 'ON' : 'OFF'}
             </span>
           </button>
@@ -1165,24 +1204,24 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
           className={`absolute bottom-4 left-4 rounded-2xl border p-4 shadow-xl flex flex-col gap-2 z-20 ${wikiPanel}`}
           style={{ minWidth: 180 }}
         >
-          <p className="text-[9px] uppercase tracking-widest font-black opacity-50">Legend</p>
+          <p className={`text-[9px] uppercase tracking-widest font-black ${isLight ? 'text-[#2b1810]' : 'opacity-50'}`}>Legend</p>
           {HIERARCHY_CONFIG.map((cat) => (
-            <div key={cat.id} className="flex items-center gap-2 text-[10px] font-semibold">
+            <div key={cat.id} className={`flex items-center gap-2 text-[10px] font-semibold ${isLight ? 'text-[#2b1810]' : ''}`}>
               <span
-                className="w-3.5 h-3.5 rounded-full flex-shrink-0 border border-white/20"
+                className="w-3.5 h-3.5 rounded-full flex-shrink-0 border border-black/10"
                 style={{ background: CATEGORY_COLORS[cat.id] }}
               />
               {cat.label}
             </div>
           ))}
-          <div className={`h-px mt-1 ${(layoutMode === 'wiki') ? 'bg-[#d4c8af]' : 'bg-slate-700'}`} />
+          <div className={`h-px mt-1 ${isLight ? 'bg-[#c8a96e]/40' : 'bg-slate-700'}`} />
           {(Object.keys(EDGE_COLORS) as EdgeKind[]).map((kind) => (
             <div key={kind} className="flex items-center gap-2 text-[10px]">
               <span
                 className="w-5 h-0.5 rounded-full flex-shrink-0"
                 style={{ background: EDGE_COLORS[kind] }}
               />
-              <span className="opacity-70">{EDGE_LABELS[kind]}</span>
+              <span className={isLight ? 'text-[#2b1810] font-medium' : 'opacity-70'}>{EDGE_LABELS[kind]}</span>
             </div>
           ))}
         </div>
@@ -1271,7 +1310,11 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
       {/* ── Zoom indicator ──────────────────────────────────────────────────── */}
       <div
-        className={`absolute bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-widest opacity-30 pointer-events-none ${wikiText}`}
+        className={`absolute bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-widest pointer-events-none transition-all ${
+          isLight
+            ? 'text-[#2b1810] bg-[#f5ead0]/95 px-4 py-1.5 rounded-full border border-[#c8a96e]/60 shadow-md font-serif'
+            : `opacity-30 ${wikiText}`
+        }`}
       >
         {Math.round(zoom * 100)}% · Scroll to zoom · Drag to pan · Click node to inspect · Double-click to open
       </div>

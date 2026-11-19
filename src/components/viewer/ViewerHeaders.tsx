@@ -269,15 +269,15 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
     const allEntities = useWorldStore(s => s.world.entities);
 
     return (
-        <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex justify-between items-center mb-6">
-            <div className="flex items-center gap-4">
+        <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+            <div className="flex items-center gap-4 min-w-0">
                 {entity.imageUri && (
                     <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#c8a96e] bg-[#24050b] shadow-xl shrink-0 relative group">
                         <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
                         <div className="absolute inset-0.5 border border-[#c8a96e]/30 rounded-xl pointer-events-none" />
                     </div>
                 )}
-                <div>
+                <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                     <div className="flex items-center gap-2 text-[#70121e] uppercase tracking-[0.2em] font-serif font-bold text-xs">
                         {isCat ? <Folder size={14} className="text-[#a0522d]" /> : <Scroll size={14} />}
@@ -294,11 +294,11 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                         </span>
                     )}
                 </div>
-                <h1 className="text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-none flex items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-tight flex items-center gap-2 break-words">
                     <span>{entity.name}</span>
-                    {isDead && <span className="text-[#70121e]/80 select-none" title="Fallen / Deceased">†</span>}
+                    {isDead && <span className="text-[#70121e]/80 select-none shrink-0" title="Fallen / Deceased">†</span>}
                 </h1>
-                {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1">"{entity.otherNames}"</p>}
+                {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1 truncate">"{entity.otherNames}"</p>}
                 {entity.tags && entity.tags.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5 mt-2">
                         {entity.tags.map((tag, idx) => (
@@ -313,7 +313,7 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                 )}
             </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
                 <ExportDropdown
                     entity={entity}
                     allEntities={allEntities}

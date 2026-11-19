@@ -404,13 +404,13 @@ const App = () => {
                     {activeEntity && (
                         isManuscript ? (
 
-                                <div className="p-3 md:p-6 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full">
+                                <div className="p-2 sm:p-4 md:p-6 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full">
                                     {/* Stacked Parchment Page Layers Behind Book */}
                                     <div className="absolute -bottom-3 -left-4 w-80 h-48 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform -rotate-2 shadow-lg pointer-events-none z-0" />
                                     <div className="absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
 
                                     {/* Inner Vellum Parchment Page */}
-                                    <div className="bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-r-2xl p-6 md:p-10 border-2 border-l-0 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] relative text-[#2b1810] min-h-[780px] h-full">
+                                    <div className="bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-r-2xl p-4 sm:p-6 md:p-10 border-2 border-l-0 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] relative text-[#2b1810] min-h-[780px] h-full">
                                     
                                     {/* Four Ornamental Gold Filigree Corners */}
                                     <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />

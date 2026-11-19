@@ -123,16 +123,20 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
         };
     }, [effectiveBaseLeagues, terrain, travelMethod, partySize]);
 
-    const accent = (themeId === 'royal-codex') ? 'text-[#70121e]' : (layoutMode === 'wiki') ? 'text-[#b91c1c]' : 'text-[#fef08a]';
-    const bgCard = (themeId === 'royal-codex')
-        ? 'bg-[#181410] border-[#c8a96e]/30 shadow-2xl'
-        : (layoutMode === 'wiki') 
-        ? 'bg-[#fdf6e3] border-[#d4c8af] shadow-md' 
-        : 'bg-slate-900/50 border-slate-800 shadow-2xl';
+    const isRoyal = themeId === 'royal-codex';
+    const isWiki = layoutMode === 'wiki';
+    const isLight = isRoyal || isWiki;
 
-    const inputBg = (themeId === 'royal-codex')
-        ? 'bg-[#0f0905] border-[#c8a96e]/30 text-[#f0ddb0]'
-        : (layoutMode === 'wiki')
+    const accent = isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+    const bgCard = isRoyal
+        ? 'bg-[#f5ead0] border-2 border-[#c8a96e]/60 shadow-xl text-[#2b1810]'
+        : isWiki 
+        ? 'bg-[#fdf6e3] border-[#d4c8af] shadow-md text-[#1a1a1a]' 
+        : 'bg-slate-900/50 border-slate-800 shadow-2xl text-slate-200';
+
+    const inputBg = isRoyal
+        ? 'bg-[#fcf5e9] border border-[#c8a96e]/50 text-[#2b1810] focus:border-[#70121e]'
+        : isWiki
         ? 'bg-white border-[#d4c8af] text-slate-900'
         : 'bg-black/30 border-slate-700 text-white';
 
@@ -346,11 +350,15 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                     )}
 
                     {/* Distance Mode: Coordinate vs Manual Override */}
-                    <div className="p-4 rounded-2xl border border-slate-500/15 space-y-3 bg-black/10">
+                    <div className={`p-4 rounded-2xl border space-y-3 ${
+                        isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'p-4 rounded-2xl border border-slate-500/15 bg-black/10'
+                    }`}>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Edit3 size={14} className={accent} />
-                                <span className="text-xs font-bold uppercase tracking-wider">Distance Determination</span>
+                                <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-[#2b1810]' : ''}`}>
+                                    Distance Determination
+                                </span>
                             </div>
                             {coordinateDistance !== null && (
                                 <button
@@ -363,8 +371,8 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                                     }}
                                     className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-lg border transition-all ${
                                         isManualOverride 
-                                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
-                                            : 'opacity-50 hover:opacity-100 border-slate-500/30'
+                                            ? (isLight ? 'bg-[#70121e]/15 text-[#70121e] border-[#70121e]/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40') 
+                                            : (isLight ? 'opacity-70 hover:opacity-100 text-[#2b1810] border-[#c8a96e]/40' : 'opacity-50 hover:opacity-100 border-slate-500/30')
                                     }`}
                                 >
                                     {isManualOverride ? 'Using Manual Override' : 'Override Distance'}
@@ -374,17 +382,17 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
 
                         {coordinateDistance !== null && !isManualOverride ? (
                             <div className="flex items-center justify-between text-xs pt-1">
-                                <span className="opacity-60">Calculated via Atlas Pin Coordinates:</span>
-                                <span className="font-mono font-bold text-base text-yellow-300">
+                                <span className={isLight ? 'text-[#2b1810]/70' : 'opacity-60'}>Calculated via Atlas Pin Coordinates:</span>
+                                <span className={`font-mono font-bold text-base ${isLight ? 'text-[#70121e]' : 'text-yellow-300'}`}>
                                     {coordinateDistance} <span className="text-xs font-normal opacity-70">Leagues</span>
                                 </span>
                             </div>
                         ) : (
                             <div className="space-y-1.5 pt-1">
-                                <label className="text-[10px] font-black uppercase opacity-60 flex items-center justify-between">
+                                <label className={`text-[10px] font-black uppercase flex items-center justify-between ${isLight ? 'text-[#2b1810]/70' : 'opacity-60'}`}>
                                     <span>Route Distance in Leagues</span>
                                     {coordinateDistance !== null && (
-                                        <span className="text-[9px] opacity-40">
+                                        <span className={isLight ? 'text-[#2b1810]/50 text-[9px]' : 'text-[9px] opacity-40'}>
                                             (Map straight-line: {coordinateDistance} leagues)
                                         </span>
                                     )}
@@ -404,7 +412,7 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
 
                     {/* Method of Transit */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase opacity-50 tracking-wider">
+                        <label className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-[#2b1810]/70' : 'opacity-50'}`}>
                             Method of Transit
                         </label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
@@ -419,12 +427,14 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                                         onClick={() => setTravelMethod(m)}
                                         className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between h-20 ${
                                             isSelected 
-                                                ? ((themeId === 'royal-codex')
+                                                ? (isRoyal
                                                     ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e] shadow-md'
-                                                    : (layoutMode === 'wiki') 
+                                                    : isWiki 
                                                     ? 'bg-[#b91c1c] text-white border-transparent shadow-md' 
                                                     : 'bg-[#fef08a] text-black border-transparent shadow-lg shadow-yellow-500/20') 
-                                                : (themeId === 'royal-codex') ? 'hover:bg-[#d9c9a3]/20 opacity-60 border-[#c8a96e]/20' : 'hover:bg-white/5 opacity-60 border-slate-500/20'
+                                                : isLight
+                                                ? 'bg-[#ede2cb]/60 hover:bg-[#ede2cb] text-[#2b1810] border-[#c8a96e]/40'
+                                                : 'hover:bg-white/5 opacity-60 border-slate-500/20'
                                         }`}
                                     >
                                         <Icon size={18} />
@@ -440,7 +450,7 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
 
                     {/* Terrain & Hazards Modifier */}
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase opacity-50 tracking-wider">
+                        <label className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-[#2b1810]/70' : 'opacity-50'}`}>
                             Terrain & Waypoint Difficulty
                         </label>
                         <select 
@@ -460,12 +470,14 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                     </div>
 
                     {/* Expedition Party Size */}
-                    <div className="flex items-center justify-between p-3.5 rounded-xl border border-slate-500/15 bg-black/10">
+                    <div className={`flex items-center justify-between p-3.5 rounded-xl border ${
+                        isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30 text-[#2b1810]' : 'border-slate-500/15 bg-black/10'
+                    }`}>
                         <div className="flex items-center gap-2">
                             <Users size={16} className={accent} />
                             <div>
                                 <div className="text-xs font-bold uppercase">Travel Party Size</div>
-                                <div className="text-[9px] opacity-40">Affects ration consumption & supply burdens</div>
+                                <div className={`text-[9px] ${isLight ? 'text-[#2b1810]/60' : 'opacity-40'}`}>Affects ration consumption & supply burdens</div>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -476,7 +488,9 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                                     onClick={() => setPartySize(size)}
                                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                                         partySize === size 
-                                            ? 'bg-yellow-400 text-black shadow' 
+                                            ? (isRoyal ? 'bg-[#70121e] text-[#fff8e7] shadow' : isWiki ? 'bg-[#b91c1c] text-white shadow' : 'bg-yellow-400 text-black shadow') 
+                                            : isLight
+                                            ? 'text-[#2b1810] opacity-60 hover:opacity-100 hover:bg-[#c8a96e]/20'
                                             : 'opacity-40 hover:opacity-100 hover:bg-white/10'
                                     }`}
                                 >
@@ -494,58 +508,62 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                         {calculation ? (
                             <div className="space-y-8 animate-in zoom-in-95 duration-300">
                                 {/* Route Overview Header */}
-                                <div className="flex items-center justify-between border-b pb-4 border-slate-500/10">
+                                <div className={`flex items-center justify-between border-b pb-4 ${isLight ? 'border-[#c8a96e]/30' : 'border-slate-500/10'}`}>
                                     <div className="truncate max-w-[45%]">
-                                        <div className="text-[9px] uppercase tracking-wider opacity-40 font-bold">Departure</div>
+                                        <div className={`text-[9px] uppercase tracking-wider font-bold ${isLight ? 'text-[#2b1810]/60' : 'opacity-40'}`}>Departure</div>
                                         <div className="text-sm font-black truncate">{startLoc?.name}</div>
                                     </div>
                                     <ArrowRight size={16} className={accent} />
                                     <div className="truncate max-w-[45%] text-right">
-                                        <div className="text-[9px] uppercase tracking-wider opacity-40 font-bold">Destination</div>
+                                        <div className={`text-[9px] uppercase tracking-wider font-bold ${isLight ? 'text-[#2b1810]/60' : 'opacity-40'}`}>Destination</div>
                                         <div className="text-sm font-black truncate">{endLoc?.name}</div>
                                     </div>
                                 </div>
 
                                 {/* Big Number Metrics */}
                                 <div className="grid grid-cols-2 gap-4 text-center">
-                                    <div className="p-4 rounded-2xl bg-black/15 border border-white/5 space-y-1">
+                                    <div className={`p-4 rounded-2xl border space-y-1 ${
+                                        isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30 text-[#2b1810]' : 'bg-black/15 border-white/5'
+                                    }`}>
                                         <span className={`text-[10px] font-black uppercase tracking-widest ${accent}`}>
                                             Expedition Distance
                                         </span>
                                         <div className="text-4xl lg:text-5xl font-serif font-black">
                                             {calculation.totalLeagues}
                                         </div>
-                                        <div className="text-[10px] opacity-50 uppercase tracking-widest">Leagues</div>
+                                        <div className={`text-[10px] uppercase tracking-widest ${isLight ? 'text-[#2b1810]/60' : 'opacity-50'}`}>Leagues</div>
                                     </div>
 
-                                    <div className="p-4 rounded-2xl bg-black/15 border border-white/5 space-y-1">
+                                    <div className={`p-4 rounded-2xl border space-y-1 ${
+                                        isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30 text-[#2b1810]' : 'bg-black/15 border-white/5'
+                                    }`}>
                                         <span className={`text-[10px] font-black uppercase tracking-widest ${accent}`}>
                                             Arrival Forecast
                                         </span>
                                         <div className="text-4xl lg:text-5xl font-serif font-black">
                                             {calculation.days}
                                         </div>
-                                        <div className="text-[10px] opacity-50 uppercase tracking-widest">Days of Transit</div>
+                                        <div className={`text-[10px] uppercase tracking-widest ${isLight ? 'text-[#2b1810]/60' : 'opacity-50'}`}>Days of Transit</div>
                                     </div>
                                 </div>
 
                                 {/* Logistics Manifest */}
-                                <div className="space-y-2 pt-2 border-t border-slate-500/10">
-                                    <div className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">
+                                <div className={`space-y-2 pt-2 border-t ${isLight ? 'border-[#c8a96e]/30' : 'border-slate-500/10'}`}>
+                                    <div className={`text-[10px] font-black uppercase tracking-widest mb-2 ${isLight ? 'text-[#2b1810]/70' : 'opacity-40'}`}>
                                         Expedition Supply Manifest
                                     </div>
 
-                                    <div className="flex items-center justify-between text-xs py-1 px-2 rounded-lg bg-black/10">
-                                        <span className="flex items-center gap-2 opacity-70">
+                                    <div className={`flex items-center justify-between text-xs py-1.5 px-3 rounded-lg ${isLight ? 'bg-[#ede2cb]/50 text-[#2b1810]' : 'bg-black/10'}`}>
+                                        <span className="flex items-center gap-2 opacity-80">
                                             <Backpack size={13} /> Provisions / Rations:
                                         </span>
-                                        <span className="font-mono font-bold text-yellow-300">
+                                        <span className={`font-mono font-bold ${isLight ? 'text-[#70121e]' : 'text-yellow-300'}`}>
                                             {calculation.rationsNeeded} Rations ({partySize} travelers)
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between text-xs py-1 px-2 rounded-lg bg-black/10">
-                                        <span className="flex items-center gap-2 opacity-70">
+                                    <div className={`flex items-center justify-between text-xs py-1.5 px-3 rounded-lg ${isLight ? 'bg-[#ede2cb]/50 text-[#2b1810]' : 'bg-black/10'}`}>
+                                        <span className="flex items-center gap-2 opacity-80">
                                             <Clock size={13} /> Expected Encampments:
                                         </span>
                                         <span className="font-mono font-bold">
@@ -553,11 +571,11 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between text-xs py-1 px-2 rounded-lg bg-black/10">
-                                        <span className="flex items-center gap-2 opacity-70">
+                                    <div className={`flex items-center justify-between text-xs py-1.5 px-3 rounded-lg ${isLight ? 'bg-[#ede2cb]/50 text-[#2b1810]' : 'bg-black/10'}`}>
+                                        <span className="flex items-center gap-2 opacity-80">
                                             <Shield size={13} /> Danger Classification:
                                         </span>
-                                        <span className="font-mono font-bold text-emerald-400">
+                                        <span className={`font-mono font-bold ${isLight ? 'text-[#1e5436]' : 'text-emerald-400'}`}>
                                             {calculation.danger}
                                         </span>
                                     </div>
@@ -565,12 +583,12 @@ export const JourneyView: React.FC<JourneyViewProps> = ({ world, onNavigate }) =
                             </div>
                         ) : (
                             <div className="my-auto text-center space-y-4 py-12">
-                                <div className="w-16 h-16 rounded-full bg-slate-500/10 flex items-center justify-center mx-auto opacity-40">
+                                <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto ${isLight ? 'bg-[#c8a96e]/20 text-[#70121e]' : 'bg-slate-500/10 opacity-40'}`}>
                                     <MapPin size={32} />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="font-serif text-lg uppercase tracking-wider opacity-60">Awaiting Course Coordinates</p>
-                                    <p className="text-xs opacity-40 max-w-xs mx-auto leading-relaxed">
+                                    <p className={`font-serif text-lg uppercase tracking-wider font-bold ${isLight ? 'text-[#2b1810]' : 'opacity-60'}`}>Awaiting Course Coordinates</p>
+                                    <p className={`text-xs max-w-xs mx-auto leading-relaxed ${isLight ? 'text-[#2b1810]/70' : 'opacity-40'}`}>
                                         Select both an Origin and a Destination above, or enter a manual distance to chart the threads of transit.
                                     </p>
                                 </div>
