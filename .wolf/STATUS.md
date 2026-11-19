@@ -12,6 +12,13 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Layout Expansion, Contrast Fixes & Responsive Viewport Ergonomics** (commits `9984b16` & `a80d280`):
+  - **Fullscreen Expansion**: Replaced `max-w-[1500px]` cap on Royal Codex mode with responsive wide bounds (`w-full max-w-none 2xl:max-w-[2400px]`) and trimmed padding; expanded `EntityViewer` containers and `OptionsView` grid.
+  - **Royal Codex & Wiki Contrast Pass**: Resolved washed-out text across Data Integrity, Developer Diagnostics, Oblivion Protocol, and Lore Archive in `OptionsView.tsx`.
+  - **Grand Voyager Theme Repair**: Fixed broken pitch-black containers in `JourneyView.tsx` under Royal Codex; migrated to canonical illuminated parchment cards (`#f5ead0` with `#c8a96e` borders) and dark ink text.
+  - **Narrow Viewport Responsive Layout**: Converted `EntityViewer` from forced `flex-row` to `flex-col lg:flex-row`, preventing left-column description cutoff and aside overlap on compact screens. Added adaptive wrapping to `RoyalHeader` and tab ribbons.
+  - **NexusGraph Visibility & Control Labels**: Category letters in graph nodes now render in bold dark ink (`#1a1008`) in light mode; node labels use deep ink (`#2b1810`) with white halo shadows (`0 0 3px #ffffff`); added explicit visible text labels to all control buttons below Filters (Zoom In/Out, Reset, Fit View, Islands, Focus Mode, Legend).
+
 - **P3 Suite — Royal Portraits, Editor Backlinks, Calendar Reckoning Bridge, Scratchpad Live Preview, Printable Character Sheets, Asset Vault & NexusGraph Enhancements** (this commit):
   - **Royal Codex Portraits**: Added ornate gold-filigreed portrait frame to `CharacterStatBlock.tsx` and 64×64 thumbnail portrait with inspect modal to `RoyalHeader` in `ViewerHeaders.tsx`.
   - **Editor Inverse Link Visibility (P3 #18)**: Built "Incoming Ties & Backlinks" inspector into `EntityEditor.tsx`, categorizing incoming connections (Events, Residents, Members, Successors, Allies) into interactive chips.
@@ -119,19 +126,27 @@ budget_tokens: 1000
 
 ## 🚀 Next Quest
 
-**Goal:** _Phase P11: Lore Search & Global Command Palette Enhancements_
-- Extend CommandPalette with custom attribute search (`attr:key=value`)
-- Add quick-create from palette with pre-filled custom attributes
-- Fuzzy search across all entity fields including custom attributes
+**Goal:** _Phase P4: High-Impact Worldbuilding Power Tools_
 
-**Files to touch:** `src/components/CommandPalette.tsx`, `src/utils/searchUtils.ts`
+1. **Rich Markdown / WYSIWYG Editor with `[[` Autocomplete**:
+   - Replace the plain `<textarea>` in entity descriptions, notes, and scratchpad with a live preview/WYSIWYG editor featuring a live dropdown autocomplete when typing `[[`.
+2. **Multi-Layer World Atlas & Cartography Overlays**:
+   - Add political border layers, climate/terrain overlays, and travel routes onto the World Map with toggleable layer visibility and opacity sliders.
+3. **Global Codex Search & Replace / Entity Renaming Engine**:
+   - Rename an entity or faction and automatically propagate the name change across all `[[wikilinks]]`, descriptions, and relational notes without breaking links.
+4. **Nexus Graph / Bloodline Tree Image Export (SVG & PNG)**:
+   - Add a one-click button to export high-resolution SVG or PNG snapshots of the force-directed graph or lineage trees for campaign handouts.
+5. **Campaign Session Logs / Dated Journal**:
+   - Add a dedicated session logbook tracking real-world game sessions, in-game dates, attending characters, and quest milestones linked to codex entries.
+
+**Files to touch:** `src/components/editor/EntityEditor.tsx`, `src/components/ui/MarkdownRenderer.tsx`, `src/views/WorldMap.tsx`, `src/utils/searchUtils.ts`, `src/views/NexusGraphView.tsx`, `src/views/SessionLogView.tsx`
 
 ---
 
 ## Context
 
-- **Branch:** main (clean working tree except .wolf/ auto-updates)
-- **Build:** `npm run build` ✅ (0 TS errors, 51/51 tests pass)
+- **Branch:** main
+- **Build:** `npm run build` ✅ (0 TS errors, 57/57 tests pass)
 - **Dev:** `npm run tauri:dev` — primary (Vite + Tauri window)
 - **OpenWolf hooks:** Active — anatomy, memory, buglog auto-maintained
 - **Tauri v2:** Desktop app confirmed working (WebView2 on Windows)
