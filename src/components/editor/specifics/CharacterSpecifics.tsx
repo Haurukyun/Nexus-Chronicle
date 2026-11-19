@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import { Character, WorldEntity, EntityType } from '../../../types';
-import { FormInput, SmartSelect, FormToggle } from '../../ui';
+import { FormInput, SmartSelect, FormToggle, FantasyDatePicker } from '../../ui';
 import { EditorGroup } from '../EditorGroup';
 import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
 import { Info, Zap, Heart, Swords, Scroll } from 'lucide-react';
+import { useWorldStore } from '../../../store/useWorldStore';
 
 interface Props {
     entity: Character;
@@ -17,6 +18,9 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
     const { layoutMode, themeId } = useTheme();
     const isWiki = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
+
+    const calendar = useWorldStore(state => state.world.timelineCalendar);
+    const customPresets = useWorldStore(state => state.world.customCalendarPresets);
 
     const textareaClass = isRoyal
         ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
@@ -63,8 +67,17 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                 <FormInput label="Height" value={entity.height || ""} onChange={(v: string) => onUpdate({ ...entity, height: v })} gridSpan={3} />
                 <FormInput label="Weight" value={entity.weight || ""} onChange={(v: string) => onUpdate({ ...entity, weight: v })} gridSpan={3} />
 
-                <FormInput label="Date of birth" value={entity.birthDate || ""} onChange={(v: string) => onUpdate({ ...entity, birthDate: v })} gridSpan={6} />
-                <FormInput label="Date of death" value={entity.deathDate || ""} onChange={(v: string) => onUpdate({ ...entity, deathDate: v })} gridSpan={6} />
+                {/* ── CHARACTER LIFECYCLE DATE COMPOSER ── */}
+                <FantasyDatePicker
+                    startDate={entity.birthDate || ""}
+                    endDate={entity.deathDate || ""}
+                    startLabel="Birth Date"
+                    endLabel="Death Date"
+                    onChangeStartDate={(v: string) => onUpdate({ ...entity, birthDate: v, dateOfBirth: v })}
+                    onChangeEndDate={(v: string) => onUpdate({ ...entity, deathDate: v, dateOfDeath: v })}
+                    activeCalendar={calendar ?? undefined}
+                    customPresets={customPresets ?? undefined}
+                />
 
                 <SmartSelect label="Species/Races" ids={entity.pairedRace || []} type="species" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedRace: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Occupation/Class" ids={entity.pairedProfession || []} type="occupation" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedProfession: ids })} onCreate={onCreateNew} gridSpan={6} />

@@ -72,6 +72,14 @@ interface WorldStore {
     scratchpadNote: string;
     setScratchpadNote: (note: string) => void;
 
+    // History (Undo / Redo)
+    historyPast: WorldData[];
+    historyFuture: WorldData[];
+    undo: () => void;
+    redo: () => void;
+    canUndo: () => boolean;
+    canRedo: () => boolean;
+
     // Actions
     handleCreate: (type: EntityType, name?: string, shouldOpen?: boolean) => string;
     handleOpenEntity: (id: string) => void;
@@ -79,6 +87,9 @@ interface WorldStore {
     handleSaveDraft: (id: string) => void;
     handleToggleEdit: (id: string) => void;
     handleDeleteToTrash: (entity: WorldEntity) => void;
+    handleBulkDeleteToTrash: (entities: WorldEntity[]) => void;
+    handleBulkReparent: (entityIds: string[], parentId: string | null) => void;
+    handleBulkAddTag: (entityIds: string[], tag: string) => void;
     setWorldPhase: (phase: string) => void;
     addMapConnection: (sourceId: string, targetId: string, type: any) => void;
     removeMapConnection: (id: string) => void;
@@ -88,7 +99,9 @@ interface WorldStore {
     handleHealRelations: () => void;
 }
 
-const syncWorld = (state: WorldStore, nextWorld: WorldData) => {
+const MAX_HISTORY = 30;
+
+const syncWorld = (state: WorldStore, nextWorld: WorldData, recordHistory = true) => {
     const updatedWorld: WorldData = {
         ...nextWorld,
         id: nextWorld.id || state.activeWorldId || defaultInitialRealm.id,
@@ -97,10 +110,21 @@ const syncWorld = (state: WorldStore, nextWorld: WorldData) => {
     const currentWorlds = state.worlds && state.worlds.length > 0 ? state.worlds : [updatedWorld];
     const updatedWorlds = currentWorlds.map(w => w.id === updatedWorld.id ? updatedWorld : w);
     const worlds = updatedWorlds.some(w => w.id === updatedWorld.id) ? updatedWorlds : [...updatedWorlds, updatedWorld];
+
+    let historyPast = state.historyPast || [];
+    let historyFuture = state.historyFuture || [];
+
+    if (recordHistory && state.world && state.world !== nextWorld) {
+        historyPast = [...historyPast.slice(-(MAX_HISTORY - 1)), state.world];
+        historyFuture = [];
+    }
+
     return {
         world: updatedWorld,
         worlds,
-        activeWorldId: updatedWorld.id
+        activeWorldId: updatedWorld.id,
+        historyPast,
+        historyFuture
     };
 };
 
@@ -110,6 +134,45 @@ export const useWorldStore = create<WorldStore>()(
             worlds: [defaultInitialRealm],
             activeWorldId: defaultInitialRealm.id,
             world: defaultInitialRealm,
+            historyPast: [],
+            historyFuture: [],
+
+            undo: () => {
+                const { historyPast, historyFuture, world } = get();
+                if (!historyPast || historyPast.length === 0) return;
+                const previousWorld = historyPast[historyPast.length - 1];
+                const newPast = historyPast.slice(0, -1);
+                const newFuture = [world, ...(historyFuture || [])].slice(0, MAX_HISTORY);
+                set((state) => ({
+                    ...syncWorld(state, previousWorld, false),
+                    historyPast: newPast,
+                    historyFuture: newFuture
+                }));
+            },
+
+            redo: () => {
+                const { historyPast, historyFuture, world } = get();
+                if (!historyFuture || historyFuture.length === 0) return;
+                const nextWorld = historyFuture[0];
+                const newFuture = historyFuture.slice(1);
+                const newPast = [...(historyPast || []).slice(-(MAX_HISTORY - 1)), world];
+                set((state) => ({
+                    ...syncWorld(state, nextWorld, false),
+                    historyPast: newPast,
+                    historyFuture: newFuture
+                }));
+            },
+
+            canUndo: () => {
+                const { historyPast } = get();
+                return Boolean(historyPast && historyPast.length > 0);
+            },
+
+            canRedo: () => {
+                const { historyFuture } = get();
+                return Boolean(historyFuture && historyFuture.length > 0);
+            },
+
             setWorld: (update) => set((state) => {
                 const nextWorld = typeof update === 'function' ? update(state.world) : update;
                 return syncWorld(state, nextWorld);
@@ -1098,6 +1161,79 @@ export const useWorldStore = create<WorldStore>()(
                 }));
                 handleCloseTab(entity.id);
             },
+
+            handleBulkDeleteToTrash: (entitiesToDelete) => {
+                if (!entitiesToDelete || entitiesToDelete.length === 0) return;
+                const idsToDelete = new Set(entitiesToDelete.map(e => e.id));
+                const { world, drafts, handleCloseTab } = get();
+
+                let currentEntities = [...world.entities];
+                let currentDrafts = { ...drafts };
+
+                // Safely reparent any children of deleted entities
+                entitiesToDelete.forEach(entity => {
+                    const safeParent = entity.parentId || null;
+                    currentEntities = currentEntities.map(e =>
+                        e.parentId === entity.id ? { ...e, parentId: safeParent } : e
+                    );
+                });
+
+                // Remove deleted entities
+                currentEntities = currentEntities.filter(e => !idsToDelete.has(e.id));
+
+                // Clean bidirectional relations for all deleted entities
+                entitiesToDelete.forEach(entity => {
+                    const res = removeEntityRelationsOnDelete(entity.id, currentEntities, currentDrafts);
+                    currentEntities = res.entities;
+                    if (res.drafts) currentDrafts = res.drafts;
+                });
+
+                const now = Date.now();
+                const newTrashItems = entitiesToDelete.map(e => ({ ...e, lastModified: now }));
+
+                set((state) => ({
+                    ...syncWorld(state, {
+                        ...state.world,
+                        entities: currentEntities,
+                        trash: [...state.world.trash, ...newTrashItems]
+                    }),
+                    drafts: currentDrafts
+                }));
+
+                entitiesToDelete.forEach(e => handleCloseTab(e.id));
+            },
+
+            handleBulkReparent: (entityIds, parentId) => {
+                if (!entityIds || entityIds.length === 0) return;
+                const targetSet = new Set(entityIds);
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    entities: state.world.entities.map(e => {
+                        if (targetSet.has(e.id) && e.id !== parentId) {
+                            return { ...e, parentId: parentId || undefined };
+                        }
+                        return e;
+                    })
+                }));
+            },
+
+            handleBulkAddTag: (entityIds, tag) => {
+                if (!entityIds || entityIds.length === 0 || !tag.trim()) return;
+                const cleanTag = tag.trim().replace(/^#/, '');
+                const targetSet = new Set(entityIds);
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    entities: state.world.entities.map(e => {
+                        if (targetSet.has(e.id)) {
+                            const existingTags = Array.isArray(e.tags) ? e.tags : [];
+                            if (!existingTags.includes(cleanTag)) {
+                                return { ...e, tags: [...existingTags, cleanTag] };
+                            }
+                        }
+                        return e;
+                    })
+                }));
+            },
             setWorldPhase: (phase) => {
                 set((state) => syncWorld(state, { ...state.world, worldPhase: phase as any }));
             },
@@ -1269,6 +1405,8 @@ export const useWorldStore = create<WorldStore>()(
                 set({
                     world: targetWorld,
                     activeWorldId: targetWorld.id,
+                    historyPast: [],
+                    historyFuture: [],
                     openTabIds: [],
                     drafts: {},
                     editingTabIds: [],
@@ -1461,7 +1599,8 @@ export const useWorldStore = create<WorldStore>()(
                 worlds: state.worlds,
                 activeWorldId: state.activeWorldId,
                 world: state.world,
-                theme: state.theme
+                theme: state.theme,
+                scratchpadNote: state.scratchpadNote
             }),
             onRehydrateStorage: () => (state) => {
                 if (!state) return;

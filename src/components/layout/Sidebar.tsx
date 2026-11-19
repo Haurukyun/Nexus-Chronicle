@@ -1,8 +1,10 @@
 import React, { useMemo, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { 
     Search, Plus, Trash2, BarChart3, History, GitMerge, 
     Footprints, Globe, Settings, BookMarked, Compass, 
-    ChevronRight, ChevronDown, GripVertical, Folder
+    ChevronRight, ChevronDown, GripVertical, Folder,
+    CheckSquare, Square, Tag, ArrowRightLeft, Download, X, Layers, Check
 } from 'lucide-react';
 import { isEntityDeceased, isEntityCategory, isEntityFinished, isEntityMinor, getEntityAliases } from '../../utils/documentModeUtils';
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
@@ -10,6 +12,7 @@ import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { RealmSwitcher } from './RealmSwitcher';
+import { generateEntityMarkdown, downloadTextFile } from '../../utils/exportUtils';
 
 interface SidebarProps {
     world: WorldData;
@@ -74,14 +77,20 @@ const EntityItem: React.FC<{
     draggedEntityId: string | null;
     setDraggedEntityId: (id: string | null) => void;
     onReorderAndReparent: (draggedId: string, targetId: string | null, position: 'before' | 'after' | 'inside', targetType?: EntityType) => void;
+    selectedEntityIds: Set<string>;
+    onToggleSelect: (id: string) => void;
+    isSelectMode: boolean;
 }> = ({ 
-    entity, depth, allEntities, activeTabId, handleOpenEntity, handleDeleteToTrash, draggedEntityId, setDraggedEntityId, onReorderAndReparent 
+    entity, depth, allEntities, activeTabId, handleOpenEntity, handleDeleteToTrash, draggedEntityId, setDraggedEntityId, onReorderAndReparent,
+    selectedEntityIds, onToggleSelect, isSelectMode
 }) => {
     const { themeId, layoutMode } = useTheme();
     const [isExpanded, setIsExpanded] = useState(true);
     const [dropPosition, setDropPosition] = useState<'before' | 'after' | 'inside' | null>(null);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const dragCounter = useRef(0);
+
+    const isSelected = selectedEntityIds.has(entity.id);
 
     // Bulletproof child lookup: Only includes entities whose safe parent is this entity
     const children = allEntities.filter(e => getSafeParentId(e, allEntities) === entity.id);
@@ -257,13 +266,35 @@ const EntityItem: React.FC<{
                 } ${
                     isBeingDragged ? 'opacity-40' : ''
                 } ${dropIndicatorClass} ${
-                    isActive ? activeStyle : hoverStyle
+                    isSelected
+                        ? 'bg-amber-500/20 ring-1 ring-amber-400/60 text-amber-200'
+                        : isActive
+                        ? activeStyle
+                        : hoverStyle
                 } ${isEntityMinor(entity) ? 'italic opacity-50' : ''} ${isEntityDeceased(entity) ? 'opacity-80' : ''}`}
                 style={customStyle}
                 title={`Drag to reparent or reorder: "${entity.name}"`}
             >
                 <div className={`flex items-center flex-1 min-w-0 select-none ${currentDraggedId ? 'pointer-events-none' : ''}`}>
                     <GripVertical size={11} className="opacity-0 group-hover/item:opacity-40 hover:opacity-80 transition-opacity shrink-0 -ml-1 mr-0.5 cursor-grab pointer-events-none" />
+
+                    {(isSelectMode || selectedEntityIds.size > 0) && (
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onToggleSelect(entity.id);
+                            }}
+                            className="p-1 text-slate-400 hover:text-amber-400 transition-colors shrink-0 cursor-pointer -mr-0.5"
+                            title={isSelected ? "Deselect" : "Select"}
+                        >
+                            {isSelected ? (
+                                <CheckSquare size={13} className="text-amber-400" />
+                            ) : (
+                                <Square size={13} />
+                            )}
+                        </button>
+                    )}
 
                     {hasChildren ? (
                         <button 
@@ -277,7 +308,14 @@ const EntityItem: React.FC<{
                     )}
                     
                     <button
-                        onClick={() => handleOpenEntity(entity.id)}
+                        onClick={(e) => {
+                            if (e.ctrlKey || e.metaKey || isSelectMode) {
+                                e.stopPropagation();
+                                onToggleSelect(entity.id);
+                            } else {
+                                handleOpenEntity(entity.id);
+                            }
+                        }}
                         className="flex-1 text-left py-2 text-xs truncate flex items-center justify-between gap-2 pr-2"
                     >
                         <span className="truncate flex items-center gap-1.5">
@@ -338,6 +376,9 @@ const EntityItem: React.FC<{
                             draggedEntityId={draggedEntityId}
                             setDraggedEntityId={setDraggedEntityId}
                             onReorderAndReparent={onReorderAndReparent}
+                            selectedEntityIds={selectedEntityIds}
+                            onToggleSelect={onToggleSelect}
+                            isSelectMode={isSelectMode}
                         />
                     ))}
                 </div>
@@ -362,6 +403,93 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const [draggedEntityId, setDraggedEntityId] = useState<string | null>(null);
     const [headerDropType, setHeaderDropType] = useState<EntityType | null>(null);
     const reorderAndReparentEntity = useWorldStore(state => state.reorderAndReparentEntity);
+    const handleBulkDeleteToTrash = useWorldStore(state => state.handleBulkDeleteToTrash);
+    const handleBulkReparent = useWorldStore(state => state.handleBulkReparent);
+    const handleBulkAddTag = useWorldStore(state => state.handleBulkAddTag);
+
+    // Multi-select state
+    const [selectedEntityIds, setSelectedEntityIds] = useState<Set<string>>(new Set());
+    const [isSelectMode, setIsSelectMode] = useState<boolean>(false);
+    const [showMoveModal, setShowMoveModal] = useState<boolean>(false);
+    const [showTagModal, setShowTagModal] = useState<boolean>(false);
+    const [tagInput, setTagInput] = useState<string>('');
+    const [targetParentId, setTargetParentId] = useState<string>('root');
+    const [confirmBulkTrash, setConfirmBulkTrash] = useState<boolean>(false);
+
+    const toggleSelectEntity = (id: string) => {
+        setSelectedEntityIds(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const selectedEntities = useMemo(() => {
+        return world.entities.filter(e => selectedEntityIds.has(e.id));
+    }, [world.entities, selectedEntityIds]);
+
+    // Check if all selected entities share the same type
+    const sharedSelectedType = useMemo(() => {
+        if (selectedEntities.length === 0) return null;
+        const firstType = selectedEntities[0].type;
+        return selectedEntities.every(e => e.type === firstType) ? firstType : null;
+    }, [selectedEntities]);
+
+    // Eligible parents for Move operation (same type, excluding self & descendants)
+    const eligibleParents = useMemo(() => {
+        if (!sharedSelectedType) return [];
+        const excludedIds = new Set(selectedEntityIds);
+        // Also exclude descendants
+        const isDescendantOfSelected = (entityId: string): boolean => {
+            let curr = world.entities.find(e => e.id === entityId);
+            while (curr && curr.parentId) {
+                if (excludedIds.has(curr.parentId)) return true;
+                curr = world.entities.find(e => e.id === curr?.parentId);
+            }
+            return false;
+        };
+
+        return world.entities.filter(e => 
+            e.type === sharedSelectedType && 
+            !excludedIds.has(e.id) && 
+            !isDescendantOfSelected(e.id)
+        );
+    }, [world.entities, sharedSelectedType, selectedEntityIds]);
+
+    const handleExecuteBulkTrash = () => {
+        if (selectedEntities.length === 0) return;
+        handleBulkDeleteToTrash(selectedEntities);
+        setSelectedEntityIds(new Set());
+        setConfirmBulkTrash(false);
+    };
+
+    const handleExecuteBulkReparent = () => {
+        const parentId = targetParentId === 'root' ? null : targetParentId;
+        handleBulkReparent(Array.from(selectedEntityIds), parentId);
+        setShowMoveModal(false);
+        setSelectedEntityIds(new Set());
+    };
+
+    const handleExecuteBulkAddTag = () => {
+        if (!tagInput.trim()) return;
+        handleBulkAddTag(Array.from(selectedEntityIds), tagInput.trim());
+        setTagInput('');
+        setShowTagModal(false);
+        setSelectedEntityIds(new Set());
+    };
+
+    const handleExecuteBulkExport = async () => {
+        if (selectedEntities.length === 0) return;
+        const combinedMd = selectedEntities
+            .map(e => generateEntityMarkdown(e, world.entities))
+            .join('\n\n---\n\n');
+        await downloadTextFile(
+            combinedMd, 
+            `${(world.name || 'world').toLowerCase().replace(/\s+/g, '-')}-selected-lore-${selectedEntities.length}.md`, 
+            'text/markdown'
+        );
+    };
 
     const draggedEntity = useMemo(() => {
         return world.entities.find(e => e.id === draggedEntityId);
@@ -525,22 +653,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Header with Realm Switcher */}
             <div className={`p-3.5 border-b ${borderColor} relative z-10 space-y-3`}>
                 <RealmSwitcher onOpenOptions={() => setActiveTabId('options')} />
-                <div className="relative group">
-                    <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${(themeId === 'grand-voyager') ? 'text-[#2dd4bf]/60' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50' : 'text-slate-500 group-focus-within:text-yellow-500'}`} size={13} />
-                    <input
-                        id="sidebar-search-input"
-                        placeholder="type:location tag:urban... (Ctrl+K)"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className={`w-full border rounded-xl py-2 pl-9 pr-3 text-xs focus:ring-1 outline-none transition-all ${
-                            (themeId === 'grand-voyager')
-                                ? 'bg-[#0b0805]/80 border-[#3d2617] text-[#e0f2fe] placeholder-amber-200/30 focus:ring-[#14b8a6]/50'
-                                : (themeId === 'royal-codex')
-                                ? 'bg-[#0f0905] border-[#c8a96e]/20 text-[#f0ddb0] placeholder-[#c8a96e]/30 focus:ring-[#c8a96e]/40'
-                                : (layoutMode === 'wiki') ? 'bg-white/50 border-none focus:ring-yellow-500/50'
-                                : 'bg-white/5 border-none focus:ring-yellow-500/50'
+                <div className="flex items-center gap-1.5">
+                    <div className="relative group flex-1">
+                        <Search className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${(themeId === 'grand-voyager') ? 'text-[#2dd4bf]/60' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50' : 'text-slate-500 group-focus-within:text-yellow-500'}`} size={13} />
+                        <input
+                            id="sidebar-search-input"
+                            placeholder="type:location tag:urban... (Ctrl+K)"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className={`w-full border rounded-xl py-2 pl-9 pr-3 text-xs focus:ring-1 outline-none transition-all ${
+                                (themeId === 'grand-voyager')
+                                    ? 'bg-[#0b0805]/80 border-[#3d2617] text-[#e0f2fe] placeholder-amber-200/30 focus:ring-[#14b8a6]/50'
+                                    : (themeId === 'royal-codex')
+                                    ? 'bg-[#0f0905] border-[#c8a96e]/20 text-[#f0ddb0] placeholder-[#c8a96e]/30 focus:ring-[#c8a96e]/40'
+                                    : (layoutMode === 'wiki') ? 'bg-white/50 border-none focus:ring-yellow-500/50'
+                                    : 'bg-white/5 border-none focus:ring-yellow-500/50'
+                            }`}
+                        />
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            if (isSelectMode && selectedEntityIds.size > 0) {
+                                setSelectedEntityIds(new Set());
+                            }
+                            setIsSelectMode(!isSelectMode);
+                        }}
+                        className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                            isSelectMode || selectedEntityIds.size > 0
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                : 'bg-white/5 text-slate-400 hover:text-white border-white/5'
                         }`}
-                    />
+                        title={isSelectMode ? "Exit multi-select mode" : "Multi-select entities (or Ctrl+click)"}
+                    >
+                        <CheckSquare size={13} />
+                    </button>
                 </div>
             </div>
 
@@ -666,6 +813,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                         draggedEntityId={draggedEntityId}
                                                         setDraggedEntityId={setDraggedEntityId}
                                                         onReorderAndReparent={reorderAndReparentEntity}
+                                                        selectedEntityIds={selectedEntityIds}
+                                                        onToggleSelect={toggleSelectEntity}
+                                                        isSelectMode={isSelectMode}
                                                     />
                                                 ))}
                                         </div>
@@ -676,6 +826,215 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </div>
                 ))}
             </nav>
+
+            {/* Docked Bulk Actions Panel */}
+            {selectedEntityIds.size > 0 && (
+                <div className={`p-2.5 mx-2 mb-2 rounded-xl border shadow-xl backdrop-blur-md space-y-2 animate-in fade-in slide-in-from-bottom-2 ${
+                    themeId === 'royal-codex' 
+                        ? 'bg-[#1e130c]/95 border-[#c8a96e]/50 text-[#f0ddb0]' 
+                        : themeId === 'grand-voyager'
+                        ? 'bg-[#0f1d24]/95 border-[#2dd4bf]/40 text-teal-100'
+                        : layoutMode === 'wiki'
+                        ? 'bg-amber-50/95 border-amber-200 text-stone-800'
+                        : 'bg-slate-900/95 border-amber-500/30 text-white'
+                }`}>
+                    <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-amber-400">
+                            {selectedEntityIds.size} Selected
+                        </span>
+                        <button
+                            type="button"
+                            onClick={() => setSelectedEntityIds(new Set())}
+                            className="text-[10px] text-slate-400 hover:text-white transition-colors cursor-pointer"
+                        >
+                            Clear
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-1.5">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setTargetParentId('root');
+                                setShowMoveModal(true);
+                            }}
+                            className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] font-medium transition-all cursor-pointer"
+                            title="Move to Parent"
+                        >
+                            <ArrowRightLeft size={11} /> Move
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setShowTagModal(true)}
+                            className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] font-medium transition-all cursor-pointer"
+                            title="Add Tag"
+                        >
+                            <Tag size={11} /> Tag
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleExecuteBulkExport}
+                            className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[10px] font-medium transition-all cursor-pointer"
+                            title="Export Selected to Markdown"
+                        >
+                            <Download size={11} /> Export
+                        </button>
+                        {confirmBulkTrash ? (
+                            <button
+                                type="button"
+                                onClick={handleExecuteBulkTrash}
+                                className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-bold transition-all cursor-pointer"
+                                title="Confirm Deletion"
+                            >
+                                <Check size={11} /> Sure?
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => setConfirmBulkTrash(true)}
+                                onBlur={() => setTimeout(() => setConfirmBulkTrash(false), 3000)}
+                                className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-[10px] font-bold transition-all cursor-pointer"
+                                title="Send Selected to Trash"
+                            >
+                                <Trash2 size={11} /> Trash
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Bulk Move Modal */}
+            {showMoveModal && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+                    <div className={`w-full max-w-sm rounded-2xl border p-5 space-y-4 shadow-2xl ${
+                        themeId === 'royal-codex' 
+                            ? 'bg-[#181410] border-[#c8a96e]/60 text-[#f0ddb0]' 
+                            : themeId === 'grand-voyager'
+                            ? 'bg-[#0f1d24] border-[#2dd4bf]/40 text-teal-100'
+                            : layoutMode === 'wiki'
+                            ? 'bg-amber-50 border-amber-200 text-stone-800'
+                            : 'bg-slate-900 border-slate-700 text-white'
+                    }`}>
+                        <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                            <h3 className="font-bold text-sm flex items-center gap-2">
+                                <ArrowRightLeft size={14} className="text-amber-400" />
+                                <span>Move {selectedEntityIds.size} Selected Entities</span>
+                            </h3>
+                            <button 
+                                type="button" 
+                                onClick={() => setShowMoveModal(false)}
+                                className="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold tracking-wider opacity-60">Choose Destination Parent</label>
+                            <select
+                                value={targetParentId}
+                                onChange={e => setTargetParentId(e.target.value)}
+                                className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none cursor-pointer"
+                            >
+                                <option value="root">📁 Root Level (No Parent)</option>
+                                {eligibleParents.map(p => (
+                                    <option key={p.id} value={p.id}>
+                                        ↳ {p.name}
+                                    </option>
+                                ))}
+                            </select>
+                            {!sharedSelectedType && (
+                                <p className="text-[11px] text-amber-400/80 italic">
+                                    Selected entities have mixed types and will be reparented to the Root level of their respective categories.
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
+                            <button
+                                type="button"
+                                onClick={() => setShowMoveModal(false)}
+                                className="px-3 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleExecuteBulkReparent}
+                                className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition-colors cursor-pointer shadow-sm"
+                            >
+                                Apply Move
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Bulk Tag Modal */}
+            {showTagModal && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+                    <div className={`w-full max-w-sm rounded-2xl border p-5 space-y-4 shadow-2xl ${
+                        themeId === 'royal-codex' 
+                            ? 'bg-[#181410] border-[#c8a96e]/60 text-[#f0ddb0]' 
+                            : themeId === 'grand-voyager'
+                            ? 'bg-[#0f1d24] border-[#2dd4bf]/40 text-teal-100'
+                            : layoutMode === 'wiki'
+                            ? 'bg-amber-50 border-amber-200 text-stone-800'
+                            : 'bg-slate-900 border-slate-700 text-white'
+                    }`}>
+                        <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                            <h3 className="font-bold text-sm flex items-center gap-2">
+                                <Tag size={14} className="text-amber-400" />
+                                <span>Tag {selectedEntityIds.size} Selected Entities</span>
+                            </h3>
+                            <button 
+                                type="button" 
+                                onClick={() => setShowTagModal(false)}
+                                className="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] uppercase font-bold tracking-wider opacity-60">Tag Name</label>
+                            <input
+                                type="text"
+                                value={tagInput}
+                                onChange={e => setTagInput(e.target.value)}
+                                placeholder="e.g. major, forbidden, arc-1"
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleExecuteBulkAddTag();
+                                    }
+                                }}
+                                autoFocus
+                                className="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs outline-none"
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
+                            <button
+                                type="button"
+                                onClick={() => setShowTagModal(false)}
+                                className="px-3 py-1.5 text-xs text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleExecuteBulkAddTag}
+                                className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition-colors cursor-pointer shadow-sm"
+                            >
+                                Add Tag
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
 
             {/* Footer Nav */}
             <div className={`p-3 border-t ${borderColor} space-y-1`}>

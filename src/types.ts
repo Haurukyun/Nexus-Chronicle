@@ -286,6 +286,7 @@ export interface Currency extends BaseEntity {
 export interface Event extends BaseEntity {
   type: 'event';
   eventType?: string; // Event type
+  color?: string; // Timeline accent color (hex)
   startDate?: string; // Start date
   endDate?: string; // End date
   date?: string; // Legacy date alias

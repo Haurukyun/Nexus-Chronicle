@@ -1,7 +1,8 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import {
     Search, Plus, Globe, Trash2, Settings,
-    BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints, Keyboard
+    BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints, Keyboard,
+    Undo2, Redo2
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
 import { useTheme } from './theme';
@@ -34,6 +35,7 @@ const App = () => {
         searchQuery, setSearchQuery,
         expandedCategories, setExpandedCategories,
         scratchpadNote, setScratchpadNote, exportWorld,
+        historyPast, historyFuture, undo, redo,
         handleOpenEntity, handleCloseTab, handleCreate,
         handleSaveDraft, handleToggleEdit, handleDeleteToTrash
     } = useWorldStore();
@@ -45,6 +47,9 @@ const App = () => {
     const { t, layoutMode, themeId } = useTheme();
     const isManuscript = layoutMode === 'manuscript';
     const isGrandVoyager = themeId === 'grand-voyager';
+
+    const canUndo = Boolean(historyPast && historyPast.length > 0);
+    const canRedo = Boolean(historyFuture && historyFuture.length > 0);
 
     useEffect(() => {
         const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey'];
@@ -76,6 +81,27 @@ const App = () => {
                 if (isEditing) {
                     e.preventDefault();
                     handleSaveDraft(activeTabId as string);
+                    return;
+                }
+            }
+
+            // Undo changes (Ctrl+Z or Cmd+Z outside text inputs)
+            if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+                if (!isInput) {
+                    e.preventDefault();
+                    undo();
+                    return;
+                }
+            }
+
+            // Redo changes (Ctrl+Y or Ctrl+Shift+Z or Cmd+Shift+Z outside text inputs)
+            if (
+                ((e.ctrlKey || e.metaKey) && (e.key === 'y' || e.key === 'Y')) ||
+                ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'z' || e.key === 'Z'))
+            ) {
+                if (!isInput) {
+                    e.preventDefault();
+                    redo();
                     return;
                 }
             }
@@ -165,7 +191,7 @@ const App = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [activeTabId, editingTabIds, handleSaveDraft, handleToggleEdit, setActiveTabId, showCommandPalette, showScratchpad, showKeybindsModal]);
+    }, [activeTabId, editingTabIds, handleSaveDraft, handleToggleEdit, setActiveTabId, showCommandPalette, showScratchpad, showKeybindsModal, undo, redo]);
 
     // App shell geometry tokens — derived from layoutMode (structure) + theme tokens (material)
     const bgClass = t.layout.appBg;
@@ -277,6 +303,44 @@ const App = () => {
                                 <Search size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                 <span className="hidden md:inline font-medium">Jump</span>
                                 <kbd className="hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.08] text-slate-400 border border-white/[0.06]">Ctrl+K</kbd>
+                            </button>
+
+                            {/* Undo Button */}
+                            <button
+                                onClick={undo}
+                                disabled={!canUndo}
+                                title="Undo changes (Ctrl+Z)"
+                                className={`group flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${
+                                    theme === 'royal-codex'
+                                        ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
+                                        : theme === 'wiki'
+                                        ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
+                                        : theme === 'grand-voyager'
+                                        ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
+                                        : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
+                                }`}
+                            >
+                                <Undo2 size={13} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
+                                <span className="hidden xl:inline font-medium">Undo</span>
+                            </button>
+
+                            {/* Redo Button */}
+                            <button
+                                onClick={redo}
+                                disabled={!canRedo}
+                                title="Redo changes (Ctrl+Y or Ctrl+Shift+Z)"
+                                className={`group flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${
+                                    theme === 'royal-codex'
+                                        ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
+                                        : theme === 'wiki'
+                                        ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
+                                        : theme === 'grand-voyager'
+                                        ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
+                                        : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
+                                }`}
+                            >
+                                <Redo2 size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+                                <span className="hidden xl:inline font-medium">Redo</span>
                             </button>
 
                             {/* Scratchpad / Lore Journal */}

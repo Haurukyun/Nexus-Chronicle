@@ -14,6 +14,16 @@ interface Props {
     onCreateNew: (type: EntityType, search: string, open: boolean) => string | void;
 }
 
+const EVENT_PALETTE = [
+    { hex: '#f59e0b', label: 'Amber (Historical / Lore)' },
+    { hex: '#ef4444', label: 'Crimson (War / Cataclysm)' },
+    { hex: '#10b981', label: 'Emerald (Discovery / Era)' },
+    { hex: '#0284c7', label: 'Sky Blue (Peace / Treaty)' },
+    { hex: '#8b5cf6', label: 'Violet (Arcane / Magic)' },
+    { hex: '#ec4899', label: 'Rose (Dynasty / Coronation)' },
+    { hex: '#64748b', label: 'Slate (Shadow / Mystery)' },
+];
+
 export const EventSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate, onCreateNew }) => {
     const { layoutMode, themeId } = useTheme();
     const calendar = useWorldStore(state => state.world.timelineCalendar);
@@ -33,7 +43,38 @@ export const EventSpecifics: React.FC<Props> = ({ entity, allEntities, onUpdate,
     return (
         <>
             <EditorGroup title="Basic" icon={Info}>
-                <FormInput label="Event type" value={entity.eventType || ""} onChange={(v: string) => onUpdate({ ...entity, eventType: v })} />
+                <FormInput label="Event type" value={entity.eventType || ""} onChange={(v: string) => onUpdate({ ...entity, eventType: v })} gridSpan={6} />
+
+                <div className="col-span-12 lg:col-span-6 space-y-1.5 flex flex-col justify-center">
+                    <label className={labelClass}>Timeline Color</label>
+                    <div className="flex items-center gap-2 flex-wrap py-1">
+                        {EVENT_PALETTE.map(c => {
+                            const isSelected = (entity.color || '#f59e0b').toLowerCase() === c.hex.toLowerCase();
+                            return (
+                                <button
+                                    key={c.hex}
+                                    type="button"
+                                    onClick={() => onUpdate({ ...entity, color: c.hex })}
+                                    className={`w-6 h-6 rounded-full border transition-all hover:scale-110 flex items-center justify-center cursor-pointer ${
+                                        isSelected ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-slate-900 scale-110 shadow-sm' : 'opacity-75 hover:opacity-100'
+                                    }`}
+                                    style={{ backgroundColor: c.hex, borderColor: 'rgba(255,255,255,0.25)' }}
+                                    title={c.label}
+                                />
+                            );
+                        })}
+                        <div className="relative flex items-center gap-1.5 ml-2 pl-2 border-l border-white/10">
+                            <input
+                                type="color"
+                                value={entity.color || '#f59e0b'}
+                                onChange={e => onUpdate({ ...entity, color: e.target.value })}
+                                className="w-6 h-6 rounded-md cursor-pointer bg-transparent border-0 p-0"
+                                title="Custom color hex"
+                            />
+                            <span className="text-[10px] font-mono opacity-60 uppercase">{entity.color || '#f59e0b'}</span>
+                        </div>
+                    </div>
+                </div>
 
                 {/* ── DEDICATED DATE COMPOSER & CALENDAR SYSTEM CONVERTER ── */}
                 <FantasyDatePicker

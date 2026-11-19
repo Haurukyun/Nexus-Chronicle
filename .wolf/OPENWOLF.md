@@ -31,7 +31,6 @@ When a bug may recur, search `.wolf/buglog.json` by error or path for a known fi
 ## Session end
 
 Before wrapping up: update `.wolf/STATUS.md`, and record any learnings or bugs from the session in cerebrum.md / buglog.json. If your agent has no OpenWolf hooks installed, also write a one-line session summary to `.wolf/memory.md` (`| HH:MM | description | file(s) | outcome | ~tokens |`).
-**Crucial Commit Rule:** NEVER commit if only `.wolf/` files have changed. Any updates to `.wolf/` files must be bundled and committed together with application code changes. Never produce standalone `docs(wolf): ...` commits.
 
 ## On-demand skills
 

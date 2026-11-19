@@ -110,6 +110,7 @@
     },
     "agents": [
       "claude",
+      "codex",
       "opencode",
       "gemini"
     ],

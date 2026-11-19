@@ -272,7 +272,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
                         end: isPointEvent ? start : Math.max(end, start + 1),
                         eventType: evt.eventType,
                         description: evt.description,
-                        color: '#f59e0b',
+                        color: evt.color || '#f59e0b',
                         entity: e,
                         isPointEvent
                     });

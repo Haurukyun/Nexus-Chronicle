@@ -12,6 +12,15 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **P2 Fixes — Undo/Redo Engine, Per-Event Timeline Colors, Trash Bulk Operations, Sidebar Multi-Select, Character Date Composer & Scratchpad Persistence** (this commit):
+  - **Undo / Redo (P2 #12)**: Implemented in-memory history stack (`historyPast`, `historyFuture`, `undo`, `redo`, `canUndo`, `canRedo`) integrated with `syncWorld`. Hooked global keyboard shortcuts `Ctrl+Z` (undo) and `Ctrl+Y` / `Ctrl+Shift+Z` (redo) in `App.tsx` outside text inputs. Added jewel-styled top toolbar Undo/Redo buttons with disabled state awareness. Added to Grimoire of Shortcuts in `KeybindsModal`.
+  - **Per-Event Timeline Colors (P2 #9)**: Added `color?: string` to `Event` interface in `src/types.ts`. Built a palette swatch picker (Amber, Crimson, Emerald, Sky Blue, Violet, Rose, Slate + custom hex input) in `EventSpecifics.tsx`. Wired `TimelineView.tsx` to read `evt.color || '#f59e0b'`.
+  - **Trash Bulk Operations (P2 #11)**: Completely modernized `TrashView.tsx` with multi-select checkboxes, Select All / Deselect All, type filtering dropdown, bulk restore, bulk erase with confirmation, and empty whole archive with safety confirm.
+  - **Sidebar Multi-Select & Bulk Operations (P2 #14)**: Added multi-select mode and Ctrl/Cmd+click selection in `Sidebar.tsx`. Added docked bulk action panel with Move to Parent (with smart type filtering and Root option), Bulk Tag (with hashtag normalization), Bulk Markdown Export (Obsidian-ready formatted export), and Bulk Trash.
+  - **Character Lifecycle Date Composer (P2 #8)**: Replaced raw text inputs in `CharacterSpecifics.tsx` with `FantasyDatePicker` supporting customizable `startLabel="Birth Date"` and `endLabel="Death Date"` and synchronized legacy aliases.
+  - **Scratchpad Persistence (P2 #15)**: Added `scratchpadNote` to Zustand `partialize` configuration in `useWorldStore.ts` to ensure DM notes persist across page reloads and browser sessions.
+  - **Journey Coordinate Nudge (P2 #13)**: Validated existing quick-pin modal, coordinate readout, and unanchored warning callouts in `JourneyView.tsx`.
+
 - **P1 Fixes — Tree Depth Expansion, Viewer Tags Display & Command Palette Supercharged Search** (this commit):
   - **NexusTreeView On-Demand Depth Expansion**: Replaced static depth-5 cutoff with an interactive on-demand expansion button (`Show deeper (+N descendants)`), allowing users to explore deep lineage branches beyond depth 5 without losing tree structure.
   - **Viewer Headers Tags Display**: Added dedicated `#tag` badges across `CodexHeader`, `WikiHeader`, and `RoyalHeader` in `ViewerHeaders.tsx`, surfacing entity tags across all three themes and linking them to sidebar `tag:...` filtering.

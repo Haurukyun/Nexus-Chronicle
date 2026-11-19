@@ -127,6 +127,16 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
             icon: Keyboard,
             items: [
                 {
+                    keys: ['Ctrl', 'Z'],
+                    action: 'Undo Realm Changes',
+                    description: 'Revert last modification to entities, map, or timeline'
+                },
+                {
+                    keys: ['Ctrl', 'Y'],
+                    action: 'Redo Realm Changes',
+                    description: 'Reapply undone changes (or Ctrl+Shift+Z)'
+                },
+                {
                     keys: ['Ctrl', 'K'],
                     action: 'Command Palette & Spotlight',
                     description: 'Universal quick jump across all entities, realms, and actions'

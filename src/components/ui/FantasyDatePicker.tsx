@@ -31,6 +31,8 @@ export interface FantasyDatePickerProps {
     endDate?: string;
     onChangeStartDate?: (date: string) => void;
     onChangeEndDate?: (date: string) => void;
+    startLabel?: string;
+    endLabel?: string;
     // Fallback single-date API for compatibility
     value?: string;
     onChange?: (date: string) => void;
@@ -254,6 +256,8 @@ export const FantasyDatePicker: React.FC<FantasyDatePickerProps> = ({
     endDate = '',
     onChangeStartDate,
     onChangeEndDate,
+    startLabel = 'Start',
+    endLabel = 'End',
     value,
     onChange,
     label,
@@ -462,7 +466,7 @@ export const FantasyDatePicker: React.FC<FantasyDatePickerProps> = ({
                                     color: activeTarget === 'start' ? (isLight ? '#ffffff' : '#000000') : (isLight ? '#475569' : '#cbd5e1')
                                 }}
                             >
-                                <span>Target: Start</span>
+                                <span>Target: {startLabel}</span>
                                 {startDate && (
                                     <span className="text-[10px] font-mono opacity-80 max-w-[100px] truncate">
                                         ({startDate})
@@ -480,7 +484,7 @@ export const FantasyDatePicker: React.FC<FantasyDatePickerProps> = ({
                                     color: activeTarget === 'end' ? (isLight ? '#ffffff' : '#000000') : (isLight ? '#475569' : '#cbd5e1')
                                 }}
                             >
-                                <span>Target: End</span>
+                                <span>Target: {endLabel}</span>
                                 {endDate && (
                                     <span className="text-[10px] font-mono opacity-80 max-w-[100px] truncate">
                                         ({endDate})
@@ -494,13 +498,13 @@ export const FantasyDatePicker: React.FC<FantasyDatePickerProps> = ({
                 {/* ── Active Target Date Direct Input / Clear Bar ── */}
                 <div className="flex items-center gap-2 px-1">
                     <span className="text-[10px] uppercase font-bold tracking-wider opacity-60 shrink-0">
-                        {isDualDate ? (activeTarget === 'start' ? 'Start Date:' : 'End Date:') : 'Date:'}
+                        {isDualDate ? `${activeTarget === 'start' ? startLabel : endLabel}:` : 'Date:'}
                     </span>
                     <div className="relative flex-1 flex items-center">
                         <input
                             type="text"
                             value={effectiveTargetDate}
-                            placeholder={isDualDate && activeTarget === 'end' ? "e.g. 20 Morning Star, 1495 (leave blank for single-point event)" : "e.g. 15 Morning Star, 1492"}
+                            placeholder={isDualDate && activeTarget === 'end' ? `e.g. 20 Morning Star, 1495 (leave blank for single-point / living)` : `e.g. 15 Morning Star, 1492`}
                             onChange={(e) => handleUpdateTargetDate(e.target.value)}
                             className="w-full text-xs font-mono font-semibold px-3 py-1.5 pr-8 rounded-xl border bg-black/10 focus:outline-none transition-all"
                             style={{
@@ -513,7 +517,7 @@ export const FantasyDatePicker: React.FC<FantasyDatePickerProps> = ({
                                 type="button"
                                 onClick={() => handleUpdateTargetDate('')}
                                 className="absolute right-2 text-slate-400 hover:text-rose-400 p-0.5 rounded cursor-pointer transition-colors"
-                                title={isDualDate && activeTarget === 'end' ? "Clear end date (converts back to single point event)" : "Clear date"}
+                                title={`Clear ${isDualDate ? (activeTarget === 'start' ? startLabel : endLabel) : 'date'}`}
                             >
                                 <X size={13} />
                             </button>
