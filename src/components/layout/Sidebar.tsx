@@ -1037,18 +1037,52 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 document.body
             )}
 
-            {/* Footer Nav */}
-            <div className={`p-3 border-t ${borderColor} space-y-1`}>
-                <button onClick={() => setActiveTabId('dashboard')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('dashboard', 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20')}`}><BarChart3 size={14} /> World Ledger</button>
-                <button onClick={() => setActiveTabId('timeline')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('timeline', 'bg-[#fef08a] text-slate-950 shadow-lg shadow-yellow-500/25')}`}><History size={14} /> Chronos View</button>
-                <button onClick={() => setActiveTabId('session-logs')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('session-logs', 'bg-amber-500 text-black shadow-lg shadow-amber-500/20')}`}><BookOpen size={14} /> Session Codex</button>
-                <button onClick={() => setActiveTabId('plot-threads')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('plot-threads', 'bg-blue-500 text-white shadow-lg shadow-blue-500/20')}`}><Lightbulb size={14} /> Plot Threads</button>
-                <button onClick={() => setActiveTabId('faction-matrix')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('faction-matrix', 'bg-red-500 text-white shadow-lg shadow-red-500/20')}`}><Swords size={14} /> Balance of Power</button>
-                <button onClick={() => setActiveTabId('nexus')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('nexus', 'bg-rose-500 text-white shadow-lg shadow-rose-500/20')}`}><GitMerge size={14} /> Nexus Lines</button>
-                <button onClick={() => setActiveTabId('journey')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('journey', 'bg-orange-500 text-white shadow-lg shadow-orange-500/20')}`}><Footprints size={14} /> Grand Journey</button>
-                <button onClick={() => setActiveTabId('map')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('map', 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20')}`}><Globe size={14} /> Atlas View</button>
-                <button onClick={() => setActiveTabId('trash')} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTabId === 'trash' ? 'text-red-400' : (themeId === 'grand-voyager') ? 'text-amber-100/50 hover:text-red-400' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50 hover:text-red-400' : 'text-slate-500 hover:text-red-400'}`}><Trash2 size={13} /> Forgotten Depth</button>
-                <button onClick={() => setActiveTabId('options')} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${activeTabId === 'options' ? accentText : (themeId === 'grand-voyager') ? 'text-amber-100/50 hover:text-[#2dd4bf]' : (themeId === 'royal-codex') ? 'text-[#c8a96e]/50 hover:text-[#d4af37]' : 'text-slate-500 hover:text-slate-300'}`}><Settings size={13} /> System Archive</button>
+            {/* Minimal Footer: Trash & Settings */}
+            <div className={`p-2 border-t ${borderColor} flex items-center justify-between gap-1.5`}>
+                <button
+                    onClick={() => setActiveTabId('trash')}
+                    title="Forgotten Depth (Trash Archive)"
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                        activeTabId === 'trash'
+                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            : (themeId === 'grand-voyager')
+                                ? 'text-amber-100/50 hover:text-red-400 hover:bg-white/5'
+                                : (themeId === 'royal-codex')
+                                    ? 'text-[#c8a96e]/60 hover:text-red-400 hover:bg-white/5'
+                                    : 'text-slate-500 hover:text-red-400 hover:bg-white/5'
+                    }`}
+                >
+                    <Trash2 size={13} />
+                    <span className="truncate">Trash</span>
+                    {world.trash && world.trash.length > 0 && (
+                        <span className="text-[10px] font-mono px-1 rounded-full bg-red-500/20 text-red-400 font-bold">
+                            {world.trash.length}
+                        </span>
+                    )}
+                </button>
+
+                <button
+                    onClick={() => setActiveTabId('options')}
+                    title="System Archive & Realm Settings"
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                        activeTabId === 'options'
+                            ? (themeId === 'royal-codex')
+                                ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                : (layoutMode === 'wiki')
+                                    ? 'bg-[#b91c1c] text-white shadow-sm'
+                                    : (themeId === 'grand-voyager')
+                                        ? 'bg-[#2dd4bf] text-slate-950 shadow-sm'
+                                        : 'bg-[#fef08a] text-slate-950 shadow-sm'
+                            : (themeId === 'grand-voyager')
+                                ? 'text-amber-100/50 hover:text-[#2dd4bf] hover:bg-white/5'
+                                : (themeId === 'royal-codex')
+                                    ? 'text-[#c8a96e]/60 hover:text-[#d4af37] hover:bg-white/5'
+                                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                    }`}
+                >
+                    <Settings size={13} />
+                    <span className="truncate">Settings</span>
+                </button>
             </div>
         </aside>
     );

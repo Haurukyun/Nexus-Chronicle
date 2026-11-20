@@ -12,6 +12,15 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **UI Shell Debloat & Two-Tier Header Redesign**:
+  1. **Sidebar Pure Codex Focus**:
+     - Removed the vertical stack of 10 system buttons from the bottom of `Sidebar.tsx`, recovering ~350px of vertical space.
+     - The Codex hierarchy tree now expands to the full height of the viewport, eliminating cramped tree scrolling.
+     - Added a clean, minimal footer row containing only `Trash / Forgotten Depth` (with counter badge) and `System Archive / Settings`.
+  2. **Two-Tier Header in `App.tsx`**:
+     - **Tier 1 (Top Realm Ribbon & Actions)**: Full-width ribbon housing the 8 primary realm tool views (`Atlas`, `Chronos`, `Sessions`, `Plot Threads`, `Factions`, `Nexus Lines`, `Journey`, `Ledger`) as theme-aware pill buttons with keyboard shortcut tooltips, alongside the glassmorphic quick-actions toolbar (`Jump`, `Undo`, `Redo`, `Scratchpad`, `Keybinds`, `Theme Switcher`).
+     - **Tier 2 (Entity Document Tabs Bar)**: Dedicated dossier tab bar displaying open entity documents with close buttons, active editing states, and open tab count.
+
 - **Phase P5 Option 4: Narrative & Simulation Tools (The Conspiracy Board & Balance of Power)**:
   1. **The Conspiracy Board (Plot Threads & Clue Web Tracker)**:
      - Added `PlotThread` and `PlotClue` interfaces to `types.ts` and store actions (`addPlotThread`, `updatePlotThread`, `deletePlotThread`, `addClueToThread`, `removeClueFromThread`) to `useWorldStore.ts`.
