@@ -359,9 +359,9 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
   const [showLegend, setShowLegend] = useState(true);
   const [dims, setDims] = useState({ w: 1200, h: 700 });
-  const [isClustered, setIsClustered] = useState(false);
+  const [isClustered, setIsClustered] = useState(true);
   const [isolateNeighbors, setIsolateNeighbors] = useState(false);
-  const isClusteredRef = useRef(isClustered);
+  const isClusteredRef = useRef(true);
 
   useEffect(() => {
     isClusteredRef.current = isClustered;
@@ -979,13 +979,15 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
       {/* ── Top-right: controls ─────────────────────────────────────────────── */}
       <div className="absolute top-4 right-4 flex flex-col gap-1.5 z-20">
+        {/* Helper function for HUD buttons */}
+        {(() => null)()}
         {/* Filter panel toggle */}
         <button
           onClick={() => setFilterOpen((o) => !o)}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-            filterOpen 
-              ? (isRoyal ? 'ring-2 ring-[#70121e] bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : isWiki ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c] text-white' : 'ring-2 ring-yellow-400/50 bg-yellow-400/20 text-yellow-300') 
-              : isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs uppercase tracking-wider transition-all shadow-sm ${
+            filterOpen
+              ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] font-black shadow-md' : isWiki ? 'bg-[#b91c1c] text-white border-2 border-[#b91c1c] font-black shadow-md' : 'bg-yellow-400 text-black border-2 border-yellow-300 font-black shadow-md'
+              : isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
         >
           <Filter size={13} className={isLight && !filterOpen ? 'text-[#70121e]' : ''} />
@@ -994,8 +996,8 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Zoom In */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+            isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={() => setZoom((z) => Math.min(4, z * 1.25))}
           title="Zoom In"
@@ -1006,8 +1008,8 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Zoom Out */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+            isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={() => setZoom((z) => Math.max(0.15, z * 0.8))}
           title="Zoom Out"
@@ -1018,8 +1020,8 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Reset camera */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+            isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={resetCamera}
           title="Reset camera (100% Origin)"
@@ -1030,8 +1032,8 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Zoom to fit */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+            isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={zoomToFit}
           title="Zoom to Fit (Fit all visible nodes)"
@@ -1042,10 +1044,10 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Cluster by Category Islands */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-sm ${
             isClustered
-              ? (isRoyal ? 'ring-2 ring-[#70121e] bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : isWiki ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c] text-white' : 'ring-2 ring-yellow-400 bg-yellow-400/20 text-yellow-300')
-              : isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+              ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] font-black shadow-md' : isWiki ? 'bg-[#b91c1c] text-white border-2 border-[#b91c1c] font-black shadow-md' : 'bg-yellow-400 text-black border-2 border-yellow-300 font-black shadow-md'
+              : isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={() => setIsClustered(c => !c)}
           title={isClustered ? "Disable Category Islands" : "Cluster by Category Islands"}
@@ -1056,10 +1058,10 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Isolate Neighbors / Focus Mode */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-sm ${
             isolateNeighbors
-              ? (isRoyal ? 'ring-2 ring-[#70121e] bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : isWiki ? 'ring-2 ring-[#b91c1c] bg-[#b91c1c] text-white' : 'ring-2 ring-yellow-400 bg-yellow-400/20 text-yellow-300')
-              : isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+              ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] font-black shadow-md' : isWiki ? 'bg-[#b91c1c] text-white border-2 border-[#b91c1c] font-black shadow-md' : 'bg-yellow-400 text-black border-2 border-yellow-300 font-black shadow-md'
+              : isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={() => setIsolateNeighbors(i => !i)}
           title={isolateNeighbors ? "Focus Mode Active (Isolating active node & neighbors)" : "Enable Focus Mode (Isolate neighbors on click)"}
@@ -1071,8 +1073,8 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
         {/* Re-center on selected node */}
         {selectedId && (
           <button
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-              isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+              isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
             }`}
             onClick={() => {
               const n = nodesRef.current.find((n) => n.id === selectedId);
@@ -1088,8 +1090,10 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Legend toggle */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+            showLegend
+              ? isRoyal ? 'bg-[#ede2cc] border-2 border-[#c8a96e] text-[#2b1810]' : isWiki ? 'bg-[#ede4d8] border border-[#d4c8af] text-[#2b1810]' : 'bg-slate-800 border border-slate-600 text-white'
+              : isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={() => setShowLegend((v) => !v)}
           title="Toggle legend"
@@ -1100,8 +1104,8 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Export SVG */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+            isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={() => { if (svgRef.current) exportSvg(svgRef.current, 'nexus-graph.svg'); }}
           title="Export graph as SVG"
@@ -1112,8 +1116,8 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
 
         {/* Export PNG */}
         <button
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
-            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${
+            isRoyal ? 'bg-[#fbf8ef] border border-[#c8a96e]/70 text-[#2b1810] hover:bg-[#ede0c9]' : isWiki ? 'bg-[#f5f0e8] border border-[#d4c8af] text-[#2b1810] hover:bg-[#ede4d8]' : 'bg-slate-900 border border-slate-700 text-white hover:bg-white/10'
           }`}
           onClick={() => { if (svgRef.current) exportPng(svgRef.current, 'nexus-graph.png'); }}
           title="Export graph as PNG (2× resolution)"

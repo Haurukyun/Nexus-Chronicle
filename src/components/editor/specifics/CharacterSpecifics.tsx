@@ -140,12 +140,92 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
             </EditorGroup>
 
             <EditorGroup title="Relationships" icon={Heart}>
-                <SmartSelect label="Parents" ids={effectiveParentIds} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, parentsOfCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="parentsOfCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
-                <SmartSelect label="Children" ids={effectiveChildIds} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, childOfCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="childOfCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
-                <SmartSelect label="Relatives" ids={entity.relativesOfCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, relativesOfCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="relativesOfCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
-                <SmartSelect label="Friends" ids={entity.allyResCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, allyResCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="allyResCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
-                <SmartSelect label="Enemies" ids={entity.enemydResCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, enemydResCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="enemydResCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
-                <SmartSelect label="Complicated" ids={entity.complicatedResCharacter || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, complicatedResCharacter: ids })} onCreate={onCreateNew} gridSpan={4} fieldKey="complicatedResCharacter" relationalNotes={entity.relationalNotes} onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} />
+                <SmartSelect 
+                    label="Parents" 
+                    ids={effectiveParentIds} 
+                    type="character" 
+                    all={allEntities} 
+                    excludeIds={[entity.id]}
+                    onChange={(ids) => {
+                        const removedParent = (entity.parentsOfCharacter || []).find(p => !ids.includes(p));
+                        onUpdate({ 
+                            ...entity, 
+                            parentsOfCharacter: ids,
+                            parentId: removedParent && entity.parentId === removedParent ? null : entity.parentId,
+                            parentIds: ids
+                        });
+                    }} 
+                    onCreate={onCreateNew} 
+                    gridSpan={4} 
+                    fieldKey="parentsOfCharacter" 
+                    relationalNotes={entity.relationalNotes} 
+                    onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} 
+                />
+                <SmartSelect 
+                    label="Children" 
+                    ids={effectiveChildIds} 
+                    type="character" 
+                    all={allEntities} 
+                    excludeIds={[entity.id]}
+                    onChange={(ids) => onUpdate({ ...entity, childOfCharacter: ids, childrenIds: ids })} 
+                    onCreate={onCreateNew} 
+                    gridSpan={4} 
+                    fieldKey="childOfCharacter" 
+                    relationalNotes={entity.relationalNotes} 
+                    onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} 
+                />
+                <SmartSelect 
+                    label="Relatives" 
+                    ids={entity.relativesOfCharacter || []} 
+                    type="character" 
+                    all={allEntities} 
+                    excludeIds={[entity.id]}
+                    onChange={(ids) => onUpdate({ ...entity, relativesOfCharacter: ids, relativeIds: ids })} 
+                    onCreate={onCreateNew} 
+                    gridSpan={4} 
+                    fieldKey="relativesOfCharacter" 
+                    relationalNotes={entity.relationalNotes} 
+                    onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} 
+                />
+                <SmartSelect 
+                    label="Friends" 
+                    ids={entity.allyResCharacter || []} 
+                    type="character" 
+                    all={allEntities} 
+                    excludeIds={[entity.id]}
+                    onChange={(ids) => onUpdate({ ...entity, allyResCharacter: ids, friendIds: ids })} 
+                    onCreate={onCreateNew} 
+                    gridSpan={4} 
+                    fieldKey="allyResCharacter" 
+                    relationalNotes={entity.relationalNotes} 
+                    onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} 
+                />
+                <SmartSelect 
+                    label="Enemies" 
+                    ids={entity.enemydResCharacter || []} 
+                    type="character" 
+                    all={allEntities} 
+                    excludeIds={[entity.id]}
+                    onChange={(ids) => onUpdate({ ...entity, enemydResCharacter: ids, enemyIds: ids })} 
+                    onCreate={onCreateNew} 
+                    gridSpan={4} 
+                    fieldKey="enemydResCharacter" 
+                    relationalNotes={entity.relationalNotes} 
+                    onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} 
+                />
+                <SmartSelect 
+                    label="Complicated" 
+                    ids={entity.complicatedResCharacter || []} 
+                    type="character" 
+                    all={allEntities} 
+                    excludeIds={[entity.id]}
+                    onChange={(ids) => onUpdate({ ...entity, complicatedResCharacter: ids, complicatedWithIds: ids })} 
+                    onCreate={onCreateNew} 
+                    gridSpan={4} 
+                    fieldKey="complicatedResCharacter" 
+                    relationalNotes={entity.relationalNotes} 
+                    onRelationalNotesChange={(notes) => onUpdate({ ...entity, relationalNotes: notes })} 
+                />
             </EditorGroup>
 
             <EditorGroup title="Groups & Affiliations" icon={Swords}>

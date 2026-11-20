@@ -60,11 +60,6 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
     const toggleId = (id: string) => {
         if (ids.includes(id)) {
             onChange(ids.filter((i: string) => i !== id));
-            // Non-destructively clean up only this specific field's relational note
-            if (fieldKey && onRelationalNotesChange && relationalNotes) {
-                const nextNotes = setRelationalNote(relationalNotes, fieldKey, id, '');
-                onRelationalNotesChange(nextNotes);
-            }
         } else {
             onChange([...ids, id]);
         }
@@ -168,7 +163,18 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
                             )}
 
                             {!disabled && (
-                                <X size={10} className={`${isRoyal ? 'hover:text-[#70121e]' : 'hover:text-black'} cursor-pointer shrink-0 ml-0.5`} onClick={(e) => { e.stopPropagation(); toggleId(id); }} />
+                                <button
+                                    type="button"
+                                    onClick={(e) => { 
+                                        e.stopPropagation(); 
+                                        e.preventDefault(); 
+                                        toggleId(id); 
+                                    }}
+                                    className={`${isRoyal ? 'hover:text-[#70121e]' : 'hover:text-black'} p-0.5 rounded cursor-pointer shrink-0 ml-0.5 transition-colors`}
+                                    title={`Remove ${target?.name || 'connection'}`}
+                                >
+                                    <X size={10} />
+                                </button>
                             )}
                         </span>
                     );

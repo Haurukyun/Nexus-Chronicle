@@ -3,9 +3,10 @@ import { createPortal } from 'react-dom';
 import { 
     MapPin, Globe, Link2, Trash2, X, Plus, Sparkles, Shield, Swords, 
     Compass, Search, AlertTriangle, CheckCircle2, ZoomIn, ZoomOut, 
-    RotateCcw, Edit3, Grid, Filter, Eye, Layers, Move, Info
+    RotateCcw, Edit3, Grid, Filter, Eye, Layers, Move, Info,
+    PenTool, Undo2
 } from 'lucide-react';
-import { WorldData, MapConnection, Location, MapOverlayLayer } from '../types';
+import { WorldData, MapConnection, Location, MapOverlayLayer, CartographyRegion } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
 import { NexusImage } from '../components/ui/NexusImage';
@@ -91,6 +92,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
     // Modal state for creating a new connection
     const [pendingConnection, setPendingConnection] = useState<{ sourceId: string; targetId: string } | null>(null);
     const [selectedConnectionType, setSelectedConnectionType] = useState<ConnectionType>('trade');
+
+    // Cartography Drawing & Management State
+    const [activeDrawingLayer, setActiveDrawingLayer] = useState<'political' | 'climate' | 'routes' | null>(null);
+    const [drawingPoints, setDrawingPoints] = useState<{ x: number; y: number }[]>([]);
+    const [showSaveRegionModal, setShowSaveRegionModal] = useState(false);
+    const [newRegionName, setNewRegionName] = useState('');
+    const [newRegionColor, setNewRegionColor] = useState('#b91c1c');
 
     // Clamp pan so map edges never pull inside container viewport
     const clampPan = useCallback((targetPanX: number, targetPanY: number, targetZoom: number, width: number, height: number) => {
@@ -338,6 +346,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
             targetEl?.closest('form')
         );
 
+        // If user is currently drawing a cartography region/route:
+        if (!hasDragged && activeDrawingLayer && !isUiOrPinClick) {
+            const coords = getMapPercentFromClient(e.clientX, e.clientY);
+            setDrawingPoints(prev => [...prev, coords]);
+            return;
+        }
+
         // If user simply clicked on empty map territory without dragging:
         if (!hasDragged && editMode === 'marker' && !isUiOrPinClick) {
             const coords = getMapPercentFromClient(e.clientX, e.clientY);
@@ -469,6 +484,114 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
         pendingConnection ? world.entities.find(e => e.id === pendingConnection.targetId) : null
     , [pendingConnection, world.entities]);
 
+    const getPolygonCentroid = (pts: { x: number; y: number }[]) => {
+        if (pts.length === 0) return { x: 0, y: 0 };
+        const sum = pts.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), { x: 0, y: 0 });
+        return { x: sum.x / pts.length, y: sum.y / pts.length };
+    };
+
+    const handleAutoGenerateCartography = () => {
+        const sampleRegions: CartographyRegion[] = [
+            {
+                id: `reg-pol-1-${Date.now()}`,
+                name: 'High Kingdom of Aethelgard',
+                type: 'political',
+                color: '#b91c1c',
+                points: [{ x: 18, y: 35 }, { x: 38, y: 30 }, { x: 42, y: 55 }, { x: 24, y: 65 }, { x: 14, y: 48 }],
+            },
+            {
+                id: `reg-pol-2-${Date.now()}`,
+                name: 'Valenreach Dominion',
+                type: 'political',
+                color: '#1e40af',
+                points: [{ x: 55, y: 25 }, { x: 78, y: 22 }, { x: 82, y: 50 }, { x: 64, y: 58 }, { x: 52, y: 40 }],
+            },
+            {
+                id: `reg-pol-3-${Date.now()}`,
+                name: 'Sovereign Free Cities',
+                type: 'political',
+                color: '#047857',
+                points: [{ x: 34, y: 62 }, { x: 52, y: 60 }, { x: 58, y: 82 }, { x: 38, y: 86 }, { x: 28, y: 74 }],
+            },
+            {
+                id: `reg-clim-1-${Date.now()}`,
+                name: 'Frostveil Wastes',
+                type: 'climate',
+                color: '#38bdf8',
+                points: [{ x: 10, y: 8 }, { x: 90, y: 8 }, { x: 86, y: 24 }, { x: 12, y: 24 }],
+            },
+            {
+                id: `reg-clim-2-${Date.now()}`,
+                name: 'The Golden Expanse',
+                type: 'climate',
+                color: '#eab308',
+                points: [{ x: 26, y: 42 }, { x: 74, y: 40 }, { x: 70, y: 70 }, { x: 28, y: 72 }],
+            },
+            {
+                id: `reg-route-1-${Date.now()}`,
+                name: 'The Great Silk Highway',
+                type: 'routes',
+                color: '#f59e0b',
+                points: [{ x: 20, y: 45 }, { x: 35, y: 42 }, { x: 50, y: 48 }, { x: 65, y: 38 }, { x: 80, y: 42 }],
+            },
+            {
+                id: `reg-route-2-${Date.now()}`,
+                name: 'The Kingsway',
+                type: 'routes',
+                color: '#ec4899',
+                points: [{ x: 30, y: 28 }, { x: 36, y: 45 }, { x: 42, y: 65 }, { x: 45, y: 82 }],
+            },
+        ];
+
+        setWorld(prev => ({
+            ...prev,
+            cartographyRegions: sampleRegions,
+            mapOverlayLayers: (prev.mapOverlayLayers || DEFAULT_MAP_LAYERS).map(l => ({ ...l, visible: true }))
+        }));
+    };
+
+    const handleDeleteRegion = (id: string) => {
+        setWorld(prev => ({
+            ...prev,
+            cartographyRegions: (prev.cartographyRegions || []).filter(r => r.id !== id)
+        }));
+    };
+
+    const startDrawing = (type: 'political' | 'climate' | 'routes') => {
+        setActiveDrawingLayer(type);
+        setDrawingPoints([]);
+        setNewRegionName(type === 'political' ? 'New Realm' : type === 'climate' ? 'New Biome' : 'New Route');
+        setNewRegionColor(type === 'political' ? '#b91c1c' : type === 'climate' ? '#10b981' : '#f59e0b');
+        updateMapOverlayLayer(type, { visible: true });
+        setShowLayerPanel(false);
+    };
+
+    const handleSaveDrawnRegion = () => {
+        if (!activeDrawingLayer) return;
+        const minPts = activeDrawingLayer === 'routes' ? 2 : 3;
+        if (drawingPoints.length < minPts) return;
+
+        const newReg: CartographyRegion = {
+            id: `reg-${Date.now()}`,
+            name: newRegionName.trim() || `Unnamed ${activeDrawingLayer}`,
+            type: activeDrawingLayer,
+            color: newRegionColor,
+            points: drawingPoints,
+        };
+
+        setWorld(prev => ({
+            ...prev,
+            cartographyRegions: [...(prev.cartographyRegions || []), newReg],
+            mapOverlayLayers: (prev.mapOverlayLayers || DEFAULT_MAP_LAYERS).map(l =>
+                l.id === activeDrawingLayer ? { ...l, visible: true } : l
+            )
+        }));
+
+        setActiveDrawingLayer(null);
+        setDrawingPoints([]);
+        setShowSaveRegionModal(false);
+    };
+
     // Theme color tokens
     const accent = isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]';
     const bgCard = isRoyal ? 'bg-[#f7f0e1]' : isWiki ? 'bg-[#fbf6ea]' : isVoyager ? 'bg-[#0f172a]' : 'bg-slate-900';
@@ -481,15 +604,15 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
         : 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-[#fef08a]';
 
     return (
-        <div className="w-full h-full flex flex-col animate-in fade-in duration-500 p-6 md:p-8 space-y-4 relative select-none">
+        <div className="w-full h-full min-h-0 flex-1 flex flex-col animate-in fade-in duration-300 p-2 sm:p-3 space-y-2 relative select-none overflow-hidden">
             {/* Top Atlas Header & Control Bar */}
-            <div data-interactive-ui="true" className="flex flex-col md:flex-row md:items-center justify-between gap-4 z-20">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-3">
-                        <h2 className={`text-4xl md:text-5xl font-serif font-black uppercase tracking-tight ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'}`}>
+            <div data-interactive-ui="true" className="flex flex-col md:flex-row md:items-center justify-between gap-2 z-20 shrink-0">
+                <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                        <h2 className={`text-2xl sm:text-3xl font-serif font-black uppercase tracking-tight ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'}`}>
                             {world.name} Atlas
                         </h2>
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-widest border ${
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest border ${
                             isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/60 text-[#70121e] font-bold' : 'border-current/20 bg-black/20 opacity-70'
                         }`}>
                             {anchoredLocations.length} Anchors
@@ -501,7 +624,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                         <span className={`px-2 py-0.5 rounded-md font-sans font-bold flex items-center gap-1.5 border ${
                             isRoyal ? 'bg-[#ede2cc]/70 border-[#c8a96e]/50 text-[#451a03]' : 'bg-black/10 border-current/10'
                         }`}>
-                            <Info size={12} className={accent} />
+                            <Info size={11} className={accent} />
                             <strong>Hover:</strong> Quick Peek · <strong>Click:</strong> Open Dossier · <strong>Double-Click:</strong> Relocate · <strong>Click Canvas:</strong> Plant Anchor
                         </span>
                     </div>
@@ -699,7 +822,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
 
             {/* Cartography Overlay Layers Floating Panel */}
             {showLayerPanel && (
-                <div data-interactive-ui="true" className={`absolute top-24 right-8 z-[35] p-4 rounded-3xl border shadow-2xl space-y-3 w-80 animate-in slide-in-from-top-2 duration-200 ${
+                <div data-interactive-ui="true" className={`absolute top-20 right-4 z-[35] p-4 rounded-3xl border shadow-2xl space-y-4 w-84 max-h-[85vh] overflow-y-auto animate-in slide-in-from-top-2 duration-200 ${
                     isRoyal ? 'bg-[#fbf8ef] border-2 border-[#c8a96e] text-[#2b1810]' : isWiki ? 'bg-white border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900/95 border-slate-700 text-slate-100'
                 }`}>
                     <div className="flex items-center justify-between border-b pb-2 border-current/15">
@@ -711,12 +834,55 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                         </button>
                     </div>
 
-                    <div className="space-y-3">
+                    {/* Quick Tools: Auto-Generate & Draw */}
+                    <div className="space-y-2">
+                        <button
+                            type="button"
+                            onClick={handleAutoGenerateCartography}
+                            className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all ${
+                                isRoyal
+                                    ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e] hover:bg-[#881337]'
+                                    : isWiki
+                                    ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
+                                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                            }`}
+                        >
+                            <Sparkles size={14} /> Auto-Generate Atlas Layout
+                        </button>
+
+                        <div className="grid grid-cols-3 gap-1.5">
+                            <button
+                                type="button"
+                                onClick={() => startDrawing('political')}
+                                className="py-1.5 px-2 rounded-lg text-[10px] font-bold border border-red-500/40 bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 flex flex-col items-center gap-1"
+                            >
+                                <PenTool size={11} /> + Realm
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => startDrawing('climate')}
+                                className="py-1.5 px-2 rounded-lg text-[10px] font-bold border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 flex flex-col items-center gap-1"
+                            >
+                                <PenTool size={11} /> + Biome
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => startDrawing('routes')}
+                                className="py-1.5 px-2 rounded-lg text-[10px] font-bold border border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 flex flex-col items-center gap-1"
+                            >
+                                <PenTool size={11} /> + Route
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Layers visibility and opacity sliders */}
+                    <div className="space-y-2.5">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60 block">Layer Visibility & Opacity</span>
                         {mapLayers.map(layer => (
-                            <div key={layer.id} className={`rounded-xl p-3 ${
+                            <div key={layer.id} className={`rounded-xl p-2.5 ${
                                 isRoyal ? 'bg-[#ede2cc]/60' : isWiki ? 'bg-gray-50' : 'bg-white/5'
                             }`}>
-                                <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center justify-between mb-1.5">
                                     <span className="text-xs font-bold">{layer.label}</span>
                                     <button
                                         type="button"
@@ -747,6 +913,36 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                             </div>
                         ))}
                     </div>
+
+                    {/* Custom territories and routes list */}
+                    <div className="space-y-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60 block">
+                            Active Regions & Routes ({(world.cartographyRegions || []).length})
+                        </span>
+                        {(!world.cartographyRegions || world.cartographyRegions.length === 0) ? (
+                            <p className="text-[11px] opacity-60 italic py-1">No custom regions drawn yet. Click Auto-Generate or draw above.</p>
+                        ) : (
+                            <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                                {world.cartographyRegions.map(reg => (
+                                    <div key={reg.id} className="flex items-center justify-between p-2 rounded-lg bg-black/5 hover:bg-black/10 transition-colors text-xs">
+                                        <div className="flex items-center gap-2 min-w-0 pr-2">
+                                            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: reg.color }} />
+                                            <span className="font-bold truncate">{reg.name}</span>
+                                            <span className="text-[9px] font-mono uppercase opacity-50">({reg.type})</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            title="Delete territory"
+                                            onClick={() => handleDeleteRegion(reg.id)}
+                                            className="opacity-40 hover:opacity-100 hover:text-red-500 transition-colors p-1"
+                                        >
+                                            <Trash2 size={12} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
 
@@ -756,10 +952,47 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
-                className={`flex-1 w-full min-h-[500px] rounded-[3.5rem] border-8 md:border-[14px] ${borderCard} ${bgCard} shadow-2xl relative overflow-hidden select-none ${
-                    isPanning ? 'cursor-grabbing' : editMode === 'marker' ? 'cursor-crosshair' : 'cursor-grab'
+                className={`flex-1 w-full min-h-0 h-full rounded-2xl md:rounded-3xl border-4 md:border-6 ${borderCard} ${bgCard} shadow-2xl relative overflow-hidden select-none ${
+                    isPanning ? 'cursor-grabbing' : activeDrawingLayer ? 'cursor-crosshair' : editMode === 'marker' ? 'cursor-crosshair' : 'cursor-grab'
                 }`}
             >
+                {/* Active Drawing Top Banner */}
+                {activeDrawingLayer && (
+                    <div data-interactive-ui="true" className={`absolute top-3 left-1/2 -translate-x-1/2 z-[30] px-4 py-2 rounded-2xl border shadow-xl flex items-center gap-3 backdrop-blur-md ${
+                        isRoyal ? 'bg-[#fbf8ef]/95 border-2 border-[#c8a96e] text-[#2b1810]' : 'bg-slate-900/95 border-slate-700 text-white'
+                    } text-xs`}>
+                        <PenTool size={14} className={accent} />
+                        <span>
+                            Drawing <strong>{activeDrawingLayer === 'political' ? 'Realm Border' : activeDrawingLayer === 'climate' ? 'Biome' : 'Travel Route'}</strong> ({drawingPoints.length} points)
+                        </span>
+                        <button
+                            type="button"
+                            disabled={activeDrawingLayer === 'routes' ? drawingPoints.length < 2 : drawingPoints.length < 3}
+                            onClick={() => setShowSaveRegionModal(true)}
+                            className="px-3 py-1 rounded-lg bg-[#70121e] text-white font-bold hover:bg-[#881337] disabled:opacity-30 transition-all text-xs"
+                        >
+                            Complete
+                        </button>
+                        <button
+                            type="button"
+                            disabled={drawingPoints.length === 0}
+                            onClick={() => setDrawingPoints(prev => prev.slice(0, -1))}
+                            title="Undo last point"
+                            className="p-1.5 rounded-lg bg-black/10 hover:bg-black/20 disabled:opacity-30"
+                        >
+                            <Undo2 size={12} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setActiveDrawingLayer(null); setDrawingPoints([]); }}
+                            title="Cancel drawing"
+                            className="p-1.5 rounded-lg bg-black/10 hover:bg-black/20"
+                        >
+                            <X size={12} />
+                        </button>
+                    </div>
+                )}
+
                 {/* Layer 1: Scaled & Panned Background Map Image Layer (constrained to minZoom=1.0) */}
                 <div
                     style={{
@@ -792,46 +1025,136 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                     )}
                 </div>
 
-                {/* Layer 1.5: Cartography Overlay SVG (Political, Climate, Routes) */}
+                {/* Layer 1.5: Functional Cartography Overlay SVG (Political Polygons, Biomes, Travel Routes) */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none z-[12]">
                     <defs>
-                        <pattern id="atlas-political-hatch" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="rotate(0)">
-                            <line x1="0" y1="0" x2="40" y2="0" stroke="#f97316" strokeWidth="6" strokeOpacity="0.35" />
-                            <line x1="0" y1="20" x2="40" y2="20" stroke="#7c3aed" strokeWidth="6" strokeOpacity="0.35" />
-                        </pattern>
-                        <radialGradient id="atlas-climate-radial" cx="50%" cy="40%" r="60%">
-                            <stop offset="0%" stopColor="#34d399" stopOpacity="0.5" />
-                            <stop offset="40%" stopColor="#fbbf24" stopOpacity="0.3" />
-                            <stop offset="80%" stopColor="#60a5fa" stopOpacity="0.3" />
-                            <stop offset="100%" stopColor="#6366f1" stopOpacity="0.15" />
-                        </radialGradient>
-                        <pattern id="atlas-routes-dash" patternUnits="userSpaceOnUse" width="28" height="28" patternTransform="rotate(45)">
-                            <line x1="0" y1="14" x2="28" y2="14" stroke="#fef08a" strokeWidth="2.5" strokeDasharray="6,10" strokeOpacity="0.7" />
-                        </pattern>
+                        <filter id="climate-soft-blur" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                        </filter>
                     </defs>
-                    {mapLayers.map(layer => {
-                        if (!layer.visible) return null;
+
+                    {/* Rendered World Cartography Regions */}
+                    {(world.cartographyRegions || []).map(region => {
+                        const layer = mapLayers.find(l => l.id === region.type);
+                        if (!layer || !layer.visible) return null;
                         const alpha = layer.opacity / 100;
-                        if (layer.id === 'political') return (
-                            <rect key="political" x="0" y="0" width="100%" height="100%"
-                                fill="url(#atlas-political-hatch)"
-                                opacity={alpha}
-                            />
+                        const screenPts = region.points.map(pt => getScreenCoords(pt.x, pt.y));
+                        if (screenPts.length < 2) return null;
+
+                        const pointsStr = screenPts.map(p => `${p.x},${p.y}`).join(' ');
+
+                        if (region.type === 'routes') {
+                            return (
+                                <g key={region.id}>
+                                    <polyline
+                                        points={pointsStr}
+                                        fill="none"
+                                        stroke={region.color || '#fbbf24'}
+                                        strokeWidth="3.5"
+                                        strokeDasharray="8,6"
+                                        strokeOpacity={alpha * 0.9}
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+                                    {screenPts.map((p, idx) => (
+                                        <circle
+                                            key={idx}
+                                            cx={p.x}
+                                            cy={p.y}
+                                            r="4"
+                                            fill={region.color || '#fbbf24'}
+                                            fillOpacity={alpha}
+                                            stroke="#ffffff"
+                                            strokeWidth="1.5"
+                                        />
+                                    ))}
+                                </g>
+                            );
+                        }
+
+                        const centroid = getPolygonCentroid(screenPts);
+                        const isPolitical = region.type === 'political';
+
+                        return (
+                            <g key={region.id}>
+                                <polygon
+                                    points={pointsStr}
+                                    fill={region.color}
+                                    fillOpacity={alpha * (isPolitical ? 0.28 : 0.22)}
+                                    stroke={region.color}
+                                    strokeWidth={isPolitical ? '2.5' : '1.5'}
+                                    strokeDasharray={isPolitical ? '6,4' : undefined}
+                                    strokeOpacity={alpha * 0.85}
+                                    filter={!isPolitical ? 'url(#climate-soft-blur)' : undefined}
+                                />
+                                {isPolitical && screenPts.length >= 3 && (
+                                    <g transform={`translate(${centroid.x}, ${centroid.y})`}>
+                                        <text
+                                            textAnchor="middle"
+                                            dy="0.35em"
+                                            fill={region.color}
+                                            fontSize="12"
+                                            fontWeight="bold"
+                                            fontFamily="serif"
+                                            letterSpacing="0.12em"
+                                            stroke={isRoyal ? '#fbf8ef' : '#0f172a'}
+                                            strokeWidth="3"
+                                            paintOrder="stroke"
+                                            opacity={alpha}
+                                        >
+                                            {region.name.toUpperCase()}
+                                        </text>
+                                    </g>
+                                )}
+                            </g>
                         );
-                        if (layer.id === 'climate') return (
-                            <rect key="climate" x="0" y="0" width="100%" height="100%"
-                                fill="url(#atlas-climate-radial)"
-                                opacity={alpha}
-                            />
-                        );
-                        if (layer.id === 'routes') return (
-                            <rect key="routes" x="0" y="0" width="100%" height="100%"
-                                fill="url(#atlas-routes-dash)"
-                                opacity={alpha}
-                            />
-                        );
-                        return null;
                     })}
+
+                    {/* Active In-Progress Drawing Preview */}
+                    {activeDrawingLayer && drawingPoints.length > 0 && (
+                        <g>
+                            {drawingPoints.length >= 2 && (
+                                activeDrawingLayer === 'routes' ? (
+                                    <polyline
+                                        points={drawingPoints.map(p => {
+                                            const sc = getScreenCoords(p.x, p.y);
+                                            return `${sc.x},${sc.y}`;
+                                        }).join(' ')}
+                                        fill="none"
+                                        stroke={newRegionColor}
+                                        strokeWidth="3.5"
+                                        strokeDasharray="6,4"
+                                    />
+                                ) : (
+                                    <polygon
+                                        points={drawingPoints.map(p => {
+                                            const sc = getScreenCoords(p.x, p.y);
+                                            return `${sc.x},${sc.y}`;
+                                        }).join(' ')}
+                                        fill={newRegionColor}
+                                        fillOpacity="0.25"
+                                        stroke={newRegionColor}
+                                        strokeWidth="2.5"
+                                        strokeDasharray="4,4"
+                                    />
+                                )
+                            )}
+                            {drawingPoints.map((p, idx) => {
+                                const sc = getScreenCoords(p.x, p.y);
+                                return (
+                                    <circle
+                                        key={idx}
+                                        cx={sc.x}
+                                        cy={sc.y}
+                                        r="6"
+                                        fill={newRegionColor}
+                                        stroke="#ffffff"
+                                        strokeWidth="2"
+                                    />
+                                );
+                            })}
+                        </g>
+                    )}
                 </svg>
 
                 {/* Layer 2: Vector Crisp Ley-Lines SVG Layer (Connected directly to Pin Centers) */}
@@ -1465,6 +1788,94 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                                 }`}
                             >
                                 Forge Passage
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Save Cartography Region Modal */}
+            {showSaveRegionModal && activeDrawingLayer && createPortal(
+                <div data-interactive-ui="true" className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className={`w-full max-w-md rounded-3xl border shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200 ${
+                        isRoyal ? 'bg-[#fbf8ef] border-2 border-[#c8a96e] text-[#2b1810]' : isWiki ? 'bg-white border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900 border-slate-700 text-slate-100'
+                    }`}>
+                        <div className="flex items-center justify-between border-b pb-3 border-current/15">
+                            <div className="flex items-center gap-2">
+                                <PenTool size={18} className={accent} />
+                                <h3 className="text-base font-serif font-black uppercase tracking-tight">
+                                    Save {activeDrawingLayer === 'political' ? 'Realm Territory' : activeDrawingLayer === 'climate' ? 'Climate Biome' : 'Travel Route'}
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowSaveRegionModal(false)}
+                                className="opacity-50 hover:opacity-100 transition-opacity"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1.5">
+                                    Name / Designation
+                                </label>
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    value={newRegionName}
+                                    onChange={e => setNewRegionName(e.target.value)}
+                                    placeholder={activeDrawingLayer === 'political' ? 'e.g. Kingdom of Aethelgard' : activeDrawingLayer === 'climate' ? 'e.g. Frostveil Tundra' : 'e.g. The King’s Highway'}
+                                    className={`w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all ${inputCls}`}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2">
+                                    Heraldic Tint / Color
+                                </label>
+                                <div className="flex items-center gap-2.5 flex-wrap">
+                                    {['#b91c1c', '#1e40af', '#047857', '#d97706', '#7c3aed', '#0891b2', '#ec4899', '#64748b'].map(c => (
+                                        <button
+                                            key={c}
+                                            type="button"
+                                            onClick={() => setNewRegionColor(c)}
+                                            style={{ backgroundColor: c }}
+                                            className={`w-7 h-7 rounded-full border-2 transition-transform ${
+                                                newRegionColor === c ? 'scale-125 border-white ring-2 ring-black/50 shadow-md' : 'border-transparent opacity-80 hover:opacity-100'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <p className="text-[11px] opacity-60 font-mono">
+                                Points recorded: {drawingPoints.length} vertices
+                            </p>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 pt-2">
+                            <button
+                                type="button"
+                                onClick={() => setShowSaveRegionModal(false)}
+                                className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase opacity-60 hover:opacity-100 transition-opacity"
+                            >
+                                Keep Drawing
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleSaveDrawnRegion}
+                                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                                    isRoyal
+                                        ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border border-[#c8a96e] shadow-md'
+                                        : isWiki
+                                        ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
+                                        : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg'
+                                }`}
+                            >
+                                Save to Atlas
                             </button>
                         </div>
                     </div>

@@ -12,6 +12,27 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Fixes & Refinements for Session Codex, Character Relations, Nexus Lines, Atlas Cartography & Lineage Export**:
+  1. **Session Codex Focus Loss Fixed**:
+     - Extracted `SessionFormPanel` from inside `SessionLogView.tsx` into a top-level component, eliminating the keystroke remount bug that dropped input focus on every character.
+     - Preserved live markdown preview and `[[` wikilink autocomplete.
+  2. **Character Relations Removal & Self-Linking Bug Fixed**:
+     - In `SmartSelect.tsx`, removed duplicate/stale `onRelationalNotesChange` invocation in `toggleId` that was racing and reverting ID removals. Fixed tag removal button with explicit `<button type="button">` and event propagation stops.
+     - In `CharacterSpecifics.tsx`, passed `excludeIds={[entity.id]}` across Parents, Children, Relatives, Friends, Enemies, and Complicated fields, making self-linking impossible.
+  3. **Nexus Lines Islands Default & Button Contrast Fixed**:
+     - Defaulted `isClustered = true` in `NexusGraphView.tsx`.
+     - Fixed HUD button active states: removed conflicting `wikiPanel` class from active state so deep crimson (`bg-[#70121e]`) text stays crisp and readable (`text-[#fff8e7]`) in Royal Codex and light modes.
+  4. **Atlas View Map Container Sizing**:
+     - Updated `App.tsx` and `WorldMap.tsx` with responsive flex containment (`p-2 sm:p-3`, `min-h-0`, `overflow-hidden`), ensuring the atlas fits 100% on screen without clipping or overflow.
+  5. **Functional Cartography Overlays & Territory Drawing Engine**:
+     - Replaced static hatched SVG rectangles with real `CartographyRegion` polygon and polyline overlays.
+     - Added interactive polygon/route boundary drawing directly on the map with live point previews and undo.
+     - Added "Auto-Generate Atlas Layout" creating thematic realm borders, climate zones, and travel routes.
+     - Added polygon centroid badge rendering for realm labels in SVG layer.
+  6. **Bloodline Tree Handout Export (PDF & HTML)**:
+     - Built `lineageExportUtils.ts` with dedicated pedigree campaign handouts (A4/Letter landscape, genealogical connector trees, deceased markings, generation badges) and zero app UI chrome.
+     - Wired Print Handout (PDF) and HTML export into `NexusTreeView.tsx`.
+
 - **Phase P4: High-Impact Worldbuilding Power Tools Suite (Completed in Order)**:
   1. **Rich Markdown Editor with `[[` Autocomplete**:
      - Upgraded `MarkdownEditor.tsx` with Live Preview by default, `Ctrl+Enter` mode toggle, click-to-edit preview pane, and live `[[` wikilink autocomplete popup with arrow key navigation.

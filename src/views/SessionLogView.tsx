@@ -7,11 +7,223 @@ import { WorldData, SessionLog, WorldEntity } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
 import { MarkdownRenderer } from '../components/ui/MarkdownRenderer';
+import { MarkdownEditor } from '../components/ui/MarkdownEditor';
 
 interface Props {
   world: WorldData;
   onNavigate: (id: string) => void;
 }
+
+interface FormState {
+  sessionNumber: number;
+  realDate: string;
+  inGameDate: string;
+  title: string;
+  summary: string;
+  characterIds: string[];
+  locationIds: string[];
+  milestones: string[];
+  newMilestone: string;
+}
+
+interface SessionFormPanelProps {
+  form: FormState;
+  setForm: React.Dispatch<React.SetStateAction<FormState>>;
+  characters: WorldEntity[];
+  locations: WorldEntity[];
+  allEntities: WorldEntity[];
+  cardBg: string;
+  accent: string;
+  accentBg: string;
+  inputCls: string;
+  onSave: () => void;
+  onCancel: () => void;
+}
+
+const SessionFormPanel: React.FC<SessionFormPanelProps> = ({
+  form,
+  setForm,
+  characters,
+  locations,
+  allEntities,
+  cardBg,
+  accent,
+  accentBg,
+  inputCls,
+  onSave,
+  onCancel,
+}) => {
+  const toggleCharacter = (id: string) => {
+    setForm(f => ({
+      ...f,
+      characterIds: f.characterIds.includes(id) ? f.characterIds.filter(x => x !== id) : [...f.characterIds, id]
+    }));
+  };
+
+  const toggleLocation = (id: string) => {
+    setForm(f => ({
+      ...f,
+      locationIds: f.locationIds.includes(id) ? f.locationIds.filter(x => x !== id) : [...f.locationIds, id]
+    }));
+  };
+
+  const addMilestone = () => {
+    const m = form.newMilestone.trim();
+    if (!m) return;
+    setForm(f => ({ ...f, milestones: [...f.milestones, m], newMilestone: '' }));
+  };
+
+  const removeMilestone = (i: number) => {
+    setForm(f => ({ ...f, milestones: f.milestones.filter((_, idx) => idx !== i) }));
+  };
+
+  return (
+    <div className={`rounded-3xl border-2 p-5 space-y-4 shadow-xl ${cardBg}`}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>Session Number</label>
+          <input 
+            type="number" 
+            value={form.sessionNumber} 
+            onChange={e => {
+              const val = Number(e.target.value);
+              setForm(f => ({ ...f, sessionNumber: val }));
+            }} 
+            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none font-bold ${inputCls}`} 
+          />
+        </div>
+        <div>
+          <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>Real Date</label>
+          <input 
+            type="date" 
+            value={form.realDate} 
+            onChange={e => {
+              const val = e.target.value;
+              setForm(f => ({ ...f, realDate: val }));
+            }} 
+            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${inputCls}`} 
+          />
+        </div>
+      </div>
+      <div>
+        <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>Session Title</label>
+        <input 
+          type="text" 
+          value={form.title} 
+          onChange={e => {
+            const val = e.target.value;
+            setForm(f => ({ ...f, title: val }));
+          }} 
+          placeholder="e.g. The Siege of Iron Citadel, Trial by Fire..." 
+          className={`w-full px-3 py-2 rounded-xl border text-sm outline-none font-bold ${inputCls}`} 
+        />
+      </div>
+      <div>
+        <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>In-Game / Fantasy Calendar Date (Optional)</label>
+        <input 
+          type="text" 
+          value={form.inGameDate} 
+          onChange={e => {
+            const val = e.target.value;
+            setForm(f => ({ ...f, inGameDate: val }));
+          }} 
+          placeholder="e.g. 14th of Sunwane, Year 420 of the Third Age..." 
+          className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${inputCls}`} 
+        />
+      </div>
+      <div>
+        <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>
+          Session Chronicle & Notes (Live Preview & [[Wikilink]] Autocomplete)
+        </label>
+        <MarkdownEditor
+          value={form.summary}
+          onChange={(val) => setForm(f => ({ ...f, summary: val }))}
+          allEntities={allEntities}
+          placeholder="Write session events, party dialogues, combat outcomes, NPC discoveries... Type [[ to link codex entries"
+          minHeight="min-h-[140px]"
+        />
+      </div>
+      {/* Attending Characters */}
+      {characters.length > 0 && (
+        <div>
+          <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 ${accent}`}>Attending Characters</label>
+          <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
+            {characters.map(c => (
+              <button 
+                key={c.id} 
+                type="button" 
+                onClick={() => toggleCharacter(c.id)} 
+                className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-all ${
+                  form.characterIds.includes(c.id) 
+                    ? accentBg + ' border-transparent shadow-sm' 
+                    : 'border-current/20 opacity-50 hover:opacity-100'
+                }`}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* Key Locations */}
+      {locations.length > 0 && (
+        <div>
+          <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 ${accent}`}>Visited Locations</label>
+          <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
+            {locations.map(l => (
+              <button 
+                key={l.id} 
+                type="button" 
+                onClick={() => toggleLocation(l.id)} 
+                className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-all ${
+                  form.locationIds.includes(l.id) 
+                    ? accentBg + ' border-transparent shadow-sm' 
+                    : 'border-current/20 opacity-50 hover:opacity-100'
+                }`}
+              >
+                {l.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* Quest Milestones */}
+      <div>
+        <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 ${accent}`}>Quest Milestones Achieved</label>
+        <div className="space-y-1.5 mb-2">
+          {form.milestones.map((m, i) => (
+            <div key={i} className="flex items-center gap-2 text-xs p-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-current/10">
+              <Star size={11} className={`${accent} shrink-0`} />
+              <span className="flex-1 font-medium">{m}</span>
+              <button type="button" onClick={() => removeMilestone(i)} className="opacity-40 hover:opacity-100 p-0.5"><X size={12} /></button>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            value={form.newMilestone} 
+            onChange={e => {
+              const val = e.target.value;
+              setForm(f => ({ ...f, newMilestone: val }));
+            }} 
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addMilestone(); } }} 
+            placeholder="Add milestone (e.g. Uncovered the sunken tome, Negotiated truce)..." 
+            className={`flex-1 px-3 py-1.5 rounded-xl border text-xs outline-none ${inputCls}`} 
+          />
+          <button type="button" onClick={addMilestone} className={`px-4 py-1.5 rounded-xl text-xs font-bold ${accentBg}`}>Add</button>
+        </div>
+      </div>
+      {/* Actions */}
+      <div className="flex justify-end gap-2 pt-2 border-t border-current/10">
+        <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border border-current/20 opacity-60 hover:opacity-100">Cancel</button>
+        <button type="button" onClick={onSave} disabled={!form.title.trim()} className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 disabled:opacity-30 shadow-md ${accentBg}`}>
+          <Save size={13} /> Save Session Record
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
   const { themeId, layoutMode } = useTheme();
@@ -20,7 +232,6 @@ export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
   const isRoyal = themeId === 'royal-codex';
   const isWiki = layoutMode === 'wiki';
   const isGV = themeId === 'grand-voyager';
-  const isLight = isRoyal || isWiki;
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -28,7 +239,7 @@ export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Form state
-  const blankForm = () => ({
+  const blankForm = (): FormState => ({
     sessionNumber: ((world.sessionLogs || []).reduce((max, s) => Math.max(max, s.sessionNumber || 0), 0)) + 1,
     realDate: new Date().toISOString().slice(0, 10),
     inGameDate: '',
@@ -39,7 +250,7 @@ export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
     milestones: [] as string[],
     newMilestone: '',
   });
-  const [form, setForm] = useState(blankForm);
+  const [form, setForm] = useState<FormState>(blankForm);
 
   const logs = useMemo(() => {
     const all = [...(world.sessionLogs || [])].sort((a, b) => b.sessionNumber - a.sessionNumber);
@@ -110,162 +321,6 @@ export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
     setEditingId(null);
   };
 
-  const toggleCharacter = (id: string) => {
-    setForm(f => ({
-      ...f,
-      characterIds: f.characterIds.includes(id) ? f.characterIds.filter(x => x !== id) : [...f.characterIds, id]
-    }));
-  };
-
-  const toggleLocation = (id: string) => {
-    setForm(f => ({
-      ...f,
-      locationIds: f.locationIds.includes(id) ? f.locationIds.filter(x => x !== id) : [...f.locationIds, id]
-    }));
-  };
-
-  const addMilestone = () => {
-    const m = form.newMilestone.trim();
-    if (!m) return;
-    setForm(f => ({ ...f, milestones: [...f.milestones, m], newMilestone: '' }));
-  };
-
-  const removeMilestone = (i: number) => {
-    setForm(f => ({ ...f, milestones: f.milestones.filter((_, idx) => idx !== i) }));
-  };
-
-  const FormPanel = ({ onSave, onCancel }: { onSave: () => void; onCancel: () => void }) => (
-    <div className={`rounded-3xl border-2 p-5 space-y-4 shadow-xl ${cardBg}`}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>Session Number</label>
-          <input 
-            type="number" 
-            value={form.sessionNumber} 
-            onChange={e => setForm(f => ({ ...f, sessionNumber: Number(e.target.value) }))} 
-            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none font-bold ${inputCls}`} 
-          />
-        </div>
-        <div>
-          <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>Real Date</label>
-          <input 
-            type="date" 
-            value={form.realDate} 
-            onChange={e => setForm(f => ({ ...f, realDate: e.target.value }))} 
-            className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${inputCls}`} 
-          />
-        </div>
-      </div>
-      <div>
-        <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>Session Title</label>
-        <input 
-          type="text" 
-          value={form.title} 
-          onChange={e => setForm(f => ({ ...f, title: e.target.value }))} 
-          placeholder="e.g. The Siege of Iron Citadel, Trial by Fire..." 
-          className={`w-full px-3 py-2 rounded-xl border text-sm outline-none font-bold ${inputCls}`} 
-        />
-      </div>
-      <div>
-        <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>In-Game / Fantasy Calendar Date (Optional)</label>
-        <input 
-          type="text" 
-          value={form.inGameDate} 
-          onChange={e => setForm(f => ({ ...f, inGameDate: e.target.value }))} 
-          placeholder="e.g. 14th of Sunwane, Year 420 of the Third Age..." 
-          className={`w-full px-3 py-2 rounded-xl border text-sm outline-none ${inputCls}`} 
-        />
-      </div>
-      <div>
-        <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-1 ${accent}`}>
-          Session Chronicle / Notes (Markdown & [[Wikilinks]] supported)
-        </label>
-        <textarea 
-          value={form.summary} 
-          onChange={e => setForm(f => ({ ...f, summary: e.target.value }))} 
-          placeholder="Write session events, party discussions, combat outcomes, NPC discoveries..." 
-          rows={5} 
-          className={`w-full px-3 py-2 rounded-xl border text-sm outline-none resize-none font-mono ${inputCls}`} 
-        />
-      </div>
-      {/* Attending Characters */}
-      {characters.length > 0 && (
-        <div>
-          <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 ${accent}`}>Attending Characters</label>
-          <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
-            {characters.map(c => (
-              <button 
-                key={c.id} 
-                type="button" 
-                onClick={() => toggleCharacter(c.id)} 
-                className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-all ${
-                  form.characterIds.includes(c.id) 
-                    ? accentBg + ' border-transparent shadow-sm' 
-                    : 'border-current/20 opacity-50 hover:opacity-100'
-                }`}
-              >
-                {c.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      {/* Key Locations */}
-      {locations.length > 0 && (
-        <div>
-          <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 ${accent}`}>Visited Locations</label>
-          <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1">
-            {locations.map(l => (
-              <button 
-                key={l.id} 
-                type="button" 
-                onClick={() => toggleLocation(l.id)} 
-                className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-all ${
-                  form.locationIds.includes(l.id) 
-                    ? accentBg + ' border-transparent shadow-sm' 
-                    : 'border-current/20 opacity-50 hover:opacity-100'
-                }`}
-              >
-                {l.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-      {/* Quest Milestones */}
-      <div>
-        <label className={`text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2 ${accent}`}>Quest Milestones Achieved</label>
-        <div className="space-y-1.5 mb-2">
-          {form.milestones.map((m, i) => (
-            <div key={i} className="flex items-center gap-2 text-xs p-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-current/10">
-              <Star size={11} className={`${accent} shrink-0`} />
-              <span className="flex-1 font-medium">{m}</span>
-              <button type="button" onClick={() => removeMilestone(i)} className="opacity-40 hover:opacity-100 p-0.5"><X size={12} /></button>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <input 
-            type="text" 
-            value={form.newMilestone} 
-            onChange={e => setForm(f => ({ ...f, newMilestone: e.target.value }))} 
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addMilestone(); } }} 
-            placeholder="Add milestone (e.g. Uncovered the sunken tome, Negotiated truce with Elves)..." 
-            className={`flex-1 px-3 py-1.5 rounded-xl border text-xs outline-none ${inputCls}`} 
-          />
-          <button type="button" onClick={addMilestone} className={`px-4 py-1.5 rounded-xl text-xs font-bold ${accentBg}`}>Add</button>
-        </div>
-      </div>
-      {/* Actions */}
-      <div className="flex justify-end gap-2 pt-2 border-t border-current/10">
-        <button type="button" onClick={onCancel} className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border border-current/20 opacity-60 hover:opacity-100">Cancel</button>
-        <button type="button" onClick={onSave} disabled={!form.title.trim()} className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 disabled:opacity-30 shadow-md ${accentBg}`}>
-          <Save size={13} /> Save Session Record
-        </button>
-      </div>
-    </div>
-  );
-
   const getEntityById = (id: string) => world.entities.find(e => e.id === id);
 
   return (
@@ -309,7 +364,21 @@ export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
-        {showNewForm && <FormPanel onSave={saveNew} onCancel={() => setShowNewForm(false)} />}
+        {showNewForm && (
+          <SessionFormPanel 
+            form={form} 
+            setForm={setForm} 
+            characters={characters} 
+            locations={locations} 
+            allEntities={world.entities}
+            cardBg={cardBg} 
+            accent={accent} 
+            accentBg={accentBg} 
+            inputCls={inputCls} 
+            onSave={saveNew} 
+            onCancel={() => setShowNewForm(false)} 
+          />
+        )}
 
         {logs.length === 0 && !showNewForm && (
           <div className="flex flex-col items-center justify-center py-24 opacity-40 text-center">
@@ -322,7 +391,24 @@ export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
         )}
 
         {logs.map(log => {
-          if (editingId === log.id) return <FormPanel key={log.id} onSave={saveEdit} onCancel={() => setEditingId(null)} />;
+          if (editingId === log.id) {
+            return (
+              <SessionFormPanel 
+                key={log.id} 
+                form={form} 
+                setForm={setForm} 
+                characters={characters} 
+                locations={locations} 
+                allEntities={world.entities}
+                cardBg={cardBg} 
+                accent={accent} 
+                accentBg={accentBg} 
+                inputCls={inputCls} 
+                onSave={saveEdit} 
+                onCancel={() => setEditingId(null)} 
+              />
+            );
+          }
           const isExpanded = expandedId === log.id;
           const attendees = (log.characterIds || []).map(id => getEntityById(id)).filter(Boolean) as WorldEntity[];
           const keyLocs = (log.locationIds || []).map(id => getEntityById(id)).filter(Boolean) as WorldEntity[];

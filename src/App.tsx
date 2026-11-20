@@ -394,7 +394,7 @@ const App = () => {
                     </div>
 
                 {/* Body Content */}
-                <div className="flex-1 p-4 md:p-6">
+                <div className={`flex-1 min-h-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'p-2 sm:p-3 overflow-hidden' : 'p-4 md:p-6'}`}>
                     {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
                     {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
@@ -426,7 +426,7 @@ const App = () => {
                                             <EntityEditor
                                                 entity={activeEntity}
                                                 allEntities={world.entities}
-                                                onUpdate={(updated) => setDrafts({ ...drafts, [activeTabId as string]: updated })}
+                                                onUpdate={(updated) => setDrafts(prev => ({ ...prev, [activeTabId as string]: { ...(prev[activeTabId as string] || activeEntity), ...updated } }))}
                                                 onSave={() => handleSaveDraft(activeTabId as string)}
                                                 onCancel={() => handleToggleEdit(activeTabId as string)}
                                                 onCreateNew={handleCreate}
@@ -475,7 +475,7 @@ const App = () => {
                                         <EntityEditor
                                             entity={activeEntity}
                                             allEntities={world.entities}
-                                            onUpdate={(updated) => setDrafts({ ...drafts, [activeTabId as string]: updated })}
+                                            onUpdate={(updated) => setDrafts(prev => ({ ...prev, [activeTabId as string]: { ...(prev[activeTabId as string] || activeEntity), ...updated } }))}
                                             onSave={() => handleSaveDraft(activeTabId as string)}
                                             onCancel={() => handleToggleEdit(activeTabId as string)}
                                             onCreateNew={handleCreate}

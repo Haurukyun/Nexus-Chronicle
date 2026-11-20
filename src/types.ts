@@ -25,6 +25,16 @@ export interface MapOverlayLayer {
   opacity: number; // 0–100
 }
 
+export interface CartographyRegion {
+  id: string;
+  name: string;
+  type: 'political' | 'climate' | 'routes';
+  color: string;
+  points: { x: number; y: number }[]; // 0-100 percentage coordinates
+  notes?: string;
+  faction?: string;
+}
+
 export interface GroupRoleLinks {
   leadingFigureOf: string[];
   connectedTo: string[];
@@ -78,6 +88,7 @@ export interface BaseEntity {
   // Nexus Chronicle specific extensions
   isReadOnly?: boolean;
   privateNotes?: string;
+  notes?: string;
   coordinates?: { x: number; y: number };
   spoilerNotes?: string; // Standardized spoiler field from blueprints
   imageUri?: string; // Portrait / illustration — asset:// vault URI or external web URL
@@ -988,6 +999,7 @@ export interface WorldData {
   customCalendarPresets?: FantasyCalendar[];
   timelineCurrentYear?: number;
   sessionLogs?: SessionLog[];
+  cartographyRegions?: CartographyRegion[];
 }
 
 export interface UniverseArchive {
