@@ -355,8 +355,8 @@ const App = () => {
                                     <kbd className={`hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded border ${
                                         isRoyal ? 'bg-black/50 text-[#e6c687] border-[#c8a96e]/40'
                                         : isWiki ? 'bg-white/80 text-stone-600 border-stone-300'
-                                        : 'bg-white/[0.08] text-slate-300 border-white/[0.10]'
-                                    }`}>Ctrl+K</kbd>
+                                            : 'bg-white/[0.08] text-slate-300 border-white/[0.10]'
+                                        }`}>Ctrl+K</kbd>
                                 </button>
 
                                 {/* Undo Button */}
