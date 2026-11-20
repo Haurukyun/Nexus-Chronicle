@@ -208,122 +208,62 @@ const App = () => {
     const bgClass = t.layout.appBg;
     const textColor = t.colors.textBody;
 
-    // High-Fidelity Glassmorphic Header Bar Styling Tokens
-    const headerBarStyle: React.CSSProperties = isRoyal
-        ? {
-            background: 'linear-gradient(180deg, rgba(38, 18, 9, 0.95) 0%, rgba(24, 11, 5, 0.98) 100%)',
-            boxShadow: '0 1px 0 rgba(200, 169, 110, 0.28), inset 0 1px 0 rgba(255, 215, 130, 0.12), 0 8px 32px rgba(0, 0, 0, 0.55)',
-            borderBottom: '1px solid rgba(200, 169, 110, 0.22)',
-            backdropFilter: 'blur(24px) saturate(140%)',
-            WebkitBackdropFilter: 'blur(24px) saturate(140%)',
-        }
-        : isGrandVoyager
-            ? {
-                background: 'linear-gradient(180deg, rgba(14, 34, 35, 0.92) 0%, rgba(8, 20, 21, 0.98) 100%)',
-                boxShadow: '0 1px 0 rgba(45, 212, 191, 0.25), inset 0 1px 0 rgba(45, 212, 191, 0.12), 0 8px 32px rgba(0, 0, 0, 0.60)',
-                borderBottom: '1px solid rgba(45, 212, 191, 0.20)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-            }
-            : isWiki
-                ? {
-                    background: 'linear-gradient(180deg, rgba(248, 244, 235, 0.97) 0%, rgba(240, 234, 220, 0.98) 100%)',
-                    boxShadow: '0 1px 0 rgba(212, 200, 175, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 20px rgba(0, 0, 0, 0.05)',
-                    borderBottom: '1px solid rgba(212, 200, 175, 0.70)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                }
-                : {
-                    background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(9, 14, 26, 0.96) 100%)',
-                    boxShadow: '0 1px 0 rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 32px rgba(0, 0, 0, 0.55)',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                    backdropFilter: 'blur(24px) saturate(180%)',
-                    WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-                };
-
-    const capsuleStyle: React.CSSProperties = isRoyal
-        ? {
-            background: 'linear-gradient(180deg, rgba(18, 9, 5, 0.65) 0%, rgba(10, 4, 2, 0.82) 100%)',
-            border: '1px solid rgba(200, 169, 110, 0.30)',
-            boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.65), 0 2px 10px rgba(0, 0, 0, 0.35)',
-        }
-        : isGrandVoyager
-            ? {
-                background: 'linear-gradient(180deg, rgba(5, 14, 15, 0.65) 0%, rgba(2, 8, 8, 0.82) 100%)',
-                border: '1px solid rgba(45, 212, 191, 0.28)',
-                boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.65), 0 2px 10px rgba(0, 0, 0, 0.35)',
-            }
-            : isWiki
-                ? {
-                    background: 'linear-gradient(180deg, rgba(235, 227, 212, 0.75) 0%, rgba(228, 218, 201, 0.85) 100%)',
-                    border: '1px solid rgba(200, 185, 160, 0.85)',
-                    boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
-                }
-                : {
-                    background: 'linear-gradient(180deg, rgba(2, 6, 23, 0.65) 0%, rgba(15, 23, 42, 0.55) 100%)',
-                    border: '1px solid rgba(255, 255, 255, 0.10)',
-                    boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.65), 0 2px 10px rgba(0, 0, 0, 0.35)',
-                };
-
-    const subRailStyle: React.CSSProperties = isRoyal
-        ? {
-            background: 'rgba(18, 9, 5, 0.45)',
-            borderTop: '1px solid rgba(200, 169, 110, 0.15)',
-        }
-        : isGrandVoyager
-            ? {
-                background: 'rgba(5, 14, 15, 0.45)',
-                borderTop: '1px solid rgba(45, 212, 191, 0.15)',
-            }
-            : isWiki
-                ? {
-                    background: 'rgba(235, 227, 212, 0.50)',
-                    borderTop: '1px solid rgba(212, 200, 175, 0.55)',
-                }
-                : {
-                    background: 'rgba(2, 6, 23, 0.45)',
-                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-                };
-
-    const ribbonInactiveCls = isRoyal
-        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08] font-serif font-medium'
+    // Architectural Toolbar Tokens — perfectly cohesive with Sidebar, Codex sheets, and theme registry
+    const headerTrayCls = isRoyal
+        ? 'bg-[#18100a]/85 border border-[#c8a96e]/30 shadow-inner'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/80 font-medium'
+            ? 'bg-[#e8dcce] border border-[#d4c8af] shadow-inner'
             : isGrandVoyager
-                ? 'text-amber-100/75 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-medium'
-                : 'text-slate-300 hover:text-white hover:bg-white/[0.08] font-medium';
+                ? 'bg-[#0a181a]/85 border border-[#2dd4bf]/30 shadow-inner'
+                : 'bg-slate-950/70 border border-slate-800 shadow-inner';
 
     const ribbonActiveCls = isRoyal
-        ? 'bg-gradient-to-r from-[#8b1524] via-[#75111e] to-[#590a14] text-[#fff8e7] border border-[#d4af37]/80 shadow-[0_0_18px_rgba(139,21,36,0.65),inset_0_1px_0_rgba(255,225,145,0.45)] font-serif font-bold tracking-wide'
+        ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-sm font-serif font-bold uppercase tracking-wider'
         : isWiki
-            ? 'bg-gradient-to-r from-[#b91c1c] to-[#991b1b] text-white font-bold shadow-md border border-red-700/60'
+            ? 'bg-[#b91c1c] text-white font-bold border border-red-800 shadow-sm font-serif uppercase tracking-wide'
             : isGrandVoyager
-                ? 'bg-gradient-to-r from-[#2dd4bf] via-[#14b8a6] to-[#0d9488] text-slate-950 font-bold shadow-[0_0_20px_rgba(45,212,191,0.55),inset_0_1px_0_rgba(255,255,255,0.5)]'
-                : 'bg-gradient-to-r from-[#fef08a] via-[#fde047] to-[#eab308] text-slate-950 font-bold shadow-[0_0_20px_rgba(254,240,138,0.55),inset_0_1px_0_rgba(255,255,255,0.6)]';
+                ? 'bg-[#2dd4bf] text-slate-950 font-bold border border-teal-300 shadow-sm font-serif uppercase tracking-wider'
+                : 'bg-[#fef08a] text-slate-950 font-bold border border-yellow-300 shadow-sm';
+
+    const ribbonInactiveCls = isRoyal
+        ? 'text-[#c8a96e]/80 hover:text-[#fff8e7] hover:bg-[#70121e]/20 font-serif font-semibold tracking-wider transition-colors duration-150'
+        : isWiki
+            ? 'text-stone-700 hover:text-stone-950 hover:bg-black/5 font-serif font-medium tracking-wide transition-colors duration-150'
+            : isGrandVoyager
+                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-white/5 font-serif font-medium tracking-wider transition-colors duration-150'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60 font-medium transition-colors duration-150';
 
     const actionToolBtnCls = isRoyal
-        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08] font-serif font-medium'
+        ? 'text-[#c8a96e]/80 hover:text-[#fff8e7] hover:bg-[#70121e]/20 font-serif font-semibold tracking-wider transition-colors duration-150'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/80 font-medium'
+            ? 'text-stone-700 hover:text-stone-950 hover:bg-black/5 font-serif font-medium tracking-wide transition-colors duration-150'
             : isGrandVoyager
-                ? 'text-amber-100/75 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-medium'
-                : 'text-slate-300 hover:text-white hover:bg-white/[0.08] font-medium';
+                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-white/5 font-serif font-medium tracking-wider transition-colors duration-150'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60 font-medium transition-colors duration-150';
+
+    const dossierBarCls = isRoyal
+        ? 'bg-[#180e07] border-[#c8a96e]/20'
+        : isWiki
+            ? 'bg-[#ede0ce] border-[#d4c8af]'
+            : isGrandVoyager
+                ? 'bg-[#0c1c1e] border-[#2dd4bf]/20'
+                : 'bg-slate-950/80 border-slate-800';
 
     const dossierActiveCls = isRoyal
-        ? 'bg-gradient-to-r from-[#8b1524] to-[#600c17] text-[#fff8e7] border border-[#d4af37]/80 shadow-[0_0_12px_rgba(139,21,36,0.5)]'
-        : isGrandVoyager
-            ? 'bg-gradient-to-r from-[#2dd4bf] to-[#0d9488] text-slate-950 font-bold shadow-[0_0_12px_rgba(45,212,191,0.4)]'
-            : isWiki
-                ? 'bg-[#b91c1c] text-white shadow-sm font-bold border border-red-700/60'
-                : 'bg-gradient-to-r from-[#fef08a] to-[#fde047] text-slate-950 font-bold shadow-[0_0_12px_rgba(254,240,138,0.4)]';
+        ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] font-serif font-bold uppercase tracking-wider shadow-sm'
+        : isWiki
+            ? 'bg-white text-[#b91c1c] border border-[#d4c8af] font-serif font-bold uppercase tracking-wide shadow-sm'
+            : isGrandVoyager
+                ? 'bg-[#133438] text-[#2dd4bf] border border-[#2dd4bf]/40 font-serif font-bold uppercase tracking-wider shadow-sm'
+                : 'bg-slate-800 text-[#fef08a] border border-slate-700 font-bold shadow-sm';
 
     const dossierInactiveCls = isRoyal
-        ? 'bg-black/35 hover:bg-black/50 text-[#d6c4aa] hover:text-[#fff8e7] border border-[#c8a96e]/25'
-        : isGrandVoyager
-            ? 'bg-black/35 hover:bg-black/50 text-amber-100/70 hover:text-[#2dd4bf] border border-[#2dd4bf]/25'
-            : isWiki
-                ? 'bg-white/60 hover:bg-white text-stone-600 hover:text-stone-900 border border-stone-300'
-                : 'bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 hover:text-white border border-white/10';
+        ? 'bg-[#120803] text-[#c8a96e]/70 hover:text-[#fff8e7] hover:bg-[#251206] border border-[#c8a96e]/20 font-serif tracking-wider transition-colors duration-150'
+        : isWiki
+            ? 'bg-[#f5e6d3] text-stone-600 hover:text-stone-900 border border-[#d4c8af]/60 font-serif transition-colors duration-150'
+            : isGrandVoyager
+                ? 'bg-[#081517] text-amber-100/60 hover:text-amber-100 border border-[#2dd4bf]/15 font-serif transition-colors duration-150'
+                : 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800/80 transition-colors duration-150';
 
     const auraStyles = useMemo(() => {
         const phase = world.worldPhase || 'golden';
@@ -338,16 +278,16 @@ const App = () => {
     }, [world.worldPhase]);
 
     return (
-        <div 
+        <div
             style={{ filter: auraStyles.filter }}
             className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${isManuscript ? 'p-1 sm:p-2 md:p-3 items-center justify-center' : ''}`}>
-            
+
             {auraStyles.bg !== 'none' && (
                 <div className="absolute inset-0 pointer-events-none opacity-10 z-0" style={{ background: auraStyles.bg }} />
             )}
 
             <div className={`flex w-full h-full ${isManuscript ? 'w-full max-w-none 2xl:max-w-[2400px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
-                <Sidebar 
+                <Sidebar
                     world={world}
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
@@ -365,13 +305,13 @@ const App = () => {
 
                     {/* Grand Voyager tropical scene background */}
                     {isGrandVoyager && <TropicalSceneBackground />}
-                    
+
                     {/* Top Header Bar */}
-                    <header style={headerBarStyle} className="sticky top-0 z-[100] transition-colors duration-300" data-interactive-ui="true">
+                    <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} shadow-sm`} data-interactive-ui="true">
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
-                        <div className="flex items-center justify-between px-3.5 py-2 gap-3">
+                        <div className="flex items-center justify-between px-3 py-2 gap-3">
                             {/* Realm Navigation Ribbon */}
-                            <nav style={capsuleStyle} className="inline-flex items-center p-1 rounded-full max-w-full overflow-x-auto custom-scrollbar-hidden min-w-0 gap-1 backdrop-blur-xl">
+                            <nav className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} max-w-full overflow-x-auto custom-scrollbar-hidden min-w-0 gap-1`}>
                                 {[
                                     { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G' },
                                     { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5' },
@@ -391,28 +331,28 @@ const App = () => {
                                             type="button"
                                             onClick={() => setActiveTabId(item.id)}
                                             title={`${item.label} (${item.shortcut})`}
-                                            className={`group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs tracking-tight transition-all duration-200 active:scale-95 shrink-0 ${
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${
                                                 isActive ? ribbonActiveCls : ribbonInactiveCls
                                             }`}
                                         >
-                                            <IconComponent size={14} className={`shrink-0 transition-opacity ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`} />
+                                            <IconComponent size={13} className={`shrink-0 ${isActive ? 'opacity-100' : 'opacity-80'}`} />
                                             <span>{item.label}</span>
                                         </button>
                                     );
                                 })}
                             </nav>
 
-                            {/* Header Action Tools — Matching Floating Glass Capsule */}
-                            <div style={capsuleStyle} className="inline-flex items-center gap-0.5 p-1 rounded-full shrink-0 backdrop-blur-xl">
+                            {/* Header Action Tools */}
+                            <div className={`inline-flex items-center gap-0.5 p-1 rounded-xl ${headerTrayCls} shrink-0`}>
                                 {/* Jump / Command Palette */}
                                 <button
                                     onClick={() => setShowCommandPalette(true)}
                                     title="Command Palette & Fast Search (Ctrl+K)"
-                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
+                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
                                 >
-                                    <Search size={14} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                    <Search size={13} className="opacity-80" />
                                     <span className="hidden md:inline font-medium">Jump</span>
-                                    <kbd className={`hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded-md border ${
+                                    <kbd className={`hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded border ${
                                         isRoyal ? 'bg-black/50 text-[#e6c687] border-[#c8a96e]/40'
                                         : isWiki ? 'bg-white/80 text-stone-600 border-stone-300'
                                         : 'bg-white/[0.08] text-slate-300 border-white/[0.10]'
@@ -424,9 +364,9 @@ const App = () => {
                                     onClick={undo}
                                     disabled={!canUndo}
                                     title="Undo changes (Ctrl+Z)"
-                                    className={`group flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
                                 >
-                                    <Undo2 size={14} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
+                                    <Undo2 size={13} />
                                     <span className="hidden xl:inline font-medium">Undo</span>
                                 </button>
 
@@ -435,9 +375,9 @@ const App = () => {
                                     onClick={redo}
                                     disabled={!canRedo}
                                     title="Redo changes (Ctrl+Y or Ctrl+Shift+Z)"
-                                    className={`group flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
                                 >
-                                    <Redo2 size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+                                    <Redo2 size={13} />
                                     <span className="hidden xl:inline font-medium">Redo</span>
                                 </button>
 
@@ -445,9 +385,9 @@ const App = () => {
                                 <button
                                     onClick={() => setShowScratchpad(true)}
                                     title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
+                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
                                 >
-                                    <BookMarked size={14} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                    <BookMarked size={13} className="opacity-80" />
                                     <span className="hidden sm:inline font-medium">Scratchpad</span>
                                 </button>
 
@@ -455,22 +395,22 @@ const App = () => {
                                 <button
                                     onClick={() => setShowKeybindsModal(true)}
                                     title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
+                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
                                 >
-                                    <Keyboard size={14} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                    <Keyboard size={13} className="opacity-80" />
                                     <span className="hidden sm:inline font-medium">Keybinds</span>
                                 </button>
 
                                 {/* Sleek divider */}
-                                <div className="w-px h-4 mx-1 opacity-25 bg-current" />
+                                <div className="w-px h-4 mx-0.5 bg-current opacity-20" />
 
-                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`} />
+                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`} />
                             </div>
                         </div>
 
                         {/* Tier 2: Entity Document Tabs Bar (Rendered only when open dossier tabs exist) */}
                         {openTabIds.length > 0 && (
-                            <div style={subRailStyle} className="flex items-center justify-between px-3.5 py-1.5 min-h-[38px] gap-2 backdrop-blur-xl">
+                            <div className={`flex items-center justify-between px-3 py-1.5 border-t min-h-[36px] gap-2 ${dossierBarCls}`}>
                                 <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0 custom-scrollbar-hidden">
                                     {openTabIds.map(id => {
                                         const e = world.entities.find(ent => ent.id === id);
@@ -482,7 +422,7 @@ const App = () => {
                                             <div
                                                 key={id}
                                                 onClick={() => setActiveTabId(id)}
-                                                className={`flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider cursor-pointer transition-all border shrink-0 ${
+                                                className={`flex items-center gap-2 px-3 py-1 rounded-lg text-xs cursor-pointer transition-colors duration-150 border shrink-0 ${
                                                     isActive ? dossierActiveCls : dossierInactiveCls
                                                 }`}
                                             >
@@ -492,7 +432,7 @@ const App = () => {
                                                 </span>
                                                 <button
                                                     onClick={(ev) => handleCloseTab(id, ev)}
-                                                    className="hover:text-red-400 ml-1 font-bold p-0.5 rounded-full hover:bg-black/20 transition-colors"
+                                                    className="hover:text-red-400 ml-1 font-bold p-0.5 rounded hover:bg-black/20 transition-colors duration-150"
                                                     title="Close dossier tab"
                                                 >
                                                     ×
@@ -511,22 +451,22 @@ const App = () => {
                         )}
                     </header>
 
-                {/* Body Content */}
-                <div className={`flex-1 min-h-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'p-2 sm:p-3 overflow-hidden' : 'p-4 md:p-6'}`}>
-                    {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
-                    {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
-                    {activeTabId === 'dashboard' && <DashboardView world={world} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'timeline' && <TimelineView world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'nexus' && <NexusTreeView world={world} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'journey' && <JourneyView world={world} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'session-logs' && <SessionLogView world={world} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'plot-threads' && <PlotThreadsView world={world} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'faction-matrix' && <FactionMatrixView world={world} onNavigate={handleOpenEntity} />}
-                    {activeTabId === 'gazette' && <GazetteView world={world} onNavigate={handleOpenEntity} />}
+                    {/* Body Content */}
+                    <div className={`flex-1 min-h-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'p-2 sm:p-3 overflow-hidden' : 'p-4 md:p-6'}`}>
+                        {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
+                        {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
+                        {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
+                        {activeTabId === 'dashboard' && <DashboardView world={world} onNavigate={handleOpenEntity} />}
+                        {activeTabId === 'timeline' && <TimelineView world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
+                        {activeTabId === 'nexus' && <NexusTreeView world={world} onNavigate={handleOpenEntity} />}
+                        {activeTabId === 'journey' && <JourneyView world={world} onNavigate={handleOpenEntity} />}
+                        {activeTabId === 'session-logs' && <SessionLogView world={world} onNavigate={handleOpenEntity} />}
+                        {activeTabId === 'plot-threads' && <PlotThreadsView world={world} onNavigate={handleOpenEntity} />}
+                        {activeTabId === 'faction-matrix' && <FactionMatrixView world={world} onNavigate={handleOpenEntity} />}
+                        {activeTabId === 'gazette' && <GazetteView world={world} onNavigate={handleOpenEntity} />}
 
-                    {activeEntity && (
-                        isManuscript ? (
+                        {activeEntity && (
+                            isManuscript ? (
 
                                 <div className="relative flex-1 flex flex-col p-2 sm:p-4 md:p-6 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl">
                                     {/* Stacked Parchment Page Layers Behind Book */}
@@ -535,13 +475,76 @@ const App = () => {
 
                                     {/* Inner Vellum Parchment Page — Wraps Full Scroll Height Seamlessly */}
                                     <div className="relative flex-1 flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-2xl p-4 sm:p-6 md:p-10 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
-                                    
-                                    {/* Four Ornamental Gold Filigree Corners */}
-                                    <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                                    <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-[#c8a96e] pointer-events-none" />
-                                    <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                                    <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-[#c8a96e] pointer-events-none" />
 
+                                        {/* Four Ornamental Gold Filigree Corners */}
+                                        <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
+                                        <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+                                        <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-[#c8a96e] pointer-events-none" />
+                                        <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+
+                                        <ErrorBoundary fallbackLabel="Error rendering character scroll or details. Click below to recover.">
+                                            {editingTabIds.includes(activeTabId as string) ? (
+                                                <EntityEditor
+                                                    entity={activeEntity}
+                                                    allEntities={world.entities}
+                                                    onUpdate={(updated) => setDrafts(prev => ({ ...prev, [activeTabId as string]: { ...(prev[activeTabId as string] || activeEntity), ...updated } }))}
+                                                    onSave={() => handleSaveDraft(activeTabId as string)}
+                                                    onCancel={() => handleToggleEdit(activeTabId as string)}
+                                                    onCreateNew={handleCreate}
+                                                    onNavigate={handleOpenEntity}
+                                                />
+                                            ) : (
+                                                <EntityViewer
+                                                    entity={activeEntity}
+                                                    allEntities={world.entities}
+                                                    onEdit={() => handleToggleEdit(activeTabId as string)}
+                                                    onDelete={() => handleDeleteToTrash(activeEntity)}
+                                                    onNavigate={handleOpenEntity}
+                                                    onFocusMap={() => {
+                                                        if (activeEntity?.type === 'location') {
+                                                            useWorldStore.getState().focusMapLocation(activeEntity.id);
+                                                        } else if (activeEntity?.type === 'character' && (activeEntity as any).pairedCurrentLocationNew?.[0]) {
+                                                            useWorldStore.getState().focusMapLocation((activeEntity as any).pairedCurrentLocationNew[0]);
+                                                        } else {
+                                                            setActiveTabId('map');
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        </ErrorBoundary>
+
+                                        {/* Persistent Illuminated Royal Codex Bottom Binding Contour */}
+                                        <div className="mt-16 pt-6 border-t-2 border-[#c8a96e]/50 flex items-center justify-between opacity-80 select-none">
+                                            <div className="flex items-center gap-2 text-[10px] font-serif font-black tracking-widest text-[#70121e] uppercase">
+                                                <span>❖ Nexus Chronicle</span>
+                                                <span className="opacity-40">·</span>
+                                                <span>Royal Codex</span>
+                                            </div>
+                                            <div className="h-0.5 flex-1 mx-4 bg-gradient-to-r from-[#c8a96e]/60 via-[#70121e]/40 to-[#c8a96e]/60" />
+                                            <div className="text-[10px] font-serif italic text-[#5c2a12]">
+                                                Finis Chronicorum ❖
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Realistic Feather Quill Pen Overlay Bottom Right */}
+                                    <div className="absolute -bottom-8 -right-8 w-44 h-44 pointer-events-none z-30 transform rotate-12 drop-shadow-[0_15px_15px_rgba(0,0,0,0.8)]">
+                                        <svg viewBox="0 0 100 100" className="w-full h-full">
+                                            <path d="M85 10 C 60 30, 30 65, 10 90 L 14 92 C 35 70, 65 35, 88 12 Z" fill="url(#quillGrad)" />
+                                            <path d="M85 10 Q 55 25, 40 55 Q 60 45, 88 12 Z" fill="#2d261e" opacity="0.8" />
+                                            <path d="M10 90 L 4 98 L 12 94 Z" fill="#d4af37" />
+                                            <defs>
+                                                <linearGradient id="quillGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                    <stop offset="0%" stopColor="#1f1a14" />
+                                                    <stop offset="50%" stopColor="#4a3e31" />
+                                                    <stop offset="100%" stopColor="#8c785c" />
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="w-full max-w-none 2xl:max-w-7xl mx-auto px-6 md:px-12 py-8 md:py-12 min-h-full">
                                     <ErrorBoundary fallbackLabel="Error rendering character scroll or details. Click below to recover.">
                                         {editingTabIds.includes(activeTabId as string) ? (
                                             <EntityEditor
@@ -560,84 +563,21 @@ const App = () => {
                                                 onEdit={() => handleToggleEdit(activeTabId as string)}
                                                 onDelete={() => handleDeleteToTrash(activeEntity)}
                                                 onNavigate={handleOpenEntity}
-                                                onFocusMap={() => {
-                                                    if (activeEntity?.type === 'location') {
-                                                        useWorldStore.getState().focusMapLocation(activeEntity.id);
-                                                    } else if (activeEntity?.type === 'character' && (activeEntity as any).pairedCurrentLocationNew?.[0]) {
-                                                        useWorldStore.getState().focusMapLocation((activeEntity as any).pairedCurrentLocationNew[0]);
-                                                    } else {
-                                                        setActiveTabId('map');
-                                                    }
-                                                }}
+                                                onFocusMap={() => setActiveTabId('map')}
                                             />
                                         )}
                                     </ErrorBoundary>
-
-                                    {/* Persistent Illuminated Royal Codex Bottom Binding Contour */}
-                                    <div className="mt-16 pt-6 border-t-2 border-[#c8a96e]/50 flex items-center justify-between opacity-80 select-none">
-                                        <div className="flex items-center gap-2 text-[10px] font-serif font-black tracking-widest text-[#70121e] uppercase">
-                                            <span>❖ Nexus Chronicle</span>
-                                            <span className="opacity-40">·</span>
-                                            <span>Royal Codex</span>
-                                        </div>
-                                        <div className="h-0.5 flex-1 mx-4 bg-gradient-to-r from-[#c8a96e]/60 via-[#70121e]/40 to-[#c8a96e]/60" />
-                                        <div className="text-[10px] font-serif italic text-[#5c2a12]">
-                                            Finis Chronicorum ❖
-                                        </div>
-                                    </div>
                                 </div>
+                            )
 
-                                {/* Realistic Feather Quill Pen Overlay Bottom Right */}
-                                <div className="absolute -bottom-8 -right-8 w-44 h-44 pointer-events-none z-30 transform rotate-12 drop-shadow-[0_15px_15px_rgba(0,0,0,0.8)]">
-                                    <svg viewBox="0 0 100 100" className="w-full h-full">
-                                        <path d="M85 10 C 60 30, 30 65, 10 90 L 14 92 C 35 70, 65 35, 88 12 Z" fill="url(#quillGrad)" />
-                                        <path d="M85 10 Q 55 25, 40 55 Q 60 45, 88 12 Z" fill="#2d261e" opacity="0.8" />
-                                        <path d="M10 90 L 4 98 L 12 94 Z" fill="#d4af37" />
-                                        <defs>
-                                            <linearGradient id="quillGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                                <stop offset="0%" stopColor="#1f1a14" />
-                                                <stop offset="50%" stopColor="#4a3e31" />
-                                                <stop offset="100%" stopColor="#8c785c" />
-                                            </linearGradient>
-                                        </defs>
-                                    </svg>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="w-full max-w-none 2xl:max-w-7xl mx-auto px-6 md:px-12 py-8 md:py-12 min-h-full">
-                                <ErrorBoundary fallbackLabel="Error rendering character scroll or details. Click below to recover.">
-                                    {editingTabIds.includes(activeTabId as string) ? (
-                                        <EntityEditor
-                                            entity={activeEntity}
-                                            allEntities={world.entities}
-                                            onUpdate={(updated) => setDrafts(prev => ({ ...prev, [activeTabId as string]: { ...(prev[activeTabId as string] || activeEntity), ...updated } }))}
-                                            onSave={() => handleSaveDraft(activeTabId as string)}
-                                            onCancel={() => handleToggleEdit(activeTabId as string)}
-                                            onCreateNew={handleCreate}
-                                            onNavigate={handleOpenEntity}
-                                        />
-                                    ) : (
-                                        <EntityViewer
-                                            entity={activeEntity}
-                                            allEntities={world.entities}
-                                            onEdit={() => handleToggleEdit(activeTabId as string)}
-                                            onDelete={() => handleDeleteToTrash(activeEntity)}
-                                            onNavigate={handleOpenEntity}
-                                            onFocusMap={() => setActiveTabId('map')}
-                                        />
-                                    )}
-                                </ErrorBoundary>
-                            </div>
-                        )
-
-                    )}
-                </div>
-            </main>
+                        )}
+                    </div>
+                </main>
             </div>
 
-            <KeybindsModal 
-                isOpen={showKeybindsModal} 
-                onClose={() => setShowKeybindsModal(false)} 
+            <KeybindsModal
+                isOpen={showKeybindsModal}
+                onClose={() => setShowKeybindsModal(false)}
             />
 
             <CommandPalette

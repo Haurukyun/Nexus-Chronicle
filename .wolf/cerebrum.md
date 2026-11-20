@@ -32,6 +32,11 @@ budget_tokens: 2000
 
 ## Strict Multi-Theme & Prose Contrast Rules (MANDATORY)
 
+- **Hover Latency & Nested Backdrop-Filter Elimination (2026-11-20):**
+  - Never stack nested `backdrop-filter: blur(...)` containers inside elements with existing filters (like `world.worldPhase` aura styles). Doing so forces Blink/WebKit to re-rasterize heavy blur passes on every hover frame, creating severe cursor/hover lag.
+  - Never use `transition-all` on elements sitting over filtered or blurred backgrounds. Use scoped `transition-colors duration-150` to keep composite rendering instantaneous.
+  - Maintain the app's established design language: use `rounded-xl` / `rounded-lg` architectural framing and theme fonts rather than generic mobile `rounded-full` pills.
+
 - **Printable Character & Relation Sheets via In-Page Iframe Printing (2026-11-20):**
   - Never rely on bare `window.open('', '_blank')` followed by `document.write` for printing in web applications or Tauri/webview environments. Modern browsers and webviews block unprompted popups or silently fail to trigger print dialogs, leading to "clicking does nothing".
   - Always use an in-page hidden `iframe` print sandbox (`nexus-print-sandbox`), injecting the document and invoking `iframe.contentWindow?.print()` after styles settle. Provide automatic script fallback with Blob URLs.

@@ -12,6 +12,12 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Cohesive Architectural Header Ribbon & Hover Performance Fix (`App.tsx`) (2026-11-20)**:
+  - Eliminated hover lag by removing nested `backdrop-filter: blur(24px)` layers, costly `box-shadow` spread transitions, and `transition-all`.
+  - Replaced mobile-style `rounded-full` pills with the app's established architectural codex language (`rounded-xl` trays, `rounded-lg` buttons, Cinzel/Lora serif typography, crisp borders).
+  - Aligned active and inactive states directly with `Sidebar.tsx` and `ViewerHeaders.tsx` (`#70121e` crimson on `#c8a96e` antique gold in Royal Codex, `#fef08a` on slate in Sovereign).
+  - Switched to zero-latency `transition-colors duration-150` for instantaneous, silky-smooth hover response.
+
 - **Glassmorphic Floating Header Ribbon & Bulletproof Character/Relation Sheet Printing (2026-11-20)**:
   1. **Glassmorphic Header Ribbon Overhaul (`App.tsx`)**:
      - Upgraded the top header bar from a flat utility strip into an integrated, translucent floating console with multi-stop gradients, delicate specular highlights (`inset 0 1px 0`), dynamic backdrop blur (`backdrop-blur-2xl`), and theme-adapted lighting.
