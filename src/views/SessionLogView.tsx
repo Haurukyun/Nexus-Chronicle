@@ -38,6 +38,7 @@ interface SessionFormPanelProps {
   inputCls: string;
   onSave: () => void;
   onCancel: () => void;
+  onNavigate?: (id: string) => void;
 }
 
 const SessionFormPanel: React.FC<SessionFormPanelProps> = ({
@@ -52,6 +53,7 @@ const SessionFormPanel: React.FC<SessionFormPanelProps> = ({
   inputCls,
   onSave,
   onCancel,
+  onNavigate,
 }) => {
   const toggleCharacter = (id: string) => {
     setForm(f => ({
@@ -139,6 +141,7 @@ const SessionFormPanel: React.FC<SessionFormPanelProps> = ({
           value={form.summary}
           onChange={(val) => setForm(f => ({ ...f, summary: val }))}
           allEntities={allEntities}
+          onNavigate={onNavigate}
           placeholder="Write session events, party dialogues, combat outcomes, NPC discoveries... Type [[ to link codex entries"
           minHeight="min-h-[140px]"
         />
@@ -377,6 +380,7 @@ export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
             inputCls={inputCls} 
             onSave={saveNew} 
             onCancel={() => setShowNewForm(false)} 
+            onNavigate={onNavigate}
           />
         )}
 
@@ -406,6 +410,7 @@ export const SessionLogView: React.FC<Props> = ({ world, onNavigate }) => {
                 inputCls={inputCls} 
                 onSave={saveEdit} 
                 onCancel={() => setEditingId(null)} 
+                onNavigate={onNavigate}
               />
             );
           }

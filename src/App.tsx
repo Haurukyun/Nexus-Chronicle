@@ -407,13 +407,13 @@ const App = () => {
                     {activeEntity && (
                         isManuscript ? (
 
-                                <div className="p-2 sm:p-4 md:p-6 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full">
+                                <div className="relative flex-1 flex flex-col p-2 sm:p-4 md:p-6 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl">
                                     {/* Stacked Parchment Page Layers Behind Book */}
                                     <div className="absolute -bottom-3 -left-4 w-80 h-48 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform -rotate-2 shadow-lg pointer-events-none z-0" />
                                     <div className="absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
 
-                                    {/* Inner Vellum Parchment Page */}
-                                    <div className="bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-r-2xl p-4 sm:p-6 md:p-10 border-2 border-l-0 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] relative text-[#2b1810] min-h-[780px] h-full">
+                                    {/* Inner Vellum Parchment Page — Wraps Full Scroll Height Seamlessly */}
+                                    <div className="relative flex-1 flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-2xl p-4 sm:p-6 md:p-10 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
                                     
                                     {/* Four Ornamental Gold Filigree Corners */}
                                     <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
@@ -430,6 +430,7 @@ const App = () => {
                                                 onSave={() => handleSaveDraft(activeTabId as string)}
                                                 onCancel={() => handleToggleEdit(activeTabId as string)}
                                                 onCreateNew={handleCreate}
+                                                onNavigate={handleOpenEntity}
                                             />
                                         ) : (
                                             <EntityViewer
@@ -450,6 +451,19 @@ const App = () => {
                                             />
                                         )}
                                     </ErrorBoundary>
+
+                                    {/* Persistent Illuminated Royal Codex Bottom Binding Contour */}
+                                    <div className="mt-16 pt-6 border-t-2 border-[#c8a96e]/50 flex items-center justify-between opacity-80 select-none">
+                                        <div className="flex items-center gap-2 text-[10px] font-serif font-black tracking-widest text-[#70121e] uppercase">
+                                            <span>❖ Nexus Chronicle</span>
+                                            <span className="opacity-40">·</span>
+                                            <span>Royal Codex</span>
+                                        </div>
+                                        <div className="h-0.5 flex-1 mx-4 bg-gradient-to-r from-[#c8a96e]/60 via-[#70121e]/40 to-[#c8a96e]/60" />
+                                        <div className="text-[10px] font-serif italic text-[#5c2a12]">
+                                            Finis Chronicorum ❖
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Realistic Feather Quill Pen Overlay Bottom Right */}
@@ -479,6 +493,7 @@ const App = () => {
                                             onSave={() => handleSaveDraft(activeTabId as string)}
                                             onCancel={() => handleToggleEdit(activeTabId as string)}
                                             onCreateNew={handleCreate}
+                                            onNavigate={handleOpenEntity}
                                         />
                                     ) : (
                                         <EntityViewer

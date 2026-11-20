@@ -86,6 +86,29 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
         setEditingNoteTargetId(null);
     };
 
+    const noteSuggestions = useMemo(() => {
+        const textKey = (fieldKey || label || '').toLowerCase();
+        if (textKey.includes('parent')) {
+            return ['Father', 'Mother', 'Adoptive Father', 'Adoptive Mother', 'Step-father', 'Step-mother', 'Guardian', 'Biological Father', 'Biological Mother'];
+        }
+        if (textKey.includes('child')) {
+            return ['Son', 'Daughter', 'Adopted Son', 'Adopted Daughter', 'Step-son', 'Step-daughter', 'Eldest', 'Youngest', 'Twin'];
+        }
+        if (textKey.includes('relative')) {
+            return ['Brother', 'Sister', 'Uncle', 'Aunt', 'Cousin', 'Grandfather', 'Grandmother', 'Grandson', 'Granddaughter', 'Nephew', 'Niece', 'In-law'];
+        }
+        if (textKey.includes('friend')) {
+            return ['Best Friend', 'Confidant', 'Childhood Friend', 'Sworn Companion', 'Mentor', 'Protégé', 'Shield-brother', 'Ally'];
+        }
+        if (textKey.includes('enem')) {
+            return ['Arch-nemesis', 'Rival', 'Betrayer', 'Usurper', 'Blood Feud', 'Sworn Enemy', 'Former Friend', 'Oppressor'];
+        }
+        if (textKey.includes('complicated')) {
+            return ['Former Lover', 'Estranged', 'Unrequited Love', 'Secret Ally', 'Frenemy', 'Reluctant Partner', 'Debtor', 'Blackmailer'];
+        }
+        return ['Ally', 'Protector', 'Subordinate', 'Commander', 'Spouse', 'Betrothed', 'Advisor', 'Servant', 'Mentor', 'Rival'];
+    }, [fieldKey, label]);
+
     const bgInput = isRoyal 
         ? 'bg-[#fbf8ef] border-[#c8a96e]/60 text-[#2b1810] font-serif shadow-inner'
         : isWikiMode 
@@ -295,16 +318,48 @@ export const SmartSelect: React.FC<SmartSelectProps & { icon?: LucideIcon }> = (
                             </button>
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                             <label className={`text-[10px] font-black uppercase tracking-wider ${isRoyal ? 'text-[#451a03] font-serif' : 'text-slate-400'}`}>
                                 Relational Context & History
                             </label>
                             <p className={`text-[11px] ${isRoyal ? 'text-[#5c2a12]/80 font-serif' : 'text-slate-400'} italic`}>
                                 Add specific context explaining this connection (e.g. "Betrayed Aurelius during the Siege of Sol", "Mentored her swordsmanship in youth").
                             </p>
+
+                            {/* Quick Note Suggestions */}
+                            {noteSuggestions.length > 0 && (
+                                <div className="space-y-1">
+                                    <span className={`text-[9px] font-black uppercase tracking-wider block opacity-70 ${isRoyal ? 'text-[#451a03]' : 'text-slate-400'}`}>
+                                        Quick Role Suggestions
+                                    </span>
+                                    <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-0.5">
+                                        {noteSuggestions.map(s => (
+                                            <button
+                                                key={s}
+                                                type="button"
+                                                onClick={() => {
+                                                    setNoteDraftText(prev => prev.trim() ? `${prev.trim()}, ${s}` : s);
+                                                }}
+                                                className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border transition-all ${
+                                                    noteDraftText.includes(s)
+                                                        ? isRoyal
+                                                            ? 'bg-[#70121e] text-[#fff8e7] border-[#70121e] shadow-xs'
+                                                            : 'bg-amber-400 text-black border-amber-400 font-bold shadow-xs'
+                                                        : isRoyal
+                                                        ? 'bg-[#ede2cc]/70 hover:bg-[#ede2cc] border-[#c8a96e]/50 text-[#3d0a10]'
+                                                        : 'bg-white/5 hover:bg-white/10 border-white/10 text-slate-300'
+                                                }`}
+                                            >
+                                                + {s}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             <textarea
                                 autoFocus
-                                rows={4}
+                                rows={3}
                                 value={noteDraftText}
                                 onChange={(e) => setNoteDraftText(e.target.value)}
                                 placeholder="Enter context or historical annotation for this relationship..."

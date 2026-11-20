@@ -13,6 +13,7 @@ interface MarkdownEditorProps {
     placeholder?: string;
     minHeight?: string;
     label?: string;
+    defaultMode?: 'edit' | 'preview' | 'split';
 }
 
 interface WikiSuggestion {
@@ -29,12 +30,13 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     placeholder = 'Write your lore here... Use [[Entity Name]] to link entities, **bold**, *italic*, # Heading',
     minHeight = 'h-72',
     label,
+    defaultMode = 'preview',
 }) => {
     const { themeId, layoutMode } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
     const isVoyager = themeId === 'grand-voyager';
-    const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('split');
+    const [mode, setMode] = useState<'edit' | 'preview' | 'split'>(defaultMode);
 
     // Wikilink autocomplete state
     const [suggestions, setSuggestions] = useState<WikiSuggestion[]>([]);

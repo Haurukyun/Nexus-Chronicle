@@ -145,13 +145,69 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
 
             {entity.personalityTraits && (
                 <ViewerSectionCard title="Traits & Characteristics">
-                    <p className="whitespace-pre-wrap leading-relaxed font-serif text-base">{entity.personalityTraits}</p>
+                    {(() => {
+                        try {
+                            const parsed = JSON.parse(entity.personalityTraits);
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                return (
+                                    <ul className="space-y-2">
+                                        {parsed.map((item: any, idx: number) => {
+                                            const name = typeof item === 'string' ? item : item.name || item.title;
+                                            const note = typeof item === 'object' ? item.note : null;
+                                            return (
+                                                <li key={idx} className="flex items-start gap-2 text-base font-serif leading-relaxed">
+                                                    <span className={`${isRoyal ? 'text-[#70121e]' : 'text-amber-500'} select-none shrink-0 font-bold`}>•</span>
+                                                    <div className="flex-1">
+                                                        <strong className="font-bold">{name}</strong>
+                                                        {note && (
+                                                            <span className={`italic text-sm ml-2 ${isRoyal ? 'text-[#5c2a12]/85' : 'opacity-75'}`}>
+                                                                — {note}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                );
+                            }
+                        } catch {}
+                        return <p className="whitespace-pre-wrap leading-relaxed font-serif text-base">{entity.personalityTraits}</p>;
+                    })()}
                 </ViewerSectionCard>
             )}
 
             {entity.traits && (
-                <ViewerSectionCard title="Unusual Features">
-                    <p className="whitespace-pre-wrap leading-relaxed font-serif text-base">{entity.traits}</p>
+                <ViewerSectionCard title="Unique / Unusual Features">
+                    {(() => {
+                        try {
+                            const parsed = JSON.parse(entity.traits);
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                return (
+                                    <ul className="space-y-2">
+                                        {parsed.map((item: any, idx: number) => {
+                                            const name = typeof item === 'string' ? item : item.name || item.title;
+                                            const note = typeof item === 'object' ? item.note : null;
+                                            return (
+                                                <li key={idx} className="flex items-start gap-2 text-base font-serif leading-relaxed">
+                                                    <span className={`${isRoyal ? 'text-[#70121e]' : 'text-amber-500'} select-none shrink-0 font-bold`}>•</span>
+                                                    <div className="flex-1">
+                                                        <strong className="font-bold">{name}</strong>
+                                                        {note && (
+                                                            <span className={`italic text-sm ml-2 ${isRoyal ? 'text-[#5c2a12]/85' : 'opacity-75'}`}>
+                                                                — {note}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                );
+                            }
+                        } catch {}
+                        return <p className="whitespace-pre-wrap leading-relaxed font-serif text-base">{entity.traits}</p>;
+                    })()}
                 </ViewerSectionCard>
             )}
             

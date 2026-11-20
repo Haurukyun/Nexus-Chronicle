@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Settings, Info, BookOpen, Heart, Globe, Swords, Scroll, Ghost, Zap,
     Scale, FolderTree, Type, PaintBucket, CheckSquare, Search, Skull,
     Box, Hash, Tag, FileText, Code, UserCircle, MapPin, Calendar, Hourglass,
     Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe,
     Gem, User, Leaf, Sun, Moon, Tent, Pencil, ImageIcon, Plus, Trash2, GripVertical,
-    Check, X, Link2, GitMerge, ExternalLink
+    Check, X, Link2, GitMerge, ExternalLink, Compass, ChevronRight
 } from 'lucide-react';
 import { AssetImageUploader } from '../ui/AssetImageUploader';
 import { EditorGroup } from './EditorGroup';
@@ -184,15 +184,17 @@ const CustomAttributesEditor = ({
     );
 };
 
-export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, onUpdate }: EntityEditorProps) => {
+export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNew, onUpdate, onNavigate }: EntityEditorProps) => {
     const { themeId, layoutMode } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
     const isLocation = entity.type === 'location';
     const loc = entity as Location;
 
-    const handleOpenEntity = useWorldStore(s => s.handleOpenEntity);
+    const handleOpenEntity = onNavigate || useWorldStore(s => s.handleOpenEntity);
     const backlinks = React.useMemo(() => getCategorizedBacklinks(entity.id, allEntities), [entity.id, allEntities]);
+    const [activeSection, setActiveSection] = useState<string>('section-doc-settings');
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
     const resolveEntities = (ids: string[]): WorldEntity[] => {
         return ids.map(id => allEntities.find(e => e.id === id)).filter(Boolean) as WorldEntity[];
@@ -223,6 +225,67 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
     }, [backlinks, allEntities]);
 
     const totalBacklinkCount = backlinkSections.reduce((acc, s) => acc + s.items.length, 0);
+
+    const navItems = useMemo(() => {
+        const items: { id: string; label: string; icon: any }[] = [
+            { id: 'section-doc-settings', label: 'Document Settings', icon: Settings },
+            { id: 'section-portrait', label: 'Portrait & Imagery', icon: ImageIcon },
+            { id: 'section-description', label: 'Description & History', icon: BookOpen },
+        ];
+
+        if (!isEntityCategory(entity)) {
+            if (entity.type === 'character') {
+                items.push(
+                    { id: 'section-basic-info', label: 'Basic Info', icon: Info },
+                    { id: 'section-characteristics', label: 'Characteristics & Stats', icon: Zap },
+                    { id: 'section-relationships', label: 'Relationships', icon: Heart },
+                    { id: 'section-groups', label: 'Groups & Affiliations', icon: Swords },
+                    { id: 'section-cultural', label: 'Cultural Context', icon: Scroll },
+                );
+            } else {
+                items.push(
+                    { id: 'section-specifics', label: `${entity.type.charAt(0).toUpperCase() + entity.type.slice(1)} Details`, icon: Sparkles }
+                );
+            }
+        }
+
+        items.push(
+            { id: 'section-world', label: 'World & Details', icon: Scroll },
+            { id: 'section-attributes', label: 'Custom Attributes', icon: Hash },
+            { id: 'section-secrets', label: 'Secrets & Notes', icon: Ghost },
+            { id: 'section-backlinks', label: `Backlinks (${totalBacklinkCount})`, icon: GitMerge }
+        );
+
+        return items;
+    }, [entity.type, entity.isCategory, entity.categorySwitch, totalBacklinkCount]);
+
+    useEffect(() => {
+        const sectionIds = navItems.map(item => item.id);
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const visible = entries.find(e => e.isIntersecting);
+                if (visible) {
+                    setActiveSection(visible.target.id);
+                }
+            },
+            { rootMargin: '-10% 0px -70% 0px', threshold: 0.05 }
+        );
+
+        sectionIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+
+        return () => observer.disconnect();
+    }, [navItems]);
+
+    const scrollToSection = (id: string) => {
+        setActiveSection(id);
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -287,220 +350,335 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                 </div>
             </header>
 
-            <fieldset disabled={entity.isReadOnly} className="space-y-12">
-                {/* 1. MANDATORY DOCUMENT SETTINGS (UNIVERSAL) */}
-                <EditorGroup title="Document settings" icon={Settings}>
-                    <FormInput label="Name" icon={Scale} value={entity.name} onChange={(v: string) => onUpdate({ ...entity, name: v })} gridSpan={6} />
-                    <SmartSelect 
-                        label="Belongs under" 
-                        icon={FolderTree} 
-                        ids={entity.parentId ? [entity.parentId] : []} 
-                        type={entity.type} 
-                        all={allEntities} 
-                        onChange={(ids) => onUpdate({ ...entity, parentId: ids[0] || null })} 
-                        onCreate={onCreateNew} 
-                        gridSpan={6}
-                        excludeIds={[entity.id]}
-                    />
-                    
-                    <div className={`col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl border ${
-                        isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/60 shadow-inner' : 'border-slate-500/10 bg-black/5'
-                    }`}>
-                        <FormToggle 
-                            label="Clean Codex (Finished)" 
-                            icon={CheckSquare} 
-                            checked={Boolean(entity.isFinished || entity.finishedSwitch)} 
-                            onChange={(v: boolean) => onUpdate({ ...entity, isFinished: v, finishedSwitch: v })} 
-                        />
-                        <FormToggle 
-                            label="Folder / Category" 
-                            icon={Box} 
-                            checked={Boolean(entity.isCategory || entity.categorySwitch)} 
-                            onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v, categorySwitch: v })} 
-                        />
-                        <FormToggle 
-                            label="Dead / Fallen / Ruined" 
-                            icon={Skull} 
-                            checked={Boolean(entity.isDead || entity.deadSwitch)} 
-                            onChange={(v: boolean) => onUpdate({ ...entity, isDead: v, deadSwitch: v })} 
-                        />
-                        <FormToggle 
-                            label="Minor Background Entry" 
-                            icon={Search} 
-                            checked={Boolean(entity.isMinorDocument || entity.minorSwitch)} 
-                            onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v, minorSwitch: v })} 
-                        />
-                    </div>
+            <div className="flex gap-8 items-start relative">
+                {/* Main Editor Form */}
+                <div className="flex-1 min-w-0">
+                    <fieldset disabled={entity.isReadOnly} className="space-y-12">
+                        {/* 1. MANDATORY DOCUMENT SETTINGS (UNIVERSAL) */}
+                        <EditorGroup id="section-doc-settings" title="Document settings" icon={Settings}>
+                            <FormInput label="Name" icon={Scale} value={entity.name} onChange={(v: string) => onUpdate({ ...entity, name: v })} gridSpan={6} />
+                            <SmartSelect 
+                                label="Belongs under" 
+                                icon={FolderTree} 
+                                ids={entity.parentId ? [entity.parentId] : []} 
+                                type={entity.type} 
+                                all={allEntities} 
+                                onChange={(ids) => onUpdate({ ...entity, parentId: ids[0] || null })} 
+                                onCreate={onCreateNew} 
+                                gridSpan={6}
+                                excludeIds={[entity.id]}
+                            />
+                            
+                            <div className={`col-span-12 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl border ${
+                                isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/60 shadow-inner' : 'border-slate-500/10 bg-black/5'
+                            }`}>
+                                <FormToggle 
+                                    label="Clean Codex (Finished)" 
+                                    icon={CheckSquare} 
+                                    checked={Boolean(entity.isFinished || entity.finishedSwitch)} 
+                                    onChange={(v: boolean) => onUpdate({ ...entity, isFinished: v, finishedSwitch: v })} 
+                                />
+                                <FormToggle 
+                                    label="Folder / Category" 
+                                    icon={Box} 
+                                    checked={Boolean(entity.isCategory || entity.categorySwitch)} 
+                                    onChange={(v: boolean) => onUpdate({ ...entity, isCategory: v, categorySwitch: v })} 
+                                />
+                                <FormToggle 
+                                    label="Dead / Fallen / Ruined" 
+                                    icon={Skull} 
+                                    checked={Boolean(entity.isDead || entity.deadSwitch)} 
+                                    onChange={(v: boolean) => onUpdate({ ...entity, isDead: v, deadSwitch: v })} 
+                                />
+                                <FormToggle 
+                                    label="Minor Background Entry" 
+                                    icon={Search} 
+                                    checked={Boolean(entity.isMinorDocument || entity.minorSwitch)} 
+                                    onChange={(v: boolean) => onUpdate({ ...entity, isMinorDocument: v, minorSwitch: v })} 
+                                />
+                            </div>
 
-                    <FormInput 
-                        label="Accent / Sigil color" 
-                        icon={PaintBucket} 
-                        value={entity.documentColor || entity.textColor || ""} 
-                        type="color" 
-                        onChange={(v: string) => onUpdate({ ...entity, documentColor: v, textColor: v })} 
-                        gridSpan={4} 
-                    />
-                    <FormInput 
-                        label="Archetype / Template" 
-                        icon={FileText} 
-                        value={entity.documentTemplate || (entity.docTemplate ? entity.docTemplate[0] : "None")} 
-                        options={['None', 'Protagonist', 'Antagonist', 'Major Ally', 'Major Rival', 'NPC', 'Legendary', 'Deity']} 
-                        onChange={(v: string) => onUpdate({ ...entity, documentTemplate: v, docTemplate: [v] })} 
-                        gridSpan={8} 
-                    />
+                            <FormInput 
+                                label="Accent / Sigil color" 
+                                icon={PaintBucket} 
+                                value={entity.documentColor || entity.textColor || ""} 
+                                type="color" 
+                                onChange={(v: string) => onUpdate({ ...entity, documentColor: v, textColor: v })} 
+                                gridSpan={4} 
+                            />
+                            <FormInput 
+                                label="Archetype / Template" 
+                                icon={FileText} 
+                                value={entity.documentTemplate || (entity.docTemplate ? entity.docTemplate[0] : "None")} 
+                                options={['None', 'Protagonist', 'Antagonist', 'Major Ally', 'Major Rival', 'NPC', 'Legendary', 'Deity']} 
+                                onChange={(v: string) => onUpdate({ ...entity, documentTemplate: v, docTemplate: [v] })} 
+                                gridSpan={8} 
+                            />
 
-                    <FormInput 
-                        label="Tags" 
-                        icon={Tag} 
-                        value={entity.tags?.join(', ') || ""} 
-                        placeholder="Fantasy, Hero, Royal, Arcane..." 
-                        onChange={(v: string) => onUpdate({ ...entity, tags: v.split(',').map(s => s.trim()).filter(Boolean) })} 
-                        gridSpan={6} 
-                    />
-                    <FormInput 
-                        label="Other Names & Epithets" 
-                        icon={UserCircle} 
-                        value={entity.otherNamesAndEpithets || (Array.isArray(entity.otherNames) ? entity.otherNames.join(', ') : "")} 
-                        placeholder="The Golden King, Lord of Cinders..." 
-                        onChange={(v: string) => {
-                            const arr = v.split(',').map(s => s.trim()).filter(Boolean);
-                            onUpdate({ ...entity, otherNamesAndEpithets: v, otherNames: arr });
-                        }} 
-                        gridSpan={6} 
-                    />
-                </EditorGroup>
+                            <FormInput 
+                                label="Tags" 
+                                icon={Tag} 
+                                value={entity.tags?.join(', ') || ""} 
+                                placeholder="Fantasy, Hero, Royal, Arcane..." 
+                                onChange={(v: string) => onUpdate({ ...entity, tags: v.split(',').map(s => s.trim()).filter(Boolean) })} 
+                                gridSpan={6} 
+                            />
+                            <FormInput 
+                                label="Other Names & Epithets" 
+                                icon={UserCircle} 
+                                value={entity.otherNamesAndEpithets || (Array.isArray(entity.otherNames) ? entity.otherNames.join(', ') : "")} 
+                                placeholder="The Golden King, Lord of Cinders..." 
+                                onChange={(v: string) => {
+                                    const arr = v.split(',').map(s => s.trim()).filter(Boolean);
+                                    onUpdate({ ...entity, otherNamesAndEpithets: v, otherNames: arr });
+                                }} 
+                                gridSpan={6} 
+                            />
+                        </EditorGroup>
 
-                {/* 2. PORTRAIT & IMAGERY (UNIVERSAL) */}
-                <EditorGroup title="Portrait & Imagery" icon={ImageIcon}>
-                    <div className="col-span-12 max-w-2xl mx-auto w-full py-2">
-                        <AssetImageUploader
-                            label="Portrait / Illustration"
-                            value={entity.imageUri || ''}
-                            onChange={(uri) => onUpdate({ ...entity, imageUri: uri })}
-                            helperText="Upload a high-resolution portrait from your device or paste a web URL. Stored uncompressed in the local IndexedDB asset vault — preserved inside .nexus archives."
-                        />
-                    </div>
-                </EditorGroup>
+                        {/* 2. PORTRAIT & IMAGERY (UNIVERSAL) */}
+                        <EditorGroup id="section-portrait" title="Portrait & Imagery" icon={ImageIcon}>
+                            <div className="col-span-12 max-w-2xl mx-auto w-full py-2">
+                                <AssetImageUploader
+                                    label="Portrait / Illustration"
+                                    value={entity.imageUri || ''}
+                                    onChange={(uri) => onUpdate({ ...entity, imageUri: uri })}
+                                    helperText="Upload a high-resolution portrait from your device or paste a web URL. Stored uncompressed in the local IndexedDB asset vault — preserved inside .nexus archives."
+                                />
+                            </div>
+                        </EditorGroup>
 
-                {/* 3. DESCRIPTION & HISTORY (UNIVERSAL) */}
-                <EditorGroup title="Description & History" icon={BookOpen}>
-                    <div className="col-span-12 w-full">
-                        <MarkdownEditor
-                            value={entity.description || ''}
-                            onChange={(v) => onUpdate({ ...entity, description: v })}
-                            allEntities={allEntities}
-                            placeholder="The echoes of history begin here... Use **bold**, *italic*, # Heading, and [[Entity Name]] to link."
-                            minHeight="h-80"
-                        />
-                    </div>
-                </EditorGroup>
+                        {/* 3. DESCRIPTION & HISTORY (UNIVERSAL) */}
+                        <EditorGroup id="section-description" title="Description & History" icon={BookOpen}>
+                            <div className="col-span-12 w-full">
+                                <MarkdownEditor
+                                    value={entity.description || ''}
+                                    onChange={(v) => onUpdate({ ...entity, description: v })}
+                                    allEntities={allEntities}
+                                    onNavigate={onNavigate}
+                                    placeholder="The echoes of history begin here... Use **bold**, *italic*, # Heading, and [[Entity Name]] to link."
+                                    minHeight="h-80"
+                                />
+                            </div>
+                        </EditorGroup>
 
-                {isEntityCategory(entity) ? (
-                    <div className="p-8 rounded-3xl border border-dashed border-teal-500/30 bg-teal-500/5 text-center space-y-2">
-                        <FolderTree className="w-10 h-10 text-teal-400 mx-auto opacity-70" />
-                        <h3 className="font-serif font-bold text-lg text-teal-300">Folder / Category Mode Active</h3>
-                        <p className="text-xs opacity-60 max-w-md mx-auto">
-                            This entry acts as an organizational folder for child records. Type-specific stat blocks and mechanical fields are suppressed to maintain a clean container view.
-                        </p>
-                    </div>
-                ) : (
-                    <EntitySpecificsRegistry entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
-                )}
-
-                {/* 4. UNIVERSAL CONNECTIONS */}
-                <EditorGroup title="World & Details" icon={Scroll}>
-                    <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
-                        <SmartSelect label="Lore Notes" icon={BookOpen} ids={entity.loreNoteIds} type="note" all={allEntities} onChange={(ids) => onUpdate({ ...entity, loreNoteIds: ids })} onCreate={onCreateNew} />
-                        <SmartSelect label="Myths & Legends" icon={Scroll} ids={entity.mythIds} type="myth" all={allEntities} onChange={(ids) => onUpdate({ ...entity, mythIds: ids })} onCreate={onCreateNew} />
-                    </div>
-                    
-                    <SmartSelect label="Connected to Events" icon={Calendar} ids={entity.eventIds} type="event" all={allEntities} onChange={(ids) => onUpdate({ ...entity, eventIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    <SmartSelect label="Connected to Skills/Spells/Other" icon={Zap} ids={entity.detailSkillIds} type="ability" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailSkillIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    <SmartSelect label="Connected to Items" icon={Pencil} ids={entity.detailItemIds} type="item" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailItemIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    
-                    <SmartSelect label="Affected by Boons" icon={Sun} ids={entity.detailConditionIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    <SmartSelect label="Affected by Afflictions" icon={Moon} ids={entity.detailConditionIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                    <SmartSelect label="Affected by Other conditions" icon={Sun} ids={entity.detailResourceIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailResourceIds: ids })} onCreate={onCreateNew} gridSpan={4} />
-                </EditorGroup>
-
-                {/* 4.5. CUSTOM ATTRIBUTES (UNIVERSAL) */}
-                <EditorGroup title="Custom Attributes" icon={Hash}>
-                    <CustomAttributesEditor
-                        attributes={entity.customAttributes || {}}
-                        onChange={(attrs) => onUpdate({ ...entity, customAttributes: attrs })}
-                        themeId={themeId}
-                    />
-                </EditorGroup>
-
-                {/* 5. SECRETS (UNIVERSAL) */}
-                <EditorGroup title="Secrets/Spoilers/DM notes" icon={Ghost}>
-                    <div className="col-span-12 space-y-1.5">
-                        <label className={`text-[10px] uppercase tracking-widest block ${
-                            isRoyal ? 'text-[#451a03] font-serif font-bold' : 'text-slate-500 font-black opacity-60'
-                        }`}>
-                            Private Ruminations
-                        </label>
-                        <MarkdownEditor
-                            value={entity.privateNotes || ''}
-                            onChange={(v) => onUpdate({ ...entity, privateNotes: v })}
-                            allEntities={allEntities}
-                            placeholder="Private ruminations only visible in the scroll of creation..."
-                            minHeight="h-48"
-                        />
-                    </div>
-                </EditorGroup>
-
-                {/* 6. INCOMING TIES & BACKLINKS (UNIVERSAL) */}
-                <EditorGroup title={`Incoming Ties & Backlinks (${totalBacklinkCount})`} icon={GitMerge}>
-                    <div className="col-span-12 space-y-4">
-                        {totalBacklinkCount === 0 ? (
-                            <div className="p-5 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] text-center">
-                                <p className="text-xs opacity-50 italic">
-                                    No other codex entries currently reference this record. As you link other characters, locations, events, or factions to "{entity.name}", their incoming connections will automatically be reflected here.
+                        {isEntityCategory(entity) ? (
+                            <div className="p-8 rounded-3xl border border-dashed border-teal-500/30 bg-teal-500/5 text-center space-y-2">
+                                <FolderTree className="w-10 h-10 text-teal-400 mx-auto opacity-70" />
+                                <h3 className="font-serif font-bold text-lg text-teal-300">Folder / Category Mode Active</h3>
+                                <p className="text-xs opacity-60 max-w-md mx-auto">
+                                    This entry acts as an organizational folder for child records. Type-specific stat blocks and mechanical fields are suppressed to maintain a clean container view.
                                 </p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {backlinkSections.map(section => (
-                                    <div 
-                                        key={section.title}
-                                        className={`p-4 rounded-2xl border space-y-3 ${
-                                            isRoyal 
-                                                ? 'bg-[#f7efe0] border-[#c8a96e]/40 text-[#2b1810]' 
-                                                : isWikiMode 
-                                                ? 'bg-amber-50/60 border-amber-200 text-stone-800' 
-                                                : 'bg-black/20 border-white/10 text-slate-200'
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between border-b border-current/10 pb-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-wider opacity-75">
-                                                {section.title}
-                                            </span>
-                                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/10 font-bold">
-                                                {section.items.length}
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
-                                            {section.items.map(item => (
-                                                <button
-                                                    key={item.id}
-                                                    type="button"
-                                                    onClick={() => handleOpenEntity(item.id)}
-                                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium border border-current/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm group"
-                                                    title={`Open ${item.name} (${item.type}) in new tab`}
-                                                >
-                                                    <span className="truncate max-w-[130px]">{item.name}</span>
-                                                    <ExternalLink size={10} className="opacity-40 group-hover:opacity-100 shrink-0" />
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
+                            <div id="section-specifics">
+                                <EntitySpecificsRegistry entity={entity} allEntities={allEntities} onUpdate={onUpdate} onCreateNew={onCreateNew} />
                             </div>
                         )}
+
+                        {/* 4. UNIVERSAL CONNECTIONS */}
+                        <EditorGroup id="section-world" title="World & Details" icon={Scroll}>
+                            <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
+                                <SmartSelect label="Lore Notes" icon={BookOpen} ids={entity.loreNoteIds} type="note" all={allEntities} onChange={(ids) => onUpdate({ ...entity, loreNoteIds: ids })} onCreate={onCreateNew} />
+                                <SmartSelect label="Myths & Legends" icon={Scroll} ids={entity.mythIds} type="myth" all={allEntities} onChange={(ids) => onUpdate({ ...entity, mythIds: ids })} onCreate={onCreateNew} />
+                            </div>
+                            
+                            <SmartSelect label="Connected to Events" icon={Calendar} ids={entity.eventIds} type="event" all={allEntities} onChange={(ids) => onUpdate({ ...entity, eventIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                            <SmartSelect label="Connected to Skills/Spells/Other" icon={Zap} ids={entity.detailSkillIds} type="ability" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailSkillIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                            <SmartSelect label="Connected to Items" icon={Pencil} ids={entity.detailItemIds} type="item" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailItemIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                            
+                            <SmartSelect label="Affected by Boons" icon={Sun} ids={entity.detailConditionIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                            <SmartSelect label="Affected by Afflictions" icon={Moon} ids={entity.detailConditionIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailConditionIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                            <SmartSelect label="Affected by Other conditions" icon={Sun} ids={entity.detailResourceIds} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, detailResourceIds: ids })} onCreate={onCreateNew} gridSpan={4} />
+                        </EditorGroup>
+
+                        {/* 4.5. CUSTOM ATTRIBUTES (UNIVERSAL) */}
+                        <EditorGroup id="section-attributes" title="Custom Attributes" icon={Hash}>
+                            <CustomAttributesEditor
+                                attributes={entity.customAttributes || {}}
+                                onChange={(attrs) => onUpdate({ ...entity, customAttributes: attrs })}
+                                themeId={themeId}
+                            />
+                        </EditorGroup>
+
+                        {/* 5. SECRETS (UNIVERSAL) */}
+                        <EditorGroup id="section-secrets" title="Secrets/Spoilers/DM notes" icon={Ghost}>
+                            <div className="col-span-12 space-y-1.5">
+                                <label className={`text-[10px] uppercase tracking-widest block ${
+                                    isRoyal ? 'text-[#451a03] font-serif font-bold' : 'text-slate-500 font-black opacity-60'
+                                }`}>
+                                    Private Ruminations
+                                </label>
+                                <MarkdownEditor
+                                    value={entity.privateNotes || ''}
+                                    onChange={(v) => onUpdate({ ...entity, privateNotes: v })}
+                                    allEntities={allEntities}
+                                    onNavigate={onNavigate}
+                                    placeholder="Private ruminations only visible in the scroll of creation..."
+                                    minHeight="h-48"
+                                />
+                            </div>
+                        </EditorGroup>
+
+                        {/* 6. INCOMING TIES & BACKLINKS (UNIVERSAL) */}
+                        <EditorGroup id="section-backlinks" title={`Incoming Ties & Backlinks (${totalBacklinkCount})`} icon={GitMerge}>
+                            <div className="col-span-12 space-y-4">
+                                {totalBacklinkCount === 0 ? (
+                                    <div className="p-5 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] text-center">
+                                        <p className="text-xs opacity-50 italic">
+                                            No other codex entries currently reference this record. As you link other characters, locations, events, or factions to "{entity.name}", their incoming connections will automatically be reflected here.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {backlinkSections.map(section => (
+                                            <div 
+                                                key={section.title}
+                                                className={`p-4 rounded-2xl border space-y-3 ${
+                                                    isRoyal 
+                                                        ? 'bg-[#f7efe0] border-[#c8a96e]/40 text-[#2b1810]' 
+                                                        : isWikiMode 
+                                                        ? 'bg-amber-50/60 border-amber-200 text-stone-800' 
+                                                        : 'bg-black/20 border-white/10 text-slate-200'
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between border-b border-current/10 pb-2">
+                                                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-75">
+                                                        {section.title}
+                                                    </span>
+                                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/10 font-bold">
+                                                        {section.items.length}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
+                                                    {section.items.map(item => (
+                                                        <button
+                                                            key={item.id}
+                                                            type="button"
+                                                            onClick={() => handleOpenEntity(item.id)}
+                                                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium border border-current/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm group"
+                                                            title={`Open ${item.name} (${item.type}) in new tab`}
+                                                        >
+                                                            <span className="truncate max-w-[130px]">{item.name}</span>
+                                                            <ExternalLink size={10} className="opacity-40 group-hover:opacity-100 shrink-0" />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </EditorGroup>
+                    </fieldset>
+                </div>
+
+                {/* Quick-Jump Category Navigation Sidepanel (Desktop Sticky) */}
+                <aside className="hidden xl:block w-56 shrink-0 sticky top-6 z-20">
+                    <div className={`p-3.5 rounded-2xl border backdrop-blur-md shadow-xl transition-all ${
+                        isRoyal
+                            ? 'bg-[#f7efe0]/95 border-[#c8a96e]/60 text-[#2b1810]'
+                            : isWikiMode
+                                ? 'bg-[#fdfcf0]/95 border-[#d4c8af] text-[#2d2d2d]'
+                                : 'bg-slate-900/90 border-slate-700/60 text-slate-200'
+                    }`}>
+                        <div className="flex items-center gap-2 px-2 pb-2.5 mb-2 border-b border-current/15">
+                            <Compass size={14} className={isRoyal ? 'text-[#70121e]' : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]'} />
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${
+                                isRoyal ? 'font-serif text-[#3d0a10]' : isWikiMode ? 'text-[#854d0e]' : 'text-[#fef08a]'
+                            }`}>
+                                Quick Categories
+                            </span>
+                        </div>
+                        <nav className="space-y-1">
+                            {navItems.map((item) => {
+                                const isActive = activeSection === item.id;
+                                const IconComponent = item.icon;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={() => scrollToSection(item.id)}
+                                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-[11px] font-medium text-left transition-all ${
+                                            isActive
+                                                ? isRoyal
+                                                    ? 'bg-[#70121e] text-[#fff8e7] font-serif font-bold shadow-sm'
+                                                    : isWikiMode
+                                                        ? 'bg-[#b91c1c] text-white font-bold shadow-sm'
+                                                        : 'bg-[#fef08a] text-black font-bold shadow-sm'
+                                                : isRoyal
+                                                    ? 'hover:bg-[#70121e]/10 hover:text-[#70121e]'
+                                                    : isWikiMode
+                                                        ? 'hover:bg-amber-100/60 hover:text-[#854d0e]'
+                                                        : 'hover:bg-white/10 hover:text-white'
+                                        }`}
+                                    >
+                                        <IconComponent size={13} className="shrink-0 opacity-80" />
+                                        <span className="truncate flex-1">{item.label}</span>
+                                        {isActive && <ChevronRight size={12} className="shrink-0 opacity-80" />}
+                                    </button>
+                                );
+                            })}
+                        </nav>
                     </div>
-                </EditorGroup>
-            </fieldset>
+                </aside>
+            </div>
+
+            {/* Mobile / Tablet Floating Quick Jump Button */}
+            <div className="xl:hidden fixed bottom-6 right-6 z-40">
+                <div className="relative">
+                    <button
+                        type="button"
+                        onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+                        className={`p-3.5 rounded-full shadow-2xl border flex items-center justify-center transition-all active:scale-95 ${
+                            isRoyal
+                                ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e]'
+                                : isWikiMode
+                                    ? 'bg-[#b91c1c] text-white border-amber-300'
+                                    : 'bg-[#fef08a] text-black border-yellow-300'
+                        }`}
+                        title="Jump to Section"
+                    >
+                        <Compass size={20} />
+                    </button>
+
+                    {isMobileNavOpen && (
+                        <div className={`absolute bottom-14 right-0 w-56 p-3 rounded-2xl border backdrop-blur-md shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 z-50 ${
+                            isRoyal
+                                ? 'bg-[#f7efe0] border-[#c8a96e] text-[#2b1810]'
+                                : isWikiMode
+                                    ? 'bg-[#fdfcf0] border-[#d4c8af] text-[#2d2d2d]'
+                                    : 'bg-slate-900 border-slate-700 text-slate-200'
+                        }`}>
+                            <div className="flex items-center justify-between pb-2 mb-2 border-b border-current/15">
+                                <span className="text-[10px] font-black uppercase tracking-widest">Jump to Category</span>
+                                <button type="button" onClick={() => setIsMobileNavOpen(false)} className="p-1 opacity-60 hover:opacity-100">
+                                    <X size={14} />
+                                </button>
+                            </div>
+                            <div className="space-y-1 max-h-80 overflow-y-auto custom-scrollbar">
+                                {navItems.map((item) => {
+                                    const IconComponent = item.icon;
+                                    return (
+                                        <button
+                                            key={item.id}
+                                            type="button"
+                                            onClick={() => {
+                                                scrollToSection(item.id);
+                                                setIsMobileNavOpen(false);
+                                            }}
+                                            className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs text-left hover:bg-black/10 transition-colors"
+                                        >
+                                            <IconComponent size={14} className="shrink-0 opacity-80" />
+                                            <span className="truncate">{item.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

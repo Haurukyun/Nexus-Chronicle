@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { marked, Renderer } from 'marked';
+import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { WorldEntity } from '../../types';
 import { useTheme } from '../../theme';
+import { useWorldStore } from '../../store/useWorldStore';
 
 interface MarkdownRendererProps {
     content: string;
@@ -17,8 +18,13 @@ interface MarkdownRendererProps {
 function buildNameMap(entities: WorldEntity[]): Map<string, string> {
     const map = new Map<string, string>();
     entities.forEach(e => {
-        // Primary name
-        map.set(e.name.toLowerCase(), e.id);
+        if (!e) return;
+        if (e.name) {
+            map.set(e.name.trim().toLowerCase(), e.id);
+        }
+        if (e.id) {
+            map.set(e.id.toLowerCase(), e.id);
+        }
         // Common aliases
         if ((e as any).otherNamesAndEpithets) {
             String((e as any).otherNamesAndEpithets)
@@ -27,22 +33,31 @@ function buildNameMap(entities: WorldEntity[]): Map<string, string> {
                 .filter(Boolean)
                 .forEach((alias: string) => map.set(alias, e.id));
         }
+        if (Array.isArray((e as any).otherNames)) {
+            (e as any).otherNames.forEach((alias: any) => {
+                if (typeof alias === 'string' && alias.trim()) {
+                    map.set(alias.trim().toLowerCase(), e.id);
+                }
+            });
+        }
     });
     return map;
 }
 
 /**
- * Converts [[Entity Name]] wikilinks to anchor tags with a custom data attribute.
- * The renderer replaces them before handing off to marked.
+ * Converts [[Entity Name]] or [[Entity Name|Display Text]] wikilinks to anchor tags.
  */
 function processWikilinks(text: string, nameMap: Map<string, string>): string {
-    return text.replace(/\[\[([^\]]+)\]\]/g, (_match, name: string) => {
-        const id = nameMap.get(name.toLowerCase());
+    return text.replace(/\[\[([^\]]+)\]\]/g, (_match, rawTarget: string) => {
+        const parts = rawTarget.split('|');
+        const target = parts[0].trim();
+        const display = parts.length > 1 ? parts.slice(1).join('|').trim() : target;
+        const id = nameMap.get(target.toLowerCase());
         if (id) {
-            return `<a href="#" data-entity-id="${id}" class="wikilink">${name}</a>`;
+            return `<a href="#" data-entity-id="${id}" class="wikilink" title="Jump to ${target}">${display}</a>`;
         }
         // Unresolved wikilink — show with a dashed underline
-        return `<span class="wikilink wikilink--broken">${name}</span>`;
+        return `<span class="wikilink wikilink--broken" title="Unresolved entity link">${display}</span>`;
     });
 }
 
@@ -78,8 +93,15 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         const link = target.closest<HTMLAnchorElement>('a[data-entity-id]');
         if (link) {
             e.preventDefault();
+            e.stopPropagation();
             const id = link.getAttribute('data-entity-id');
-            if (id && onNavigate) onNavigate(id);
+            if (id) {
+                if (onNavigate) {
+                    onNavigate(id);
+                } else {
+                    useWorldStore.getState().handleOpenEntity(id);
+                }
+            }
         }
     };
 

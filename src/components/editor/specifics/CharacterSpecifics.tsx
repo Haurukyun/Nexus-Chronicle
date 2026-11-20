@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Character, WorldEntity, EntityType } from '../../../types';
 import { FormInput, SmartSelect, FormToggle, FantasyDatePicker } from '../../ui';
 import { EditorGroup } from '../EditorGroup';
+import { TraitListEditor } from '../TraitListEditor';
 import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
 import { Info, Zap, Heart, Swords, Scroll } from 'lucide-react';
@@ -56,7 +57,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
 
     return (
         <>
-            <EditorGroup title="Basic information" icon={Info}>
+            <EditorGroup id="section-basic-info" title="Basic information" icon={Info}>
                 <div className="col-span-12">
                     <label className={labelClass}>Titles</label>
                     <textarea className={`${textareaClass} h-20`} value={entity.titles || ""} onChange={e => onUpdate({ ...entity, titles: e.target.value })} />
@@ -103,24 +104,94 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                 </div>
             </EditorGroup>
 
-            <EditorGroup title="Characteristics & Knowledge" icon={Zap}>
-                <div className="col-span-6">
-                    <label className={labelClass}>Traits & Characteristics</label>
-                    <textarea className={`${textareaClass} h-32`} value={entity.personalityTraits || ''} onChange={e => onUpdate({ ...entity, personalityTraits: e.target.value })} />
-                </div>
-                <div className="col-span-6">
-                    <label className={labelClass}>Unique/Unusual Features</label>
-                    <textarea className={`${textareaClass} h-32`} value={entity.traits || ''} onChange={e => onUpdate({ ...entity, traits: e.target.value })} />
-                </div>
+            <EditorGroup id="section-characteristics" title="Characteristics & Knowledge" icon={Zap}>
+                {/* Traits & Characteristics List with Notes & Suggestions */}
+                <TraitListEditor
+                    label="Traits & Characteristics"
+                    value={entity.personalityTraits || ''}
+                    onChange={v => onUpdate({ ...entity, personalityTraits: v })}
+                    suggestions={['Honest', 'Stubborn', 'Cunning', 'Compassionate', 'Brave', 'Cynical', 'Charming', 'Loyal', 'Impulsive', 'Calculating', 'Pragmatic', 'Zealous', 'Stoic', 'Melancholic', 'Eccentric']}
+                    placeholder="Add trait (e.g. Brave, Cynical)..."
+                    gridSpan={6}
+                />
 
-                <div className={`col-span-12 grid grid-cols-6 gap-6 p-6 rounded-3xl border ${isRoyal ? 'border-[#c8a96e]/40 bg-[#fbf8ef]' : isWiki ? 'border-[#d4c8af]/40 bg-white/60' : 'border-slate-500/10 bg-black/5'}`}>
-                    <h4 className={`col-span-full text-[10px] font-black uppercase border-b pb-2 mb-2 flex items-center gap-2 ${isRoyal ? 'text-[#451a03] border-[#c8a96e]/30 font-serif' : isWiki ? 'text-[#854d0e] border-[#d4c8af]/40' : 'text-slate-500 border-slate-500/10'}`}>Core Attributes</h4>
-                    <FormInput label="STR" value={entity.stats?.strength || ""} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats!, strength: v } })} />
-                    <FormInput label="DEX" value={entity.stats?.dexterity || ""} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats!, dexterity: v } })} />
-                    <FormInput label="CON" value={entity.stats?.constitution || ""} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats!, constitution: v } })} />
-                    <FormInput label="INT" value={entity.stats?.intelligence || ""} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats!, intelligence: v } })} />
-                    <FormInput label="WIS" value={entity.stats?.wisdom || ""} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats!, wisdom: v } })} />
-                    <FormInput label="CHA" value={entity.stats?.charisma || ""} onChange={(v: string) => onUpdate({ ...entity, stats: { ...entity.stats!, charisma: v } })} />
+                {/* Unique / Unusual Features List with Notes & Suggestions */}
+                <TraitListEditor
+                    label="Unique / Unusual Features"
+                    value={entity.traits || ''}
+                    onChange={v => onUpdate({ ...entity, traits: v })}
+                    suggestions={['Heterochromia', 'Scar across eye', 'Mechanical prosthetic', 'Tattooed arcane runes', 'Silver hair', 'Pointed ears', 'Missing finger', 'Faint glowing aura', 'Burn marks', 'Golden irises', 'Intricate brand mark', 'Cybernetic ocular implant']}
+                    placeholder="Add feature (e.g. Scar across eye, Pointed ears)..."
+                    gridSpan={6}
+                />
+
+                {/* Ultra-Compact Core Attributes Block with Full Stat Names in Parentheses */}
+                <div className={`col-span-12 p-3 sm:p-4 rounded-2xl border ${isRoyal ? 'border-[#c8a96e]/40 bg-[#fbf8ef]' : isWiki ? 'border-[#d4c8af]/40 bg-white/60' : 'border-slate-500/10 bg-black/5'}`}>
+                    <div className="flex items-center justify-between border-b pb-1.5 mb-2.5">
+                        <span className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${isRoyal ? 'text-[#451a03] font-serif' : isWiki ? 'text-[#854d0e]' : 'text-slate-400'}`}>
+                            Core Attributes
+                        </span>
+                        <span className="text-[9px] font-mono opacity-50">Standard D20 Ability Array</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                        {[
+                            { key: 'strength', abbr: 'STR', full: 'Strength' },
+                            { key: 'dexterity', abbr: 'DEX', full: 'Dexterity' },
+                            { key: 'constitution', abbr: 'CON', full: 'Constitution' },
+                            { key: 'intelligence', abbr: 'INT', full: 'Intelligence' },
+                            { key: 'wisdom', abbr: 'WIS', full: 'Wisdom' },
+                            { key: 'charisma', abbr: 'CHA', full: 'Charisma' },
+                        ].map(stat => {
+                            const val = (entity.stats as any)?.[stat.key] || '';
+                            const num = parseInt(val, 10);
+                            const mod = !isNaN(num) ? Math.floor((num - 10) / 2) : null;
+                            const modStr = mod !== null ? (mod >= 0 ? `+${mod}` : `${mod}`) : null;
+
+                            return (
+                                <div
+                                    key={stat.key}
+                                    className={`flex flex-col items-center p-2 rounded-xl border text-center transition-all ${
+                                        isRoyal
+                                            ? 'bg-[#f7f0e1] border-[#c8a96e]/50 text-[#2b1810]'
+                                            : isWiki
+                                            ? 'bg-[#fbf8ef] border-[#d4c8af] text-[#1a1a1a]'
+                                            : 'bg-slate-800/60 border-slate-700 text-slate-100'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-1 mb-1">
+                                        <span className="font-mono font-black text-xs">{stat.abbr}</span>
+                                        <span className="text-[9px] opacity-60 font-sans tracking-tight">({stat.full})</span>
+                                    </div>
+
+                                    <input
+                                        type="text"
+                                        value={val}
+                                        placeholder="10"
+                                        onChange={e => onUpdate({
+                                            ...entity,
+                                            stats: { ...(entity.stats || { strength: '10', dexterity: '10', constitution: '10', intelligence: '10', wisdom: '10', charisma: '10' }), [stat.key]: e.target.value }
+                                        })}
+                                        className={`w-full text-center font-mono font-bold text-sm py-1 px-1.5 rounded-lg border outline-none transition-all ${
+                                            isRoyal
+                                                ? 'bg-[#fbf8ef] border-[#c8a96e]/60 focus:border-[#70121e] text-[#2b1810]'
+                                                : isWiki
+                                                ? 'bg-white border-[#d4c8af] focus:border-[#b91c1c] text-black'
+                                                : 'bg-slate-900 border-slate-700 focus:border-amber-400 text-white'
+                                        }`}
+                                    />
+
+                                    {modStr !== null && (
+                                        <span className={`mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+                                            isRoyal ? 'bg-[#70121e]/15 text-[#70121e]' : 'bg-amber-400/20 text-amber-500'
+                                        }`}>
+                                            {modStr}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
 
                 <FormInput label="Equipment" value={entity.possessedItems || ""} onChange={(v: string) => onUpdate({ ...entity, possessedItems: v })} gridSpan={4} />
@@ -139,7 +210,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                 <SmartSelect label="Sciences & Technologies" ids={entity.pairedTech || []} type="science" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedTech: ids })} onCreate={onCreateNew} gridSpan={6} />
             </EditorGroup>
 
-            <EditorGroup title="Relationships" icon={Heart}>
+            <EditorGroup id="section-relationships" title="Relationships" icon={Heart}>
                 <SmartSelect 
                     label="Parents" 
                     ids={effectiveParentIds} 
@@ -228,7 +299,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                 />
             </EditorGroup>
 
-            <EditorGroup title="Groups & Affiliations" icon={Swords}>
+            <EditorGroup id="section-groups" title="Groups & Affiliations" icon={Swords}>
                 <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                     <GroupRoleGroup label="Political groups" roleKey="political" entity={{...entity, groupConnections: { political: { leadingFigureOf: entity.leadingPoliticalLeaders || [], connectedTo: entity.pairedConnectionPolGroup || [], memberOf: entity.pairedBelongingPolGroup || [], allyOf: entity.pairedAllyPolGroup || [], enemyOf: entity.pairedEnemyPolGroup || []} }} as any} allEntities={allEntities}
                         onUpdate={(updatedData: any) => {
@@ -258,7 +329,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                 </div>
             </EditorGroup>
 
-            <EditorGroup title="Cultural Context" icon={Scroll}>
+            <EditorGroup id="section-cultural" title="Cultural Context" icon={Scroll}>
                 <SmartSelect label="Events" ids={entity.pairedEvent || []} type="event" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedEvent: ids })} onCreate={onCreateNew} gridSpan={4} />
                 <SmartSelect label="Cultures" ids={entity.relatedCultures || []} type="culture" all={allEntities} onChange={(ids) => onUpdate({ ...entity, relatedCultures: ids })} onCreate={onCreateNew} gridSpan={4} />
                 <SmartSelect label="Myths" ids={entity.pairedConnectedMyths || []} type="myth" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConnectedMyths: ids })} onCreate={onCreateNew} gridSpan={4} />

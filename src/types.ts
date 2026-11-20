@@ -1016,6 +1016,7 @@ export interface EntityEditorProps {
     onCancel: () => void;
     onUpdate: (data: any) => void;
     onCreateNew: (type: EntityType, search: string, open: boolean) => string | void;
+    onNavigate?: (id: string) => void;
 }
 
 

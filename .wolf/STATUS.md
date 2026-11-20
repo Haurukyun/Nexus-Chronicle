@@ -12,6 +12,30 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Entity Sheet Ergonomics, Wikilinks Engine & Codex Crafting Suite**:
+  1. **Quick-Jump Category Navigation Sidepanel**:
+     - Built a responsive category navigation system in `EntityEditor.tsx` with a desktop sticky side rail (`xl:block`) and a mobile floating navigator (`xl:hidden`).
+     - Added smooth scrolling to all sections: Document Settings, Portrait & Imagery, Description & History, Basic Info, Characteristics & Stats, Relationships, Groups & Affiliations, Cultural Context, World & Details, Custom Attributes, Secrets & Notes, and Backlinks.
+     - Added live scroll spy with `IntersectionObserver` highlighting the active section with theme-specific styling.
+  2. **Relation Note Quick Suggestions in SmartSelect**:
+     - Computed dynamic, contextual note suggestions for relation popups based on field category (e.g. for Parents: "Father", "Mother", "Step-father", "Step-mother", "Adoptive Father", "Guardian"; for Relatives: "Sibling", "Cousin", "Uncle", "Aunt"; for Friends/Enemies/Complicated).
+     - Rendered interactive 1-click chip buttons in the relational note annotation modal.
+  3. **Royal Codex Full-Height Book Contour & Illuminated Footer**:
+     - Resolved the cutoff where leather contours stopped early at "Portrait & Imagery". Updated manuscript container with `relative flex-1 flex flex-col min-h-full` and added permanent illuminated parchment footers (`Finis Chronicorum ❖`) and corner filigrees spanning the entire scroll height.
+  4. **[[Wikilinks]] Navigation Engine Overhaul**:
+     - Overhauled `MarkdownRenderer.tsx` and `MarkdownEditor.tsx` to reliably navigate to linked entities.
+     - Added support for piped alias wikilinks (`[[Target Entity|Custom Display Label]]`).
+     - Indexed both primary names, lowercase IDs, and `otherNames` epithets.
+     - Added fallback to `useWorldStore.getState().handleOpenEntity(id)` when `onNavigate` is not explicitly passed.
+  5. **Default Markdown Mode to Live Preview**:
+     - Set default mode in `MarkdownEditor.tsx` to Live Preview (`'preview'`) across Description & History, Private Ruminations, and Session Codex.
+  6. **Structured Traits & Features Bullet List with Notes & Suggestions**:
+     - Replaced raw textareas for "Traits & Characteristics" and "Unique/Unusual Features" with `TraitListEditor.tsx`.
+     - Features chip bullets with individual custom notes, remove button, quick-pick suggestions ("Honest", "Cynical", "Heterochromia", "Scar across eye"), and backward-compatible JSON/plaintext serialization.
+     - Updated `CharacterSpecificsViewer.tsx` to render structured bullet items with annotations in read mode.
+  7. **Ultra-Compact Core Attributes Block**:
+     - Redesigned the 6 Core Attributes (STR, DEX, CON, INT, WIS, CHA) from a 500px vertical stack into a compact 6-column grid displaying full stat names in parentheses (e.g., `STR (Strength)`, `DEX (Dexterity)`) and calculated D20 modifiers (e.g., `+2`).
+
 - **MarkdownRenderer Multi-Theme Prose & Wikilink Contrast Pass**:
   - Eliminated the binary `isWikiMode ? prose-nexus-wiki : prose-nexus-dark` fallback bug that misidentified Royal Codex as a dark theme, causing yellow `#fef08a` text and washed-out gray on cream parchment.
   - Added `.prose-nexus-royal` (deep crimson `#70121e` wikilinks with >12:1 contrast ratio, dark ink text `#2b1810`, serif headings `#5c2a12`) and `.prose-nexus-voyager` (teal `#2dd4bf` wikilinks, warm parchment text `#f5e9d0`) to `src/index.css`.
