@@ -542,7 +542,6 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
                                         content={scratchpadNote}
                                         allEntities={world.entities}
                                         onNavigate={onNavigate}
-                                        isWikiMode={isWiki}
                                         className="text-xs"
                                     />
                                     {viewMode === 'preview' && (

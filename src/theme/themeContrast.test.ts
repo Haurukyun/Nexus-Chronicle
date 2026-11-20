@@ -53,4 +53,22 @@ describe('Theme Contrast & WCAG Compliance', () => {
         expect(royalCodexTheme.colors.textAccent).not.toContain('#fef08a');
         expect(yellowRatio).toBeLessThan(2.0); // Verifying that yellow would have failed
     });
+
+    it('Prose wikilinks maintain high contrast across all themes', () => {
+        // Royal Codex: #70121e crimson on #fbf8ef parchment
+        const royalRatio = getContrastRatio('#fbf8ef', '#70121e');
+        expect(royalRatio).toBeGreaterThanOrEqual(7);
+
+        // Wiki: #b91c1c red on #fdfcf0 parchment
+        const wikiRatio = getContrastRatio('#fdfcf0', '#b91c1c');
+        expect(wikiRatio).toBeGreaterThanOrEqual(4.5);
+
+        // Sovereign: #fef08a gold on #0f172a dark slate
+        const sovereignRatio = getContrastRatio('#0f172a', '#fef08a');
+        expect(sovereignRatio).toBeGreaterThanOrEqual(7);
+
+        // Grand Voyager: #2dd4bf teal on #0f2a2a dark timber
+        const voyagerRatio = getContrastRatio('#0f2a2a', '#2dd4bf');
+        expect(voyagerRatio).toBeGreaterThanOrEqual(4.5);
+    });
 });

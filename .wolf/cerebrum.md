@@ -25,6 +25,21 @@ budget_tokens: 2000
 - **Commit execution rule (Updated 2026-11-16):** The user explicitly requested the AI to execute `git commit` directly with a detailed description each time, rather than only proposing the name.
 - **No standalone .wolf commits rule (Updated 2026-11-16):** NEVER create a git commit that contains ONLY `.wolf` files (such as `.wolf/STATUS.md`, `.wolf/cerebrum.md`, `.wolf/memory.md`, etc.). Documentation in `.wolf/` must ALWAYS be bundled and committed together with the corresponding application code changes. If only `.wolf` files are modified, do NOT commit.
 
+## Strict Multi-Theme & Prose Contrast Rules (MANDATORY)
+
+- **NEVER use binary theme assumptions (`isWiki ? light : dark`)**:
+  - The application has 4 distinct visual themes with different polarities:
+    1. **`sovereign`**: Dark slate (`#0f172a`), yellow-gold accent (`#fef08a`), white/slate text (`#cbd5e1`).
+    2. **`wiki`**: Light paper (`#fdfcf0`), red accent (`#b91c1c`), dark text (`#2d2d2d`).
+    3. **`royal-codex`**: **LIGHT illuminated parchment** (`#fbf8ef` / `#f7f0e1`), deep crimson accent (`#70121e`), dark ink text (`#2b1810`), gold filigree borders (`#c8a96e`). **NEVER treat Royal Codex as dark mode!** Falling back to dark styles renders unreadable yellow `#fef08a` text and washed-out gray on cream.
+    4. **`grand-voyager`**: Deep dark timber/cove (`#0f2a2a`), sea-foam teal accent (`#2dd4bf`), warm parchment text (`#f5e9d0`).
+  - Any code doing `isWiki ? 'light-style' : 'dark-style'` is a critical bug. Always use `themeId` (`royal-codex`, `grand-voyager`, `sovereign`) and `layoutMode` (`wiki`) with exhaustive branches.
+- **Prose & Wikilink Styling**:
+  - `MarkdownRenderer` uses dedicated CSS classes for each theme: `.prose-nexus-royal`, `.prose-nexus-wiki`, `.prose-nexus-voyager`, and `.prose-nexus-dark`.
+  - In Royal Codex, wikilinks are deep crimson `#70121e` (contrast ratio > 12:1 against `#fbf8ef`), body text is `#2b1810`, and headings are `#5c2a12`.
+  - In Grand Voyager, wikilinks are `#2dd4bf` (contrast > 4.5:1 against `#0f2a2a`).
+  - All prose text, code tags, pre blocks, blockquotes, and wikilinks are tested for WCAG AA/AAA compliance in `themeContrast.test.ts`.
+
 ## Key Learnings
 
 - **Project:** nexus-chronicle

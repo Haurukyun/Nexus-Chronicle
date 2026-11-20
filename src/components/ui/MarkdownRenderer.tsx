@@ -52,8 +52,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     onNavigate,
     className = '',
 }) => {
-    const { layoutMode } = useTheme();
-    const isWikiMode = layoutMode === 'wiki';
+    const { themeId, layoutMode } = useTheme();
+    const isWiki = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
+    const isVoyager = themeId === 'grand-voyager';
+
     const nameMap = useMemo(() => buildNameMap(allEntities), [allEntities]);
 
     const html = useMemo(() => {
@@ -80,8 +83,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         }
     };
 
-    const proseClass = isWikiMode
+    const proseClass = isRoyal
+        ? 'prose-nexus-royal'
+        : isWiki
         ? 'prose-nexus-wiki'
+        : isVoyager
+        ? 'prose-nexus-voyager'
         : 'prose-nexus-dark';
 
     return (

@@ -33,6 +33,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     const { themeId, layoutMode } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
+    const isVoyager = themeId === 'grand-voyager';
     const [mode, setMode] = useState<'edit' | 'preview' | 'split'>('split');
 
     // Wikilink autocomplete state
@@ -45,25 +46,40 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     const mirrorRef = useRef<HTMLDivElement>(null);
 
     const accent = isRoyal 
-        ? 'text-[#451a03] font-serif font-bold' 
+        ? 'text-[#70121e] font-serif font-bold' 
         : isWikiMode 
             ? 'text-[#b91c1c]' 
+            : isVoyager
+            ? 'text-[#2dd4bf]'
             : 'text-[#fef08a]';
     const borderFocus = isRoyal 
         ? 'focus:border-[#70121e]' 
         : isWikiMode 
             ? 'focus:border-[#b91c1c]' 
+            : isVoyager
+            ? 'focus:border-[#2dd4bf]'
             : 'focus:border-[#fef08a]';
     const bg = isRoyal 
         ? 'bg-[#fbf8ef] border-[#c8a96e]/60 text-[#2b1810] font-serif placeholder:text-[#8c6d48]/70 shadow-inner' 
         : isWikiMode 
-            ? 'bg-white border-[#d4c8af]' 
-            : 'bg-slate-800/60 border-slate-700';
+            ? 'bg-white border-[#d4c8af] text-[#2d2d2d]' 
+            : isVoyager
+            ? 'bg-[#0d2929] border-teal-800 text-[#f5e9d0]'
+            : 'bg-slate-800/60 border-slate-700 text-slate-100';
     const toolbarBg = isRoyal 
         ? 'bg-[#ede2cc] border-[#c8a96e]/50' 
         : isWikiMode 
             ? 'bg-[#f0e6d2] border-[#d4c8af]' 
+            : isVoyager
+            ? 'bg-[#133636] border-teal-800'
             : 'bg-slate-900 border-slate-700/60';
+    const previewBg = isRoyal
+        ? 'bg-[#fdfbf7] text-[#2b1810]'
+        : isWikiMode
+        ? 'bg-[#fdfcf0] text-[#2d2d2d]'
+        : isVoyager
+        ? 'bg-[#0f2a2a] text-[#f5e9d0]'
+        : 'bg-slate-900/40 text-slate-100';
 
     // --- Toolbar helpers ---
     const wrapSelection = useCallback((before: string, after: string) => {
@@ -287,9 +303,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
                 {/* Preview pane */}
                 {(mode === 'preview' || mode === 'split') && (
                     <div 
-                        className={`flex-1 ${minHeight} overflow-y-auto px-5 py-4 ${
-                            isRoyal ? 'bg-[#fdfbf7] text-[#2b1810]' : isWikiMode ? 'bg-[#fdfcf0]' : 'bg-slate-900/30'
-                        } ${mode === 'preview' ? 'cursor-text group/preview relative' : ''}`}
+                        className={`flex-1 ${minHeight} overflow-y-auto px-5 py-4 ${previewBg} ${mode === 'preview' ? 'cursor-text group/preview relative' : ''}`}
                         onClick={(e) => {
                             if ((e.target as HTMLElement).closest('a, button')) return;
                             if (mode === 'preview') {

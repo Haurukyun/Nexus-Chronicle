@@ -12,6 +12,12 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **MarkdownRenderer Multi-Theme Prose & Wikilink Contrast Pass**:
+  - Eliminated the binary `isWikiMode ? prose-nexus-wiki : prose-nexus-dark` fallback bug that misidentified Royal Codex as a dark theme, causing yellow `#fef08a` text and washed-out gray on cream parchment.
+  - Added `.prose-nexus-royal` (deep crimson `#70121e` wikilinks with >12:1 contrast ratio, dark ink text `#2b1810`, serif headings `#5c2a12`) and `.prose-nexus-voyager` (teal `#2dd4bf` wikilinks, warm parchment text `#f5e9d0`) to `src/index.css`.
+  - Updated `MarkdownRenderer.tsx` and `MarkdownEditor.tsx` with explicit exhaustive theme branches for all 4 themes.
+  - Added WCAG compliance tests in `src/theme/themeContrast.test.ts` verifying all 4 themes maintain >= 4.5:1 (AA) and >= 7:1 (AAA) contrast ratios.
+
 - **Fixes & Refinements for Session Codex, Character Relations, Nexus Lines, Atlas Cartography & Lineage Export**:
   1. **Session Codex Focus Loss Fixed**:
      - Extracted `SessionFormPanel` from inside `SessionLogView.tsx` into a top-level component, eliminating the keystroke remount bug that dropped input focus on every character.

@@ -80,6 +80,21 @@ body {
 .prose-nexus-wiki code { background: rgba(0,0,0,0.06); color: #7a200d; }
 .prose-nexus-wiki pre { background: rgba(0,0,0,0.04); color: #2d2d2d; }
 
+/* Royal Codex (Illuminated Parchment) theme prose */
+.prose-nexus-royal { color: #2b1810; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; }
+.prose-nexus-royal h1, .prose-nexus-royal h2, .prose-nexus-royal h3,
+.prose-nexus-royal h4, .prose-nexus-royal h5, .prose-nexus-royal h6 { color: #5c2a12; font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; font-weight: 800; }
+.prose-nexus-royal code { background: rgba(200, 169, 110, 0.2); color: #70121e; border: 1px solid rgba(200, 169, 110, 0.4); border-radius: 4px; padding: 0.1em 0.3em; }
+.prose-nexus-royal pre { background: #f4ecdc; color: #2b1810; border: 1px solid #c8a96e; border-radius: 8px; }
+.prose-nexus-royal blockquote { border-left-color: #c8a96e; color: #5c2a12; background: rgba(200, 169, 110, 0.1); border-radius: 0 6px 6px 0; }
+
+/* Grand Voyager theme prose */
+.prose-nexus-voyager { color: #f5e9d0; }
+.prose-nexus-voyager h1, .prose-nexus-voyager h2, .prose-nexus-voyager h3 { color: #fef08a; }
+.prose-nexus-voyager code { background: rgba(45, 212, 191, 0.12); color: #2dd4bf; border-radius: 4px; padding: 0.1em 0.3em; }
+.prose-nexus-voyager pre { background: rgba(13, 41, 41, 0.8); color: #f5e9d0; border: 1px solid rgba(45, 212, 191, 0.3); border-radius: 8px; }
+.prose-nexus-voyager blockquote { border-left-color: #2dd4bf; color: #ccfbf1; }
+
 /* Wikilinks */
 a.wikilink {
   font-weight: 600;
@@ -88,14 +103,19 @@ a.wikilink {
   text-underline-offset: 2px;
   transition: opacity 0.15s;
 }
-.prose-nexus-dark a.wikilink  { color: #fef08a; }
-.prose-nexus-wiki  a.wikilink { color: #b91c1c; }
+.prose-nexus-dark a.wikilink    { color: #fef08a; }
+.prose-nexus-wiki a.wikilink    { color: #b91c1c; }
+.prose-nexus-royal a.wikilink   { color: #70121e; font-weight: 700; }
+.prose-nexus-voyager a.wikilink { color: #2dd4bf; }
+
 a.wikilink:hover { opacity: 0.75; }
 
 span.wikilink--broken {
   text-decoration: underline dashed;
-  opacity: 0.5;
+  opacity: 0.6;
 }
+.prose-nexus-royal span.wikilink--broken { color: #8c6d48; opacity: 0.85; }
+.prose-nexus-voyager span.wikilink--broken { color: #94a3b8; opacity: 0.75; }
 
 @keyframes spinSlow {
   from { transform: rotate(0deg); }
