@@ -73,8 +73,8 @@ const RelationRow: React.FC<RelationRowProps> = ({ rel, factionA, factionB, isRo
     const bg = tensionBg(rel.tension);
 
     return (
-        <div className={`rounded-2xl border transition-all overflow-hidden ${
-            isRoyal ? 'border-[#c8a96e]/40 bg-[#f7f0e1]' : isWiki ? 'border-[#d4c8af] bg-white' : 'border-slate-700/50 bg-slate-800/50'
+        <div className={`rounded-2xl transition-all overflow-hidden ${
+            isRoyal ? 'border-2 border-[#c8a96e]/70 bg-[#fffcf5] text-[#2b1810] shadow-md' : isWiki ? 'border-2 border-[#d4c8af] bg-white text-[#2d2d2d] shadow-sm' : 'border border-slate-700/50 bg-slate-800/50 text-white'
         }`}>
             {/* Row Summary */}
             <div
@@ -155,18 +155,6 @@ const RelationRow: React.FC<RelationRowProps> = ({ rel, factionA, factionB, isRo
                             />
                             <span className="text-[10px] opacity-50 w-16 text-right">🤝 Allies</span>
                         </div>
-                        {/* Visual bar */}
-                        <div className="mt-2 h-1.5 rounded-full bg-current/10 relative overflow-hidden">
-                            <div
-                                className="absolute top-0 h-full rounded-full transition-all"
-                                style={{
-                                    backgroundColor: color,
-                                    left: rel.tension >= 0 ? '50%' : `${50 + rel.tension / 2}%`,
-                                    width: `${Math.abs(rel.tension) / 2}%`
-                                }}
-                            />
-                            <div className="absolute top-0 left-1/2 w-px h-full bg-current/30" />
-                        </div>
                     </div>
 
                     {/* Notes */}
@@ -226,14 +214,14 @@ export const FactionMatrixView: React.FC<Props> = ({ world, onNavigate }) => {
 
     const headerText = isRoyal ? 'text-[#2b1810] font-serif' : isWiki ? 'text-[#2d2d2d]' : 'text-white';
     const subText = isRoyal ? 'text-[#5c2a12]' : isWiki ? 'text-[#854d0e]' : 'text-slate-400';
-    const cardBg = isRoyal ? 'bg-[#f7f0e1] border-[#c8a96e]/40' : isWiki ? 'bg-white border-[#d4c8af]' : 'bg-slate-800/40 border-slate-700/40';
+    const cardBg = isRoyal ? 'bg-[#fffdfa] border-2 border-[#c8a96e]/60 shadow-md' : isWiki ? 'bg-white border-2 border-[#d4c8af] shadow-sm' : 'bg-slate-800/60 border-slate-700/60 shadow-md';
     const inputCls = isRoyal
-        ? 'border-[#c8a96e]/50 bg-[#fbf8ef] text-[#2b1810] placeholder-[#2b1810]/30 focus:border-[#70121e]'
+        ? 'border-2 border-[#c8a96e]/70 bg-[#fffcf5] text-[#2b1810] placeholder-[#2b1810]/40 focus:border-[#70121e] shadow-inner font-medium'
         : isWiki
-            ? 'border-[#d4c8af] bg-white text-[#2d2d2d] placeholder-[#2d2d2d]/30 focus:border-[#b91c1c]'
+            ? 'border-2 border-[#d4c8af] bg-white text-[#2d2d2d] placeholder-[#2d2d2d]/40 focus:border-[#b91c1c]'
             : 'border-slate-600 bg-slate-900/80 text-white placeholder-white/30 focus:border-blue-500';
     const accentBtn = isRoyal
-        ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] hover:bg-[#881337]'
+        ? 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] hover:bg-[#881337] shadow-sm'
         : isWiki
             ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
             : 'bg-blue-600 text-white hover:bg-blue-700';
@@ -292,7 +280,7 @@ export const FactionMatrixView: React.FC<Props> = ({ world, onNavigate }) => {
                     type="button"
                     onClick={handleAddRelation}
                     disabled={!newA || !newB || newA === newB}
-                    className={`px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider disabled:opacity-30 transition-all active:scale-95 ${accentBtn}`}
+                    className={`px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider transition-all active:scale-95 disabled:cursor-not-allowed disabled:bg-[#3a2215]/10 disabled:text-[#2b1810]/30 disabled:border-[#c8a96e]/30 disabled:shadow-none ${accentBtn}`}
                 >
                     <Plus size={14} />
                 </button>

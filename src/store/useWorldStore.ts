@@ -42,8 +42,8 @@ interface WorldStore {
     openTabIds: string[];
     setOpenTabIds: (update: string[] | ((prev: string[]) => string[])) => void;
 
-    activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey' | 'session-logs' | 'plot-threads' | 'faction-matrix';
-    setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey' | 'session-logs' | 'plot-threads' | 'faction-matrix') => void;
+    activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey' | 'session-logs' | 'plot-threads' | 'faction-matrix' | 'gazette';
+    setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey' | 'session-logs' | 'plot-threads' | 'faction-matrix' | 'gazette') => void;
     focusMapLocationId: string | null;
     focusMapLocation: (id: string) => void;
     clearFocusMapLocation: () => void;

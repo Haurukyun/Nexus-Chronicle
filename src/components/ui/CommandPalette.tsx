@@ -4,7 +4,7 @@ import {
     Search, Plus, Globe, Trash2, Settings,
     BarChart3, History, GitMerge, Footprints, Keyboard,
     BookMarked, CornerDownLeft, Sparkles, FileText, ArrowRight,
-    User, MapPin, Calendar, Shield, Feather, Sparkle, BookOpen, Lightbulb, Swords
+    User, MapPin, Calendar, Shield, Feather, Sparkle, BookOpen, Lightbulb, Swords, Newspaper
 } from 'lucide-react';
 import { WorldData, EntityType, WorldEntity } from '../../types';
 import { useTheme } from '../../theme';
@@ -81,6 +81,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         { id: 'session-logs', label: 'Session Codex & Campaign Chronicles', aliases: ['sessions', 'logs', 'campaign', 'journal', 'recap'], sublabel: 'System Realm · Alt+8', icon: BookOpen },
         { id: 'plot-threads', label: 'The Conspiracy Board (Plot Threads & Clues)', aliases: ['threads', 'plots', 'clues', 'mysteries', 'quests', 'investigation'], sublabel: 'System Realm · Alt+9', icon: Lightbulb },
         { id: 'faction-matrix', label: 'Balance of Power (Faction Tension Matrix)', aliases: ['factions', 'alliances', 'tension', 'war', 'matrix', 'influence', 'radar'], sublabel: 'System Realm · Alt+0', icon: Swords },
+        { id: 'gazette', label: 'The Chronicle Gazette (World Broadsheet & Dispatches)', aliases: ['gazette', 'newspaper', 'chronicle', 'reports', 'dispatches', 'news', 'headlines', 'broadsheet'], sublabel: 'System Realm · Alt+G', icon: Newspaper },
     ], []);
 
     // Quick creation targets

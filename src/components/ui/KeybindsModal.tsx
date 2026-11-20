@@ -134,6 +134,11 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
                     keys: ['Alt', '0'],
                     action: 'Balance of Power',
                     description: 'Inspect faction relationships and tension heat map'
+                },
+                {
+                    keys: ['Alt', 'G'],
+                    action: 'The Chronicle Gazette',
+                    description: 'Inspect living world reports, dispatches, and dynastic broadsheets'
                 }
             ]
         },

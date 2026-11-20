@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import {
     Search, Plus, Globe, Trash2, Settings,
     BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints, Keyboard,
-    Undo2, Redo2, BookOpen, Lightbulb, Swords
+    Undo2, Redo2, BookOpen, Lightbulb, Swords, Newspaper
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
 import { useTheme } from './theme';
@@ -17,6 +17,7 @@ import { JourneyView } from './views/JourneyView';
 import { SessionLogView } from './views/SessionLogView';
 import { PlotThreadsView } from './views/PlotThreadsView';
 import { FactionMatrixView } from './views/FactionMatrixView';
+import { GazetteView } from './views/GazetteView';
 import { EntityViewer } from './components/viewer/EntityViewer';
 import { EntityEditor } from './components/editor/EntityEditor';
 import { Sidebar } from './components/layout/Sidebar';
@@ -57,7 +58,7 @@ const App = () => {
     const canRedo = Boolean(historyFuture && historyFuture.length > 0);
 
     useEffect(() => {
-        const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs', 'plot-threads', 'faction-matrix'];
+        const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs', 'plot-threads', 'faction-matrix', 'gazette'];
         if (!systemTabs.includes(activeTabId)) {
             const exists = world.entities.some(e => e.id === activeTabId);
             if (!exists) {
@@ -136,7 +137,7 @@ const App = () => {
 
             // Toggle Edit mode (Ctrl+E or Cmd+E)
             if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')) {
-                const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs', 'plot-threads', 'faction-matrix'];
+                const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs', 'plot-threads', 'faction-matrix', 'gazette'];
                 if (!systemTabs.includes(activeTabId)) {
                     e.preventDefault();
                     handleToggleEdit(activeTabId as string);
@@ -175,7 +176,7 @@ const App = () => {
                 return;
             }
 
-            // Alt+1 to Alt+7: quick navigate realms
+            // Alt navigation: quick navigate realms
             if (e.altKey && !e.ctrlKey && !e.shiftKey) {
                 const navKeys: Record<string, any> = {
                     '1': 'dashboard',
@@ -187,7 +188,9 @@ const App = () => {
                     '7': 'options',
                     '8': 'session-logs',
                     '9': 'plot-threads',
-                    '0': 'faction-matrix'
+                    '0': 'faction-matrix',
+                    'g': 'gazette',
+                    'G': 'gazette'
                 };
                 if (navKeys[e.key]) {
                     e.preventDefault();
@@ -253,6 +256,7 @@ const App = () => {
                             {/* Realm Navigation Ribbon */}
                             <nav className="flex items-center gap-1.5 overflow-x-auto py-0.5 custom-scrollbar-hidden flex-1 min-w-0">
                                 {[
+                                    { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G' },
                                     { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5' },
                                     { id: 'timeline', label: 'Chronos', icon: History, shortcut: 'Alt+2' },
                                     { id: 'session-logs', label: 'Sessions', icon: BookOpen, shortcut: 'Alt+8' },
@@ -273,14 +277,14 @@ const App = () => {
                                             className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tracking-tight transition-all active:scale-95 shrink-0 ${
                                                 isActive
                                                     ? isRoyal
-                                                        ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-md font-serif'
+                                                        ? 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] shadow-lg shadow-black/40 font-serif font-black'
                                                         : isWiki
                                                             ? 'bg-[#b91c1c] text-white shadow-md'
                                                             : isGrandVoyager
                                                                 ? 'bg-[#2dd4bf] text-slate-950 shadow-md font-bold'
                                                                 : 'bg-[#fef08a] text-slate-950 shadow-md font-bold'
                                                     : isRoyal
-                                                        ? 'text-[#2b1810]/75 hover:text-[#70121e] hover:bg-[#70121e]/10 font-serif'
+                                                        ? 'text-[#ebd9bd] bg-[#3a2215]/80 border border-[#c8a96e]/30 hover:text-[#fff8e7] hover:bg-[#523321] hover:border-[#c8a96e]/60 font-serif'
                                                         : isWiki
                                                             ? 'text-stone-700 hover:text-stone-950 hover:bg-stone-200/50'
                                                             : isGrandVoyager
@@ -482,6 +486,7 @@ const App = () => {
                     {activeTabId === 'session-logs' && <SessionLogView world={world} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'plot-threads' && <PlotThreadsView world={world} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'faction-matrix' && <FactionMatrixView world={world} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'gazette' && <GazetteView world={world} onNavigate={handleOpenEntity} />}
 
                     {activeEntity && (
                         isManuscript ? (

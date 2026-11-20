@@ -12,6 +12,26 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Royal Codex Theme Contrast Pass, Faction Matrix Fixes & The Chronicle Gazette**:
+  1. **Theme Contrast Fix in Two-Tier Ribbon (Royal Codex & Voyager)**:
+     - Fixed invisibility of inactive realm buttons in `App.tsx` where `text-[#2b1810]` rendered dark brown on `#2a170d` dark mahogany header leather.
+     - Switched Royal Codex inactive buttons to warm gilded ivory (`text-[#ebd9bd] bg-[#3a2215]/80 border border-[#c8a96e]/30 hover:text-[#fff8e7] hover:bg-[#523321]`).
+     - Enhanced active button styling with `bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] shadow-lg shadow-black/40 font-serif font-black`.
+     - Updated `.wolf/cerebrum.md` with explicit rule regarding header vs body background inversion traps.
+  2. **Faction Matrix View Cleanup & Polish**:
+     - Removed redundant duplicated green slider bar beneath the tension score input.
+     - Upgraded relation cards, inputs, and selects to crisp high-contrast parchment containers (`border-2 border-[#c8a96e]/70 bg-[#fffcf5] text-[#2b1810] shadow-md`).
+     - Styled disabled state for the add button (`disabled:bg-[#3a2215]/10 disabled:text-[#2b1810]/30 disabled:border-[#c8a96e]/30`) preventing washed-out pink blobs.
+  3. **The Chronicle Gazette (Living World Newspaper & Procedural Dispatches)**:
+     - Built `GazetteView.tsx`: 100% offline, deterministic broadsheet generator synthesizing living lore from pure client-side state (0 AI, 0 external APIs).
+     - Procedural dispatches:
+       - *Diplomatic & Faction Accords*: Sworn alliances, treaties, hostile borders, and total war with graceful world name handling (`in the world of ${world.name}` or stops cleanly at `are allied.` if unnamed).
+       - *Dynastic & Bloodline Chronicles*: Dynastic heirs (2+ children), succession branches, and court rivalries/blood feuds.
+       - *Historical Eras & Convergences*: Multi-year saga chronicles, omitting boring single-point birth records.
+       - *The Mystery Desk*: Clue investigations, unsolved mysteries, and resolved plot threads.
+     - Interactive broadsheet UI with masthead, dateline strip, category filters, real-time search, and 1-click entity chip navigation to dossiers.
+     - Registered `Alt+G` keyboard shortcut, Tier 1 realm ribbon navigation button, and `CommandPalette.tsx` integration.
+
 - **UI Shell Debloat & Two-Tier Header Redesign**:
   1. **Sidebar Pure Codex Focus**:
      - Removed the vertical stack of 10 system buttons from the bottom of `Sidebar.tsx`, recovering ~350px of vertical space.

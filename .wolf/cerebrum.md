@@ -32,6 +32,19 @@ budget_tokens: 2000
 
 ## Strict Multi-Theme & Prose Contrast Rules (MANDATORY)
 
+- **Header vs. Body Background Inversion Trap (CRITICAL — ROYAL CODEX & VOYAGER):**
+  - In **`royal-codex`**, the **Top Header Bar** (`t.layout.headerBg`) and **Sidebar** (`t.layout.sidebarBg`) are **DARK mahogany / leather** (`#2a170d` and `#181410`), while the **Content area / Book page** (`pageBg`) is **LIGHT cream parchment** (`#fbf8ef` / `#f7f0e1`).
+  - **NEVER use dark body text classes (e.g. `text-[#2b1810]`, `text-[#451a03]`, `text-slate-700`) inside the Header, Top Ribbon, or Sidebar in Royal Codex!** Doing so creates invisible dark-on-dark text with < 1.2:1 contrast.
+  - In Royal Codex Header & Top Ribbon:
+    - Inactive buttons/text MUST be **warm gilded ivory** (`text-[#ebd9bd]` or `text-[#c8a96e]` on `bg-[#3a2215]/80` with `border-[#c8a96e]/30`, hovering to `text-[#fff8e7]` and `bg-[#523321]`).
+    - Active buttons MUST be **deep illuminated crimson** (`bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] shadow-lg font-serif font-black`).
+  - In Grand Voyager Header: inactive text must be warm parchment `text-[#f5e9d0]` with teal hover `hover:text-[#2dd4bf]`, never dark text.
+- **Card & Form Controls Contrast on Cream Parchment:**
+  - In views like `FactionMatrixView` and `PlotThreadsView`, cards on cream parchment must have crisp, solid borders (`border-2 border-[#c8a96e]`, `bg-[#fffcf5]` or `bg-[#fcf8ee]`).
+  - Never use faint 1px borders (`border-[#c8a96e]/20`) or faint backgrounds that wash out into the page.
+  - Never allow disabled buttons to become muddy washed-out blobs with `disabled:opacity-30`. Provide explicit crisp disabled styles (`disabled:bg-black/5 disabled:text-current/30 disabled:border-current/20 disabled:shadow-none`).
+  - Sliders must have a single clean native track and thumb; never stack a redundant second progress bar directly underneath.
+
 - **NEVER use binary theme assumptions (`isWiki ? light : dark`)**:
   - The application has 4 distinct visual themes with different polarities:
     1. **`sovereign`**: Dark slate (`#0f172a`), yellow-gold accent (`#fef08a`), white/slate text (`#cbd5e1`).
