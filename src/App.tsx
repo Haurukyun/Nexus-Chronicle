@@ -208,6 +208,39 @@ const App = () => {
     const bgClass = t.layout.appBg;
     const textColor = t.colors.textBody;
 
+    // Unified Header Bar Styling
+    const headerTrayCls = isRoyal
+        ? 'bg-black/35 border border-[#c8a96e]/25 shadow-inner backdrop-blur-md'
+        : isWiki
+            ? 'bg-stone-200/60 border border-[#d4c8af] shadow-inner'
+            : isGrandVoyager
+                ? 'bg-black/40 border border-[#2dd4bf]/25 shadow-inner backdrop-blur-md'
+                : 'bg-slate-900/60 border border-slate-700/60 shadow-inner backdrop-blur-md';
+
+    const ribbonInactiveCls = isRoyal
+        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08]'
+        : isWiki
+            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/80'
+            : isGrandVoyager
+                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.08]';
+
+    const ribbonActiveCls = isRoyal
+        ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e]/70 shadow-md shadow-black/40 font-serif font-semibold'
+        : isWiki
+            ? 'bg-[#b91c1c] text-white shadow-sm font-semibold'
+            : isGrandVoyager
+                ? 'bg-[#2dd4bf] text-slate-950 shadow-md font-bold'
+                : 'bg-[#fef08a] text-slate-950 shadow-md font-bold';
+
+    const actionToolBtnCls = isRoyal
+        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08]'
+        : isWiki
+            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/80'
+            : isGrandVoyager
+                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.08]';
+
     const auraStyles = useMemo(() => {
         const phase = world.worldPhase || 'golden';
         const config: any = {
@@ -249,12 +282,12 @@ const App = () => {
                     {/* Grand Voyager tropical scene background */}
                     {isGrandVoyager && <TropicalSceneBackground />}
                     
-                    {/* Top Two-Tier Header Bar */}
+                    {/* Top Header Bar */}
                     <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} backdrop-blur-md shadow-sm`} data-interactive-ui="true">
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
-                        <div className="flex items-center justify-between px-3 py-2 gap-3 border-b border-current/10">
+                        <div className="flex items-center justify-between px-3 py-2 gap-3">
                             {/* Realm Navigation Ribbon */}
-                            <nav className="flex items-center gap-1.5 overflow-x-auto py-0.5 custom-scrollbar-hidden flex-1 min-w-0">
+                            <nav className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} max-w-full overflow-x-auto custom-scrollbar-hidden min-w-0`}>
                                 {[
                                     { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G' },
                                     { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5' },
@@ -274,65 +307,32 @@ const App = () => {
                                             type="button"
                                             onClick={() => setActiveTabId(item.id)}
                                             title={`${item.label} (${item.shortcut})`}
-                                            className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tracking-tight transition-all active:scale-95 shrink-0 ${
-                                                isActive
-                                                    ? isRoyal
-                                                        ? 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] shadow-lg shadow-black/40 font-serif font-black'
-                                                        : isWiki
-                                                            ? 'bg-[#b91c1c] text-white shadow-md'
-                                                            : isGrandVoyager
-                                                                ? 'bg-[#2dd4bf] text-slate-950 shadow-md font-bold'
-                                                                : 'bg-[#fef08a] text-slate-950 shadow-md font-bold'
-                                                    : isRoyal
-                                                        ? 'text-[#ebd9bd] bg-[#3a2215]/80 border border-[#c8a96e]/30 hover:text-[#fff8e7] hover:bg-[#523321] hover:border-[#c8a96e]/60 font-serif'
-                                                        : isWiki
-                                                            ? 'text-stone-700 hover:text-stone-950 hover:bg-stone-200/50'
-                                                            : isGrandVoyager
-                                                                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
-                                                                : 'text-slate-300 hover:text-white hover:bg-white/10'
+                                            className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs tracking-tight transition-all active:scale-95 shrink-0 ${
+                                                isActive ? ribbonActiveCls : ribbonInactiveCls
                                             }`}
                                         >
-                                            <IconComponent size={13} className="shrink-0 opacity-80 group-hover:opacity-100 transition-opacity" />
+                                            <IconComponent size={13} className={`shrink-0 transition-opacity ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`} />
                                             <span>{item.label}</span>
                                         </button>
                                     );
                                 })}
                             </nav>
 
-                            {/* Header Action Tools — Glassmorphic Toolbar */}
-                            <div className="flex items-center gap-0.5 p-1 rounded-full border shrink-0 backdrop-blur-2xl transition-all shadow-xl"
-                                style={{
-                                    backgroundColor: theme === 'royal-codex' ? 'rgba(251, 248, 239, 0.88)'
-                                                   : theme === 'wiki' ? 'rgba(255, 255, 255, 0.92)'
-                                                   : theme === 'grand-voyager' ? 'rgba(18, 10, 5, 0.82)'
-                                                   : 'rgba(10, 15, 26, 0.75)',
-                                    borderColor: theme === 'royal-codex' ? 'rgba(200, 169, 110, 0.5)'
-                                               : theme === 'wiki' ? 'rgba(212, 200, 175, 0.85)'
-                                               : theme === 'grand-voyager' ? 'rgba(45, 212, 191, 0.3)'
-                                               : 'rgba(255, 255, 255, 0.12)',
-                                    boxShadow: theme === 'royal-codex' ? '0 4px 20px rgba(112, 18, 30, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-                                             : theme === 'wiki' ? '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-                                             : theme === 'grand-voyager' ? '0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(45, 212, 191, 0.15)'
-                                             : '0 8px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
-                                }}
-                            >
+                            {/* Header Action Tools — Matching Unified Glassmorphic Tray */}
+                            <div className={`inline-flex items-center gap-0.5 p-1 rounded-xl ${headerTrayCls} shrink-0`}>
                                 {/* Jump / Command Palette */}
                                 <button
                                     onClick={() => setShowCommandPalette(true)}
                                     title="Command Palette & Fast Search (Ctrl+K)"
-                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
-                                        theme === 'royal-codex'
-                                            ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
-                                            : theme === 'wiki'
-                                            ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
-                                            : theme === 'grand-voyager'
-                                            ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
-                                            : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
-                                    }`}
+                                    className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
                                 >
                                     <Search size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                     <span className="hidden md:inline font-medium">Jump</span>
-                                    <kbd className="hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.08] text-slate-400 border border-white/[0.06]">Ctrl+K</kbd>
+                                    <kbd className={`hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded border ${
+                                        isRoyal ? 'bg-black/40 text-[#c8a96e] border-[#c8a96e]/30'
+                                        : isWiki ? 'bg-white/80 text-stone-600 border-stone-300'
+                                        : 'bg-white/[0.08] text-slate-400 border-white/[0.06]'
+                                    }`}>Ctrl+K</kbd>
                                 </button>
 
                                 {/* Undo Button */}
@@ -340,15 +340,7 @@ const App = () => {
                                     onClick={undo}
                                     disabled={!canUndo}
                                     title="Undo changes (Ctrl+Z)"
-                                    className={`group flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${
-                                        theme === 'royal-codex'
-                                            ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
-                                            : theme === 'wiki'
-                                            ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
-                                            : theme === 'grand-voyager'
-                                            ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
-                                            : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
-                                    }`}
+                                    className={`group flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
                                 >
                                     <Undo2 size={13} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
                                     <span className="hidden xl:inline font-medium">Undo</span>
@@ -359,15 +351,7 @@ const App = () => {
                                     onClick={redo}
                                     disabled={!canRedo}
                                     title="Redo changes (Ctrl+Y or Ctrl+Shift+Z)"
-                                    className={`group flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${
-                                        theme === 'royal-codex'
-                                            ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
-                                            : theme === 'wiki'
-                                            ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
-                                            : theme === 'grand-voyager'
-                                            ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
-                                            : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
-                                    }`}
+                                    className={`group flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
                                 >
                                     <Redo2 size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
                                     <span className="hidden xl:inline font-medium">Redo</span>
@@ -377,15 +361,7 @@ const App = () => {
                                 <button
                                     onClick={() => setShowScratchpad(true)}
                                     title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
-                                        theme === 'royal-codex'
-                                            ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
-                                            : theme === 'wiki'
-                                            ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
-                                            : theme === 'grand-voyager'
-                                            ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
-                                            : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
-                                    }`}
+                                    className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
                                 >
                                     <BookMarked size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                     <span className="hidden sm:inline font-medium">Scratchpad</span>
@@ -395,15 +371,7 @@ const App = () => {
                                 <button
                                     onClick={() => setShowKeybindsModal(true)}
                                     title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
-                                        theme === 'royal-codex'
-                                            ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
-                                            : theme === 'wiki'
-                                            ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
-                                            : theme === 'grand-voyager'
-                                            ? 'text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
-                                            : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
-                                    }`}
+                                    className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
                                 >
                                     <Keyboard size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                     <span className="hidden sm:inline font-medium">Keybinds</span>
@@ -411,26 +379,21 @@ const App = () => {
 
                                 {/* Sleek divider */}
                                 <div className={`w-px h-3.5 mx-0.5 ${
-                                    theme === 'royal-codex' ? 'bg-[#70121e]/20'
-                                    : theme === 'wiki' ? 'bg-black/10'
-                                    : theme === 'grand-voyager' ? 'bg-[#2dd4bf]/25'
+                                    isRoyal ? 'bg-[#c8a96e]/25'
+                                    : isWiki ? 'bg-stone-300'
+                                    : isGrandVoyager ? 'bg-[#2dd4bf]/25'
                                     : 'bg-white/10'
                                 }`} />
 
-                                <ThemeSwitcher theme={theme} setTheme={setTheme} />
+                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`} />
                             </div>
                         </div>
 
-                        {/* Tier 2: Entity Document Tabs Bar */}
-                        <div className="flex items-center justify-between px-3 py-1.5 min-h-[38px] gap-2">
-                            <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0">
-                                {openTabIds.length === 0 ? (
-                                    <span className="text-[11px] opacity-40 italic flex items-center gap-1.5 px-2 py-0.5 select-none">
-                                        <Eye size={12} className="opacity-60" />
-                                        Select any entry from the Codex tree or press Ctrl+K to open a dossier
-                                    </span>
-                                ) : (
-                                    openTabIds.map(id => {
+                        {/* Tier 2: Entity Document Tabs Bar (Rendered only when open dossier tabs exist) */}
+                        {openTabIds.length > 0 && (
+                            <div className="flex items-center justify-between px-3 py-1.5 border-t border-current/10 min-h-[36px] gap-2">
+                                <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0 custom-scrollbar-hidden">
+                                    {openTabIds.map(id => {
                                         const e = world.entities.find(ent => ent.id === id);
                                         if (!e) return null;
                                         const isEditing = editingTabIds.includes(id);
@@ -460,18 +423,16 @@ const App = () => {
                                                 </button>
                                             </div>
                                         );
-                                    })
-                                )}
-                            </div>
+                                    })}
+                                </div>
 
-                            {openTabIds.length > 0 && (
                                 <div className="flex items-center gap-2 shrink-0">
                                     <span className="text-[9px] font-mono opacity-40 font-bold uppercase tracking-widest hidden sm:inline">
                                         {openTabIds.length} {openTabIds.length === 1 ? 'dossier' : 'dossiers'}
                                     </span>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </header>
 
                 {/* Body Content */}

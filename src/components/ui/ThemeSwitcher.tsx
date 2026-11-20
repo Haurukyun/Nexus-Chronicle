@@ -6,6 +6,7 @@ interface ThemeSwitcherProps {
     theme: ThemeMode;
     setTheme: (theme: ThemeMode) => void;
     compact?: boolean;
+    buttonClassName?: string;
 }
 
 const THEME_OPTIONS: { id: ThemeMode; label: string; sub: string; icon: React.FC<{ size?: number; className?: string }>; badgeColor: string }[] = [
@@ -39,7 +40,7 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; sub: string; icon: React.FC
     }
 ];
 
-export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, compact = false }) => {
+export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, compact = false, buttonClassName }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -61,9 +62,9 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
+                className={buttonClassName || `group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${
                     theme === 'royal-codex'
-                        ? 'text-[#70121e] hover:bg-[#70121e]/10 font-serif'
+                        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08] font-serif'
                         : theme === 'wiki'
                         ? 'text-slate-700 hover:text-slate-950 hover:bg-black/[0.05]'
                         : theme === 'grand-voyager'
