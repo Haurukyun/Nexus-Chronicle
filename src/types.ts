@@ -18,6 +18,13 @@ export interface MapConnection {
   label?: string;
 }
 
+export interface MapOverlayLayer {
+  id: 'political' | 'climate' | 'routes';
+  label: string;
+  visible: boolean;
+  opacity: number; // 0–100
+}
+
 export interface GroupRoleLinks {
   leadingFigureOf: string[];
   connectedTo: string[];
@@ -949,6 +956,20 @@ export interface FantasyCalendar {
   epochOffset?: number; // Base offset for year numbers
 }
 
+export interface SessionLog {
+  id: string;
+  sessionNumber: number;
+  realDate: string; // YYYY-MM-DD
+  inGameDate?: string; // free-text, e.g. "3rd of Frostmere, Age of Embers"
+  title: string;
+  summary?: string; // Markdown
+  characterIds: string[]; // linked entity IDs
+  locationIds: string[]; // linked entity IDs
+  milestones: string[]; // free-text milestone notes
+  createdAt: number;
+  lastModified: number;
+}
+
 export interface WorldData {
   id?: string;
   name: string;
@@ -959,12 +980,14 @@ export interface WorldData {
   trash: WorldEntity[];
   mapImage?: string;
   mapConnections: MapConnection[];
+  mapOverlayLayers?: MapOverlayLayer[];
   worldPhase: WorldPhase;
   timelineEras?: FantasyEra[];
   milestonePins?: MilestonePin[];
   timelineCalendar?: FantasyCalendar;
   customCalendarPresets?: FantasyCalendar[];
   timelineCurrentYear?: number;
+  sessionLogs?: SessionLog[];
 }
 
 export interface UniverseArchive {

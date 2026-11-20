@@ -45,6 +45,56 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
     const [clearScratchpadAfterConvert, setClearScratchpadAfterConvert] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+    // Wikilink autocomplete state
+    const [suggestions, setSuggestions] = useState<WorldEntity[]>([]);
+    const [suggestionIndex, setSuggestionIndex] = useState(0);
+    const [wikilinkQuery, setWikilinkQuery] = useState<string | null>(null);
+    const [caretRect, setCaretRect] = useState<{ top: number; left: number } | null>(null);
+
+    const detectWikilink = (text: string) => {
+        const ta = textareaRef.current;
+        if (!ta) return;
+        const caret = ta.selectionStart;
+        const textBefore = text.slice(0, caret);
+        const match = textBefore.match(/\[\[([^\]|]*)$/);
+        if (match) {
+            const query = match[1];
+            setWikilinkQuery(query);
+            const filtered = world.entities
+                .filter(e => e.name.toLowerCase().includes(query.toLowerCase()))
+                .slice(0, 8);
+            setSuggestions(filtered);
+            setSuggestionIndex(0);
+            const lineHeight = 20;
+            const lines = textBefore.split('\n').length;
+            setCaretRect({ top: Math.min(lines * lineHeight + 8, 260), left: 16 });
+        } else {
+            setWikilinkQuery(null);
+            setSuggestions([]);
+            setCaretRect(null);
+        }
+    };
+
+    const applyWikilink = (entity: WorldEntity) => {
+        const ta = textareaRef.current;
+        if (!ta) return;
+        const caret = ta.selectionStart;
+        const textBefore = scratchpadNote.slice(0, caret);
+        const match = textBefore.match(/\[\[([^\]|]*)$/);
+        if (!match) return;
+        const openBracketPos = textBefore.length - match[0].length;
+        const newVal = scratchpadNote.slice(0, openBracketPos) + `[[${entity.name}]]` + scratchpadNote.slice(caret);
+        onUpdateNote(newVal);
+        setWikilinkQuery(null);
+        setSuggestions([]);
+        setCaretRect(null);
+        setTimeout(() => {
+            ta.focus();
+            const pos = openBracketPos + entity.name.length + 4;
+            ta.setSelectionRange(pos, pos);
+        }, 10);
+    };
+
     // Auto-focus textarea when drawer opens
     useEffect(() => {
         if (isOpen && viewMode !== 'preview') {
@@ -378,11 +428,37 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
                             <textarea
                                 ref={textareaRef}
                                 value={scratchpadNote}
-                                onChange={(e) => onUpdateNote(e.target.value)}
+                                onChange={(e) => {
+                                    onUpdateNote(e.target.value);
+                                    detectWikilink(e.target.value);
+                                }}
                                 onKeyDown={(e) => {
                                     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                                         e.preventDefault();
                                         setViewMode('preview');
+                                        return;
+                                    }
+                                    if (suggestions.length > 0 && wikilinkQuery !== null) {
+                                        if (e.key === 'ArrowDown') {
+                                            e.preventDefault();
+                                            setSuggestionIndex(i => (i + 1) % suggestions.length);
+                                            return;
+                                        }
+                                        if (e.key === 'ArrowUp') {
+                                            e.preventDefault();
+                                            setSuggestionIndex(i => (i - 1 + suggestions.length) % suggestions.length);
+                                            return;
+                                        }
+                                        if (e.key === 'Enter' || e.key === 'Tab') {
+                                            e.preventDefault();
+                                            applyWikilink(suggestions[suggestionIndex]);
+                                            return;
+                                        }
+                                        if (e.key === 'Escape') {
+                                            setSuggestions([]);
+                                            setWikilinkQuery(null);
+                                            return;
+                                        }
                                     }
                                 }}
                                 placeholder="Jot down active session thoughts, spontaneous NPC dialogues, encounter seeds, or quick rolls here... (Markdown & [[Wikilinks]] supported)"
@@ -390,6 +466,44 @@ export const ScratchpadDrawer: React.FC<ScratchpadDrawerProps> = ({
                                     isRoyal ? 'placeholder-[#c8a96e]/40' : 'placeholder-current/30'
                                 }`}
                             />
+                            {/* Wikilink dropdown */}
+                            {suggestions.length > 0 && caretRect && (
+                                <div
+                                    className={`absolute z-50 min-w-[200px] max-w-[280px] rounded-xl border shadow-2xl overflow-hidden ${
+                                        isRoyal ? 'bg-[#f7f0e1] border-2 border-[#c8a96e]' : isWiki ? 'bg-[#fdfcf0] border-[#d4c8af]' : 'bg-slate-900 border-slate-700'
+                                    }`}
+                                    style={{ top: caretRect.top, left: caretRect.left }}
+                                >
+                                    <div className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest ${
+                                        isRoyal ? 'text-[#5c2a12] border-b border-[#c8a96e]/40 font-serif' : isWiki ? 'opacity-40 border-b border-[#d4c8af]' : 'opacity-40 border-b border-slate-700'
+                                    }`}>
+                                        Link entity — ↑↓ · Enter select
+                                    </div>
+                                    {suggestions.map((s, i) => (
+                                        <button
+                                            key={s.id}
+                                            type="button"
+                                            onMouseDown={(e) => { e.preventDefault(); applyWikilink(s); }}
+                                            className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between gap-2 transition-colors ${
+                                                i === suggestionIndex
+                                                    ? isRoyal
+                                                        ? 'bg-[#70121e] text-[#fff8e7] font-bold'
+                                                        : isWiki
+                                                            ? 'bg-[#b91c1c] text-white'
+                                                            : 'bg-[#fef08a] text-black'
+                                                    : isRoyal
+                                                        ? 'hover:bg-[#ede2cc] text-[#2b1810]'
+                                                        : isWiki
+                                                            ? 'hover:bg-[#b91c1c]/10'
+                                                            : 'hover:bg-slate-800'
+                                            }`}
+                                        >
+                                            <span className="font-bold truncate">{s.name}</span>
+                                            <span className={`text-[9px] uppercase font-mono opacity-60 shrink-0 ${i === suggestionIndex ? 'opacity-80' : ''}`}>{s.type}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                             {viewMode === 'write' && (
                                 <button
                                     onClick={() => setViewMode('preview')}

@@ -5,7 +5,7 @@ import {
     Compass, Search, AlertTriangle, CheckCircle2, ZoomIn, ZoomOut, 
     RotateCcw, Edit3, Grid, Filter, Eye, Layers, Move, Info
 } from 'lucide-react';
-import { WorldData, MapConnection, Location } from '../types';
+import { WorldData, MapConnection, Location, MapOverlayLayer } from '../types';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
 import { NexusImage } from '../components/ui/NexusImage';
@@ -39,6 +39,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
     const handleToggleEdit = useWorldStore(state => state.handleToggleEdit);
     const focusMapLocationId = useWorldStore(state => state.focusMapLocationId);
     const clearFocusMapLocation = useWorldStore(state => state.clearFocusMapLocation);
+    const updateMapOverlayLayer = useWorldStore(state => state.updateMapOverlayLayer);
 
     // Edit Modes & Link Building
     const [editMode, setEditMode] = useState<'marker' | 'link'>('marker');
@@ -70,6 +71,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
     });
     const [showFiltersMenu, setShowFiltersMenu] = useState(false);
     const [showGrid, setShowGrid] = useState(false);
+    const [showLayerPanel, setShowLayerPanel] = useState(false);
 
     // HOVER state: Floating mini-card by the pin
     const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
@@ -157,6 +159,14 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
         });
         return counts;
     }, [world.mapConnections]);
+
+    // Overlay layers
+    const DEFAULT_MAP_LAYERS: MapOverlayLayer[] = [
+        { id: 'political', label: 'Political Borders', visible: false, opacity: 70 },
+        { id: 'climate', label: 'Climate / Biomes', visible: false, opacity: 50 },
+        { id: 'routes', label: 'Travel Routes', visible: false, opacity: 80 },
+    ];
+    const mapLayers = world.mapOverlayLayers || DEFAULT_MAP_LAYERS;
 
     // Precise coordinate projection from percentage (0-100%) to unscaled screen space
     const getScreenCoords = useCallback((xPercent: number, yPercent: number) => {
@@ -628,6 +638,18 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                     >
                         <Grid size={15} />
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => { setShowLayerPanel(!showLayerPanel); setShowFiltersMenu(false); }}
+                        title="Toggle Cartography Overlay Layers"
+                        className={`p-2.5 rounded-2xl border transition-all ${
+                            showLayerPanel
+                                ? isRoyal ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e]' : 'bg-white/20 border-white/40'
+                                : isRoyal ? 'bg-[#fbf8ef] border-[#c8a96e]/60 text-[#2b1810]' : isWiki ? 'bg-white border-[#d4c8af]' : 'bg-slate-900 border-slate-700'
+                        } shadow-sm`}
+                    >
+                        <Layers size={15} />
+                    </button>
                 </div>
             </div>
 
@@ -675,6 +697,59 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                 </div>
             )}
 
+            {/* Cartography Overlay Layers Floating Panel */}
+            {showLayerPanel && (
+                <div data-interactive-ui="true" className={`absolute top-24 right-8 z-[35] p-4 rounded-3xl border shadow-2xl space-y-3 w-80 animate-in slide-in-from-top-2 duration-200 ${
+                    isRoyal ? 'bg-[#fbf8ef] border-2 border-[#c8a96e] text-[#2b1810]' : isWiki ? 'bg-white border-[#d4c8af] text-[#2b1810]' : 'bg-slate-900/95 border-slate-700 text-slate-100'
+                }`}>
+                    <div className="flex items-center justify-between border-b pb-2 border-current/15">
+                        <span className="text-xs font-serif font-black uppercase tracking-wider flex items-center gap-1.5">
+                            <Layers size={13} className={accent} /> Cartography Overlays
+                        </span>
+                        <button type="button" onClick={() => setShowLayerPanel(false)} className="opacity-50 hover:opacity-100">
+                            <X size={14} />
+                        </button>
+                    </div>
+
+                    <div className="space-y-3">
+                        {mapLayers.map(layer => (
+                            <div key={layer.id} className={`rounded-xl p-3 ${
+                                isRoyal ? 'bg-[#ede2cc]/60' : isWiki ? 'bg-gray-50' : 'bg-white/5'
+                            }`}>
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-bold">{layer.label}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => updateMapOverlayLayer(layer.id, { visible: !layer.visible })}
+                                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                            layer.visible
+                                                ? isRoyal ? 'bg-[#70121e]' : isWiki ? 'bg-[#b91c1c]' : isVoyager ? 'bg-[#2dd4bf]' : 'bg-[#fef08a]'
+                                                : isRoyal ? 'bg-[#c8a96e]/40' : 'bg-slate-600'
+                                        }`}
+                                    >
+                                        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                                            layer.visible ? 'translate-x-4' : 'translate-x-0.5'
+                                        }`} />
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-mono opacity-60 w-10 shrink-0">Opacity</span>
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={100}
+                                        value={layer.opacity}
+                                        onChange={e => updateMapOverlayLayer(layer.id, { opacity: Number(e.target.value) })}
+                                        className="flex-1 h-1.5 accent-current cursor-pointer"
+                                    />
+                                    <span className="text-[10px] font-mono opacity-60 w-7 text-right">{layer.opacity}%</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Main Interactive Map Viewport */}
             <div
                 ref={containerRef}
@@ -716,6 +791,48 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
                         </div>
                     )}
                 </div>
+
+                {/* Layer 1.5: Cartography Overlay SVG (Political, Climate, Routes) */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-[12]">
+                    <defs>
+                        <pattern id="atlas-political-hatch" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="rotate(0)">
+                            <line x1="0" y1="0" x2="40" y2="0" stroke="#f97316" strokeWidth="6" strokeOpacity="0.35" />
+                            <line x1="0" y1="20" x2="40" y2="20" stroke="#7c3aed" strokeWidth="6" strokeOpacity="0.35" />
+                        </pattern>
+                        <radialGradient id="atlas-climate-radial" cx="50%" cy="40%" r="60%">
+                            <stop offset="0%" stopColor="#34d399" stopOpacity="0.5" />
+                            <stop offset="40%" stopColor="#fbbf24" stopOpacity="0.3" />
+                            <stop offset="80%" stopColor="#60a5fa" stopOpacity="0.3" />
+                            <stop offset="100%" stopColor="#6366f1" stopOpacity="0.15" />
+                        </radialGradient>
+                        <pattern id="atlas-routes-dash" patternUnits="userSpaceOnUse" width="28" height="28" patternTransform="rotate(45)">
+                            <line x1="0" y1="14" x2="28" y2="14" stroke="#fef08a" strokeWidth="2.5" strokeDasharray="6,10" strokeOpacity="0.7" />
+                        </pattern>
+                    </defs>
+                    {mapLayers.map(layer => {
+                        if (!layer.visible) return null;
+                        const alpha = layer.opacity / 100;
+                        if (layer.id === 'political') return (
+                            <rect key="political" x="0" y="0" width="100%" height="100%"
+                                fill="url(#atlas-political-hatch)"
+                                opacity={alpha}
+                            />
+                        );
+                        if (layer.id === 'climate') return (
+                            <rect key="climate" x="0" y="0" width="100%" height="100%"
+                                fill="url(#atlas-climate-radial)"
+                                opacity={alpha}
+                            />
+                        );
+                        if (layer.id === 'routes') return (
+                            <rect key="routes" x="0" y="0" width="100%" height="100%"
+                                fill="url(#atlas-routes-dash)"
+                                opacity={alpha}
+                            />
+                        );
+                        return null;
+                    })}
+                </svg>
 
                 {/* Layer 2: Vector Crisp Ley-Lines SVG Layer (Connected directly to Pin Centers) */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none z-[15]">

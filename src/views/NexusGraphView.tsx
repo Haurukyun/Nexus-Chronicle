@@ -20,12 +20,14 @@ import {
   Layers,
   Compass,
   Scan,
+  Download,
 } from 'lucide-react';
 import { WorldData, WorldEntity, EntityType } from '../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../constants';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
 import { isEntityMinor } from '../utils/documentModeUtils';
+import { exportSvg, exportPng } from '../utils/graphExport';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1094,6 +1096,30 @@ export const NexusGraphView: React.FC<Props> = ({ world, onNavigate }) => {
         >
           {showLegend ? <EyeOff size={13} className={isLight ? 'text-[#70121e]' : ''} /> : <Eye size={13} className={isLight ? 'text-[#70121e]' : ''} />}
           <span>{showLegend ? 'Hide Legend' : 'Legend'}</span>
+        </button>
+
+        {/* Export SVG */}
+        <button
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
+          onClick={() => { if (svgRef.current) exportSvg(svgRef.current, 'nexus-graph.svg'); }}
+          title="Export graph as SVG"
+        >
+          <Download size={13} className={isLight ? 'text-[#70121e]' : ''} />
+          <span>Export SVG</span>
+        </button>
+
+        {/* Export PNG */}
+        <button
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all shadow-sm ${wikiPanel} ${
+            isLight ? 'hover:bg-[#ede0c9] text-[#2b1810]' : 'hover:bg-white/10'
+          }`}
+          onClick={() => { if (svgRef.current) exportPng(svgRef.current, 'nexus-graph.png'); }}
+          title="Export graph as PNG (2× resolution)"
+        >
+          <Download size={13} className={isLight ? 'text-[#70121e]' : ''} />
+          <span>Export PNG</span>
         </button>
       </div>
 

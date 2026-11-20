@@ -1,7 +1,7 @@
 import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { WorldData, WorldEntity, EntityType, ThemeMode, WorldPhase, UniverseArchive } from '../types';
+import { WorldData, WorldEntity, EntityType, ThemeMode, WorldPhase, UniverseArchive, MapOverlayLayer, SessionLog } from '../types';
 import { downloadFileToDevice } from '../utils/nexusArchive';
 import { applyBidirectionalSync, removeEntityRelationsOnDelete, reconcileAllBidirectionalRelations } from '../utils/bidirectionalSync';
 
@@ -93,10 +93,14 @@ interface WorldStore {
     setWorldPhase: (phase: string) => void;
     addMapConnection: (sourceId: string, targetId: string, type: any) => void;
     removeMapConnection: (id: string) => void;
+    updateMapOverlayLayer: (layerId: string, patch: Partial<{ visible: boolean; opacity: number }>) => void;
     updateEntityParent: (entityId: string, parentId: string | null) => void;
     updateEntityLock: (id: string, isReadOnly: boolean) => void;
     reorderAndReparentEntity: (draggedId: string, targetId: string | null, position: 'before' | 'after' | 'inside', targetType?: EntityType) => void;
     handleHealRelations: () => void;
+    addSessionLog: (log: Omit<SessionLog, 'id' | 'createdAt' | 'lastModified'>) => string;
+    updateSessionLog: (id: string, patch: Partial<SessionLog>) => void;
+    deleteSessionLog: (id: string) => void;
 }
 
 const MAX_HISTORY = 30;
@@ -1248,6 +1252,38 @@ export const useWorldStore = create<WorldStore>()(
                 ...state.world,
                 mapConnections: state.world.mapConnections.filter(c => c.id !== id)
             })),
+
+            updateMapOverlayLayer: (layerId, patch) => set((state) => {
+                const world = state.world;
+                const existing: MapOverlayLayer[] = world.mapOverlayLayers || [
+                    { id: 'political', label: 'Political Borders', visible: false, opacity: 70 },
+                    { id: 'climate', label: 'Climate / Biomes', visible: false, opacity: 50 },
+                    { id: 'routes', label: 'Travel Routes', visible: false, opacity: 80 },
+                ];
+                const updated = existing.map(l => l.id === layerId ? { ...l, ...patch } : l);
+                return syncWorld(state, { ...world, mapOverlayLayers: updated });
+            }),
+
+            addSessionLog: (log) => {
+                const id = `session-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+                const now = Date.now();
+                const newLog: SessionLog = { ...log, id, createdAt: now, lastModified: now };
+                const world = get().world;
+                set((state) => syncWorld(state, { ...world, sessionLogs: [...(world.sessionLogs || []), newLog] }));
+                return id;
+            },
+
+            updateSessionLog: (id, patch) => {
+                const world = get().world;
+                const updated = (world.sessionLogs || []).map(l => l.id === id ? { ...l, ...patch, lastModified: Date.now() } : l);
+                set((state) => syncWorld(state, { ...world, sessionLogs: updated }));
+            },
+
+            deleteSessionLog: (id) => {
+                const world = get().world;
+                const updated = (world.sessionLogs || []).filter(l => l.id !== id);
+                set((state) => syncWorld(state, { ...world, sessionLogs: updated }));
+            },
 
             updateEntityLock: (id, isReadOnly) => set((state) => syncWorld(state, {
                 ...state.world,

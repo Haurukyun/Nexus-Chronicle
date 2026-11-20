@@ -104,10 +104,6 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
             </EditorGroup>
 
             <EditorGroup title="Characteristics & Knowledge" icon={Zap}>
-                <div className="col-span-12">
-                    <label className={labelClass}>Description & History</label>
-                    <textarea className={`${textareaClass} h-32`} value={entity.description || ''} onChange={e => onUpdate({ ...entity, description: e.target.value })} />
-                </div>
                 <div className="col-span-6">
                     <label className={labelClass}>Traits & Characteristics</label>
                     <textarea className={`${textareaClass} h-32`} value={entity.personalityTraits || ''} onChange={e => onUpdate({ ...entity, personalityTraits: e.target.value })} />

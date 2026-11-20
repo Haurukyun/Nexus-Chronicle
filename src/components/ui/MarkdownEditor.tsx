@@ -148,6 +148,12 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     }, [value, onChange]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            setMode(m => m === 'preview' ? 'edit' : 'preview');
+            return;
+        }
+
         if (suggestions.length > 0 && wikilinkQuery !== null) {
             if (e.key === 'ArrowDown') { e.preventDefault(); setSuggestionIndex(i => (i + 1) % suggestions.length); return; }
             if (e.key === 'ArrowUp') { e.preventDefault(); setSuggestionIndex(i => (i - 1 + suggestions.length) % suggestions.length); return; }
@@ -280,15 +286,36 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
                 {/* Preview pane */}
                 {(mode === 'preview' || mode === 'split') && (
-                    <div className={`flex-1 ${minHeight} overflow-y-auto px-5 py-4 ${isRoyal ? 'bg-[#fdfbf7] text-[#2b1810]' : isWikiMode ? 'bg-[#fdfcf0]' : 'bg-slate-900/30'}`}>
+                    <div 
+                        className={`flex-1 ${minHeight} overflow-y-auto px-5 py-4 ${
+                            isRoyal ? 'bg-[#fdfbf7] text-[#2b1810]' : isWikiMode ? 'bg-[#fdfcf0]' : 'bg-slate-900/30'
+                        } ${mode === 'preview' ? 'cursor-text group/preview relative' : ''}`}
+                        onClick={(e) => {
+                            if ((e.target as HTMLElement).closest('a, button')) return;
+                            if (mode === 'preview') {
+                                setMode('edit');
+                                setTimeout(() => textareaRef.current?.focus(), 50);
+                            }
+                        }}
+                    >
                         {value.trim() ? (
-                            <MarkdownRenderer
-                                content={value}
-                                allEntities={allEntities}
-                                onNavigate={onNavigate}
-                            />
+                            <>
+                                <MarkdownRenderer
+                                    content={value}
+                                    allEntities={allEntities}
+                                    onNavigate={onNavigate}
+                                />
+                                {mode === 'preview' && (
+                                    <div className="sticky bottom-2 flex justify-end pointer-events-none opacity-0 group-hover/preview:opacity-100 transition-opacity">
+                                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[9px] font-bold uppercase tracking-wider bg-black/50 text-[#fff8e7] border border-white/20 backdrop-blur-xs shadow-lg">
+                                            <PenLine size={10} />
+                                            Click to edit · Live Preview
+                                        </span>
+                                    </div>
+                                )}
+                            </>
                         ) : (
-                            <p className={`text-xs italic ${isRoyal ? 'text-[#8c6d48] font-serif' : 'opacity-30'}`}>Preview will appear here...</p>
+                            <p className={`text-xs italic ${isRoyal ? 'text-[#8c6d48] font-serif' : 'opacity-30'}`}>Click to start writing or view preview...</p>
                         )}
                     </div>
                 )}

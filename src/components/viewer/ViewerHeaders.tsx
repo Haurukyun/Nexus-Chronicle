@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2, Printer } from 'lucide-react';
+import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2, Printer, Edit3 } from 'lucide-react';
 import { WorldEntity, Character } from '../../types';
 import { isEntityCategory, isEntityDeceased, isEntityFinished } from '../../utils/documentModeUtils';
 import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../../utils/exportUtils';
@@ -7,6 +7,8 @@ import { generateCharacterSheetHtml, openPrintableDocument } from '../../utils/c
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { NexusImage } from '../ui';
+import { RenameEntityModal } from '../ui/RenameEntityModal';
+import { renameEntityInWorld } from '../../utils/entityRenaming';
 
 interface HeaderProps {
     entity: WorldEntity;
@@ -125,8 +127,12 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
     const allEntities = useWorldStore(s => s.world.entities);
+    const world = useWorldStore(s => s.world);
+    const setWorld = useWorldStore(s => s.setWorld);
+    const [showRename, setShowRename] = useState(false);
 
     return (
+    <>
         <header className="border-b border-slate-800/80 pb-8 mb-8">
             <div className="flex justify-between items-end gap-6">
                 <div>
@@ -166,6 +172,15 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                 </div>
                 <div className="flex items-center gap-4 shrink-0">
                     <ExportDropdown entity={entity} allEntities={allEntities} theme="sovereign" />
+                    {!entity.isReadOnly && (
+                        <button
+                            onClick={() => setShowRename(true)}
+                            className="p-3 opacity-40 hover:opacity-100 text-slate-400 hover:text-amber-400 hover:bg-white/5 rounded-xl transition-all"
+                            title="Rename & propagate wikilinks"
+                        >
+                            <Edit3 size={18} />
+                        </button>
+                    )}
                     {entity.isReadOnly ? (
                         <button
                             onClick={onToggleLock}
@@ -186,6 +201,19 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                 </div>
             </div>
         </header>
+        {showRename && (
+            <RenameEntityModal
+                entity={entity}
+                world={world}
+                onConfirm={(newName) => {
+                    const result = renameEntityInWorld(world, entity.id, newName);
+                    setWorld(result.updatedWorld);
+                    setShowRename(false);
+                }}
+                onClose={() => setShowRename(false)}
+            />
+        )}
+    </>
     );
 };
 
@@ -194,8 +222,12 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
     const allEntities = useWorldStore(s => s.world.entities);
+    const world = useWorldStore(s => s.world);
+    const setWorld = useWorldStore(s => s.setWorld);
+    const [showRename, setShowRename] = useState(false);
 
     return (
+    <>
         <header className="border-b-4 border-[#b91c1c] pb-2 flex justify-between items-end mb-10">
             <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -240,6 +272,9 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
                     theme="wiki"
                     className="text-[#b91c1c]"
                 />
+                {!entity.isReadOnly && (
+                    <button onClick={() => setShowRename(true)} className="p-2 hover:bg-black/5 rounded text-slate-400 hover:text-[#b91c1c]" title="Rename & propagate wikilinks"><Edit3 size={16} /></button>
+                )}
                 {entity.isReadOnly ? (
                     <button
                         onClick={onToggleLock}
@@ -259,6 +294,15 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
                 <ConfirmDeleteButton onConfirm={onDelete} className="p-2 hover:bg-rose-500/10 rounded text-rose-700" iconSize={20} />
             </div>
         </header>
+        {showRename && (
+            <RenameEntityModal
+                entity={entity}
+                world={world}
+                onConfirm={(newName) => { const result = renameEntityInWorld(world, entity.id, newName); setWorld(result.updatedWorld); setShowRename(false); }}
+                onClose={() => setShowRename(false)}
+            />
+        )}
+    </>
     );
 };
 
@@ -267,8 +311,12 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
     const allEntities = useWorldStore(s => s.world.entities);
+    const world = useWorldStore(s => s.world);
+    const setWorld = useWorldStore(s => s.setWorld);
+    const [showRename, setShowRename] = useState(false);
 
     return (
+    <>
         <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
             <div className="flex items-center gap-4 min-w-0">
                 {entity.imageUri && (
@@ -320,6 +368,9 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                     theme="royal-codex"
                     className="text-[#70121e]"
                 />
+                {!entity.isReadOnly && (
+                    <button onClick={() => setShowRename(true)} className="p-2 text-[#70121e]/60 hover:text-[#70121e] hover:bg-[#70121e]/10 rounded-full transition-all" title="Rename & propagate wikilinks"><Edit3 size={16} /></button>
+                )}
                 {entity.isReadOnly ? (
                     <button
                         onClick={onToggleLock}
@@ -341,5 +392,14 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                 <ConfirmDeleteButton onConfirm={onDelete} className="p-2 text-[#70121e] hover:bg-[#70121e]/10 rounded-full" iconSize={18} />
             </div>
         </header>
+        {showRename && (
+            <RenameEntityModal
+                entity={entity}
+                world={world}
+                onConfirm={(newName) => { const result = renameEntityInWorld(world, entity.id, newName); setWorld(result.updatedWorld); setShowRename(false); }}
+                onClose={() => setShowRename(false)}
+            />
+        )}
+    </>
     );
 };

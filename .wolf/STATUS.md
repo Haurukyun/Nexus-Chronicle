@@ -12,6 +12,27 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Phase P4: High-Impact Worldbuilding Power Tools Suite (Completed in Order)**:
+  1. **Rich Markdown Editor with `[[` Autocomplete**:
+     - Upgraded `MarkdownEditor.tsx` with Live Preview by default, `Ctrl+Enter` mode toggle, click-to-edit preview pane, and live `[[` wikilink autocomplete popup with arrow key navigation.
+     - Added wikilink autocomplete and Live Preview to `ScratchpadDrawer.tsx`. Removed redundant raw `<textarea>` from `CharacterSpecifics.tsx`.
+  2. **Multi-Layer World Atlas & Cartography Overlays**:
+     - Added `MapOverlayLayer` type and `mapOverlayLayers` to `WorldData` and `updateMapOverlayLayer` to Zustand store.
+     - Implemented Cartography Overlays control panel on `WorldMap.tsx` with toggleable visibility and opacity sliders for Political Borders, Climate / Biomes, and Travel Routes.
+     - Rendered dynamic SVG overlay patterns that scale and pan seamlessly with the atlas image.
+  3. **Global Codex Search & Replace / Entity Renaming Engine**:
+     - Built `entityRenaming.ts` (`renameEntityInWorld`) replacing `[[OldName]]` and `[[OldName|Alias]]` across entity descriptions, private notes, lore notes, summaries, and relational notes without breaking links.
+     - Created `RenameEntityModal.tsx` with live propagation preview showing affected occurrences and entity names.
+     - Wired "Rename & Propagate" action button into `CodexHeader`, `WikiHeader`, and `RoyalHeader` in `ViewerHeaders.tsx`. Added unit tests in `entityRenaming.test.ts` (passing).
+  4. **Nexus Graph / Bloodline Tree Image Export (SVG & PNG)**:
+     - Built `graphExport.ts` with `exportSvg` and `exportPng` (with retina 2x resolution and background injection).
+     - Added "Export SVG" and "Export PNG" buttons to `NexusGraphView.tsx` toolbar. Added Print / PDF export button to `NexusTreeView.tsx` lineage tree header.
+  5. **Campaign Session Logs / Dated Journal**:
+     - Added `SessionLog` interface to `src/types.ts` and store actions (`addSessionLog`, `updateSessionLog`, `deleteSessionLog`) to `useWorldStore.ts`.
+     - Built full-featured `SessionLogView.tsx` with session numbers, real dates, fantasy dates, markdown chronicles, attending character tags with codex jump links, visited location chips, and quest milestones.
+     - Integrated `'session-logs'` tab into `App.tsx` router and added "Session Codex" navigation button (`BookOpen`) in `Sidebar.tsx`.
+  - All verified: `npm run typecheck` ✅, `npm run test` ✅ (59/59 tests pass), `npm run build` ✅.
+
 - **Layout Expansion, Contrast Fixes & Responsive Viewport Ergonomics** (commits `9984b16` & `a80d280`):
   - **Fullscreen Expansion**: Replaced `max-w-[1500px]` cap on Royal Codex mode with responsive wide bounds (`w-full max-w-none 2xl:max-w-[2400px]`) and trimmed padding; expanded `EntityViewer` containers and `OptionsView` grid.
   - **Royal Codex & Wiki Contrast Pass**: Resolved washed-out text across Data Integrity, Developer Diagnostics, Oblivion Protocol, and Lore Archive in `OptionsView.tsx`.
@@ -126,27 +147,16 @@ budget_tokens: 1000
 
 ## 🚀 Next Quest
 
-**Goal:** _Phase P4: High-Impact Worldbuilding Power Tools_
+**Goal:** _Phase P5: Advanced World Simulation & Narrative Tools_
 
-1. **Rich Markdown / WYSIWYG Editor with `[[` Autocomplete**:
-   - Replace the plain `<textarea>` in entity descriptions, notes, and scratchpad with a live preview/WYSIWYG editor featuring a live dropdown autocomplete when typing `[[`.
-2. **Multi-Layer World Atlas & Cartography Overlays**:
-   - Add political border layers, climate/terrain overlays, and travel routes onto the World Map with toggleable layer visibility and opacity sliders.
-3. **Global Codex Search & Replace / Entity Renaming Engine**:
-   - Rename an entity or faction and automatically propagate the name change across all `[[wikilinks]]`, descriptions, and relational notes without breaking links.
-4. **Nexus Graph / Bloodline Tree Image Export (SVG & PNG)**:
-   - Add a one-click button to export high-resolution SVG or PNG snapshots of the force-directed graph or lineage trees for campaign handouts.
-5. **Campaign Session Logs / Dated Journal**:
-   - Add a dedicated session logbook tracking real-world game sessions, in-game dates, attending characters, and quest milestones linked to codex entries.
-
-**Files to touch:** `src/components/editor/EntityEditor.tsx`, `src/components/ui/MarkdownRenderer.tsx`, `src/views/WorldMap.tsx`, `src/utils/searchUtils.ts`, `src/views/NexusGraphView.tsx`, `src/views/SessionLogView.tsx`
+- Awaiting user instruction or refinement on Phase P5 features (e.g. Faction Influence & Territory Control Simulator, Random Lore & Encounter Generator Tables, or Soundscape / Ambience Audio Mixer for tabletop sessions).
 
 ---
 
 ## Context
 
 - **Branch:** main
-- **Build:** `npm run build` ✅ (0 TS errors, 57/57 tests pass)
+- **Build:** `npm run build` ✅ (0 TS errors, 59/59 tests pass)
 - **Dev:** `npm run tauri:dev` — primary (Vite + Tauri window)
 - **OpenWolf hooks:** Active — anatomy, memory, buglog auto-maintained
 - **Tauri v2:** Desktop app confirmed working (WebView2 on Windows)

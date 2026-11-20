@@ -4,7 +4,7 @@ import {
     Search, Plus, Trash2, BarChart3, History, GitMerge, 
     Footprints, Globe, Settings, BookMarked, Compass, 
     ChevronRight, ChevronDown, GripVertical, Folder,
-    CheckSquare, Square, Tag, ArrowRightLeft, Download, X, Layers, Check
+    CheckSquare, Square, Tag, ArrowRightLeft, Download, X, Layers, Check, BookOpen
 } from 'lucide-react';
 import { isEntityDeceased, isEntityCategory, isEntityFinished, isEntityMinor, getEntityAliases } from '../../utils/documentModeUtils';
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
@@ -1040,6 +1040,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className={`p-3 border-t ${borderColor} space-y-1`}>
                 <button onClick={() => setActiveTabId('dashboard')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('dashboard', 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20')}`}><BarChart3 size={14} /> World Ledger</button>
                 <button onClick={() => setActiveTabId('timeline')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('timeline', 'bg-[#fef08a] text-slate-950 shadow-lg shadow-yellow-500/25')}`}><History size={14} /> Chronos View</button>
+                <button onClick={() => setActiveTabId('session-logs')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('session-logs', 'bg-amber-500 text-black shadow-lg shadow-amber-500/20')}`}><BookOpen size={14} /> Session Codex</button>
                 <button onClick={() => setActiveTabId('nexus')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('nexus', 'bg-rose-500 text-white shadow-lg shadow-rose-500/20')}`}><GitMerge size={14} /> Nexus Lines</button>
                 <button onClick={() => setActiveTabId('journey')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('journey', 'bg-orange-500 text-white shadow-lg shadow-orange-500/20')}`}><Footprints size={14} /> Grand Journey</button>
                 <button onClick={() => setActiveTabId('map')} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all ${navBtnStyle('map', 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/20')}`}><Globe size={14} /> Atlas View</button>

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Network, GitBranch, GitMerge, ChevronDown, ChevronRight, Share2, Layers } from 'lucide-react';
+import { Network, GitBranch, GitMerge, ChevronDown, ChevronRight, Share2, Layers, Printer } from 'lucide-react';
 import { WorldData, WorldEntity, Character } from '../types';
 import { NexusGraphView } from './NexusGraphView';
 import { useTheme } from '../theme';
@@ -145,10 +145,26 @@ export const NexusTreeView: React.FC<NexusTreeViewProps> = ({ world, onNavigate 
                     </div>
                 </div>
 
-                <div className={`text-[10px] font-mono uppercase tracking-widest font-bold ${
-                    isLight ? 'text-[#70121e]' : 'text-slate-400 opacity-60'
-                }`}>
-                    {viewMode === 'graph' ? '✦ Multi-Entity Force Graph' : `${lineageData.all.length} Characters Catalogued`}
+                <div className="flex items-center gap-3">
+                    {viewMode === 'tree' && lineageData.roots.length > 0 && (
+                        <button
+                            onClick={() => window.print()}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${
+                                isLight
+                                    ? 'border-[#c8a96e]/60 hover:bg-[#c8a96e]/20 text-[#2b1810]'
+                                    : 'border-slate-700 hover:bg-slate-800 text-slate-300'
+                            }`}
+                            title="Print or Save Lineage Tree as PDF"
+                        >
+                            <Printer size={13} />
+                            <span>Print / PDF</span>
+                        </button>
+                    )}
+                    <div className={`text-[10px] font-mono uppercase tracking-widest font-bold ${
+                        isLight ? 'text-[#70121e]' : 'text-slate-400 opacity-60'
+                    }`}>
+                        {viewMode === 'graph' ? '✦ Multi-Entity Force Graph' : `${lineageData.all.length} Characters Catalogued`}
+                    </div>
                 </div>
             </div>
 
