@@ -119,6 +119,21 @@ export const KeybindsModal: React.FC<KeybindsModalProps> = ({
                     keys: ['Alt', '7'],
                     action: 'Multiverse Registry',
                     description: 'Open realm settings, multi-campaign switcher, and backups'
+                },
+                {
+                    keys: ['Alt', '8'],
+                    action: 'Session Codex',
+                    description: 'View campaign session chronicles and logs'
+                },
+                {
+                    keys: ['Alt', '9'],
+                    action: 'Plot Threads',
+                    description: 'Open the conspiracy board and clue investigation web'
+                },
+                {
+                    keys: ['Alt', '0'],
+                    action: 'Balance of Power',
+                    description: 'Inspect faction relationships and tension heat map'
                 }
             ]
         },

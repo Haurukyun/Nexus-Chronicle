@@ -14,6 +14,7 @@ budget_tokens: 2000
 - **Tone:** Fantasy/lore-flavored UI copy (e.g. "Chronos Timeline", "The Grand Voyager", "Forgotten Depth"); maintain this in new UI text.
 - **Theme richness:** Design is intentionally rich and layered — do not simplify or flatten UI; maintain glassmorphism, serif fonts, and high contrast.
 - **No backend:** The user explicitly wants a purely client-side app; all data is in localStorage via Zustand persist. Do NOT propose adding a server, database, or API.
+- **100% Offline & Local — ZERO AI integrations (ABSOLUTE RULE):** The app is strictly local-first and permanently offline. NEVER integrate, link to, embed, or call any AI model, AI API, cloud AI service, or AI-generated asset pipeline — not for images, text, suggestions, or autocomplete. All content is authored by the user. All assets are uploaded locally. All suggestions come exclusively from the user's own Codex data. No exceptions, no "optional" AI toggles, no future AI mode. Any feature that would require an internet call or an AI service call is forbidden by design.
 - **Target platform (Executable):** The app will be packaged using **Tauri v2** as a standalone executable targeting Windows, macOS, Linux, and Android. Keep filesystem architectures and asset managers aligned with native local storage.
 - **Tauri v2 Pre-Commit Mitigations & Security Standards:**
   1. *Styling & Rich Text:* Test WebKit/Safari engine differences early (backdrop-filter, glassmorphism, flex layout).
@@ -23,6 +24,10 @@ budget_tokens: 2000
   5. *Native Extensions:* Encapsulate any custom OS/native file routines in `src-tauri/src/lib.rs` commands.
 - **TailwindCSS inline classes:** All styling is done via inline Tailwind classes. There is no separate CSS file for component styles. Do not create `*.module.css` or non-index CSS files.
 - **Commit execution rule (Updated 2026-11-16):** The user explicitly requested the AI to execute `git commit` directly with a detailed description each time, rather than only proposing the name.
+- **Git commit title & description format rule (MANDATORY — Updated 2026-11-20):**
+  1. *Title length limit (NEVER cutoff):* The commit title (subject line) MUST be strictly under 50–70 characters. NEVER let it exceed 72 characters, because Git and GitHub Desktop automatically truncate it with `...` and dump the spilled overflow text into the description field (e.g. `...d Royal Codex Grand Voyager`).
+  2. *Strict separation of title and body:* Always separate title and description cleanly using two separate `-m` arguments: `git commit -m "short title under 65 chars" -m "Detailed multi-line bulleted description"`. Never blend or concatenate title and description into a single argument.
+  3. *NEVER omit the description:* Every commit MUST have a substantive, well-structured description explaining the changes made, why they were made, and the components affected. Commits with empty or missing descriptions are strictly forbidden.
 - **No standalone .wolf commits rule (Updated 2026-11-16):** NEVER create a git commit that contains ONLY `.wolf` files (such as `.wolf/STATUS.md`, `.wolf/cerebrum.md`, `.wolf/memory.md`, etc.). Documentation in `.wolf/` must ALWAYS be bundled and committed together with the corresponding application code changes. If only `.wolf` files are modified, do NOT commit.
 
 ## Strict Multi-Theme & Prose Contrast Rules (MANDATORY)

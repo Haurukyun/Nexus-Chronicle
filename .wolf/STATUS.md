@@ -12,6 +12,19 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Phase P5 Option 4: Narrative & Simulation Tools (The Conspiracy Board & Balance of Power)**:
+  1. **The Conspiracy Board (Plot Threads & Clue Web Tracker)**:
+     - Added `PlotThread` and `PlotClue` interfaces to `types.ts` and store actions (`addPlotThread`, `updatePlotThread`, `deletePlotThread`, `addClueToThread`, `removeClueFromThread`) to `useWorldStore.ts`.
+     - Built `PlotThreadsView.tsx`: thread board with status cycling (`Open`, `Dormant`, `Resolved`, `Red Herring`), inline markdown description with wikilinks, dynamic entity chip linking to any Codex record, clue reveal/hide toggles, and customizable card accent colors.
+  2. **Balance of Power (Faction Influence & Tension Matrix)**:
+     - Added `FactionRelation` interface and store actions (`upsertFactionRelation`, `deleteFactionRelation`) to `useWorldStore.ts`.
+     - Built `FactionMatrixView.tsx`: dual-mode view featuring an interactive List with bidirectional sliders (-100 At War to +100 Sworn Allies) and notes, plus an N×N Heat Map matrix grid with color-coded tension cells and 1-click dossier navigation.
+  3. **System Navigation & Accessibility**:
+     - Pinned both views into `Sidebar.tsx` footer nav with theme-aware styling.
+     - Added keyboard shortcuts (`Alt+9` for Plot Threads, `Alt+0` for Balance of Power) registered in `App.tsx` and `KeybindsModal.tsx`.
+     - Added fuzzy search targets into `CommandPalette.tsx` (`Ctrl+K`).
+     - Verified: 100% offline, 0 external APIs, 0 AI models, purely local Zustand persistence.
+
 - **Entity Sheet Ergonomics, Wikilinks Engine & Codex Crafting Suite**:
   1. **Quick-Jump Category Navigation Sidepanel**:
      - Built a responsive category navigation system in `EntityEditor.tsx` with a desktop sticky side rail (`xl:block`) and a mobile floating navigator (`xl:hidden`).
@@ -198,9 +211,45 @@ budget_tokens: 1000
 
 ## 🚀 Next Quest
 
-**Goal:** _Phase P5: Advanced World Simulation & Narrative Tools_
+**Goal:** _Phase P5 — Sheet & Viewer Consistency Pass (Option 1)_
 
-- Awaiting user instruction or refinement on Phase P5 features (e.g. Faction Influence & Territory Control Simulator, Random Lore & Encounter Generator Tables, or Soundscape / Ambience Audio Mixer for tabletop sessions).
+### 🔴 Active: Option 1 — Sheet & Viewer Consistency Pass
+- **EntityViewer Read-Mode Quick-Jump Rail:** Bring the sticky category nav sidepanel (already in EntityEditor) into the viewer/reading mode so long dossiers are equally navigable.
+- **Location Specifics Polish:** Defenses, hazards, notable landmarks, climate notes as structured bullet lists with notes (like TraitListEditor).
+- **Organization/Faction Specifics Polish:** Hierarchy ranks, assets, tenet lists as structured fields.
+- **Item & Spell Specifics Polish:** Attunement/components, spell school, rarity tier as compact chips.
+
+### 🟡 Queued: Option 2 — Session Codex & Campaign Play Tools
+- **Session Recap Handout Export:** Clean printable/PDF session chronicle per session (title, date, attending characters, summary, notes). Like the lineage tree export — standalone HTML, no app chrome.
+- **Timeline & Event Auto-Sync:** 1-click "Record as Chronos Event" inside a session log block to pin it onto the timeline ruler automatically.
+- **Attendance, XP & Loot Log:** Per-session block: attending character checkboxes, milestone/XP awarded, acquired items linked to Codex entries.
+
+### 🟡 Queued: Option 3 — Atlas & Cartography Deepening
+- **Faction Territory Binding:** Link drawn polygon territories to Political/Religious/Magic factions so borders adopt the faction's sigil color dynamically.
+- **Pin Clustering & Faction Filtering:** Toggle map pins by allegiance/faction, show travel route distances in fantasy leagues/days.
+- **Anchor Pins to Entities:** Each map pin links back to a location entity — clicking it opens the entity dossier without navigating away from the map.
+
+### 🟡 Queued: Option 5 — Writer & Storyteller Tools (Genre-Agnostic)
+- **Story Arc / Chapter Planner:** Structured outline board mapping acts, chapters, scenes — each beat linked to characters, locations, and events. Works for any genre (sci-fi arcs, relationship progressions, fantasy quests).
+- **Character Relationship Dynamics Tracker:** Track the emotional arc of a relationship over time between two characters. Mini-timeline per pair showing how they went from strangers → rivals → allies, etc.
+- **World Rules & Laws Editor:** Dedicated space to document internal world logic: physics, magic systems, tech limits, social laws, cultural taboos. Each rule can link to entities that break or embody it. (Works for hard sci-fi, fantasy, modern realism alike.)
+
+### 🟡 Queued: Option 6 — World Architecture & Setting Tools
+- **Genre-Switchable Entity Templates:** A genre template system where character/entity sheets adapt their fields to the selected genre. "Fantasy" shows magic affinity; "Sci-Fi" shows cybernetics; "Modern/Realistic" shows career/social class. Users pick a template; fields adapt without breaking existing data.
+- **Language & Naming Convention Builder:** Build constructed languages or naming rules for any context (Martian colony naming, elven kingdom conventions, 1920s crime family naming). Syllable patterns, forbidden sounds, example vocabulary.
+- **World Premise & Tone Document:** A pinned master document per world: elevator pitch, genre tags, tone (dark/hopeful/satirical), inspirations, and thematic questions. Acts as the creative north star that all entries orbit.
+
+### 🟡 Queued: Option 7 — Continuity & Export Tools
+- **Continuity Conflict Detector:** Scans linked entities for logical contradictions (character born in Year 50 attending an event in Year 40; location "destroyed Year 200" referenced as active in Year 350). Flags issues passively without being prescriptive.
+- **World Bible Export:** Export the entire Codex (or a filtered subset) as a clean, formatted World Bible document (PDF/HTML) — the kind you'd hand to a co-author, editor, artist, or publisher. Auto-structured from the entity hierarchy.
+- **D&D-Specific Variant (Deferred):** A genre-specific extension of the Rolling Table system strictly for tabletop RPG use (encounter tables, NPC quirk tables, random dungeon events). Planned for a later phase as a D&D plugin/mode, not a core feature.
+
+---
+
+## ⚠️ Absolute Rules (Never Break)
+
+- **100% Offline & Local — ZERO AI integrations:** The app is strictly local-first and offline. NEVER integrate, link to, embed, or call any AI model, AI API, cloud AI service, or AI-generated asset pipeline (images, text, suggestions from an external model). All content is authored by the user. All assets are uploaded locally. All suggestions/autocomplete come from the user's own Codex data. This applies permanently — no exceptions, no future "optional" AI toggles.
+- **No backend:** All data in localStorage via Zustand persist (`nexus-world-storage`). No server, no database, no API calls to external services of any kind.
 
 ---
 

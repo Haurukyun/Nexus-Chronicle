@@ -981,6 +981,43 @@ export interface SessionLog {
   lastModified: number;
 }
 
+// --- PLOT THREADS & CLUE WEB ---
+
+export type PlotThreadStatus = 'open' | 'resolved' | 'red-herring' | 'dormant';
+
+export interface PlotClue {
+  id: string;
+  text: string;
+  sourceSessionId?: string;    // session log id where it was revealed
+  linkedEntityIds: string[];   // characters, locations, events
+  isRevealed: boolean;
+  createdAt: number;
+}
+
+export interface PlotThread {
+  id: string;
+  title: string;
+  status: PlotThreadStatus;
+  description: string;         // markdown supported
+  linkedEntityIds: string[];   // any entity from the codex
+  clues: PlotClue[];
+  color?: string;              // user-chosen accent color for the card
+  createdAt: number;
+  resolvedAt?: number;
+  lastModified: number;
+}
+
+// --- FACTION INFLUENCE & TENSION MATRIX ---
+
+export interface FactionRelation {
+  id: string;
+  factionAId: string;   // ID of a political/religious/organization/magic entity
+  factionBId: string;
+  tension: number;      // -100 (total war) → 0 (neutral) → +100 (sworn allies)
+  notes: string;        // "Trade pact since Year 312"
+  lastUpdated: number;
+}
+
 export interface WorldData {
   id?: string;
   name: string;
@@ -1000,6 +1037,8 @@ export interface WorldData {
   timelineCurrentYear?: number;
   sessionLogs?: SessionLog[];
   cartographyRegions?: CartographyRegion[];
+  plotThreads?: PlotThread[];
+  factionRelations?: FactionRelation[];
 }
 
 export interface UniverseArchive {

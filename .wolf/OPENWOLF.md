@@ -32,6 +32,13 @@ When a bug may recur, search `.wolf/buglog.json` by error or path for a known fi
 
 Before wrapping up: update `.wolf/STATUS.md`, and record any learnings or bugs from the session in cerebrum.md / buglog.json. If your agent has no OpenWolf hooks installed, also write a one-line session summary to `.wolf/memory.md` (`| HH:MM | description | file(s) | outcome | ~tokens |`).
 
+## Git Commit Standards
+
+- **Title (Subject line):** Keep strictly under 50–70 characters. Never exceed 72 characters so Git and GitHub Desktop never truncate it (`...`) or spill overflow text into the description box.
+- **Separation:** Always pass title and description as distinct `-m` arguments: `git commit -m "<concise title under 65 chars>" -m "<bulleted description>"`. Never blend them together.
+- **Description:** Never omit the description. Detail the specific changes, rationale, and components modified.
+- **Bundled documentation:** Never commit `.wolf` files alone; always bundle them with the application code changes they document.
+
 ## On-demand skills
 
 - `/designqc`: screenshot-based design review of the running app .

@@ -15,6 +15,8 @@ import { TimelineView } from './views/TimelineView';
 import { NexusTreeView } from './views/NexusTreeView';
 import { JourneyView } from './views/JourneyView';
 import { SessionLogView } from './views/SessionLogView';
+import { PlotThreadsView } from './views/PlotThreadsView';
+import { FactionMatrixView } from './views/FactionMatrixView';
 import { EntityViewer } from './components/viewer/EntityViewer';
 import { EntityEditor } from './components/editor/EntityEditor';
 import { Sidebar } from './components/layout/Sidebar';
@@ -53,7 +55,7 @@ const App = () => {
     const canRedo = Boolean(historyFuture && historyFuture.length > 0);
 
     useEffect(() => {
-        const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs'];
+        const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs', 'plot-threads', 'faction-matrix'];
         if (!systemTabs.includes(activeTabId)) {
             const exists = world.entities.some(e => e.id === activeTabId);
             if (!exists) {
@@ -132,7 +134,7 @@ const App = () => {
 
             // Toggle Edit mode (Ctrl+E or Cmd+E)
             if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')) {
-                const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs'];
+                const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs', 'plot-threads', 'faction-matrix'];
                 if (!systemTabs.includes(activeTabId)) {
                     e.preventDefault();
                     handleToggleEdit(activeTabId as string);
@@ -181,7 +183,9 @@ const App = () => {
                     '5': 'map',
                     '6': 'trash',
                     '7': 'options',
-                    '8': 'session-logs'
+                    '8': 'session-logs',
+                    '9': 'plot-threads',
+                    '0': 'faction-matrix'
                 };
                 if (navKeys[e.key]) {
                     e.preventDefault();
@@ -403,6 +407,8 @@ const App = () => {
                     {activeTabId === 'nexus' && <NexusTreeView world={world} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'journey' && <JourneyView world={world} onNavigate={handleOpenEntity} />}
                     {activeTabId === 'session-logs' && <SessionLogView world={world} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'plot-threads' && <PlotThreadsView world={world} onNavigate={handleOpenEntity} />}
+                    {activeTabId === 'faction-matrix' && <FactionMatrixView world={world} onNavigate={handleOpenEntity} />}
 
                     {activeEntity && (
                         isManuscript ? (

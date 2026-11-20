@@ -1,7 +1,7 @@
 import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { WorldData, WorldEntity, EntityType, ThemeMode, WorldPhase, UniverseArchive, MapOverlayLayer, SessionLog } from '../types';
+import { WorldData, WorldEntity, EntityType, ThemeMode, WorldPhase, UniverseArchive, MapOverlayLayer, SessionLog, PlotThread, PlotClue, FactionRelation } from '../types';
 import { downloadFileToDevice } from '../utils/nexusArchive';
 import { applyBidirectionalSync, removeEntityRelationsOnDelete, reconcileAllBidirectionalRelations } from '../utils/bidirectionalSync';
 
@@ -42,8 +42,8 @@ interface WorldStore {
     openTabIds: string[];
     setOpenTabIds: (update: string[] | ((prev: string[]) => string[])) => void;
 
-    activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey';
-    setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey') => void;
+    activeTabId: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey' | 'session-logs' | 'plot-threads' | 'faction-matrix';
+    setActiveTabId: (id: string | 'map' | 'trash' | 'options' | 'dashboard' | 'timeline' | 'nexus' | 'journey' | 'session-logs' | 'plot-threads' | 'faction-matrix') => void;
     focusMapLocationId: string | null;
     focusMapLocation: (id: string) => void;
     clearFocusMapLocation: () => void;
@@ -101,6 +101,17 @@ interface WorldStore {
     addSessionLog: (log: Omit<SessionLog, 'id' | 'createdAt' | 'lastModified'>) => string;
     updateSessionLog: (id: string, patch: Partial<SessionLog>) => void;
     deleteSessionLog: (id: string) => void;
+
+    // Plot Threads (Quest & Clue Web)
+    addPlotThread: (thread: Omit<PlotThread, 'id' | 'createdAt' | 'lastModified'>) => string;
+    updatePlotThread: (id: string, patch: Partial<PlotThread>) => void;
+    deletePlotThread: (id: string) => void;
+    addClueToThread: (threadId: string, clue: Omit<PlotClue, 'id' | 'createdAt'>) => void;
+    removeClueFromThread: (threadId: string, clueId: string) => void;
+
+    // Faction Relations (Tension Matrix)
+    upsertFactionRelation: (rel: Omit<FactionRelation, 'id' | 'lastUpdated'>) => void;
+    deleteFactionRelation: (id: string) => void;
 }
 
 const MAX_HISTORY = 30;
@@ -1627,7 +1638,83 @@ export const useWorldStore = create<WorldStore>()(
                     const healedEntities = reconcileAllBidirectionalRelations(state.world.entities);
                     return syncWorld(state, { ...state.world, entities: healedEntities });
                 });
-            }
+            },
+
+            // --- PLOT THREADS ---
+            addPlotThread: (thread) => {
+                const id = crypto.randomUUID();
+                const now = Date.now();
+                const newThread: PlotThread = { ...thread, id, createdAt: now, lastModified: now };
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    plotThreads: [...(state.world.plotThreads || []), newThread]
+                }));
+                return id;
+            },
+
+            updatePlotThread: (id, patch) => {
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    plotThreads: (state.world.plotThreads || []).map(t =>
+                        t.id === id ? { ...t, ...patch, lastModified: Date.now() } : t
+                    )
+                }));
+            },
+
+            deletePlotThread: (id) => {
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    plotThreads: (state.world.plotThreads || []).filter(t => t.id !== id)
+                }));
+            },
+
+            addClueToThread: (threadId, clue) => {
+                const newClue: PlotClue = { ...clue, id: crypto.randomUUID(), createdAt: Date.now() };
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    plotThreads: (state.world.plotThreads || []).map(t =>
+                        t.id === threadId ? { ...t, clues: [...t.clues, newClue], lastModified: Date.now() } : t
+                    )
+                }));
+            },
+
+            removeClueFromThread: (threadId, clueId) => {
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    plotThreads: (state.world.plotThreads || []).map(t =>
+                        t.id === threadId ? { ...t, clues: t.clues.filter(c => c.id !== clueId), lastModified: Date.now() } : t
+                    )
+                }));
+            },
+
+            // --- FACTION RELATIONS ---
+            upsertFactionRelation: (rel) => {
+                const existing = (get().world.factionRelations || []).find(
+                    r => (r.factionAId === rel.factionAId && r.factionBId === rel.factionBId) ||
+                         (r.factionAId === rel.factionBId && r.factionBId === rel.factionAId)
+                );
+                if (existing) {
+                    set((state) => syncWorld(state, {
+                        ...state.world,
+                        factionRelations: (state.world.factionRelations || []).map(r =>
+                            r.id === existing.id ? { ...r, ...rel, lastUpdated: Date.now() } : r
+                        )
+                    }));
+                } else {
+                    const newRel: FactionRelation = { ...rel, id: crypto.randomUUID(), lastUpdated: Date.now() };
+                    set((state) => syncWorld(state, {
+                        ...state.world,
+                        factionRelations: [...(state.world.factionRelations || []), newRel]
+                    }));
+                }
+            },
+
+            deleteFactionRelation: (id) => {
+                set((state) => syncWorld(state, {
+                    ...state.world,
+                    factionRelations: (state.world.factionRelations || []).filter(r => r.id !== id)
+                }));
+            },
         }),
         {
             name: 'nexus-chronicle-storage',

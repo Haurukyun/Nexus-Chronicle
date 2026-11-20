@@ -4,7 +4,7 @@ import {
     Search, Plus, Globe, Trash2, Settings,
     BarChart3, History, GitMerge, Footprints, Keyboard,
     BookMarked, CornerDownLeft, Sparkles, FileText, ArrowRight,
-    User, MapPin, Calendar, Shield, Feather, Sparkle
+    User, MapPin, Calendar, Shield, Feather, Sparkle, BookOpen, Lightbulb, Swords
 } from 'lucide-react';
 import { WorldData, EntityType, WorldEntity } from '../../types';
 import { useTheme } from '../../theme';
@@ -78,6 +78,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         { id: 'map', label: 'Atlas & Cartography', aliases: ['map', 'atlas', 'world map', 'leylines', 'cartography'], sublabel: 'System Realm · Alt+5', icon: Globe },
         { id: 'trash', label: 'Forgotten Depth (Trash)', aliases: ['trash', 'recycle', 'archive', 'deleted'], sublabel: 'System Realm · Alt+6', icon: Trash2 },
         { id: 'options', label: 'Multiverse Registry & Settings', aliases: ['options', 'settings', 'multiverse', 'realms', 'backup'], sublabel: 'System Realm · Alt+7', icon: Settings },
+        { id: 'session-logs', label: 'Session Codex & Campaign Chronicles', aliases: ['sessions', 'logs', 'campaign', 'journal', 'recap'], sublabel: 'System Realm · Alt+8', icon: BookOpen },
+        { id: 'plot-threads', label: 'The Conspiracy Board (Plot Threads & Clues)', aliases: ['threads', 'plots', 'clues', 'mysteries', 'quests', 'investigation'], sublabel: 'System Realm · Alt+9', icon: Lightbulb },
+        { id: 'faction-matrix', label: 'Balance of Power (Faction Tension Matrix)', aliases: ['factions', 'alliances', 'tension', 'war', 'matrix', 'influence', 'radar'], sublabel: 'System Realm · Alt+0', icon: Swords },
     ], []);
 
     // Quick creation targets
