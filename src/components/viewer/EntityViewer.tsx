@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Folder, Hash } from 'lucide-react';
+import { Folder, Hash, Printer } from 'lucide-react';
 import { CodexHeader, WikiHeader, RoyalHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
@@ -13,6 +13,7 @@ import { ViewerSectionCard } from './ViewerSectionCard';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { isEntityDeceased, isEntityCategory, isEntityFinished } from '../../utils/documentModeUtils';
+import { generateRelationSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
 
 export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
@@ -149,7 +150,31 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 )}
 
                 {(!(themeId === 'royal-codex') || activeTab === 'relations') && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="space-y-4">
+                        {isChar && (
+                            <div className="flex items-center justify-between p-3 rounded-2xl border border-current/15 bg-black/5 dark:bg-white/5 backdrop-blur-sm">
+                                <span className={`text-xs font-bold uppercase tracking-wider opacity-70 ${themeId === 'royal-codex' ? 'font-serif text-[#2b1810]' : ''}`}>
+                                    Interpersonal Web & Relations
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const html = generateRelationSheetHtml(char, allEntities, { theme: themeId });
+                                        openPrintableDocument(html, `${char.name.toLowerCase().replace(/\s+/g, '-')}-relations`);
+                                    }}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold tracking-wide transition-all shadow-md cursor-pointer hover:scale-[1.02] ${
+                                        themeId === 'royal-codex'
+                                            ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] hover:bg-[#881337] font-serif'
+                                            : 'bg-indigo-600 text-white hover:bg-indigo-500'
+                                    }`}
+                                    title="Print dedicated relationship web sheet (PDF / Handout)"
+                                >
+                                    <Printer size={13} />
+                                    <span>Print Relation Sheet</span>
+                                </button>
+                            </div>
+                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <LinksDisplay label="Lore Connections" ids={[...new Set([...(entity.loreNoteIds || []), ...backlinks.lore, ...backlinks.referencedIn])]} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Mythic Roots" ids={[...new Set([...(entity.mythIds || []), ...backlinks.myths])]} all={allEntities} onNav={onNavigate} />
                         <LinksDisplay label="Event Ties" ids={[...new Set([...(entity.eventIds || []), ...backlinks.events])]} all={allEntities} onNav={onNavigate} />
@@ -191,6 +216,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                         {backlinks.unlocks && backlinks.unlocks.length > 0 && (
                             <LinksDisplay label="Enables / Refines Into" ids={backlinks.unlocks} all={allEntities} onNav={onNavigate} />
                         )}
+                        </div>
                     </div>
                 )}
 

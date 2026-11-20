@@ -12,6 +12,20 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Glassmorphic Floating Header Ribbon & Bulletproof Character/Relation Sheet Printing (2026-11-20)**:
+  1. **Glassmorphic Header Ribbon Overhaul (`App.tsx`)**:
+     - Upgraded the top header bar from a flat utility strip into an integrated, translucent floating console with multi-stop gradients, delicate specular highlights (`inset 0 1px 0`), dynamic backdrop blur (`backdrop-blur-2xl`), and theme-adapted lighting.
+     - Crafted floating glass capsule containers (`rounded-full`) for both the primary navigation ribbon and the right-hand action tools tray.
+     - Re-engineered active state styling with glowing gemstone pills (imperial crimson bloom in Royal Codex, celestial amber-gold in Sovereign, aurora teal in Grand Voyager, scholar burgundy in Wiki).
+     - Elevated dossier tabs in Tier 2 with translucent glass pills, clear active illumination, and smooth close buttons.
+  2. **Bulletproof Print Engine (`characterSheetUtils.ts`)**:
+     - Replaced fragile `window.open` popup mechanism with an in-page hidden iframe printing sandbox (`nexus-print-sandbox`).
+     - Directly triggers native browser Print / "Save as PDF" dialog without being blocked by browser popup blockers or sandboxed webviews.
+     - Added automatic script injection to guarantee printing triggers reliably once styles and assets settle, with secondary Blob URL fallback.
+  3. **Print Relation Sheet & Kinship Web Engine (`characterSheetUtils.ts`)**:
+     - Created `generateRelationSheetHtml()`: generates high-fidelity standalone A4/Letter relationship sheets featuring ancestry/parents, children/descendants, sworn allies, adversaries/rivals, complicated ties, faction orders, and relational context notes.
+     - Wired "Print Relation Sheet" into `ViewerHeaders.tsx` (`ExportDropdown`), `CharacterStatBlock.tsx` (across all 3 themes), and `EntityViewer.tsx` under the Relations tab.
+
 - **Royal Codex Theme Contrast Pass, Faction Matrix Fixes & The Chronicle Gazette**:
   1. **Theme Contrast Fix in Two-Tier Ribbon (Royal Codex & Voyager)**:
      - Fixed invisibility of inactive realm buttons in `App.tsx` where `text-[#2b1810]` rendered dark brown on `#2a170d` dark mahogany header leather.

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2, Printer, Edit3 } from 'lucide-react';
+import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2, Printer, Edit3, Users } from 'lucide-react';
 import { WorldEntity, Character } from '../../types';
 import { isEntityCategory, isEntityDeceased, isEntityFinished } from '../../utils/documentModeUtils';
 import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../../utils/exportUtils';
-import { generateCharacterSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
+import { generateCharacterSheetHtml, generateRelationSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { NexusImage } from '../ui';
@@ -60,10 +60,18 @@ const ExportDropdown: React.FC<{ entity: WorldEntity; allEntities: WorldEntity[]
         setOpen(false);
         if (entity.type === 'character') {
             const sheetHtml = generateCharacterSheetHtml(entity as Character, allEntities, { includeDmNotes: true, theme });
-            openPrintableDocument(sheetHtml);
+            openPrintableDocument(sheetHtml, `${entity.name.toLowerCase().replace(/\s+/g, '-')}-character-sheet`);
         } else {
             const html = generateEntityHtml(entity, allEntities, theme);
-            openPrintableDocument(html);
+            openPrintableDocument(html, `${entity.name.toLowerCase().replace(/\s+/g, '-')}-dossier`);
+        }
+    };
+
+    const handlePrintRelationSheet = () => {
+        setOpen(false);
+        if (entity.type === 'character') {
+            const relHtml = generateRelationSheetHtml(entity as Character, allEntities, { theme });
+            openPrintableDocument(relHtml, `${entity.name.toLowerCase().replace(/\s+/g, '-')}-relations`);
         }
     };
 
@@ -72,28 +80,38 @@ const ExportDropdown: React.FC<{ entity: WorldEntity; allEntities: WorldEntity[]
             <button
                 onClick={() => setOpen(!open)}
                 title="Export this entry"
-                className="flex items-center gap-1.5 p-2.5 rounded-xl border border-current/20 opacity-50 hover:opacity-100 transition-all"
+                className="flex items-center gap-1.5 p-2.5 rounded-xl border border-current/20 opacity-50 hover:opacity-100 transition-all cursor-pointer"
             >
                 <Download size={16} />
             </button>
             {open && (
                 <>
                     <div className="fixed inset-0 z-[200]" onClick={() => setOpen(false)} />
-                    <div className="absolute right-0 top-full mt-1 w-56 rounded-xl border bg-slate-900 border-slate-700 shadow-2xl z-[201] overflow-hidden">
+                    <div className="absolute right-0 top-full mt-1 w-60 rounded-2xl border bg-slate-900 border-slate-700 shadow-2xl z-[201] overflow-hidden">
                         <div className="px-3 pt-2.5 pb-1 text-[9px] font-black uppercase tracking-widest text-slate-500">Export Entry</div>
                         {entity.type === 'character' && (
-                            <button
-                                onClick={handlePrintSheet}
-                                className="w-full text-left px-3 py-2.5 text-xs font-medium text-amber-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors bg-amber-500/10"
-                            >
-                                <Printer size={14} className="text-amber-400" />
-                                Printable Character Sheet
-                                <span className="text-[10px] text-amber-400/70 ml-auto">PDF/Print</span>
-                            </button>
+                            <>
+                                <button
+                                    onClick={handlePrintSheet}
+                                    className="w-full text-left px-3 py-2.5 text-xs font-medium text-amber-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors bg-amber-500/10 cursor-pointer"
+                                >
+                                    <Printer size={14} className="text-amber-400" />
+                                    Printable Character Sheet
+                                    <span className="text-[10px] text-amber-400/70 ml-auto">PDF/Print</span>
+                                </button>
+                                <button
+                                    onClick={handlePrintRelationSheet}
+                                    className="w-full text-left px-3 py-2.5 text-xs font-medium text-pink-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors border-t border-slate-800 cursor-pointer bg-pink-500/10"
+                                >
+                                    <Users size={14} className="text-pink-400" />
+                                    Print Relation Sheet
+                                    <span className="text-[10px] text-pink-400/70 ml-auto">PDF/Print</span>
+                                </button>
+                            </>
                         )}
                         <button
                             onClick={handlePrintSheet}
-                            className={`w-full text-left px-3 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors ${entity.type === 'character' ? 'border-t border-slate-800' : ''}`}
+                            className={`w-full text-left px-3 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors cursor-pointer ${entity.type === 'character' ? 'border-t border-slate-800' : ''}`}
                         >
                             <Printer size={14} className="text-purple-400" />
                             Print Dossier

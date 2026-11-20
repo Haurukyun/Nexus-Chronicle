@@ -5,7 +5,7 @@ import { NexusImage } from '../ui/NexusImage';
 import { ExpandedImageModal } from '../ui/ExpandedImageModal';
 import { Character, WorldEntity } from '../../types';
 import { CategorizedBacklinks } from '../../utils/backlinkUtils';
-import { generateCharacterSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
+import { generateCharacterSheetHtml, generateRelationSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
 import { useWorldStore } from '../../store/useWorldStore';
 
 interface CharacterStatBlockProps {
@@ -135,18 +135,30 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                     </div>
 
                     {/* Print Character Sheet Action */}
-                    <div className="mt-4 pt-3 border-t border-[#c8a96e]/30 flex justify-center">
+                    <div className="mt-4 pt-3 border-t border-[#c8a96e]/30 flex flex-wrap justify-center gap-2">
                         <button
                             type="button"
                             onClick={() => {
                                 const html = generateCharacterSheetHtml(char, allEntities, { includeDmNotes: true, theme });
-                                openPrintableDocument(html);
+                                openPrintableDocument(html, `${char.name.toLowerCase().replace(/\s+/g, '-')}-sheet`);
                             }}
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#c8a96e]/60 bg-[#70121e]/80 hover:bg-[#70121e] text-[#fff8e7] text-[10px] font-serif font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer hover:scale-[1.02]"
                             title="Print Character Sheet or Export as PDF"
                         >
                             <Printer size={12} className="text-[#fef08a]" />
                             <span>Print Character Sheet</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const html = generateRelationSheetHtml(char, allEntities, { theme });
+                                openPrintableDocument(html, `${char.name.toLowerCase().replace(/\s+/g, '-')}-relations`);
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#c8a96e]/60 bg-[#4a1c1c]/90 hover:bg-[#70121e] text-[#fff8e7] text-[10px] font-serif font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer hover:scale-[1.02]"
+                            title="Print Relationship Web or Export as PDF"
+                        >
+                            <Users size={12} className="text-[#e6c687]" />
+                            <span>Print Relation Sheet</span>
                         </button>
                     </div>
                 </div>
@@ -301,18 +313,30 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                     </div>
                 )}
                 {/* Print Action */}
-                <div className="p-2.5 bg-[#fef9c3]/40 border-t border-[#d4c8af] flex justify-center">
+                <div className="p-2.5 bg-[#fef9c3]/40 border-t border-[#d4c8af] flex flex-wrap justify-center gap-2">
                     <button
                         type="button"
                         onClick={() => {
                             const html = generateCharacterSheetHtml(char, allEntities, { includeDmNotes: true, theme });
-                            openPrintableDocument(html);
+                            openPrintableDocument(html, `${char.name.toLowerCase().replace(/\s+/g, '-')}-sheet`);
                         }}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider border border-[#d4c8af] bg-white text-[#7a200d] hover:bg-[#fef9c3] transition-all cursor-pointer shadow-xs"
                         title="Print Character Sheet or Export as PDF"
                     >
                         <Printer size={12} />
                         <span>Print Character Sheet</span>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            const html = generateRelationSheetHtml(char, allEntities, { theme });
+                            openPrintableDocument(html, `${char.name.toLowerCase().replace(/\s+/g, '-')}-relations`);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider border border-[#d4c8af] bg-white text-[#7a200d] hover:bg-[#fef9c3] transition-all cursor-pointer shadow-xs"
+                        title="Print Relationship Web or Export as PDF"
+                    >
+                        <Users size={12} />
+                        <span>Print Relation Sheet</span>
                     </button>
                 </div>
             </div>
@@ -458,18 +482,30 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                 </div>
             )}
             {/* Print Action */}
-            <div className="pt-2 border-t border-slate-800/80 flex justify-center">
+            <div className="pt-2 border-t border-slate-800/80 flex flex-wrap justify-center gap-2">
                 <button
                     type="button"
                     onClick={() => {
                         const html = generateCharacterSheetHtml(char, allEntities, { includeDmNotes: true, theme });
-                        openPrintableDocument(html);
+                        openPrintableDocument(html, `${char.name.toLowerCase().replace(/\s+/g, '-')}-sheet`);
                     }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-slate-700/80 bg-slate-800/60 text-slate-300 hover:text-white hover:border-[#fef08a]/50 transition-all cursor-pointer shadow-xs"
                     title="Print Character Sheet or Export as PDF"
                 >
                     <Printer size={12} className="text-[#fef08a]" />
                     <span>Print Character Sheet</span>
+                </button>
+                <button
+                    type="button"
+                    onClick={() => {
+                        const html = generateRelationSheetHtml(char, allEntities, { theme });
+                        openPrintableDocument(html, `${char.name.toLowerCase().replace(/\s+/g, '-')}-relations`);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-slate-700/80 bg-slate-800/60 text-slate-300 hover:text-white hover:border-[#fef08a]/50 transition-all cursor-pointer shadow-xs"
+                    title="Print Relationship Web or Export as PDF"
+                >
+                    <Users size={12} className="text-[#fef08a]" />
+                    <span>Print Relation Sheet</span>
                 </button>
             </div>
         </div>

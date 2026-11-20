@@ -32,6 +32,11 @@ budget_tokens: 2000
 
 ## Strict Multi-Theme & Prose Contrast Rules (MANDATORY)
 
+- **Printable Character & Relation Sheets via In-Page Iframe Printing (2026-11-20):**
+  - Never rely on bare `window.open('', '_blank')` followed by `document.write` for printing in web applications or Tauri/webview environments. Modern browsers and webviews block unprompted popups or silently fail to trigger print dialogs, leading to "clicking does nothing".
+  - Always use an in-page hidden `iframe` print sandbox (`nexus-print-sandbox`), injecting the document and invoking `iframe.contentWindow?.print()` after styles settle. Provide automatic script fallback with Blob URLs.
+  - Relation sheets require resolving reciprocal ties (`parentsOfCharacter`, `childOfCharacter`, `allyResCharacter`, `enemydResCharacter`, `groupConnections`) along with their respective `relationalNotes` contextual annotations.
+
 - **Header vs. Body Background Inversion Trap (CRITICAL — ROYAL CODEX & VOYAGER):**
   - In **`royal-codex`**, the **Top Header Bar** (`t.layout.headerBg`) and **Sidebar** (`t.layout.sidebarBg`) are **DARK mahogany / leather** (`#2a170d` and `#181410`), while the **Content area / Book page** (`pageBg`) is **LIGHT cream parchment** (`#fbf8ef` / `#f7f0e1`).
   - **NEVER use dark body text classes (e.g. `text-[#2b1810]`, `text-[#451a03]`, `text-slate-700`) inside the Header, Top Ribbon, or Sidebar in Royal Codex!** Doing so creates invisible dark-on-dark text with < 1.2:1 contrast.

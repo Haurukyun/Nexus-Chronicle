@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateCharacterSheetHtml } from './characterSheetUtils';
+import { generateCharacterSheetHtml, generateRelationSheetHtml } from './characterSheetUtils';
 import { Character, WorldEntity } from '../types';
 
 describe('characterSheetUtils', () => {
@@ -68,5 +68,35 @@ describe('characterSheetUtils', () => {
         const html = generateCharacterSheetHtml(fallenChar, mockEntities);
         expect(html).toContain('Fallen / Deceased †');
         expect(html).toContain('TA 3019');
+    });
+
+    it('generates standalone relationship web and kinship sheet', () => {
+        const charWithKin: Character = {
+            ...mockCharacter,
+            parentsOfCharacter: ['char-parent'],
+            childOfCharacter: ['char-child'],
+            allyResCharacter: ['char-ally'],
+            relationalNotes: {
+                'parentsOfCharacter:char-parent': 'Adoptive foster father',
+                'allyResCharacter:char-ally': 'Sworn brother in arms',
+            },
+        };
+
+        const extraEntities: WorldEntity[] = [
+            ...mockEntities,
+            { id: 'char-parent', name: 'Elrond Half-elven', type: 'character', tags: [], lastModified: Date.now() },
+            { id: 'char-child', name: 'Eldarion', type: 'character', tags: [], lastModified: Date.now() },
+            { id: 'char-ally', name: 'Legolas Greenleaf', type: 'character', tags: [], lastModified: Date.now() },
+        ];
+
+        const html = generateRelationSheetHtml(charWithKin, extraEntities, { realmName: 'Middle-earth' });
+        expect(html).toContain('<!DOCTYPE html>');
+        expect(html).toContain('Relationship Web & Kinship Sheet');
+        expect(html).toContain('Elrond Half-elven');
+        expect(html).toContain('Adoptive foster father');
+        expect(html).toContain('Eldarion');
+        expect(html).toContain('Legolas Greenleaf');
+        expect(html).toContain('Sworn brother in arms');
+        expect(html).toContain('@media print');
     });
 });

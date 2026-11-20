@@ -208,38 +208,122 @@ const App = () => {
     const bgClass = t.layout.appBg;
     const textColor = t.colors.textBody;
 
-    // Unified Header Bar Styling
-    const headerTrayCls = isRoyal
-        ? 'bg-black/35 border border-[#c8a96e]/25 shadow-inner backdrop-blur-md'
-        : isWiki
-            ? 'bg-stone-200/60 border border-[#d4c8af] shadow-inner'
-            : isGrandVoyager
-                ? 'bg-black/40 border border-[#2dd4bf]/25 shadow-inner backdrop-blur-md'
-                : 'bg-slate-900/60 border border-slate-700/60 shadow-inner backdrop-blur-md';
+    // High-Fidelity Glassmorphic Header Bar Styling Tokens
+    const headerBarStyle: React.CSSProperties = isRoyal
+        ? {
+            background: 'linear-gradient(180deg, rgba(38, 18, 9, 0.95) 0%, rgba(24, 11, 5, 0.98) 100%)',
+            boxShadow: '0 1px 0 rgba(200, 169, 110, 0.28), inset 0 1px 0 rgba(255, 215, 130, 0.12), 0 8px 32px rgba(0, 0, 0, 0.55)',
+            borderBottom: '1px solid rgba(200, 169, 110, 0.22)',
+            backdropFilter: 'blur(24px) saturate(140%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(140%)',
+        }
+        : isGrandVoyager
+            ? {
+                background: 'linear-gradient(180deg, rgba(14, 34, 35, 0.92) 0%, rgba(8, 20, 21, 0.98) 100%)',
+                boxShadow: '0 1px 0 rgba(45, 212, 191, 0.25), inset 0 1px 0 rgba(45, 212, 191, 0.12), 0 8px 32px rgba(0, 0, 0, 0.60)',
+                borderBottom: '1px solid rgba(45, 212, 191, 0.20)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)',
+            }
+            : isWiki
+                ? {
+                    background: 'linear-gradient(180deg, rgba(248, 244, 235, 0.97) 0%, rgba(240, 234, 220, 0.98) 100%)',
+                    boxShadow: '0 1px 0 rgba(212, 200, 175, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 20px rgba(0, 0, 0, 0.05)',
+                    borderBottom: '1px solid rgba(212, 200, 175, 0.70)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                }
+                : {
+                    background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(9, 14, 26, 0.96) 100%)',
+                    boxShadow: '0 1px 0 rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 8px 32px rgba(0, 0, 0, 0.55)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                    backdropFilter: 'blur(24px) saturate(180%)',
+                    WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+                };
+
+    const capsuleStyle: React.CSSProperties = isRoyal
+        ? {
+            background: 'linear-gradient(180deg, rgba(18, 9, 5, 0.65) 0%, rgba(10, 4, 2, 0.82) 100%)',
+            border: '1px solid rgba(200, 169, 110, 0.30)',
+            boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.65), 0 2px 10px rgba(0, 0, 0, 0.35)',
+        }
+        : isGrandVoyager
+            ? {
+                background: 'linear-gradient(180deg, rgba(5, 14, 15, 0.65) 0%, rgba(2, 8, 8, 0.82) 100%)',
+                border: '1px solid rgba(45, 212, 191, 0.28)',
+                boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.65), 0 2px 10px rgba(0, 0, 0, 0.35)',
+            }
+            : isWiki
+                ? {
+                    background: 'linear-gradient(180deg, rgba(235, 227, 212, 0.75) 0%, rgba(228, 218, 201, 0.85) 100%)',
+                    border: '1px solid rgba(200, 185, 160, 0.85)',
+                    boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
+                }
+                : {
+                    background: 'linear-gradient(180deg, rgba(2, 6, 23, 0.65) 0%, rgba(15, 23, 42, 0.55) 100%)',
+                    border: '1px solid rgba(255, 255, 255, 0.10)',
+                    boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.65), 0 2px 10px rgba(0, 0, 0, 0.35)',
+                };
+
+    const subRailStyle: React.CSSProperties = isRoyal
+        ? {
+            background: 'rgba(18, 9, 5, 0.45)',
+            borderTop: '1px solid rgba(200, 169, 110, 0.15)',
+        }
+        : isGrandVoyager
+            ? {
+                background: 'rgba(5, 14, 15, 0.45)',
+                borderTop: '1px solid rgba(45, 212, 191, 0.15)',
+            }
+            : isWiki
+                ? {
+                    background: 'rgba(235, 227, 212, 0.50)',
+                    borderTop: '1px solid rgba(212, 200, 175, 0.55)',
+                }
+                : {
+                    background: 'rgba(2, 6, 23, 0.45)',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+                };
 
     const ribbonInactiveCls = isRoyal
-        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08]'
+        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08] font-serif font-medium'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/80'
+            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/80 font-medium'
             : isGrandVoyager
-                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
-                : 'text-slate-400 hover:text-white hover:bg-white/[0.08]';
+                ? 'text-amber-100/75 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-medium'
+                : 'text-slate-300 hover:text-white hover:bg-white/[0.08] font-medium';
 
     const ribbonActiveCls = isRoyal
-        ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e]/70 shadow-md shadow-black/40 font-serif font-semibold'
+        ? 'bg-gradient-to-r from-[#8b1524] via-[#75111e] to-[#590a14] text-[#fff8e7] border border-[#d4af37]/80 shadow-[0_0_18px_rgba(139,21,36,0.65),inset_0_1px_0_rgba(255,225,145,0.45)] font-serif font-bold tracking-wide'
         : isWiki
-            ? 'bg-[#b91c1c] text-white shadow-sm font-semibold'
+            ? 'bg-gradient-to-r from-[#b91c1c] to-[#991b1b] text-white font-bold shadow-md border border-red-700/60'
             : isGrandVoyager
-                ? 'bg-[#2dd4bf] text-slate-950 shadow-md font-bold'
-                : 'bg-[#fef08a] text-slate-950 shadow-md font-bold';
+                ? 'bg-gradient-to-r from-[#2dd4bf] via-[#14b8a6] to-[#0d9488] text-slate-950 font-bold shadow-[0_0_20px_rgba(45,212,191,0.55),inset_0_1px_0_rgba(255,255,255,0.5)]'
+                : 'bg-gradient-to-r from-[#fef08a] via-[#fde047] to-[#eab308] text-slate-950 font-bold shadow-[0_0_20px_rgba(254,240,138,0.55),inset_0_1px_0_rgba(255,255,255,0.6)]';
 
     const actionToolBtnCls = isRoyal
-        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08]'
+        ? 'text-[#d6c4aa] hover:text-[#fff8e7] hover:bg-white/[0.08] font-serif font-medium'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/80'
+            ? 'text-stone-700 hover:text-stone-950 hover:bg-white/80 font-medium'
             : isGrandVoyager
-                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15'
-                : 'text-slate-400 hover:text-white hover:bg-white/[0.08]';
+                ? 'text-amber-100/75 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-medium'
+                : 'text-slate-300 hover:text-white hover:bg-white/[0.08] font-medium';
+
+    const dossierActiveCls = isRoyal
+        ? 'bg-gradient-to-r from-[#8b1524] to-[#600c17] text-[#fff8e7] border border-[#d4af37]/80 shadow-[0_0_12px_rgba(139,21,36,0.5)]'
+        : isGrandVoyager
+            ? 'bg-gradient-to-r from-[#2dd4bf] to-[#0d9488] text-slate-950 font-bold shadow-[0_0_12px_rgba(45,212,191,0.4)]'
+            : isWiki
+                ? 'bg-[#b91c1c] text-white shadow-sm font-bold border border-red-700/60'
+                : 'bg-gradient-to-r from-[#fef08a] to-[#fde047] text-slate-950 font-bold shadow-[0_0_12px_rgba(254,240,138,0.4)]';
+
+    const dossierInactiveCls = isRoyal
+        ? 'bg-black/35 hover:bg-black/50 text-[#d6c4aa] hover:text-[#fff8e7] border border-[#c8a96e]/25'
+        : isGrandVoyager
+            ? 'bg-black/35 hover:bg-black/50 text-amber-100/70 hover:text-[#2dd4bf] border border-[#2dd4bf]/25'
+            : isWiki
+                ? 'bg-white/60 hover:bg-white text-stone-600 hover:text-stone-900 border border-stone-300'
+                : 'bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 hover:text-white border border-white/10';
 
     const auraStyles = useMemo(() => {
         const phase = world.worldPhase || 'golden';
@@ -283,11 +367,11 @@ const App = () => {
                     {isGrandVoyager && <TropicalSceneBackground />}
                     
                     {/* Top Header Bar */}
-                    <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} backdrop-blur-md shadow-sm`} data-interactive-ui="true">
+                    <header style={headerBarStyle} className="sticky top-0 z-[100] transition-colors duration-300" data-interactive-ui="true">
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
-                        <div className="flex items-center justify-between px-3 py-2 gap-3">
+                        <div className="flex items-center justify-between px-3.5 py-2 gap-3">
                             {/* Realm Navigation Ribbon */}
-                            <nav className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} max-w-full overflow-x-auto custom-scrollbar-hidden min-w-0`}>
+                            <nav style={capsuleStyle} className="inline-flex items-center p-1 rounded-full max-w-full overflow-x-auto custom-scrollbar-hidden min-w-0 gap-1 backdrop-blur-xl">
                                 {[
                                     { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G' },
                                     { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5' },
@@ -307,31 +391,31 @@ const App = () => {
                                             type="button"
                                             onClick={() => setActiveTabId(item.id)}
                                             title={`${item.label} (${item.shortcut})`}
-                                            className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs tracking-tight transition-all active:scale-95 shrink-0 ${
+                                            className={`group flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs tracking-tight transition-all duration-200 active:scale-95 shrink-0 ${
                                                 isActive ? ribbonActiveCls : ribbonInactiveCls
                                             }`}
                                         >
-                                            <IconComponent size={13} className={`shrink-0 transition-opacity ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`} />
+                                            <IconComponent size={14} className={`shrink-0 transition-opacity ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`} />
                                             <span>{item.label}</span>
                                         </button>
                                     );
                                 })}
                             </nav>
 
-                            {/* Header Action Tools — Matching Unified Glassmorphic Tray */}
-                            <div className={`inline-flex items-center gap-0.5 p-1 rounded-xl ${headerTrayCls} shrink-0`}>
+                            {/* Header Action Tools — Matching Floating Glass Capsule */}
+                            <div style={capsuleStyle} className="inline-flex items-center gap-0.5 p-1 rounded-full shrink-0 backdrop-blur-xl">
                                 {/* Jump / Command Palette */}
                                 <button
                                     onClick={() => setShowCommandPalette(true)}
                                     title="Command Palette & Fast Search (Ctrl+K)"
-                                    className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
+                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
                                 >
-                                    <Search size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                    <Search size={14} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                     <span className="hidden md:inline font-medium">Jump</span>
-                                    <kbd className={`hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded border ${
-                                        isRoyal ? 'bg-black/40 text-[#c8a96e] border-[#c8a96e]/30'
+                                    <kbd className={`hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded-md border ${
+                                        isRoyal ? 'bg-black/50 text-[#e6c687] border-[#c8a96e]/40'
                                         : isWiki ? 'bg-white/80 text-stone-600 border-stone-300'
-                                        : 'bg-white/[0.08] text-slate-400 border-white/[0.06]'
+                                        : 'bg-white/[0.08] text-slate-300 border-white/[0.10]'
                                     }`}>Ctrl+K</kbd>
                                 </button>
 
@@ -340,9 +424,9 @@ const App = () => {
                                     onClick={undo}
                                     disabled={!canUndo}
                                     title="Undo changes (Ctrl+Z)"
-                                    className={`group flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`group flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
                                 >
-                                    <Undo2 size={13} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
+                                    <Undo2 size={14} className="transition-transform duration-200 group-hover:-translate-x-0.5" />
                                     <span className="hidden xl:inline font-medium">Undo</span>
                                 </button>
 
@@ -351,9 +435,9 @@ const App = () => {
                                     onClick={redo}
                                     disabled={!canRedo}
                                     title="Redo changes (Ctrl+Y or Ctrl+Shift+Z)"
-                                    className={`group flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`group flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
                                 >
-                                    <Redo2 size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+                                    <Redo2 size={14} className="transition-transform duration-200 group-hover:translate-x-0.5" />
                                     <span className="hidden xl:inline font-medium">Redo</span>
                                 </button>
 
@@ -361,9 +445,9 @@ const App = () => {
                                 <button
                                     onClick={() => setShowScratchpad(true)}
                                     title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                    className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
+                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
                                 >
-                                    <BookMarked size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                    <BookMarked size={14} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                     <span className="hidden sm:inline font-medium">Scratchpad</span>
                                 </button>
 
@@ -371,27 +455,22 @@ const App = () => {
                                 <button
                                     onClick={() => setShowKeybindsModal(true)}
                                     title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                    className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
+                                    className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`}
                                 >
-                                    <Keyboard size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
+                                    <Keyboard size={14} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
                                     <span className="hidden sm:inline font-medium">Keybinds</span>
                                 </button>
 
                                 {/* Sleek divider */}
-                                <div className={`w-px h-3.5 mx-0.5 ${
-                                    isRoyal ? 'bg-[#c8a96e]/25'
-                                    : isWiki ? 'bg-stone-300'
-                                    : isGrandVoyager ? 'bg-[#2dd4bf]/25'
-                                    : 'bg-white/10'
-                                }`} />
+                                <div className="w-px h-4 mx-1 opacity-25 bg-current" />
 
-                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`} />
+                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium tracking-tight transition-all duration-150 cursor-pointer active:scale-95 ${actionToolBtnCls}`} />
                             </div>
                         </div>
 
                         {/* Tier 2: Entity Document Tabs Bar (Rendered only when open dossier tabs exist) */}
                         {openTabIds.length > 0 && (
-                            <div className="flex items-center justify-between px-3 py-1.5 border-t border-current/10 min-h-[36px] gap-2">
+                            <div style={subRailStyle} className="flex items-center justify-between px-3.5 py-1.5 min-h-[38px] gap-2 backdrop-blur-xl">
                                 <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0 custom-scrollbar-hidden">
                                     {openTabIds.map(id => {
                                         const e = world.entities.find(ent => ent.id === id);
@@ -399,24 +478,21 @@ const App = () => {
                                         const isEditing = editingTabIds.includes(id);
                                         const isActive = activeTabId === id;
 
-                                        let tabStyle = t.button.tabInactive;
-                                        if (isActive) {
-                                            tabStyle = t.button.tabActive;
-                                        }
-
                                         return (
                                             <div
                                                 key={id}
                                                 onClick={() => setActiveTabId(id)}
-                                                className={`flex items-center gap-2 px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider cursor-pointer transition-all border shrink-0 ${tabStyle}`}
+                                                className={`flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider cursor-pointer transition-all border shrink-0 ${
+                                                    isActive ? dossierActiveCls : dossierInactiveCls
+                                                }`}
                                             >
                                                 <span className="flex items-center gap-1.5">
-                                                    {isEditing ? <Edit3 size={11} className="text-blue-500 animate-pulse" /> : <Eye size={11} />}
+                                                    {isEditing ? <Edit3 size={11} className="text-amber-400 animate-pulse" /> : <Eye size={11} />}
                                                     <span className="max-w-[140px] truncate">{e.name}</span>
                                                 </span>
                                                 <button
                                                     onClick={(ev) => handleCloseTab(id, ev)}
-                                                    className="hover:text-red-500 ml-1 font-bold p-0.5 rounded hover:bg-black/10 transition-colors"
+                                                    className="hover:text-red-400 ml-1 font-bold p-0.5 rounded-full hover:bg-black/20 transition-colors"
                                                     title="Close dossier tab"
                                                 >
                                                     ×
@@ -427,7 +503,7 @@ const App = () => {
                                 </div>
 
                                 <div className="flex items-center gap-2 shrink-0">
-                                    <span className="text-[9px] font-mono opacity-40 font-bold uppercase tracking-widest hidden sm:inline">
+                                    <span className="text-[9px] font-mono opacity-50 font-bold uppercase tracking-widest hidden sm:inline">
                                         {openTabIds.length} {openTabIds.length === 1 ? 'dossier' : 'dossiers'}
                                     </span>
                                 </div>
