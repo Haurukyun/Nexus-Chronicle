@@ -12,6 +12,17 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **EntityViewer Read-Mode Quick-Jump Navigation Rail (`EntityViewer.tsx`, `ViewerSectionCard.tsx`, `CharacterSpecificsViewer.tsx`) (2026-11-22)**:
+  - Brought the sticky category navigation rail into dossier reading mode, making long worldbuilding entries instantly navigable without endless scrolling.
+  - Built responsive desktop sticky rail (`hidden xl:block`) supporting both full expanded mode (`w-52`) with text and chevron indicators, and ultra-compact collapsed strip (`w-11`) with centered icon buttons and hover tooltips.
+  - Added mobile & tablet floating quick jump button (`xl:hidden fixed bottom-6 right-6`) with smooth backdrop-blurred category picker modal.
+  - Dynamic category indexing tailored per entity type: Overview/Biography, Folder Contents (category containers), Vital Records, Traits & Quirks, Unique Features, Inventory & Gear, Kinship & Ties, Affiliations, Type Vitals, Secrets/Spoilers, Ties & Backlinks with counter badge, DM Confidential Notes, and Custom Attributes.
+  - Added `id?: string` to `ViewerSectionCard.tsx` across all theme templates, tagging sections in `EntityViewer.tsx` and `CharacterSpecificsViewer.tsx`.
+  - Integrated live `IntersectionObserver` highlighting the active section with theme-specific glows.
+  - Built intelligent Royal Codex tab switching: navigating to Interpersonal Web, Kinship, or Affiliations automatically activates the "Relations" tab; navigating to Inventory & Gear activates "Inventory"; all others switch to "Overview".
+  - Full exhaustive theme styling across Royal Codex, Wiki, Grand Voyager, and Sovereign.
+  - 100% verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
+
 - **Cohesive Architectural Header Ribbon & Hover Performance Fix (`App.tsx`) (2026-11-20)**:
   - Eliminated hover lag by removing nested `backdrop-filter: blur(24px)` layers, costly `box-shadow` spread transitions, and `transition-all`.
   - Replaced mobile-style `rounded-full` pills with the app's established architectural codex language (`rounded-xl` trays, `rounded-lg` buttons, Cinzel/Lora serif typography, crisp borders).
@@ -263,7 +274,7 @@ budget_tokens: 1000
 **Goal:** _Phase P5 — Sheet & Viewer Consistency Pass (Option 1)_
 
 ### 🔴 Active: Option 1 — Sheet & Viewer Consistency Pass
-- **EntityViewer Read-Mode Quick-Jump Rail:** Bring the sticky category nav sidepanel (already in EntityEditor) into the viewer/reading mode so long dossiers are equally navigable.
+- [x] **EntityViewer Read-Mode Quick-Jump Rail:** Built collapsible sticky category nav rail on desktop and floating compass navigator on mobile/tablet with dynamic category indexing and Royal Codex auto-tab activation.
 - **Location Specifics Polish:** Defenses, hazards, notable landmarks, climate notes as structured bullet lists with notes (like TraitListEditor).
 - **Organization/Faction Specifics Polish:** Hierarchy ranks, assets, tenet lists as structured fields.
 - **Item & Spell Specifics Polish:** Attunement/components, spell school, rarity tier as compact chips.

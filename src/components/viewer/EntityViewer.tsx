@@ -1,5 +1,9 @@
-import React, { useMemo } from 'react';
-import { Folder, Hash, Printer } from 'lucide-react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { 
+    Folder, Hash, Printer, Compass, BookOpen, Shield, 
+    Sparkles, Package, Heart, Swords, Ghost, GitMerge, 
+    EyeOff, ChevronRight, ChevronLeft, ChevronsRight, X 
+} from 'lucide-react';
 import { CodexHeader, WikiHeader, RoyalHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
@@ -37,13 +41,232 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const backlinks = useMemo(() => getCategorizedBacklinks(entity.id, allEntities), [entity.id, allEntities]);
     const parentEntity = allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId));
 
+    const isRoyal = themeId === 'royal-codex';
+    const isVoyager = themeId === 'grand-voyager';
+
     // Royal Codex: show tabs (Overview / Biography / Relations / Inventory) at top
-    const [activeTab, setActiveTab] = React.useState<string>('overview');
+    const [activeTab, setActiveTab] = useState<string>('overview');
+    const [activeSection, setActiveSection] = useState<string>('section-overview');
+    const [isNavExpanded, setIsNavExpanded] = useState<boolean>(true);
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
+
+    useEffect(() => {
+        setActiveTab('overview');
+        setActiveSection('section-overview');
+    }, [entity.id]);
+
+    const totalBacklinkCount = useMemo(() => {
+        return Object.values(backlinks).reduce((acc: number, arr: any) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
+    }, [backlinks]);
+
+    const navItems = useMemo(() => {
+        const items: Array<{ id: string; label: string; icon: React.ComponentType<{ size?: number; className?: string }> }> = [];
+
+        items.push({
+            id: 'section-overview',
+            label: isCategory ? 'Category Overview' : (isChar ? 'Biography' : 'Overview'),
+            icon: BookOpen
+        });
+
+        if (isCategory) {
+            items.push({
+                id: 'section-directory',
+                label: `Folder Contents (${childEntities.length})`,
+                icon: Folder
+            });
+        } else if (isChar) {
+            items.push({ id: 'section-vitals', label: 'Vital Records', icon: Shield });
+
+            const hasTraits = Boolean(char.personalityTraits?.trim() || (char as any).traitsList?.length);
+            if (hasTraits) {
+                items.push({ id: 'section-traits', label: 'Traits & Quirks', icon: Sparkles });
+            }
+
+            const hasFeatures = Boolean(char.traits?.trim() || (char as any).uniqueFeaturesList?.length);
+            if (hasFeatures) {
+                items.push({ id: 'section-features', label: 'Unique Features', icon: Sparkles });
+            }
+
+            items.push(
+                { id: 'section-inventory', label: 'Inventory & Gear', icon: Package },
+                { id: 'section-interpersonal', label: 'Kinship & Ties', icon: Heart },
+                { id: 'section-affiliations', label: 'Affiliations', icon: Swords }
+            );
+        } else {
+            items.push({
+                id: 'section-specifics',
+                label: `${TYPE_LABELS[entity.type as EntityType] || entity.type} Vitals`,
+                icon: Compass
+            });
+        }
+
+        if (entity.spoilerNotes?.trim()) {
+            items.push({ id: 'section-spoilers', label: 'Secrets / Spoilers', icon: Ghost });
+        }
+
+        items.push({
+            id: 'section-relations',
+            label: `Ties & Backlinks (${totalBacklinkCount})`,
+            icon: GitMerge
+        });
+
+        if (entity.privateNotes?.trim()) {
+            items.push({ id: 'section-private-notes', label: 'DM Confidential', icon: EyeOff });
+        }
+
+        if (entity.customAttributes && Object.keys(entity.customAttributes).length > 0) {
+            items.push({ id: 'section-attributes', label: 'Custom Attributes', icon: Hash });
+        }
+
+        return items;
+    }, [entity, isCategory, isChar, childEntities.length, totalBacklinkCount]);
+
+    useEffect(() => {
+        const sectionIds = navItems.map(item => item.id);
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const visible = entries.find(e => e.isIntersecting);
+                if (visible) {
+                    setActiveSection(visible.target.id);
+                }
+            },
+            { rootMargin: '-10% 0px -70% 0px', threshold: 0.05 }
+        );
+
+        sectionIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) observer.observe(el);
+        });
+
+        return () => observer.disconnect();
+    }, [navItems]);
+
+    const scrollToSection = (id: string) => {
+        setActiveSection(id);
+        if (isRoyal) {
+            if (id === 'section-relations' || id === 'section-interpersonal' || id === 'section-affiliations') {
+                setActiveTab('relations');
+            } else if (id === 'section-inventory') {
+                setActiveTab('inventory');
+            } else {
+                setActiveTab('overview');
+            }
+        }
+        setTimeout(() => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 50);
+    };
+
+    const getActiveItemClasses = (isActive: boolean) => {
+        if (isActive) {
+            if (isRoyal) return 'bg-[#70121e] text-[#fff8e7] font-serif font-bold border border-[#c8a96e]/40 shadow-sm';
+            if (isWiki) return 'bg-[#b91c1c] text-white font-bold shadow-sm';
+            if (isVoyager) return 'bg-[#2dd4bf] text-[#0a1c1c] font-bold shadow-sm';
+            return 'bg-[#fef08a] text-black font-bold shadow-sm';
+        }
+        if (isRoyal) return 'text-[#3d271d] hover:bg-[#70121e]/10 hover:text-[#70121e]';
+        if (isWiki) return 'text-[#2d2d2d] hover:bg-amber-100/60 hover:text-[#854d0e]';
+        if (isVoyager) return 'text-[#f5e9d0]/80 hover:bg-[#2dd4bf]/15 hover:text-[#2dd4bf]';
+        return 'text-slate-300 hover:bg-white/10 hover:text-white';
+    };
+
+    const accentIconClass = isRoyal ? 'text-[#70121e]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]';
+    const headerTitleClass = isRoyal ? 'font-serif text-[#3d0a10]' : isWiki ? 'text-[#854d0e]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]';
+    const mobileCompassButtonClasses = isRoyal
+        ? 'bg-[#70121e] text-[#fff8e7] border-2 border-[#c8a96e] shadow-xl hover:bg-[#881337]'
+        : isWiki
+            ? 'bg-[#b91c1c] text-white border-2 border-amber-300 shadow-xl hover:bg-[#991b1b]'
+            : isVoyager
+                ? 'bg-[#2dd4bf] text-[#0a1c1c] border-2 border-[#14b8a6] shadow-xl hover:bg-[#14b8a6]'
+                : 'bg-[#fef08a] text-black border-2 border-yellow-300 shadow-xl hover:bg-yellow-300';
 
     const royalTabs = ['Overview', 'Biography', 'Relations', 'Inventory'];
 
     const MainView = () => (
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 xl:gap-12">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 xl:gap-12 items-start relative">
+            {/* Desktop Sticky Quick-Jump Navigation Rail */}
+            <aside className={`hidden xl:block shrink-0 sticky top-6 z-20 transition-all duration-200 self-start ${isNavExpanded ? 'w-52' : 'w-11'}`}>
+                <div className={`rounded-2xl border backdrop-blur-md shadow-xl transition-all ${
+                    isNavExpanded ? 'p-3' : 'p-1.5'
+                } ${
+                    isRoyal
+                        ? 'bg-[#f7efe0]/95 border-[#c8a96e]/60 text-[#2b1810]'
+                        : isWiki
+                            ? 'bg-[#fdfcf0]/95 border-[#d4c8af] text-[#2d2d2d]'
+                            : isVoyager
+                                ? 'bg-[#0e2424]/95 border-[#2dd4bf]/40 text-[#f5e9d0]'
+                                : 'bg-slate-900/90 border-slate-700/60 text-slate-200'
+                }`}>
+                    {isNavExpanded ? (
+                        <>
+                            <div className="flex items-center justify-between pb-2 mb-2 border-b border-current/15">
+                                <div className="flex items-center gap-1.5">
+                                    <Compass size={14} className={accentIconClass} />
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${headerTitleClass}`}>
+                                        Quick Codex
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsNavExpanded(false)}
+                                    className="p-1 rounded-lg opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+                                    title="Collapse Navigator"
+                                >
+                                    <ChevronLeft size={13} />
+                                </button>
+                            </div>
+                            <nav className="space-y-1">
+                                {navItems.map(item => {
+                                    const isActive = activeSection === item.id;
+                                    const IconComponent = item.icon;
+                                    return (
+                                        <button
+                                            key={item.id}
+                                            type="button"
+                                            onClick={() => scrollToSection(item.id)}
+                                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-[11px] font-medium text-left transition-all cursor-pointer ${getActiveItemClasses(isActive)}`}
+                                        >
+                                            <IconComponent size={13} className="shrink-0 opacity-80" />
+                                            <span className="truncate flex-1">{item.label}</span>
+                                            {isActive && <ChevronRight size={12} className="shrink-0 opacity-80" />}
+                                        </button>
+                                    );
+                                })}
+                            </nav>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center space-y-1">
+                            <button
+                                type="button"
+                                onClick={() => setIsNavExpanded(true)}
+                                className="p-1.5 rounded-lg opacity-70 hover:opacity-100 transition-opacity flex justify-center w-full cursor-pointer mb-1 border-b border-current/15"
+                                title="Expand Quick Codex"
+                            >
+                                <ChevronsRight size={14} className={accentIconClass} />
+                            </button>
+                            {navItems.map(item => {
+                                const isActive = activeSection === item.id;
+                                const IconComponent = item.icon;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={() => scrollToSection(item.id)}
+                                        title={item.label}
+                                        className={`w-full flex justify-center p-2 rounded-xl text-xs transition-all cursor-pointer ${getActiveItemClasses(isActive)}`}
+                                    >
+                                        <IconComponent size={14} />
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            </aside>
+
             <div className="flex-1 min-w-0 space-y-6">
                 {/* Royal Codex Tab Bar */}
                 {(themeId === 'royal-codex') && (
@@ -52,7 +275,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab.toLowerCase())}
-                                className={`relative px-3 sm:px-5 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-serif font-bold uppercase tracking-widest rounded-t-md transition-all ${
+                                className={`relative px-3 sm:px-5 py-1.5 sm:py-2 text-[10px] sm:text-[11px] font-serif font-bold uppercase tracking-widest rounded-t-md transition-all cursor-pointer ${
                                     activeTab === tab.toLowerCase()
                                         ? 'bg-[#f7f0e1] text-[#2b1810] border-2 border-b-0 border-[#c8a96e] shadow-sm z-10'
                                         : 'bg-[#e2ceb1] text-[#593d2b] border border-b-0 border-[#c8a96e]/60 hover:bg-[#ede0c9] mt-[2px]'
@@ -68,6 +291,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 {/* Biography / Overview Section */}
                 {(!(themeId === 'royal-codex') || activeTab === 'overview' || activeTab === 'biography') && (
                     <ViewerSectionCard 
+                        id="section-overview"
                         title={isCategory ? 'Category Overview' : (isChar ? 'Biography' : 'Overview')} 
                         badgeText={isCategory ? 'Folder Container' : (isFinished ? 'Finished' : undefined)}
                     >
@@ -91,7 +315,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
                 {/* Specifics Sections OR Category Directory */}
                 {isCategory ? (
-                    <ViewerSectionCard title="Folder Contents & Nested Entries" badgeText={`${childEntities.length} Entries`}>
+                    <ViewerSectionCard id="section-directory" title="Folder Contents & Nested Entries" badgeText={`${childEntities.length} Entries`}>
                         {childEntities.length === 0 ? (
                             <p className={`text-sm opacity-50 italic py-4 ${(themeId === 'royal-codex') ? 'font-serif' : ''}`}>
                                 No child entries are currently filed under this folder container.
@@ -105,7 +329,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                                         <button
                                             key={child.id}
                                             onClick={() => onNavigate(child.id)}
-                                            className={`p-3.5 rounded-xl border text-left flex items-start justify-between gap-3 transition-all hover:scale-[1.01] shadow-sm ${
+                                            className={`p-3.5 rounded-xl border text-left flex items-start justify-between gap-3 transition-all hover:scale-[1.01] shadow-sm cursor-pointer ${
                                                 isWiki
                                                     ? 'bg-white border-[#d4c8af] hover:border-[#b91c1c]/50'
                                                     : (themeId === 'royal-codex')
@@ -133,14 +357,14 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                     </ViewerSectionCard>
                 ) : (
                     (!(themeId === 'royal-codex') || activeTab === 'overview') && (
-                        <div className="space-y-6">
+                        <div id="section-specifics" className="space-y-6">
                             <EntitySpecificsViewerRegistry entity={entity} allEntities={allEntities} onNavigate={onNavigate} backlinks={backlinks} />
                         </div>
                     )
                 )}
 
                 {entity.spoilerNotes && (!(themeId === 'royal-codex') || activeTab === 'overview') && (
-                    <ViewerSectionCard title="Secrets / DM Notes">
+                    <ViewerSectionCard id="section-spoilers" title="Secrets / DM Notes">
                         <MarkdownRenderer
                             content={entity.spoilerNotes}
                             allEntities={allEntities}
@@ -150,7 +374,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 )}
 
                 {(!(themeId === 'royal-codex') || activeTab === 'relations') && (
-                    <div className="space-y-4">
+                    <div id="section-relations" className="space-y-4">
                         {isChar && (
                             <div className="flex items-center justify-between p-3 rounded-2xl border border-current/15 bg-black/5 dark:bg-white/5 backdrop-blur-sm">
                                 <span className={`text-xs font-bold uppercase tracking-wider opacity-70 ${themeId === 'royal-codex' ? 'font-serif text-[#2b1810]' : ''}`}>
@@ -221,7 +445,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 )}
 
                 {entity.privateNotes && (
-                    <div className="bg-rose-500/5 border border-rose-900/20 p-8 rounded-2xl">
+                    <div id="section-private-notes" className="bg-rose-500/5 border border-rose-900/20 p-8 rounded-2xl">
                         <h3 className="text-xs font-black uppercase mb-4 tracking-widest text-rose-500">DM Confidential Notes</h3>
                         <MarkdownRenderer
                             content={entity.privateNotes}
@@ -330,7 +554,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
 
                         {/* Custom Attributes */}
                         {entity.customAttributes && Object.keys(entity.customAttributes).length > 0 && (
-                            <div className={`p-4 rounded-xl border space-y-2 ${
+                            <div id="section-attributes" className={`p-4 rounded-xl border space-y-2 ${
                                 themeId === 'royal-codex' ? 'bg-[#3f0d19] text-[#fef08a] border-[#c8a96e]/40' :
                                 isWiki ? 'bg-[#fdfcf0] text-[#2b1810] border-rose-300/40' :
                                 'bg-slate-900/40 text-slate-100 border-slate-800'
@@ -364,7 +588,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     );
 
     return (
-        <article className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <article className="animate-in fade-in slide-in-from-bottom-4 duration-1000 relative">
             {(themeId === 'royal-codex') ? (
                 <RoyalHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
             ) : isWiki ? (
@@ -373,6 +597,65 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 <CodexHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
             )}
             <MainView />
+
+            {/* Mobile / Tablet Floating Quick Jump Button */}
+            <div className="xl:hidden fixed bottom-6 right-6 z-40">
+                <div className="relative">
+                    <button
+                        type="button"
+                        onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+                        className={`p-3.5 rounded-full shadow-2xl border flex items-center justify-center transition-all active:scale-95 cursor-pointer ${mobileCompassButtonClasses}`}
+                        title="Jump to Section"
+                    >
+                        <Compass size={20} />
+                    </button>
+
+                    {isMobileNavOpen && (
+                        <div className={`absolute bottom-14 right-0 w-60 p-3 rounded-2xl border backdrop-blur-md shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 z-50 ${
+                            isRoyal
+                                ? 'bg-[#f7efe0] border-[#c8a96e] text-[#2b1810]'
+                                : isWiki
+                                    ? 'bg-[#fdfcf0] border-[#d4c8af] text-[#2d2d2d]'
+                                    : isVoyager
+                                        ? 'bg-[#0e2424] border-[#2dd4bf]/50 text-[#f5e9d0]'
+                                        : 'bg-slate-900 border-slate-700 text-slate-200'
+                        }`}>
+                            <div className="flex items-center justify-between pb-2 mb-2 border-b border-current/15">
+                                <div className="flex items-center gap-1.5">
+                                    <Compass size={14} className={accentIconClass} />
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${headerTitleClass}`}>Jump to Category</span>
+                                </div>
+                                <button type="button" onClick={() => setIsMobileNavOpen(false)} className="p-1 opacity-60 hover:opacity-100 cursor-pointer">
+                                    <X size={14} />
+                                </button>
+                            </div>
+                            <div className="space-y-1 max-h-80 overflow-y-auto custom-scrollbar">
+                                {navItems.map((item) => {
+                                    const IconComponent = item.icon;
+                                    const isActive = activeSection === item.id;
+                                    return (
+                                        <button
+                                            key={item.id}
+                                            type="button"
+                                            onClick={() => {
+                                                scrollToSection(item.id);
+                                                setIsMobileNavOpen(false);
+                                            }}
+                                            className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs text-left transition-colors cursor-pointer ${
+                                                isActive ? getActiveItemClasses(true) : 'hover:bg-black/10 dark:hover:bg-white/10'
+                                            }`}
+                                        >
+                                            <IconComponent size={14} className="shrink-0 opacity-80" />
+                                            <span className="truncate flex-1">{item.label}</span>
+                                            {isActive && <ChevronRight size={12} className="shrink-0 opacity-80" />}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
         </article>
     );
 };

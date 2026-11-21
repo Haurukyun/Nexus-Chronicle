@@ -70,7 +70,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
 
     return (
         <div className="space-y-6">
-            <ViewerSectionCard title="Vital Records">
+            <ViewerSectionCard id="section-vitals" title="Vital Records">
                 {isRoyal ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-3 py-1 font-serif">
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
@@ -144,7 +144,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
 
 
             {entity.personalityTraits && (
-                <ViewerSectionCard title="Traits & Characteristics">
+                <ViewerSectionCard id="section-traits" title="Traits & Characteristics">
                     {(() => {
                         try {
                             const parsed = JSON.parse(entity.personalityTraits);
@@ -178,7 +178,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
             )}
 
             {entity.traits && (
-                <ViewerSectionCard title="Unique / Unusual Features">
+                <ViewerSectionCard id="section-features" title="Unique / Unusual Features">
                     {(() => {
                         try {
                             const parsed = JSON.parse(entity.traits);
@@ -211,7 +211,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                 </ViewerSectionCard>
             )}
             
-            <ViewerSectionCard title="Inventory & Conditions">
+            <ViewerSectionCard id="section-inventory" title="Inventory & Conditions">
                 {isRoyal ? (
                     <div className="space-y-4 font-serif">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 py-1">
@@ -271,7 +271,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
             </ViewerSectionCard>
 
 
-            <ViewerSectionCard title="Interpersonal Web">
+            <ViewerSectionCard id="section-interpersonal" title="Interpersonal Web">
                 <div className="space-y-3">
                     <LinksDisplay label="Parents" ids={effectiveParentIds} all={allEntities} onNav={onNavigate} fieldKey="parentsOfCharacter" allRelationalNotes={entity.relationalNotes} />
                     <LinksDisplay label="Children" ids={effectiveChildIds} all={allEntities} onNav={onNavigate} fieldKey="childOfCharacter" allRelationalNotes={entity.relationalNotes} />
@@ -282,7 +282,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                 </div>
             </ViewerSectionCard>
             
-            <ViewerSectionCard title="Affiliations & Connections">
+            <ViewerSectionCard id="section-affiliations" title="Affiliations & Connections">
                 <div className="space-y-3">
                     <LinksDisplay label="Ideologies/Political Groups" ids={[...(entity.leadingPoliticalLeaders || []), ...(entity.pairedConnectionPolGroup || []), ...(entity.pairedBelongingPolGroup || []), ...(entity.pairedAllyPolGroup || []), ...(entity.pairedEnemyPolGroup || [])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
                     <LinksDisplay label="Organizations" ids={[...(entity.leadingOtherLeaders || []), ...(entity.pairedConnectionOtherGroups || []), ...(entity.pairedBelongingOtherGroups || []), ...(entity.pairedAllyOtherGroups || []), ...(entity.pairedEnemyOtherGroups || [])]} all={allEntities} onNav={onNavigate} wikiStyle="tag" />
