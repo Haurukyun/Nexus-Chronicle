@@ -9,6 +9,7 @@ import {
 import { WorldData, EntityType, WorldEntity } from '../../types';
 import { useTheme } from '../../theme';
 import { HIERARCHY_CONFIG, TYPE_LABELS, CATEGORY_COLORS } from '../../constants';
+import { isEntityTypeActive, isModuleActive } from '../../utils/realmConfig';
 import { getEntityAliases } from '../../utils/documentModeUtils';
 import { useWorldStore } from '../../store/useWorldStore';
 
@@ -102,7 +103,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         const results: PaletteItem[] = [];
 
         // 1. System Realms
-        const matchedRealms = systemRealms.filter(realm => {
+        const activeSystemRealms = systemRealms.filter(realm => {
+            if (realm.id === 'faction-matrix') return isModuleActive(world, 'factionMatrix');
+            if (realm.id === 'map' || realm.id === 'journey') return isModuleActive(world, 'atlasCoordinates');
+            return true;
+        });
+
+        const matchedRealms = activeSystemRealms.filter(realm => {
             if (!q) return true;
             return realm.label.toLowerCase().includes(q) || realm.aliases.some(a => a.includes(q));
         });
@@ -123,7 +130,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         });
 
         // 2. Quick Actions
-        const matchedCreate = quickCreationTypes.filter(c => {
+        const activeCreationTypes = quickCreationTypes.filter(c => isEntityTypeActive(world, c.type));
+
+        const matchedCreate = activeCreationTypes.filter(c => {
             if (!q) return true;
             return c.label.toLowerCase().includes(q) || c.type.toLowerCase().includes(q) || 'create'.includes(q) || 'new'.includes(q);
         });

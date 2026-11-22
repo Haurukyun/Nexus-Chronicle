@@ -1031,6 +1031,14 @@ export interface FactionRelation {
   lastUpdated: number;
 }
 
+export interface RealmModuleConfig {
+  combatStats?: boolean;      // RPG Combat Attributes & Radar Chart (default true)
+  magicSystems?: boolean;     // Magic & Arcana Groups & Spells (default true)
+  techSystems?: boolean;      // Technology & Cybernetic Blueprints (default true)
+  factionMatrix?: boolean;    // Faction Tension Matrix & Treaties (default true)
+  atlasCoordinates?: boolean; // Atlas Coordinates & Expedition Routes (default true)
+}
+
 export interface WorldData {
   id?: string;
   name: string;
@@ -1052,6 +1060,9 @@ export interface WorldData {
   cartographyRegions?: CartographyRegion[];
   plotThreads?: PlotThread[];
   factionRelations?: FactionRelation[];
+  activeEntityTypes?: EntityType[];
+  activeModules?: RealmModuleConfig;
+  hideEmptyFieldsDefault?: boolean;
 }
 
 export interface UniverseArchive {

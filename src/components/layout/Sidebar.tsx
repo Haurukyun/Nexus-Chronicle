@@ -10,6 +10,7 @@ import {
 import { isEntityDeceased, isEntityCategory, isEntityFinished, isEntityMinor, getEntityAliases } from '../../utils/documentModeUtils';
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
+import { isEntityTypeActive } from '../../utils/realmConfig';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { RealmSwitcher } from './RealmSwitcher';
@@ -709,21 +710,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
                 className="flex-1 overflow-y-auto p-3 custom-scrollbar select-none"
             >
-                {HIERARCHY_CONFIG.map(group => (
-                    <div key={group.id} className="mb-5">
-                        <button
-                            onClick={() => setExpandedCategories(expandedCategories.includes(group.id) ? expandedCategories.filter(id => id !== group.id) : [...expandedCategories, group.id])}
-                            className={`w-full flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] mb-2 px-2 ${accentText} opacity-80 hover:opacity-100 transition-opacity`}
-                        >
-                            <span className="flex items-center gap-2 uppercase font-serif">
-                                <group.icon size={11} /> {group.label}
-                            </span>
-                            <span className="text-[8px] opacity-40">{expandedCategories.includes(group.id) ? '▲' : '▼'}</span>
-                        </button>
+                {HIERARCHY_CONFIG.map(group => {
+                    const activeGroupTypes = group.types.filter(type => isEntityTypeActive(world, type));
+                    if (activeGroupTypes.length === 0) return null;
 
-                        {expandedCategories.includes(group.id) && (
-                            <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-300">
-                                {group.types.map(type => (
+                    return (
+                        <div key={group.id} className="mb-5">
+                            <button
+                                onClick={() => setExpandedCategories(expandedCategories.includes(group.id) ? expandedCategories.filter(id => id !== group.id) : [...expandedCategories, group.id])}
+                                className={`w-full flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] mb-2 px-2 ${accentText} opacity-80 hover:opacity-100 transition-opacity`}
+                            >
+                                <span className="flex items-center gap-2 uppercase font-serif">
+                                    <group.icon size={11} /> {group.label}
+                                </span>
+                                <span className="text-[8px] opacity-40">{expandedCategories.includes(group.id) ? '▲' : '▼'}</span>
+                            </button>
+
+                            {expandedCategories.includes(group.id) && (
+                                <div className="space-y-3 animate-in fade-in slide-in-from-top-1 duration-300">
+                                    {activeGroupTypes.map(type => (
                                     <div key={type} className="space-y-0.5 group/type">
                                         <div 
                                             onDragOver={(e) => {
@@ -826,7 +831,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             </div>
                         )}
                     </div>
-                ))}
+                    );
+                })}
             </nav>
 
             {/* Docked Bulk Actions Panel */}

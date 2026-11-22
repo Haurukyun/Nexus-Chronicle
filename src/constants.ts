@@ -28,8 +28,8 @@ export const TYPE_LABELS: Record<EntityType, string> = {
 export const HIERARCHY_CONFIG = [
     { id: 'story', label: 'Story/Lore', icon: Library, types: ['chapter', 'note', 'myth'] as EntityType[] },
     { id: 'world', label: 'World', icon: Globe, types: ['character', 'location', 'event', 'species', 'language', 'culture'] as EntityType[] },
-    { id: 'groups', label: 'Groups/Teachings', icon: Swords, types: ['political', 'religious', 'organization', 'magic', 'science'] as EntityType[] },
-    { id: 'details', label: 'Details', icon: Scroll, types: ['ability', 'item', 'occupation', 'condition', 'resource'] as EntityType[] }
+    { id: 'groups', label: 'Groups/Teachings', icon: Swords, types: ['political', 'religious', 'organization', 'magic', 'science', 'tech'] as EntityType[] },
+    { id: 'details', label: 'Details', icon: Scroll, types: ['ability', 'item', 'occupation', 'condition', 'resource', 'currency'] as EntityType[] }
 ];
 
 export const CATEGORY_COLORS: Record<string, string> = {

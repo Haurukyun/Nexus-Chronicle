@@ -7,6 +7,7 @@ import {
 import { useWorldStore } from './store/useWorldStore';
 import { useTheme } from './theme';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from './constants';
+import { isModuleActive } from './utils/realmConfig';
 import { WorldMap } from './views/WorldMap';
 import { TrashView } from './views/TrashView';
 import { OptionsView } from './views/OptionsView';
@@ -103,6 +104,17 @@ const App = () => {
         }
     ], []);
 
+    const activeRealmNavGroups = useMemo(() => {
+        return REALM_NAV_GROUPS.map(group => {
+            const items = group.items.filter(item => {
+                if (item.id === 'faction-matrix') return isModuleActive(world, 'factionMatrix');
+                if (item.id === 'map' || item.id === 'journey') return isModuleActive(world, 'atlasCoordinates');
+                return true;
+            });
+            return { ...group, items };
+        }).filter(group => group.items.length > 0);
+    }, [REALM_NAV_GROUPS, world]);
+
     const { t, layoutMode, themeId } = useTheme();
     const isManuscript = layoutMode === 'manuscript';
     const isGrandVoyager = themeId === 'grand-voyager';
@@ -113,6 +125,16 @@ const App = () => {
     const canRedo = Boolean(historyFuture && historyFuture.length > 0);
 
     useEffect(() => {
+        // If current tab is a module that was deactivated, redirect to dashboard
+        if (activeTabId === 'faction-matrix' && !isModuleActive(world, 'factionMatrix')) {
+            setActiveTabId('dashboard');
+            return;
+        }
+        if ((activeTabId === 'map' || activeTabId === 'journey') && !isModuleActive(world, 'atlasCoordinates')) {
+            setActiveTabId('dashboard');
+            return;
+        }
+
         const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs', 'plot-threads', 'faction-matrix', 'gazette'];
         if (!systemTabs.includes(activeTabId)) {
             const exists = world.entities.some(e => e.id === activeTabId);
@@ -124,7 +146,7 @@ const App = () => {
                 }
             }
         }
-    }, [activeTabId, world.entities, setActiveTabId]);
+    }, [activeTabId, world, setActiveTabId]);
 
     const activeEntity = useMemo(() => {
         if (editingTabIds.includes(activeTabId as string)) return drafts[activeTabId as string];
@@ -372,7 +394,7 @@ const App = () => {
                         <div className="relative z-20 flex items-center justify-between px-3 py-2 gap-2 min-w-0">
                             {/* Realm Navigation Categorized Dropdowns (Fandom/Codex Sphere style) */}
                             <nav className={`h-9 inline-flex items-center p-1 rounded-xl ${headerTrayCls} shrink-0 gap-1`} data-nav-dropdown="true">
-                                {REALM_NAV_GROUPS.map(group => {
+                                {activeRealmNavGroups.map(group => {
                                     const activeChild = group.items.find(item => item.id === activeTabId);
                                     const isGroupActive = Boolean(activeChild);
                                     const isOpen = openNavDropdown === group.id;

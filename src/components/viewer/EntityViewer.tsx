@@ -20,6 +20,7 @@ import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { isEntityDeceased, isEntityCategory, isEntityFinished } from '../../utils/documentModeUtils';
 import { generateRelationSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
+import { isModuleActive } from '../../utils/realmConfig';
 
 export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
@@ -29,6 +30,8 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const { layoutMode, themeId } = useTheme();
     const isWiki = layoutMode === 'wiki';
     const updateEntityLock = useWorldStore(state => state.updateEntityLock);
+    const world = useWorldStore(state => state.world);
+    const showCombatStats = isModuleActive(world, 'combatStats');
 
     const isDeceased = isEntityDeceased(entity);
     const isCategory = isEntityCategory(entity);
@@ -476,8 +479,9 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
             <aside className="w-full xl:w-80 2xl:w-96 shrink-0 space-y-6 min-w-0 max-w-full">
                 {(themeId === 'royal-codex') ? (
                     <>
-                        {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
-                        {!isChar && (
+                        {isChar && showCombatStats ? (
+                            <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />
+                        ) : (
                             <div className="bg-[#3f0d19] text-[#fef08a] border-4 border-[#c8a96e] rounded-3xl p-6 shadow-2xl space-y-4">
                                 {entity.imageUri && (
                                     <div className="w-full aspect-square rounded-2xl overflow-hidden border border-[#c8a96e]/40 shadow-lg">
@@ -518,7 +522,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                     </>
                 ) : isWiki ? (
                     <>
-                        {isChar ? (
+                        {isChar && showCombatStats ? (
                             <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />
                         ) : (
                             <WikiInfobox entity={entity} allEntities={allEntities} onNavigate={onNavigate} onFocusMap={onFocusMap} />
@@ -537,36 +541,38 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                     </>
                 ) : (
                     <>
-                        {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
-                        <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10 space-y-6">
-                            {!isChar && entity.imageUri && (
-                                <div className="w-full aspect-square rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl">
-                                    <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
-                                </div>
-                            )}
-                            <div>
-                                <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
-                                <div className="space-y-6">
-                                    <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} />
-                                    <FieldRow label="Template" value={entity.docTemplate?.join(', ') || (entity as any).documentTemplate || "Generic"} />
-                                    <FieldRow label="Order" value={entity.order || (entity as any).orderNumber} />
-                                    <FieldRow label="Status" value={(entity as any).status || (entity.deadSwitch ? 'Lost' : 'Active')} />
-                                    <FieldRow 
-                                        label="Hierarchy" 
-                                        value={parentEntity ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => onNavigate(parentEntity.id)}
-                                                className="text-left font-bold hover:underline transition-colors cursor-pointer text-[#fef08a]"
-                                                title={`Navigate to ${parentEntity.name}`}
-                                            >
-                                                {parentEntity.name}
-                                            </button>
-                                        ) : null} 
-                                    />
+                        {isChar && showCombatStats && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
+                        {(!isChar || !showCombatStats) && (
+                            <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10 space-y-6">
+                                {entity.imageUri && (
+                                    <div className="w-full aspect-square rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl">
+                                        <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
+                                    </div>
+                                )}
+                                <div>
+                                    <h3 className="text-[10px] font-black text-[#fef08a] uppercase tracking-[0.4em] mb-6 border-b border-slate-800/60 pb-3">Record Vitals</h3>
+                                    <div className="space-y-6">
+                                        <FieldRow label="Type" value={TYPE_LABELS[entity.type as EntityType]} />
+                                        <FieldRow label="Template" value={entity.docTemplate?.join(', ') || (entity as any).documentTemplate || "Generic"} />
+                                        <FieldRow label="Order" value={entity.order || (entity as any).orderNumber} />
+                                        <FieldRow label="Status" value={(entity as any).status || (entity.deadSwitch ? 'Lost' : 'Active')} />
+                                        <FieldRow
+                                            label="Hierarchy"
+                                            value={parentEntity ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onNavigate(parentEntity.id)}
+                                                    className="text-left font-bold hover:underline transition-colors cursor-pointer text-[#fef08a]"
+                                                    title={`Navigate to ${parentEntity.name}`}
+                                                >
+                                                    {parentEntity.name}
+                                                </button>
+                                            ) : null}
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Custom Attributes */}
                         {entity.customAttributes && Object.keys(entity.customAttributes).length > 0 && (

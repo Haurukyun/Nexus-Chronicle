@@ -7,6 +7,7 @@ import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
 import { Info, Zap, Heart, Swords, Scroll } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
+import { isModuleActive } from '../../../utils/realmConfig';
 
 interface Props {
     entity: Character;
@@ -22,6 +23,8 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
 
     const calendar = useWorldStore(state => state.world.timelineCalendar);
     const customPresets = useWorldStore(state => state.world.customCalendarPresets);
+    const world = useWorldStore(state => state.world);
+    const showCombatStats = isModuleActive(world, 'combatStats');
 
     const textareaClass = isRoyal
         ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
@@ -126,73 +129,75 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                 />
 
                 {/* Ultra-Compact Core Attributes Block with Full Stat Names in Parentheses */}
-                <div className={`col-span-12 p-3 sm:p-4 rounded-2xl border ${isRoyal ? 'border-[#c8a96e]/40 bg-[#fbf8ef]' : isWiki ? 'border-[#d4c8af]/40 bg-white/60' : 'border-slate-500/10 bg-black/5'}`}>
-                    <div className="flex items-center justify-between border-b pb-1.5 mb-2.5">
-                        <span className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${isRoyal ? 'text-[#451a03] font-serif' : isWiki ? 'text-[#854d0e]' : 'text-slate-400'}`}>
-                            Core Attributes
-                        </span>
-                        <span className="text-[9px] font-mono opacity-50">Standard D20 Ability Array</span>
-                    </div>
+                {showCombatStats && (
+                    <div className={`col-span-12 p-3 sm:p-4 rounded-2xl border ${isRoyal ? 'border-[#c8a96e]/40 bg-[#fbf8ef]' : isWiki ? 'border-[#d4c8af]/40 bg-white/60' : 'border-slate-500/10 bg-black/5'}`}>
+                        <div className="flex items-center justify-between border-b pb-1.5 mb-2.5">
+                            <span className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${isRoyal ? 'text-[#451a03] font-serif' : isWiki ? 'text-[#854d0e]' : 'text-slate-400'}`}>
+                                Core Attributes
+                            </span>
+                            <span className="text-[9px] font-mono opacity-50">Standard D20 Ability Array</span>
+                        </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                        {[
-                            { key: 'strength', abbr: 'STR', full: 'Strength' },
-                            { key: 'dexterity', abbr: 'DEX', full: 'Dexterity' },
-                            { key: 'constitution', abbr: 'CON', full: 'Constitution' },
-                            { key: 'intelligence', abbr: 'INT', full: 'Intelligence' },
-                            { key: 'wisdom', abbr: 'WIS', full: 'Wisdom' },
-                            { key: 'charisma', abbr: 'CHA', full: 'Charisma' },
-                        ].map(stat => {
-                            const val = (entity.stats as any)?.[stat.key] || '';
-                            const num = parseInt(val, 10);
-                            const mod = !isNaN(num) ? Math.floor((num - 10) / 2) : null;
-                            const modStr = mod !== null ? (mod >= 0 ? `+${mod}` : `${mod}`) : null;
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                            {[
+                                { key: 'strength', abbr: 'STR', full: 'Strength' },
+                                { key: 'dexterity', abbr: 'DEX', full: 'Dexterity' },
+                                { key: 'constitution', abbr: 'CON', full: 'Constitution' },
+                                { key: 'intelligence', abbr: 'INT', full: 'Intelligence' },
+                                { key: 'wisdom', abbr: 'WIS', full: 'Wisdom' },
+                                { key: 'charisma', abbr: 'CHA', full: 'Charisma' },
+                            ].map(stat => {
+                                const val = (entity.stats as any)?.[stat.key] || '';
+                                const num = parseInt(val, 10);
+                                const mod = !isNaN(num) ? Math.floor((num - 10) / 2) : null;
+                                const modStr = mod !== null ? (mod >= 0 ? `+${mod}` : `${mod}`) : null;
 
-                            return (
-                                <div
-                                    key={stat.key}
-                                    className={`flex flex-col items-center p-2 rounded-xl border text-center transition-all ${
-                                        isRoyal
-                                            ? 'bg-[#f7f0e1] border-[#c8a96e]/50 text-[#2b1810]'
-                                            : isWiki
-                                            ? 'bg-[#fbf8ef] border-[#d4c8af] text-[#1a1a1a]'
-                                            : 'bg-slate-800/60 border-slate-700 text-slate-100'
-                                    }`}
-                                >
-                                    <div className="flex items-center gap-1 mb-1">
-                                        <span className="font-mono font-black text-xs">{stat.abbr}</span>
-                                        <span className="text-[9px] opacity-60 font-sans tracking-tight">({stat.full})</span>
-                                    </div>
-
-                                    <input
-                                        type="text"
-                                        value={val}
-                                        placeholder="10"
-                                        onChange={e => onUpdate({
-                                            ...entity,
-                                            stats: { ...(entity.stats || { strength: '10', dexterity: '10', constitution: '10', intelligence: '10', wisdom: '10', charisma: '10' }), [stat.key]: e.target.value }
-                                        })}
-                                        className={`w-full text-center font-mono font-bold text-sm py-1 px-1.5 rounded-lg border outline-none transition-all ${
+                                return (
+                                    <div
+                                        key={stat.key}
+                                        className={`flex flex-col items-center p-2 rounded-xl border text-center transition-all ${
                                             isRoyal
-                                                ? 'bg-[#fbf8ef] border-[#c8a96e]/60 focus:border-[#70121e] text-[#2b1810]'
+                                                ? 'bg-[#f7f0e1] border-[#c8a96e]/50 text-[#2b1810]'
                                                 : isWiki
-                                                ? 'bg-white border-[#d4c8af] focus:border-[#b91c1c] text-black'
-                                                : 'bg-slate-900 border-slate-700 focus:border-amber-400 text-white'
+                                                ? 'bg-[#fbf8ef] border-[#d4c8af] text-[#1a1a1a]'
+                                                : 'bg-slate-800/60 border-slate-700 text-slate-100'
                                         }`}
-                                    />
+                                    >
+                                        <div className="flex items-center gap-1 mb-1">
+                                            <span className="font-mono font-black text-xs">{stat.abbr}</span>
+                                            <span className="text-[9px] opacity-60 font-sans tracking-tight">({stat.full})</span>
+                                        </div>
 
-                                    {modStr !== null && (
-                                        <span className={`mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
-                                            isRoyal ? 'bg-[#70121e]/15 text-[#70121e]' : 'bg-amber-400/20 text-amber-500'
-                                        }`}>
-                                            {modStr}
-                                        </span>
-                                    )}
-                                </div>
-                            );
-                        })}
+                                        <input
+                                            type="text"
+                                            value={val}
+                                            placeholder="10"
+                                            onChange={e => onUpdate({
+                                                ...entity,
+                                                stats: { ...(entity.stats || { strength: '10', dexterity: '10', constitution: '10', intelligence: '10', wisdom: '10', charisma: '10' }), [stat.key]: e.target.value }
+                                            })}
+                                            className={`w-full text-center font-mono font-bold text-sm py-1 px-1.5 rounded-lg border outline-none transition-all ${
+                                                isRoyal
+                                                    ? 'bg-[#fbf8ef] border-[#c8a96e]/60 focus:border-[#70121e] text-[#2b1810]'
+                                                    : isWiki
+                                                    ? 'bg-white border-[#d4c8af] focus:border-[#b91c1c] text-black'
+                                                    : 'bg-slate-900 border-slate-700 focus:border-amber-400 text-white'
+                                            }`}
+                                        />
+
+                                        {modStr !== null && (
+                                            <span className={`mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+                                                isRoyal ? 'bg-[#70121e]/15 text-[#70121e]' : 'bg-amber-400/20 text-amber-500'
+                                            }`}>
+                                                {modStr}
+                                            </span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <FormInput label="Equipment" value={entity.possessedItems || ""} onChange={(v: string) => onUpdate({ ...entity, possessedItems: v })} gridSpan={4} />
                 <FormInput label="Wealth" value={entity.possessedCurrencies || ""} onChange={(v: string) => onUpdate({ ...entity, possessedCurrencies: v })} gridSpan={4} />

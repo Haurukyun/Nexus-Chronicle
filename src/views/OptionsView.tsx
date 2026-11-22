@@ -2,10 +2,20 @@ import React, { useMemo, useState, useRef } from 'react';
 import {
     Palette, Skull, Globe, Layers, Plus, Copy,
     Download, Upload, Trash2, Edit2, Check, Sparkles, AlertTriangle, ArrowRight, BookOpen,
-    Radio, FileArchive, Zap, Heart, FileText, FileCode2, ChevronDown
+    Radio, FileArchive, Zap, Heart, FileText, FileCode2, ChevronDown,
+    Sliders, CheckSquare, Square, Shield, Swords, Cpu, MapPin
 } from 'lucide-react';
-import { WorldData, EntityType, WorldPhase } from '../types';
-import { TYPE_LABELS } from '../constants';
+import { WorldData, EntityType, WorldPhase, RealmModuleConfig } from '../types';
+import { TYPE_LABELS, HIERARCHY_CONFIG } from '../constants';
+import {
+    ALL_ENTITY_TYPES,
+    DEFAULT_REALM_MODULES,
+    isEntityTypeActive,
+    isModuleActive,
+    getActiveEntityTypes,
+    getActiveModules,
+    REALM_PRESETS
+} from '../utils/realmConfig';
 import { FormInput } from '../components/ui';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
@@ -653,6 +663,279 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 >
                                     <div className="text-xs font-bold flex items-center gap-2">🧭 Grand Voyager</div>
                                     <div className="text-[9px] opacity-60 mt-1">Tropical Seas & Teak Timber</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Realm Blueprints & Engine Modules (Approaches 2 & 7) */}
+                        <div className={`p-6 rounded-2xl border space-y-6 ${
+                            isLight ? 'bg-[#f7efe0]/80 border-[#c8a96e]/40' : 'bg-black/30 border-white/10'
+                        }`}>
+                            {/* Section Header */}
+                            <div>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Sliders size={15} className={accent} />
+                                        <h4 className={`text-xs font-black uppercase tracking-widest ${accent}`}>
+                                            Realm Blueprints & Engine Modules
+                                        </h4>
+                                    </div>
+                                    <span className="text-[10px] font-mono opacity-50">
+                                        {getActiveEntityTypes(world).length} / {ALL_ENTITY_TYPES.length} Blueprints Active
+                                    </span>
+                                </div>
+                                <p className="text-[11px] opacity-60 font-serif italic mt-1">
+                                    Tailor Nexus Chronicle to any universe. Toggle off fantasy combat rolls, cybernetic blueprints, or arcane groups to keep your workspace crisp and distraction-free. Existing data is permanently preserved.
+                                </p>
+                            </div>
+
+                            {/* Quick Presets Bar */}
+                            <div className="space-y-2">
+                                <span className="text-[9px] font-black uppercase tracking-wider opacity-60 block">
+                                    Worldbuilding Presets
+                                </span>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2">
+                                    {REALM_PRESETS.map(preset => {
+                                        const currentActiveTypes = getActiveEntityTypes(world);
+                                        const isActive = preset.activeEntityTypes.length === currentActiveTypes.length &&
+                                            preset.activeEntityTypes.every(t => currentActiveTypes.includes(t)) &&
+                                            (Object.keys(preset.activeModules) as Array<keyof RealmModuleConfig>).every(k => isModuleActive(world, k) === preset.activeModules[k]);
+
+                                        return (
+                                            <button
+                                                key={preset.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setWorld({
+                                                        ...world,
+                                                        activeEntityTypes: [...preset.activeEntityTypes],
+                                                        activeModules: { ...preset.activeModules }
+                                                    });
+                                                }}
+                                                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                                                    isActive
+                                                        ? isLight
+                                                            ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e] shadow-md font-bold'
+                                                            : 'bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-md font-bold'
+                                                        : isLight
+                                                        ? 'bg-[#fdfbf6] text-[#2b1810] border-[#c8a96e]/30 hover:border-[#c8a96e] hover:bg-[#ede2cb]/60'
+                                                        : 'bg-white/5 text-slate-300 border-white/5 hover:border-white/20 hover:bg-white/10'
+                                                }`}
+                                                title={preset.description}
+                                            >
+                                                <div className="flex items-center justify-between w-full">
+                                                    <span className="text-sm">{preset.icon}</span>
+                                                    {isActive && <Check size={12} className={isLight ? 'text-[#e6c687]' : 'text-amber-400'} />}
+                                                </div>
+                                                <span className="text-[10px] font-bold mt-1.5 leading-tight">{preset.label}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Master Engine Switches (Approach 2) */}
+                            <div className="space-y-2.5 pt-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[9px] font-black uppercase tracking-wider opacity-60 block">
+                                        Engine System Modules
+                                    </span>
+                                    <span className="text-[9px] opacity-40 font-mono">Approach 2: Realm Switches</span>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5">
+                                    {[
+                                        { key: 'combatStats' as const, label: 'RPG Combat & Stats', icon: Swords, desc: 'D20 attributes, radar chart, vital metrics' },
+                                        { key: 'magicSystems' as const, label: 'Magic & Arcana', icon: Sparkles, desc: 'Spell schools, arcane groups, mystic ties' },
+                                        { key: 'techSystems' as const, label: 'Tech & Cybernetics', icon: Cpu, desc: 'Technological blueprints, science divisions' },
+                                        { key: 'factionMatrix' as const, label: 'Faction Tension Matrix', icon: Shield, desc: 'Balance of power, treaties, and conflict' },
+                                        { key: 'atlasCoordinates' as const, label: 'Cartography & Atlas', icon: MapPin, desc: 'Map pins, geographic zones, journey routes' },
+                                    ].map(module => {
+                                        const active = isModuleActive(world, module.key);
+                                        return (
+                                            <button
+                                                key={module.key}
+                                                type="button"
+                                                onClick={() => {
+                                                    const current = getActiveModules(world);
+                                                    setWorld({
+                                                        ...world,
+                                                        activeModules: {
+                                                            ...current,
+                                                            [module.key]: !active
+                                                        }
+                                                    });
+                                                }}
+                                                className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-start gap-3 ${
+                                                    active
+                                                        ? isLight
+                                                            ? 'bg-[#f5ecda] border-[#c8a96e] text-[#2b1810]'
+                                                            : 'bg-white/10 border-white/20 text-white'
+                                                        : isLight
+                                                        ? 'bg-black/5 border-dashed border-black/20 text-[#2b1810]/50 opacity-60 hover:opacity-100'
+                                                        : 'bg-black/20 border-dashed border-white/10 text-slate-500 opacity-60 hover:opacity-100'
+                                                }`}
+                                            >
+                                                <div className={`p-1.5 rounded-lg mt-0.5 ${
+                                                    active 
+                                                        ? isLight ? 'bg-[#70121e]/15 text-[#70121e]' : 'bg-amber-400/20 text-amber-400' 
+                                                        : 'bg-black/10 text-slate-500'
+                                                }`}>
+                                                    <module.icon size={13} />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between gap-1">
+                                                        <span className="text-[11px] font-bold truncate">{module.label}</span>
+                                                        <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded-md ${
+                                                            active ? (isLight ? 'bg-[#70121e]/10 text-[#70121e]' : 'bg-amber-400/15 text-amber-300') : 'opacity-40'
+                                                        }`}>
+                                                            {active ? 'ON' : 'OFF'}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[9px] opacity-60 line-clamp-1 mt-0.5">{module.desc}</p>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Entity Blueprints Category Matrix (Approach 7) */}
+                            <div className="space-y-3 pt-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[9px] font-black uppercase tracking-wider opacity-60 block">
+                                        Entity Type Blueprints (Macro Filtering)
+                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setWorld({ ...world, activeEntityTypes: [...ALL_ENTITY_TYPES] })}
+                                            className="text-[9px] font-bold text-amber-500 hover:underline cursor-pointer"
+                                        >
+                                            Enable All (21)
+                                        </button>
+                                        <span className="text-[9px] opacity-30">|</span>
+                                        <span className="text-[9px] opacity-40 font-mono">Approach 7</span>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {HIERARCHY_CONFIG.map(group => {
+                                        const groupActive = group.types.filter(t => isEntityTypeActive(world, t));
+                                        const allGroupEnabled = groupActive.length === group.types.length;
+
+                                        return (
+                                            <div
+                                                key={group.id}
+                                                className={`p-3.5 rounded-xl border space-y-2.5 ${
+                                                    isLight ? 'bg-[#fffdf9] border-[#c8a96e]/30' : 'bg-black/20 border-white/5'
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between border-b pb-1.5 border-current/10">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <group.icon size={12} className={isLight ? 'text-[#70121e]' : 'text-amber-400'} />
+                                                        <span className="text-[10px] font-black uppercase tracking-wider font-serif">
+                                                            {group.label}
+                                                        </span>
+                                                        <span className="text-[9px] opacity-40 font-mono">
+                                                            ({groupActive.length}/{group.types.length})
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const currentSet = new Set(getActiveEntityTypes(world));
+                                                            if (allGroupEnabled) {
+                                                                group.types.forEach(t => currentSet.delete(t));
+                                                            } else {
+                                                                group.types.forEach(t => currentSet.add(t));
+                                                            }
+                                                            setWorld({ ...world, activeEntityTypes: Array.from(currentSet) });
+                                                        }}
+                                                        className="text-[9px] font-mono opacity-60 hover:opacity-100 cursor-pointer"
+                                                    >
+                                                        {allGroupEnabled ? 'None' : 'All'}
+                                                    </button>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-1.5">
+                                                    {group.types.map(type => {
+                                                        const isActive = isEntityTypeActive(world, type);
+                                                        const count = stats.byType[type] || 0;
+
+                                                        return (
+                                                            <button
+                                                                key={type}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const current = getActiveEntityTypes(world);
+                                                                    const next = isActive
+                                                                        ? current.filter(t => t !== type)
+                                                                        : [...current, type];
+                                                                    setWorld({ ...world, activeEntityTypes: next });
+                                                                }}
+                                                                className={`p-2 rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
+                                                                    isActive
+                                                                        ? isLight
+                                                                            ? 'bg-[#f7efe0] border-[#c8a96e]/60 text-[#2b1810]'
+                                                                            : 'bg-white/10 border-white/15 text-white'
+                                                                        : isLight
+                                                                        ? 'bg-black/5 border-dashed border-black/10 text-stone-400 opacity-50'
+                                                                        : 'bg-black/30 border-dashed border-white/5 text-slate-500 opacity-50'
+                                                                }`}
+                                                            >
+                                                                <div className="flex items-center gap-1.5 min-w-0">
+                                                                    {isActive ? (
+                                                                        <CheckSquare size={12} className={isLight ? 'text-[#70121e]' : 'text-amber-400'} />
+                                                                    ) : (
+                                                                        <Square size={12} className="opacity-40" />
+                                                                    )}
+                                                                    <span className="text-[10px] font-semibold truncate">
+                                                                        {TYPE_LABELS[type]}
+                                                                    </span>
+                                                                </div>
+                                                                {count > 0 && (
+                                                                    <span className={`text-[8px] font-mono px-1 py-0.2 rounded shrink-0 ${
+                                                                        isLight ? 'bg-[#70121e]/10 text-[#70121e]' : 'bg-amber-400/20 text-amber-300'
+                                                                    }`} title={`${count} records exist in storage`}>
+                                                                        {count}
+                                                                    </span>
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Codex Document Defaults (Approach 6 Global Toggle) */}
+                            <div className={`p-4 rounded-xl border flex items-center justify-between gap-4 ${
+                                isLight ? 'bg-[#fdfaf2] border-[#c8a96e]/30' : 'bg-black/25 border-white/5'
+                            }`}>
+                                <div className="space-y-0.5">
+                                    <span className="text-[10px] font-black uppercase tracking-wider block">
+                                        Default to Hide Empty Unfilled Fields in Codex View
+                                    </span>
+                                    <p className="text-[10px] opacity-60 font-serif italic">
+                                        When enabled, viewing any entity automatically conceals unpopulated attributes and empty lists by default across this Realm. Can be individually adjusted per-document.
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setWorld({ ...world, hideEmptyFieldsDefault: !world.hideEmptyFieldsDefault })}
+                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                                        world.hideEmptyFieldsDefault
+                                            ? isLight
+                                                ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e]'
+                                                : 'bg-amber-500/20 text-amber-300 border-amber-500/60'
+                                            : isLight
+                                            ? 'bg-black/5 text-[#2b1810]/60 border-black/20'
+                                            : 'bg-white/5 text-slate-400 border-white/10'
+                                    }`}
+                                >
+                                    {world.hideEmptyFieldsDefault ? '✓ Auto-Hide' : 'Show All'}
                                 </button>
                             </div>
                         </div>
