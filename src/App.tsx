@@ -608,7 +608,7 @@ const App = () => {
                     </header>
 
                     {/* Body Content */}
-                    <div className={`flex-1 min-w-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'min-h-0 p-2 sm:p-3 overflow-hidden' : 'min-h-full p-2 sm:p-4 md:p-6'}`}>
+                    <div className={`grow shrink-0 min-w-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'min-h-0 p-2 sm:p-3 overflow-hidden shrink' : 'p-2 sm:p-4 md:p-6'}`}>
                         {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
                         {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
                         {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
@@ -624,13 +624,13 @@ const App = () => {
                         {activeEntity && (
                             isManuscript ? (
 
-                                <div className="relative flex-1 min-w-0 w-full flex flex-col p-1.5 sm:p-3 md:p-5 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full rounded-2xl sm:rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl">
+                                <div className="relative grow shrink-0 min-w-0 w-full flex flex-col p-1.5 sm:p-3 md:p-5 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] rounded-2xl sm:rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl">
                                     {/* Stacked Parchment Page Layers Behind Book — visible on extra large viewports */}
                                     <div className="hidden 2xl:block absolute -bottom-3 -left-4 w-80 h-48 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform -rotate-2 shadow-lg pointer-events-none z-0" />
                                     <div className="hidden 2xl:block absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
 
                                     {/* Inner Vellum Parchment Page — Wraps Full Scroll Height Seamlessly */}
-                                    <div className="relative flex-1 min-w-0 w-full flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 lg:p-8 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
+                                    <div className="relative grow shrink-0 min-w-0 w-full flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 lg:p-8 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] pb-16">
 
                                         {/* Four Ornamental Gold Filigree Corners (Vector HD) */}
                                         <VectorFiligreeCorner position="top-left" className="absolute top-2 left-2 z-10" size={24} />
