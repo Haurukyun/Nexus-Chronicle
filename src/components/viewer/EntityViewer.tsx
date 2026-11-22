@@ -3,14 +3,15 @@ import {
     Folder, Hash, Printer, Compass, BookOpen, Shield, 
     Sparkles, Package, Heart, Swords, Ghost, GitMerge, 
     EyeOff, ChevronRight, ChevronLeft, ChevronsRight, X,
-    AlertTriangle, Landmark, CloudRain
+    AlertTriangle, Landmark, CloudRain,
+    Crown, Scroll, Castle, Anchor
 } from 'lucide-react';
 import { CodexHeader, WikiHeader, RoyalHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
 import { WikiInfobox } from './WikiInfobox';
 import { FieldRow, LinksDisplay, MarkdownRenderer } from '../ui';
 import { NexusImage } from '../ui/NexusImage';
-import { EntityViewerProps, Character, EntityType, Location } from '../../types';
+import { EntityViewerProps, Character, EntityType, Location, Organization } from '../../types';
 import { TYPE_LABELS } from '../../constants';
 import { getCategorizedBacklinks } from '../../utils/backlinkUtils';
 import { EntitySpecificsViewerRegistry } from './specifics/EntitySpecificsViewerRegistry';
@@ -100,6 +101,13 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
             if (loc.notableLandmarks?.trim()) items.push({ id: 'section-landmarks', label: 'Landmarks', icon: Landmark });
             if (loc.climateNotes?.trim()) items.push({ id: 'section-climate', label: 'Climate', icon: CloudRain });
             if (loc.traditionsAndCustoms?.trim()) items.push({ id: 'section-traditions', label: 'Traditions', icon: BookOpen });
+        } else if (entity.type === 'organization' || entity.type === 'political' || entity.type === 'religious') {
+            const org = entity as any;
+            items.push({ id: 'section-specifics', label: 'Governance & Vitals', icon: Anchor });
+            if (org.hierarchyRanks?.trim()) items.push({ id: 'section-hierarchy', label: 'Hierarchy', icon: Crown });
+            if (org.coreTenets?.trim()) items.push({ id: 'section-tenets', label: 'Tenets & Creed', icon: Scroll });
+            if (org.factionAssets?.trim()) items.push({ id: 'section-assets', label: 'Assets & Strongholds', icon: Castle });
+            if (org.traditions?.trim()) items.push({ id: 'section-traditions', label: 'Traditions', icon: BookOpen });
         } else {
             items.push({
                 id: 'section-specifics',

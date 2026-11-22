@@ -376,6 +376,9 @@ export interface Organization extends BaseEntity {
   pairedConnectedItems?: string[]; // Connected to Items
   pairedConnectedProfessions?: string[]; // Connected to Occupations/Classes
   pairedConditions?: string[]; // Connected to Afflictions/Boons/Conditions
+  hierarchyRanks?: string; // Structured list of internal leadership ranks/titles with holder notes
+  coreTenets?: string;     // Structured creed, laws, bylaws, or sacred tenets with context notes
+  factionAssets?: string;  // Strongholds, fleets, artifacts, treasuries, or territorial assets owned
 }
 
 export interface Item extends BaseEntity {
@@ -662,6 +665,9 @@ export interface PoliticalGroup extends BaseEntity {
   pairedConnectedItems?: string[]; // Connected to Items
   pairedConnectedProfessions?: string[]; // Connected to Occupations/Classes
   pairedConditions?: string[]; // Connected to Afflictions/Boons/Conditions
+  hierarchyRanks?: string; // Structured list of internal leadership ranks/titles with holder notes
+  coreTenets?: string;     // Structured creed, laws, bylaws, or sacred tenets with context notes
+  factionAssets?: string;  // Strongholds, fleets, artifacts, treasuries, or territorial assets owned
   spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 
@@ -786,6 +792,9 @@ export interface Religion extends BaseEntity {
   pairedConnectedItems?: string[]; // Connected to Items
   pairedConnectedProfessions?: string[]; // Connected to Occupations/Classes
   pairedConditions?: string[]; // Connected to Afflictions/Boons/Conditions
+  hierarchyRanks?: string; // Structured list of internal leadership ranks/titles with holder notes
+  coreTenets?: string;     // Structured creed, laws, bylaws, or sacred tenets with context notes
+  factionAssets?: string;  // Strongholds, fleets, artifacts, treasuries, or territorial assets owned
   spoilerNotes?: string; // Secrets/Spoilers/DM notes
 }
 

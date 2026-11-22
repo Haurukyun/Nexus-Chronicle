@@ -4,7 +4,8 @@ import { FormInput, SmartSelect, FormToggle } from '../../ui';
 import { EditorGroup } from '../EditorGroup';
 import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
-import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap } from 'lucide-react';
+import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap, Crown } from 'lucide-react';
+import { TraitListEditor } from '../TraitListEditor';
 
 interface Props {
     entity: Religion;
@@ -86,6 +87,33 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
                     <textarea className={`${textareaClass} h-32`} value={entity.spoilerNotes || ''} onChange={e => onUpdate({ ...entity, spoilerNotes: e.target.value })} />
                 </div>
             </EditorGroup>
+            <EditorGroup title="Priesthood, Dogma & Sacred Relics" icon={Crown}>
+                <TraitListEditor
+                    label="Priesthood & Holy Hierarchy"
+                    value={entity.hierarchyRanks || ''}
+                    onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
+                    suggestions={['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic']}
+                    placeholder="Add a holy rank or title..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Sacred Dogma & Commandments"
+                    value={entity.coreTenets || ''}
+                    onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
+                    suggestions={['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance']}
+                    placeholder="Add a sacred commandment, creed or dogma..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Sacred Relics, Temples & Sanctuaries"
+                    value={entity.factionAssets || ''}
+                    onChange={(v) => onUpdate({ ...entity, factionAssets: v })}
+                    suggestions={['Grand Cathedral', 'High Altar', 'Divine Reliquary', 'Holy Sepulchre', 'Sacred Grove', 'Monastic Fortress', 'Sanctuary of Whispers', 'Temple Vault']}
+                    placeholder="Add a sacred relic, temple or holy site..."
+                    gridSpan={12}
+                />
+            </EditorGroup>
+
             <EditorGroup title="Possessions" icon={Gem}>
                 <SmartSelect label="Important Resources/Materials" ids={entity.pairedConnectedResources || []} type="resource" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConnectedResources: ids })} onCreate={onCreateNew} />
                 <SmartSelect label="Connected to Items" ids={entity.pairedConnectedItems || []} type="item" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConnectedItems: ids })} onCreate={onCreateNew} />

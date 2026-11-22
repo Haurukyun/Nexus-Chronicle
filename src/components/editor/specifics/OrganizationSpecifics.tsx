@@ -4,7 +4,8 @@ import { FormInput, SmartSelect, FormToggle } from '../../ui';
 import { EditorGroup } from '../EditorGroup';
 import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
-import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap } from 'lucide-react';
+import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap, Crown } from 'lucide-react';
+import { TraitListEditor } from '../TraitListEditor';
 
 interface Props {
     entity: Organization;
@@ -91,6 +92,33 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
                     <label className={labelClass}>Secrets & Spoilers</label>
                     <textarea className={`w-full ${isRoyal ? 'bg-[#fdf5f5] border-[#c8a96e]/60 text-[#70121e] font-serif shadow-inner' : (layoutMode === 'wiki') ? 'bg-[#fff5f5] border-rose-100 text-rose-900 shadow-sm' : 'bg-slate-900/40 border-rose-900/20 shadow-sm'} border rounded-xl px-4 py-3 h-32 outline-none resize-none text-sm`} value={entity.spoilerNotes || ''} onChange={e => onUpdate({ ...entity, spoilerNotes: e.target.value })} />
                 </div>
+            </EditorGroup>
+
+            <EditorGroup title="Hierarchy, Doctrine & Assets" icon={Crown}>
+                <TraitListEditor
+                    label="Hierarchy & Leadership Ranks"
+                    value={entity.hierarchyRanks || ''}
+                    onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
+                    suggestions={['Grandmaster', 'High Council', 'Commander', 'Quartermaster', 'Envoy', 'Officer', 'Scribe', 'Initiate', 'Operative', 'Sentinel']}
+                    placeholder="Add an internal rank or title..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Core Tenets & Doctrine"
+                    value={entity.coreTenets || ''}
+                    onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
+                    suggestions={['Absolute Secrecy', 'Mutual Defense', 'Strict Hierarchy', 'Total Loyalty', 'Protection of the Innocent', 'Pursuit of Forbidden Lore', 'Non-Interference', 'Blood Oath', 'Code of Honor', 'Sacred Silence']}
+                    placeholder="Add a core tenet, law or creed..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Faction Assets & Strongholds"
+                    value={entity.factionAssets || ''}
+                    onChange={(v) => onUpdate({ ...entity, factionAssets: v })}
+                    suggestions={['Grand Citadel', 'Secret Vault', 'War Fleet', 'Guildhouse', 'Hidden Archives', 'Armory', 'Smuggling Network', 'Sacred Relic', 'Trade Monopoly', 'Watchtowers']}
+                    placeholder="Add a stronghold, fleet or asset..."
+                    gridSpan={12}
+                />
             </EditorGroup>
 
             <EditorGroup title="Possessions & Traditions" icon={Gem}>

@@ -4,7 +4,8 @@ import { FormInput, SmartSelect, FormToggle } from '../../ui';
 import { EditorGroup } from '../EditorGroup';
 import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
-import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap } from 'lucide-react';
+import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap, Crown } from 'lucide-react';
+import { TraitListEditor } from '../TraitListEditor';
 
 interface Props {
     entity: PoliticalGroup;
@@ -85,6 +86,33 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                     <textarea className={`${textareaClass} h-32`} value={entity.spoilerNotes || ''} onChange={e => onUpdate({ ...entity, spoilerNotes: e.target.value })} />
                 </div>
             </EditorGroup>
+            <EditorGroup title="Hierarchy, Doctrine & Assets" icon={Crown}>
+                <TraitListEditor
+                    label="Hierarchy & Leadership Ranks"
+                    value={entity.hierarchyRanks || ''}
+                    onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
+                    suggestions={['Chancellor', 'Senator', 'Consul', 'Magistrate', 'Speaker', 'Party Whip', 'Minister', 'Delegate', 'Ambassador', 'Tribune']}
+                    placeholder="Add a political rank or title..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Core Tenets & Doctrine"
+                    value={entity.coreTenets || ''}
+                    onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
+                    suggestions={['Sovereignty', 'Egalitarianism', 'Imperial Expansion', 'Tradition & Ancestry', 'Isolationism', 'Free Commerce', 'Rule of Law', 'Radical Reform', 'Devotion to the Crown']}
+                    placeholder="Add a core tenet, manifesto or creed..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Faction Assets & Strongholds"
+                    value={entity.factionAssets || ''}
+                    onChange={(v) => onUpdate({ ...entity, factionAssets: v })}
+                    suggestions={['Parliament House', 'State Treasury', 'Provincial Embassies', 'Naval Fleet', 'Fortified Palace', 'Propaganda Press', 'Trade Concessions', 'Military Garrison']}
+                    placeholder="Add an asset, seat of power or stronghold..."
+                    gridSpan={12}
+                />
+            </EditorGroup>
+
             <EditorGroup title="Possessions" icon={Gem}>
                 <SmartSelect label="Used Currencies" ids={entity.localCurrencies || []} type="character" all={allEntities} onChange={(ids) => onUpdate({ ...entity, localCurrencies: ids })} onCreate={onCreateNew} />
                 <SmartSelect label="Important Resources/Materials" ids={entity.pairedConnectedResources || []} type="resource" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConnectedResources: ids })} onCreate={onCreateNew} />

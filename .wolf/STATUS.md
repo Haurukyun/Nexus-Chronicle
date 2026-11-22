@@ -12,6 +12,13 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Faction & Organization Specifics Polish — Hierarchy, Tenets & Assets (`OrganizationSpecifics.tsx`, `PoliticalGroupSpecifics.tsx`, `ReligionSpecifics.tsx`, `OrganizationSpecificsViewer.tsx`, `PoliticalGroupSpecificsViewer.tsx`, `ReligionSpecificsViewer.tsx`, `EntityViewer.tsx`, `types.ts`) (2026-11-22)**:
+  - Extended `Organization`, `PoliticalGroup`, and `Religion` models with structured fields: `hierarchyRanks`, `coreTenets`, and `factionAssets`.
+  - Added interactive `TraitListEditor` groups across Organization, Political Group, and Religion editors with customized quick-pick suggestions and note annotation modals.
+  - Built themed `StructuredListDisplay` with `ViewerSectionCard` cards across Royal Codex, Wiki, Sovereign, and Grand Voyager.
+  - Connected hierarchy, tenets, and assets sections to `EntityViewer.tsx` quick-jump navigation rail and live scroll spy.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
+
 - **Header Trays Vertical Harmony & Responsive Thin Scaling (`App.tsx`, `ThemeSwitcher.tsx`) (2026-11-22)**:
   - Unified both header trays (Nav Dropdowns & Action Tools) to exact pixel-matched `h-9` (36px) bounding containers with identical `p-1` padding.
   - Standardized all child buttons across both trays to uniform `h-7` (28px) with `border border-transparent` base state to eliminate fractional-pixel height mismatches and layout shifting.
@@ -311,7 +318,7 @@ budget_tokens: 1000
 ### 🔴 Active: Option 1 — Sheet & Viewer Consistency Pass
 - [x] **EntityViewer Read-Mode Quick-Jump Rail:** Built collapsible sticky category nav rail on desktop and floating compass navigator on mobile/tablet with dynamic category indexing and Royal Codex auto-tab activation.
 - [x] **Location Specifics Polish:** Defenses, hazards, notable landmarks, climate notes as structured bullet lists with notes (like TraitListEditor).
-- **Organization/Faction Specifics Polish:** Hierarchy ranks, assets, tenet lists as structured fields.
+- [x] **Organization/Faction Specifics Polish:** Hierarchy ranks, assets, tenet lists as structured fields.
 - **Item & Spell Specifics Polish:** Attunement/components, spell school, rarity tier as compact chips.
 
 ### 🟡 Queued: Option 2 — Session Codex & Campaign Play Tools
