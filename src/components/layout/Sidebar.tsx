@@ -5,12 +5,12 @@ import {
     Footprints, Globe, Settings, BookMarked, Compass, 
     ChevronRight, ChevronDown, GripVertical, Folder,
     CheckSquare, Square, Tag, ArrowRightLeft, Download, X, Layers, Check, BookOpen,
-    Lightbulb, Swords
+    Lightbulb, Swords, Sliders, Eye, EyeOff
 } from 'lucide-react';
 import { isEntityDeceased, isEntityCategory, isEntityFinished, isEntityMinor, getEntityAliases } from '../../utils/documentModeUtils';
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
-import { isEntityTypeActive } from '../../utils/realmConfig';
+import { isEntityTypeActive, getActiveEntityTypes, ALL_ENTITY_TYPES, REALM_PRESETS } from '../../utils/realmConfig';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { RealmSwitcher } from './RealmSwitcher';
@@ -445,6 +445,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     // Multi-select state
     const [selectedEntityIds, setSelectedEntityIds] = useState<Set<string>>(new Set());
     const [isSelectMode, setIsSelectMode] = useState<boolean>(false);
+    const [showCategoryManager, setShowCategoryManager] = useState<boolean>(false);
     const [showMoveModal, setShowMoveModal] = useState<boolean>(false);
     const [showTagModal, setShowTagModal] = useState<boolean>(false);
     const [tagInput, setTagInput] = useState<string>('');
@@ -708,6 +709,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </div>
                     <button
                         type="button"
+                        onClick={() => setShowCategoryManager(!showCategoryManager)}
+                        className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-center ${
+                            showCategoryManager
+                                ? (themeId === 'royal-codex')
+                                    ? 'bg-[#70121e]/40 text-[#fef08a] border-[#c8a96e]/70 shadow-[0_0_10px_rgba(200,169,110,0.3)]'
+                                    : (themeId === 'grand-voyager')
+                                    ? 'bg-[#0f766e]/30 text-[#2dd4bf] border-[#2dd4bf]/60 shadow-[0_0_10px_rgba(45,212,191,0.3)]'
+                                    : (layoutMode === 'wiki')
+                                    ? 'bg-[#b91c1c]/15 text-[#b91c1c] border-[#b91c1c]/50'
+                                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                : (themeId === 'royal-codex')
+                                    ? 'bg-[#180d07] text-[#c8a96e]/60 hover:text-[#fef08a] border-[#c8a96e]/20 hover:border-[#c8a96e]/40'
+                                    : (themeId === 'grand-voyager')
+                                    ? 'bg-[#081517] text-[#2dd4bf]/60 hover:text-[#2dd4bf] border-[#2dd4bf]/20 hover:border-[#2dd4bf]/40'
+                                    : (layoutMode === 'wiki')
+                                    ? 'bg-white/60 text-stone-600 hover:text-black border-[#d4c8af]'
+                                    : 'bg-white/5 text-slate-400 hover:text-white border-white/5'
+                        }`}
+                        title={showCategoryManager ? "Close category configuration" : "Configure visible categories & blueprints"}
+                    >
+                        <Sliders size={13} />
+                    </button>
+                    <button
+                        type="button"
                         onClick={() => {
                             if (isSelectMode && selectedEntityIds.size > 0) {
                                 setSelectedEntityIds(new Set());
@@ -731,11 +756,118 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     ? 'bg-white/60 text-stone-600 hover:text-black border-[#d4c8af]'
                                     : 'bg-white/5 text-slate-400 hover:text-white border-white/5'
                         }`}
-                        title={isSelectMode ? "Exit multi-select mode" : "Multi-select entities (or Ctrl+click)"}
+                        title={isSelectMode ? "Exit multi-select mode" : "Select entities for batch operations"}
                     >
                         <CodexCheckbox checked={isSelectMode || selectedEntityIds.size > 0} size="sm" />
                     </button>
                 </div>
+
+                {/* In-Place Sidebar Category Manager Popover */}
+                {showCategoryManager && (
+                    <div className={`p-3 rounded-2xl border space-y-2.5 max-h-[70vh] overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-top-1 duration-200 ${
+                        (themeId === 'royal-codex')
+                            ? 'bg-[#1a0e07] border-[#c8a96e]/40 text-[#f0ddb0] shadow-2xl'
+                            : (themeId === 'grand-voyager')
+                            ? 'bg-[#061416] border-[#2dd4bf]/40 text-[#f5ebd7] shadow-2xl'
+                            : (layoutMode === 'wiki')
+                            ? 'bg-[#fbf8ef] border-[#d4c8af] text-[#2b1810] shadow-xl'
+                            : 'bg-slate-900 border-slate-700 text-slate-100 shadow-2xl'
+                    }`}>
+                        <div className="flex items-center justify-between pb-1.5 border-b border-current/15">
+                            <span className="text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 font-serif">
+                                <Sliders size={11} /> Visible Categories
+                            </span>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        useWorldStore.setState(state => ({
+                                            world: { ...state.world, activeEntityTypes: [...ALL_ENTITY_TYPES] }
+                                        }));
+                                    }}
+                                    className="text-[9px] font-bold text-amber-500 hover:underline cursor-pointer"
+                                >
+                                    All (21)
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCategoryManager(false)}
+                                    className="opacity-50 hover:opacity-100 cursor-pointer"
+                                    title="Close"
+                                >
+                                    <X size={11} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Preset Quick-Picks */}
+                        <div className="space-y-1">
+                            <span className="text-[8px] font-mono opacity-50 uppercase tracking-widest block">Quick Presets</span>
+                            <div className="grid grid-cols-3 gap-1">
+                                {REALM_PRESETS.slice(0, 6).map(preset => (
+                                    <button
+                                        key={preset.id}
+                                        type="button"
+                                        onClick={() => {
+                                            useWorldStore.setState(state => ({
+                                                world: {
+                                                    ...state.world,
+                                                    activeEntityTypes: [...preset.activeEntityTypes],
+                                                    activeModules: { ...preset.activeModules }
+                                                }
+                                            }));
+                                        }}
+                                        className="px-1.5 py-1 rounded border text-[9px] font-semibold text-center truncate hover:opacity-100 transition-all cursor-pointer bg-white/5 border-current/10 hover:border-amber-400/50"
+                                        title={preset.description}
+                                    >
+                                        <span className="mr-0.5">{preset.icon}</span> {preset.label.split(' ')[0]}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 4 Category Groups with Checkboxes */}
+                        <div className="space-y-2 pt-1 border-t border-current/10">
+                            {HIERARCHY_CONFIG.map(group => {
+                                const currentActive = getActiveEntityTypes(world);
+                                return (
+                                    <div key={group.id} className="space-y-1">
+                                        <div className="flex items-center justify-between text-[8px] font-mono font-black uppercase opacity-60">
+                                            <span>{group.label}</span>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-0.5">
+                                            {group.types.map(type => {
+                                                const isActive = currentActive.includes(type);
+                                                return (
+                                                    <button
+                                                        key={type}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const next = isActive
+                                                                ? currentActive.filter(t => t !== type)
+                                                                : [...currentActive, type];
+                                                            useWorldStore.setState(state => ({
+                                                                world: { ...state.world, activeEntityTypes: next }
+                                                            }));
+                                                        }}
+                                                        className={`flex items-center justify-between px-2 py-1 rounded text-[10px] text-left transition-all cursor-pointer ${
+                                                            isActive
+                                                                ? 'bg-current/10 font-bold opacity-100'
+                                                                : 'opacity-40 hover:opacity-75'
+                                                        }`}
+                                                    >
+                                                        <span className="truncate">{TYPE_LABELS[type]}</span>
+                                                        <CodexCheckbox checked={isActive} size="sm" />
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Entity Nav */}
@@ -823,15 +955,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                                     <span className="ml-1.5 text-[8px] font-normal lowercase tracking-normal text-yellow-400 font-mono">↳ root</span>
                                                 )}
                                             </span>
-                                            {!world.entities.find(e => e.categorySwitch && e.type === type) && (
+                                            <div className="flex items-center gap-0.5">
                                                 <button
-                                                    onClick={(e) => { e.stopPropagation(); handleCreate(type, undefined, true); }}
-                                                    className={`opacity-30 hover:opacity-100 p-1 hover:bg-white/10 rounded-md transition-all cursor-pointer ${(themeId === 'grand-voyager') ? 'text-[#2dd4bf]' : (themeId === 'royal-codex') ? 'text-[#c8a96e]' : 'text-slate-500'}`}
-                                                    title={`Add ${TYPE_LABELS[type]}`}
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const current = getActiveEntityTypes(world);
+                                                        const next = current.filter(t => t !== type);
+                                                        useWorldStore.setState(state => ({
+                                                            world: { ...state.world, activeEntityTypes: next }
+                                                        }));
+                                                    }}
+                                                    className={`opacity-0 group-hover/type:opacity-40 hover:!opacity-100 p-1 hover:bg-white/10 rounded-md transition-all cursor-pointer ${(themeId === 'grand-voyager') ? 'text-[#2dd4bf]' : (themeId === 'royal-codex') ? 'text-[#c8a96e]' : 'text-slate-400'}`}
+                                                    title={`Hide ${TYPE_LABELS[type]} category from sidebar`}
                                                 >
-                                                    <Plus size={12} />
+                                                    <EyeOff size={11} />
                                                 </button>
-                                            )}
+                                                {!world.entities.find(e => e.categorySwitch && e.type === type) && (
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleCreate(type, undefined, true); }}
+                                                        className={`opacity-30 hover:opacity-100 p-1 hover:bg-white/10 rounded-md transition-all cursor-pointer ${(themeId === 'grand-voyager') ? 'text-[#2dd4bf]' : (themeId === 'royal-codex') ? 'text-[#c8a96e]' : 'text-slate-500'}`}
+                                                        title={`Add ${TYPE_LABELS[type]}`}
+                                                    >
+                                                        <Plus size={12} />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                         <div 
                                             onDragOver={(e) => {

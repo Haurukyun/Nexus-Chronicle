@@ -5,7 +5,7 @@ import { EditorGroup } from '../EditorGroup';
 import { TraitListEditor } from '../TraitListEditor';
 import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
-import { Info, Zap, Heart, Swords, Scroll } from 'lucide-react';
+import { Info, Zap, Heart, Swords, Scroll, Plus, Trash2, Sliders, BookOpen, X, Sparkles } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
 import { isModuleActive } from '../../../utils/realmConfig';
 
@@ -128,76 +128,267 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                     gridSpan={6}
                 />
 
-                {/* Ultra-Compact Core Attributes Block with Full Stat Names in Parentheses */}
-                {showCombatStats && (
-                    <div className={`col-span-12 p-3 sm:p-4 rounded-2xl border ${isRoyal ? 'border-[#c8a96e]/40 bg-[#fbf8ef]' : isWiki ? 'border-[#d4c8af]/40 bg-white/60' : 'border-slate-500/10 bg-black/5'}`}>
-                        <div className="flex items-center justify-between border-b pb-1.5 mb-2.5">
-                            <span className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${isRoyal ? 'text-[#451a03] font-serif' : isWiki ? 'text-[#854d0e]' : 'text-slate-400'}`}>
-                                Core Attributes
-                            </span>
-                            <span className="text-[9px] font-mono opacity-50">Standard D20 Ability Array</span>
-                        </div>
+                {/* Flexible Stat Block Engine (Standard D20 / Custom Stats & Meters / None) */}
+                {showCombatStats && (() => {
+                    const mode = entity.statBlockMode || 'rpg-d20';
+                    const customList = entity.customStats || [];
+                    const statSuggestions = ['Health (HP)', 'Mana (MP)', 'Sanity', 'Cyberware', 'Resolve', 'Street Cred', 'Humanity', 'Stress', 'Armor', 'Luck', 'Morale', 'Ammo'];
 
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                            {[
-                                { key: 'strength', abbr: 'STR', full: 'Strength' },
-                                { key: 'dexterity', abbr: 'DEX', full: 'Dexterity' },
-                                { key: 'constitution', abbr: 'CON', full: 'Constitution' },
-                                { key: 'intelligence', abbr: 'INT', full: 'Intelligence' },
-                                { key: 'wisdom', abbr: 'WIS', full: 'Wisdom' },
-                                { key: 'charisma', abbr: 'CHA', full: 'Charisma' },
-                            ].map(stat => {
-                                const val = (entity.stats as any)?.[stat.key] || '';
-                                const num = parseInt(val, 10);
-                                const mod = !isNaN(num) ? Math.floor((num - 10) / 2) : null;
-                                const modStr = mod !== null ? (mod >= 0 ? `+${mod}` : `${mod}`) : null;
+                    return (
+                        <div className={`col-span-12 p-3 sm:p-4 rounded-2xl border space-y-3 ${isRoyal ? 'border-[#c8a96e]/40 bg-[#fbf8ef]' : isWiki ? 'border-[#d4c8af]/40 bg-white/60' : 'border-slate-500/10 bg-black/5'}`}>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2">
+                                <div>
+                                    <span className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${isRoyal ? 'text-[#451a03] font-serif' : isWiki ? 'text-[#854d0e]' : 'text-slate-400'}`}>
+                                        <Swords size={12} /> Character Attributes & Stat Block
+                                    </span>
+                                    <span className="text-[9px] font-mono opacity-50 block sm:inline">
+                                        {mode === 'rpg-d20' ? 'Standard D20 Ability Array' : mode === 'custom' ? 'Custom Author-Defined Gauges & Ratings' : 'Narrative Only (Stats Suppressed)'}
+                                    </span>
+                                </div>
 
-                                return (
-                                    <div
-                                        key={stat.key}
-                                        className={`flex flex-col items-center p-2 rounded-xl border text-center transition-all ${
-                                            isRoyal
-                                                ? 'bg-[#f7f0e1] border-[#c8a96e]/50 text-[#2b1810]'
-                                                : isWiki
-                                                ? 'bg-[#fbf8ef] border-[#d4c8af] text-[#1a1a1a]'
-                                                : 'bg-slate-800/60 border-slate-700 text-slate-100'
+                                {/* 3-Way Mode Pills */}
+                                <div className="inline-flex items-center p-0.5 rounded-lg bg-black/10 border border-current/10 shrink-0 gap-0.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => onUpdate({ ...entity, statBlockMode: 'rpg-d20' })}
+                                        className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${
+                                            mode === 'rpg-d20'
+                                                ? isRoyal
+                                                    ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                                    : 'bg-amber-500/25 text-amber-300 border border-amber-500/40'
+                                                : 'opacity-60 hover:opacity-100'
                                         }`}
                                     >
-                                        <div className="flex items-center gap-1 mb-1">
-                                            <span className="font-mono font-black text-xs">{stat.abbr}</span>
-                                            <span className="text-[9px] opacity-60 font-sans tracking-tight">({stat.full})</span>
-                                        </div>
+                                        <Swords size={10} /> D20 Array
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => onUpdate({ ...entity, statBlockMode: 'custom' })}
+                                        className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${
+                                            mode === 'custom'
+                                                ? isRoyal
+                                                    ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                                    : 'bg-amber-500/25 text-amber-300 border border-amber-500/40'
+                                                : 'opacity-60 hover:opacity-100'
+                                        }`}
+                                    >
+                                        <Sliders size={10} /> Custom Stats
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => onUpdate({ ...entity, statBlockMode: 'none' })}
+                                        className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase transition-all cursor-pointer flex items-center gap-1 ${
+                                            mode === 'none'
+                                                ? isRoyal
+                                                    ? 'bg-[#70121e] text-[#fff8e7] shadow-sm'
+                                                    : 'bg-amber-500/25 text-amber-300 border border-amber-500/40'
+                                                : 'opacity-60 hover:opacity-100'
+                                        }`}
+                                    >
+                                        <BookOpen size={10} /> None
+                                    </button>
+                                </div>
+                            </div>
 
-                                        <input
-                                            type="text"
-                                            value={val}
-                                            placeholder="10"
-                                            onChange={e => onUpdate({
-                                                ...entity,
-                                                stats: { ...(entity.stats || { strength: '10', dexterity: '10', constitution: '10', intelligence: '10', wisdom: '10', charisma: '10' }), [stat.key]: e.target.value }
-                                            })}
-                                            className={`w-full text-center font-mono font-bold text-sm py-1 px-1.5 rounded-lg border outline-none transition-all ${
-                                                isRoyal
-                                                    ? 'bg-[#fbf8ef] border-[#c8a96e]/60 focus:border-[#70121e] text-[#2b1810]'
-                                                    : isWiki
-                                                    ? 'bg-white border-[#d4c8af] focus:border-[#b91c1c] text-black'
-                                                    : 'bg-slate-900 border-slate-700 focus:border-amber-400 text-white'
-                                            }`}
-                                        />
+                            {/* Mode 1: Standard D20 */}
+                            {mode === 'rpg-d20' && (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                                    {[
+                                        { key: 'strength', abbr: 'STR', full: 'Strength' },
+                                        { key: 'dexterity', abbr: 'DEX', full: 'Dexterity' },
+                                        { key: 'constitution', abbr: 'CON', full: 'Constitution' },
+                                        { key: 'intelligence', abbr: 'INT', full: 'Intelligence' },
+                                        { key: 'wisdom', abbr: 'WIS', full: 'Wisdom' },
+                                        { key: 'charisma', abbr: 'CHA', full: 'Charisma' },
+                                    ].map(stat => {
+                                        const val = (entity.stats as any)?.[stat.key] || '';
+                                        const num = parseInt(val, 10);
+                                        const mod = !isNaN(num) ? Math.floor((num - 10) / 2) : null;
+                                        const modStr = mod !== null ? (mod >= 0 ? `+${mod}` : `${mod}`) : null;
 
-                                        {modStr !== null && (
-                                            <span className={`mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
-                                                isRoyal ? 'bg-[#70121e]/15 text-[#70121e]' : 'bg-amber-400/20 text-amber-500'
-                                            }`}>
-                                                {modStr}
-                                            </span>
-                                        )}
+                                        return (
+                                            <div
+                                                key={stat.key}
+                                                className={`flex flex-col items-center p-2 rounded-xl border text-center transition-all ${
+                                                    isRoyal
+                                                        ? 'bg-[#f7f0e1] border-[#c8a96e]/50 text-[#2b1810]'
+                                                        : isWiki
+                                                        ? 'bg-[#fbf8ef] border-[#d4c8af] text-[#1a1a1a]'
+                                                        : 'bg-slate-800/60 border-slate-700 text-slate-100'
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-1 mb-1">
+                                                    <span className="font-mono font-black text-xs">{stat.abbr}</span>
+                                                    <span className="text-[9px] opacity-60 font-sans tracking-tight">({stat.full})</span>
+                                                </div>
+
+                                                <input
+                                                    type="text"
+                                                    value={val}
+                                                    placeholder="10"
+                                                    onChange={e => onUpdate({
+                                                        ...entity,
+                                                        stats: { ...(entity.stats || { strength: '10', dexterity: '10', constitution: '10', intelligence: '10', wisdom: '10', charisma: '10' }), [stat.key]: e.target.value }
+                                                    })}
+                                                    className={`w-full text-center font-mono font-bold text-sm py-1 px-1.5 rounded-lg border outline-none transition-all ${
+                                                        isRoyal
+                                                            ? 'bg-[#fbf8ef] border-[#c8a96e]/60 focus:border-[#70121e] text-[#2b1810]'
+                                                            : isWiki
+                                                            ? 'bg-white border-[#d4c8af] focus:border-[#b91c1c] text-black'
+                                                            : 'bg-slate-900 border-slate-700 focus:border-amber-400 text-white'
+                                                    }`}
+                                                />
+
+                                                {modStr !== null && (
+                                                    <span className={`mt-1 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full ${
+                                                        isRoyal ? 'bg-[#70121e]/15 text-[#70121e]' : 'bg-amber-400/20 text-amber-500'
+                                                    }`}>
+                                                        {modStr}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Mode 2: Custom Stats & Meters */}
+                            {mode === 'custom' && (
+                                <div className="space-y-3">
+                                    {/* Quick Preset Chips */}
+                                    <div className="flex flex-wrap items-center gap-1">
+                                        <span className="text-[9px] font-mono opacity-60 uppercase mr-1">Suggestions:</span>
+                                        {statSuggestions.map(s => (
+                                            <button
+                                                key={s}
+                                                type="button"
+                                                onClick={() => {
+                                                    const exists = customList.some(item => item.label.toLowerCase() === s.toLowerCase());
+                                                    if (!exists) {
+                                                        const newStat = { id: `stat-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, label: s, value: '10', max: s.includes('HP') || s.includes('MP') || s.includes('Sanity') || s.includes('Stress') ? '100' : '' };
+                                                        onUpdate({ ...entity, customStats: [...customList, newStat] });
+                                                    }
+                                                }}
+                                                className="text-[9px] px-2 py-0.5 rounded-md border border-current/15 hover:border-amber-400/60 bg-current/5 hover:bg-current/10 transition-all cursor-pointer font-serif"
+                                            >
+                                                + {s}
+                                            </button>
+                                        ))}
                                     </div>
-                                );
-                            })}
+
+                                    {/* Stat Rows */}
+                                    {customList.length === 0 ? (
+                                        <div className="p-4 rounded-xl border border-dashed border-current/20 text-center opacity-60 text-xs font-serif italic">
+                                            No custom stats added yet. Click a suggestion above or the button below to define stats (e.g. Sanity, Cyberware, HP, Resolve).
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                            {customList.map((st, idx) => (
+                                                <div
+                                                    key={st.id || idx}
+                                                    className={`p-2.5 rounded-xl border flex flex-col justify-between gap-1.5 transition-all ${
+                                                        isRoyal
+                                                            ? 'bg-[#f7f0e1] border-[#c8a96e]/50 text-[#2b1810]'
+                                                            : isWiki
+                                                            ? 'bg-[#fbf8ef] border-[#d4c8af] text-[#1a1a1a]'
+                                                            : 'bg-slate-800/60 border-slate-700 text-slate-100'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center justify-between gap-1">
+                                                        <input
+                                                            type="text"
+                                                            value={st.label}
+                                                            placeholder="Stat name..."
+                                                            onChange={e => {
+                                                                const updated = [...customList];
+                                                                updated[idx] = { ...st, label: e.target.value };
+                                                                onUpdate({ ...entity, customStats: updated });
+                                                            }}
+                                                            className="text-xs font-black uppercase tracking-wider bg-transparent border-b border-current/20 focus:border-amber-400 outline-none flex-1 truncate py-0.5"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const updated = customList.filter((_, i) => i !== idx);
+                                                                onUpdate({ ...entity, customStats: updated });
+                                                            }}
+                                                            className="opacity-40 hover:opacity-100 hover:text-rose-500 p-0.5 cursor-pointer transition-colors"
+                                                            title="Delete stat"
+                                                        >
+                                                            <X size={12} />
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-1.5">
+                                                        <div className="flex-1">
+                                                            <span className="text-[8px] font-mono opacity-50 block uppercase">Value</span>
+                                                            <input
+                                                                type="text"
+                                                                value={st.value}
+                                                                placeholder="10"
+                                                                onChange={e => {
+                                                                    const updated = [...customList];
+                                                                    updated[idx] = { ...st, value: e.target.value };
+                                                                    onUpdate({ ...entity, customStats: updated });
+                                                                }}
+                                                                className={`w-full text-center font-mono font-bold text-xs py-1 px-1 rounded-lg border outline-none ${
+                                                                    isRoyal
+                                                                        ? 'bg-[#fbf8ef] border-[#c8a96e]/60 focus:border-[#70121e] text-[#2b1810]'
+                                                                        : isWiki
+                                                                        ? 'bg-white border-[#d4c8af] focus:border-[#b91c1c] text-black'
+                                                                        : 'bg-slate-900 border-slate-700 focus:border-amber-400 text-white'
+                                                                }`}
+                                                            />
+                                                        </div>
+                                                        <span className="text-xs opacity-40 font-mono mt-3">/</span>
+                                                        <div className="flex-1">
+                                                            <span className="text-[8px] font-mono opacity-50 block uppercase">Max (opt)</span>
+                                                            <input
+                                                                type="text"
+                                                                value={st.max || ''}
+                                                                placeholder="—"
+                                                                onChange={e => {
+                                                                    const updated = [...customList];
+                                                                    updated[idx] = { ...st, max: e.target.value };
+                                                                    onUpdate({ ...entity, customStats: updated });
+                                                                }}
+                                                                className={`w-full text-center font-mono font-bold text-xs py-1 px-1 rounded-lg border outline-none ${
+                                                                    isRoyal
+                                                                        ? 'bg-[#fbf8ef] border-[#c8a96e]/60 focus:border-[#70121e] text-[#2b1810]'
+                                                                        : isWiki
+                                                                        ? 'bg-white border-[#d4c8af] focus:border-[#b91c1c] text-black'
+                                                                        : 'bg-slate-900 border-slate-700 focus:border-amber-400 text-white'
+                                                                }`}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const newStat = { id: `stat-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, label: `Stat ${customList.length + 1}`, value: '10' };
+                                            onUpdate({ ...entity, customStats: [...customList, newStat] });
+                                        }}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-current/20 hover:border-amber-400/60 bg-current/5 hover:bg-current/10 text-[10px] font-bold uppercase transition-all cursor-pointer"
+                                    >
+                                        <Plus size={11} /> Add Custom Stat
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Mode 3: None (Story Only) */}
+                            {mode === 'none' && (
+                                <div className="p-3 rounded-xl border border-current/10 bg-current/5 text-center text-xs opacity-75 font-serif italic">
+                                    Stat block disabled for this character (Narrative / Pure Story mode). No attribute badges, scores, or combat ratings will appear in Codex view.
+                                </div>
+                            )}
                         </div>
-                    </div>
-                )}
+                    );
+                })()}
 
                 <FormInput label="Equipment" value={entity.possessedItems || ""} onChange={(v: string) => onUpdate({ ...entity, possessedItems: v })} gridSpan={4} />
                 <FormInput label="Wealth" value={entity.possessedCurrencies || ""} onChange={(v: string) => onUpdate({ ...entity, possessedCurrencies: v })} gridSpan={4} />

@@ -32,6 +32,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const updateEntityLock = useWorldStore(state => state.updateEntityLock);
     const world = useWorldStore(state => state.world);
     const showCombatStats = isModuleActive(world, 'combatStats');
+    const showCharacterStatBlock = isChar && showCombatStats && char.statBlockMode !== 'none';
 
     const isDeceased = isEntityDeceased(entity);
     const isCategory = isEntityCategory(entity);
@@ -479,7 +480,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
             <aside className="w-full xl:w-80 2xl:w-96 shrink-0 space-y-6 min-w-0 max-w-full">
                 {(themeId === 'royal-codex') ? (
                     <>
-                        {isChar && showCombatStats ? (
+                        {showCharacterStatBlock ? (
                             <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />
                         ) : (
                             <div className="bg-[#3f0d19] text-[#fef08a] border-4 border-[#c8a96e] rounded-3xl p-6 shadow-2xl space-y-4">
@@ -522,7 +523,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                     </>
                 ) : isWiki ? (
                     <>
-                        {isChar && showCombatStats ? (
+                        {showCharacterStatBlock ? (
                             <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />
                         ) : (
                             <WikiInfobox entity={entity} allEntities={allEntities} onNavigate={onNavigate} onFocusMap={onFocusMap} />
@@ -541,8 +542,8 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                     </>
                 ) : (
                     <>
-                        {isChar && showCombatStats && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
-                        {(!isChar || !showCombatStats) && (
+                        {showCharacterStatBlock && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}
+                        {!showCharacterStatBlock && (
                             <div className="bg-slate-900/40 p-8 rounded-[2rem] border border-slate-800 h-fit sticky top-10 space-y-6">
                                 {entity.imageUri && (
                                     <div className="w-full aspect-square rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl">

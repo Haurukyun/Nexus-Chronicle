@@ -149,6 +149,8 @@ export interface Character extends BaseEntity {
   traits?: string; // Unique/Unusual Features
   statsList?: string; // Stats/Attributes (legacy string)
   stats?: { strength: string; dexterity: string; constitution: string; intelligence: string; wisdom: string; charisma: string; }; // Custom stat block
+  statBlockMode?: 'rpg-d20' | 'custom' | 'none'; // Flexible stat block engine
+  customStats?: Array<{ id: string; label: string; value: string; max?: string }>; // User-defined custom stats & meters
   possessedItems?: string; // Equipment/Owned Items
   possessedCurrencies?: string; // Wealth/Owned Currencies
   knownSkills?: string; // Known Skills/Abilities

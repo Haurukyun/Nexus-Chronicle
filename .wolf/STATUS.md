@@ -6,11 +6,23 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-22 (18:20)
+> Last updated: 2026-11-22 (18:40)
 
 ---
 
 ## ✅ Done
+
+- **feat: Sidebar Category Manager & Stat Block Engine (Step 2) (`Sidebar.tsx`, `CharacterSpecifics.tsx`, `CharacterStatBlock.tsx`, `EntityViewer.tsx`, `types.ts`) (2026-11-22)**:
+  - **In-Place Sidebar Category Manager**:
+    - Added dedicated `Sliders` button in the sidebar search row next to the multi-select tool, opening an in-place Category Customizer popover with 1-click genre presets (Fantasy, Sci-Fi, Modern, Invasion, Horror, All) and `CodexCheckbox` switches for all 21 categories.
+    - Added an `EyeOff` quick-hide button on hover directly on every category header row (`CHARACTERS`, `LOCATIONS`, `MYTHS`, `MAGIC`, etc.), allowing users to dismiss unneeded categories right on the tree.
+  - **Step 2 (Approach 4) — Flexible Stat Block Engine**:
+    - Updated `Character` in `src/types.ts` with `statBlockMode?: 'rpg-d20' | 'custom' | 'none'` and `customStats?: Array<{ id: string; label: string; value: string; max?: string }>`.
+    - `CharacterSpecifics.tsx`: added 3-way mode switch (`D20 Array`, `Custom Stats`, `None`), quick-pick stat chips (`Health`, `Sanity`, `Cyberware`, `Resolve`, `Street Cred`, etc.), dynamic value and optional max cap inputs, and narrative notice when set to `None`.
+    - `CharacterStatBlock.tsx` & `EntityViewer.tsx`: renders custom stats as illuminated gauges and chips across Royal Codex, Grand Voyager, Wiki, and Sovereign themes; cleanly falls back to Record Vitals when `none`.
+    - Unit tests: `src/utils/statBlockEngine.test.tsx` (3 tests).
+    - Verified: `npm run typecheck` (0 errors), `npm run test` (72/72 passing), `npm run build` (passing).
+    - **Next quest:** Step 3 — Approach 3: Custom Suggestion Banks (`customSuggestions?: Record<EntityType, string[]>` in `WorldData`, editable in Options, merged into specifics editors).
 
 - **Fix: Restore Active Sidebar Contrast & Thematic Checkbox Architecture (`Sidebar.tsx`, `CodexCheckbox.tsx`, `OptionsView.tsx`, `TrashView.tsx`, BUG-027) (2026-11-22)**:
   - Fixed active entity in sidebar displaying as black/illegible text: `customStyle` was applying `color: entity.documentColor` unconditionally, allowing dark/black hex values (common from Fantasia Archive defaults) to override the theme's active text color (`text-[#fff8e7]` on Royal Codex). Now `isActive` forces `color: undefined` so active styles always rule, and inactive custom colors are guarded by `isColorLegibleOnDark` / `isColorLegibleOnLight` luminance checks.

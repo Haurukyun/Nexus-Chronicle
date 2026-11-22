@@ -19,6 +19,7 @@ interface CharacterStatBlockProps {
 export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName = false, backlinks }: CharacterStatBlockProps) => {
     if (entity.type !== 'character') return null;
     const char = entity as Character;
+    if (char.statBlockMode === 'none') return null;
     const theme = useWorldStore(state => state.theme);
     const isRoyal = theme === 'royal-codex';
     const isWikiMode = theme === 'wiki';
@@ -109,57 +110,98 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
 
                     {/* Banner Header */}
                     <div className="text-center border-b border-[#c8a96e]/40 pb-3 mb-3">
-                        <span className="text-[11px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] block drop-shadow">RPG Stat Chart</span>
+                        <span className="text-[11px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] block drop-shadow">
+                            {char.statBlockMode === 'custom' ? 'Character Vitals & Ratings' : 'RPG Stat Chart'}
+                        </span>
                     </div>
 
-                    {/* Radar Chart */}
-                    <div className="py-1 flex items-center justify-center">
-                        <RadarChart stats={stats} />
-                    </div>
+                    {char.statBlockMode === 'custom' ? (
+                        <div className="space-y-2.5 px-1 py-1">
+                            {(char.customStats && char.customStats.length > 0) ? (
+                                char.customStats.map(st => {
+                                    const numVal = parseFloat(st.value);
+                                    const numMax = st.max ? parseFloat(st.max) : null;
+                                    const percent = (numMax && !isNaN(numVal) && !isNaN(numMax) && numMax > 0)
+                                        ? Math.min(100, Math.max(0, (numVal / numMax) * 100))
+                                        : null;
 
-                    {/* Attribute Score Header */}
-                    <div className="border-t border-[#c8a96e]/40 pt-3 mt-2">
-                        <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] text-center mb-3">Attribute Score</div>
-
-                        {/* 6 Shield Badges in 2 Rows of 3 */}
-                        <div className="grid grid-cols-3 gap-2.5 text-center px-2">
-                            {[
-                                { label: 'STR', val: str },
-                                { label: 'DEX', val: dex },
-                                { label: 'CON', val: con },
-                                { label: 'INT', val: int },
-                                { label: 'WIS', val: wis },
-                                { label: 'CHA', val: cha }
-                            ].map((st, idx) => (
-                                <div 
-                                    key={idx} 
-                                    className="bg-gradient-to-b from-[#4a1c1c] to-[#260e0e] py-2 px-1 text-center shadow-[inset_0_2px_5px_rgba(0,0,0,0.9)] transition-all cursor-default relative h-16 flex flex-col justify-center"
-                                    style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}
-                                >
-                                    {/* Full 5-sided shield contour SVG with outer & inner gold border */}
-                                    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-                                        <polygon
-                                            points="1.5,1.5 98.5,1.5 98.5,74.5 50,98 1.5,74.5"
-                                            fill="none"
-                                            stroke="#d4c8af"
-                                            strokeWidth="1.5"
-                                            vectorEffect="non-scaling-stroke"
-                                        />
-                                        <polygon
-                                            points="4,4 96,4 96,72.5 50,94.5 4,72.5"
-                                            fill="none"
-                                            stroke="#d4c8af"
-                                            strokeOpacity="0.4"
-                                            strokeWidth="1"
-                                            vectorEffect="non-scaling-stroke"
-                                        />
-                                    </svg>
-                                    <span className="block font-serif font-bold text-[#e6c687] text-[10px] tracking-wider uppercase leading-none mb-1 z-10">{st.label}</span>
-                                    <span className="text-xl font-serif font-medium text-white leading-none drop-shadow z-10">{st.val}</span>
+                                    return (
+                                        <div key={st.id} className="bg-black/35 p-2.5 rounded-xl border border-[#c8a96e]/30 space-y-1.5 shadow-inner">
+                                            <div className="flex items-center justify-between text-xs">
+                                                <span className="font-serif font-bold text-[#e6c687] uppercase tracking-wider">{st.label}</span>
+                                                <span className="font-mono font-bold text-white">
+                                                    {st.value} {st.max ? <span className="opacity-60 text-[10px]">/ {st.max}</span> : ''}
+                                                </span>
+                                            </div>
+                                            {percent !== null && (
+                                                <div className="w-full h-2 rounded-full bg-black/60 border border-[#c8a96e]/30 overflow-hidden p-0.5">
+                                                    <div
+                                                        className="h-full rounded-full bg-gradient-to-r from-[#c8a96e] to-[#fef08a] transition-all duration-500 shadow-[0_0_8px_rgba(254,240,138,0.5)]"
+                                                        style={{ width: `${percent}%` }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="p-3 text-center text-xs opacity-60 font-serif italic">
+                                    No custom stats configured for this character.
                                 </div>
-                            ))}
+                            )}
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            {/* Radar Chart */}
+                            <div className="py-1 flex items-center justify-center">
+                                <RadarChart stats={stats} />
+                            </div>
+
+                            {/* Attribute Score Header */}
+                            <div className="border-t border-[#c8a96e]/40 pt-3 mt-2">
+                                <div className="text-[10px] font-serif font-bold uppercase tracking-[0.25em] text-[#e6c687] text-center mb-3">Attribute Score</div>
+
+                                {/* 6 Shield Badges in 2 Rows of 3 */}
+                                <div className="grid grid-cols-3 gap-2.5 text-center px-2">
+                                    {[
+                                        { label: 'STR', val: str },
+                                        { label: 'DEX', val: dex },
+                                        { label: 'CON', val: con },
+                                        { label: 'INT', val: int },
+                                        { label: 'WIS', val: wis },
+                                        { label: 'CHA', val: cha }
+                                    ].map((st, idx) => (
+                                        <div 
+                                            key={idx} 
+                                            className="bg-gradient-to-b from-[#4a1c1c] to-[#260e0e] py-2 px-1 text-center shadow-[inset_0_2px_5px_rgba(0,0,0,0.9)] transition-all cursor-default relative h-16 flex flex-col justify-center"
+                                            style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}
+                                        >
+                                            {/* Full 5-sided shield contour SVG with outer & inner gold border */}
+                                            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                                <polygon
+                                                    points="1.5,1.5 98.5,1.5 98.5,74.5 50,98 1.5,74.5"
+                                                    fill="none"
+                                                    stroke="#d4c8af"
+                                                    strokeWidth="1.5"
+                                                    vectorEffect="non-scaling-stroke"
+                                                />
+                                                <polygon
+                                                    points="4,4 96,4 96,72.5 50,94.5 4,72.5"
+                                                    fill="none"
+                                                    stroke="#d4c8af"
+                                                    strokeOpacity="0.4"
+                                                    strokeWidth="1"
+                                                    vectorEffect="non-scaling-stroke"
+                                                />
+                                            </svg>
+                                            <span className="block font-serif font-bold text-[#e6c687] text-[10px] tracking-wider uppercase leading-none mb-1 z-10">{st.label}</span>
+                                            <span className="text-xl font-serif font-medium text-white leading-none drop-shadow z-10">{st.val}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    )}
 
                     {/* Living Status Header & Glowing Emerald Gem */}
                     <div className="border-t border-[#c8a96e]/40 pt-3 mt-4 text-center">
@@ -270,35 +312,71 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                     </div>
                 )}
 
-                {/* Radar Chart */}
-                <div className="py-2 flex items-center justify-center bg-[#fdfcf0]/70 border-b border-[#d4c8af]">
-                    <RadarChart stats={stats} />
-                </div>
+                {char.statBlockMode === 'custom' ? (
+                    <div className="p-3 bg-white/70 space-y-2 border-b border-[#d4c8af]">
+                        <div className="text-[9px] font-bold uppercase tracking-widest text-[#854d0e] text-center mb-1">
+                            Character Vitals
+                        </div>
+                        {(char.customStats && char.customStats.length > 0) ? (
+                            char.customStats.map(st => {
+                                const numVal = parseFloat(st.value);
+                                const numMax = st.max ? parseFloat(st.max) : null;
+                                const percent = (numMax && !isNaN(numVal) && !isNaN(numMax) && numMax > 0)
+                                    ? Math.min(100, Math.max(0, (numVal / numMax) * 100))
+                                    : null;
+                                return (
+                                    <div key={st.id} className="p-2 bg-[#fdfcf0] border border-[#d4c8af] rounded text-xs space-y-1">
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-bold text-[#7a200d] uppercase text-[10px]">{st.label}</span>
+                                            <span className="font-mono font-bold text-[#1a1a1a]">
+                                                {st.value} {st.max ? <span className="opacity-60 text-[10px]">/ {st.max}</span> : ''}
+                                            </span>
+                                        </div>
+                                        {percent !== null && (
+                                            <div className="w-full h-1.5 rounded-full bg-stone-200 overflow-hidden">
+                                                <div className="h-full bg-[#8b0000]" style={{ width: `${percent}%` }} />
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div className="text-center text-xs opacity-50 italic">No custom stats defined.</div>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        {/* Radar Chart */}
+                        <div className="py-2 flex items-center justify-center bg-[#fdfcf0]/70 border-b border-[#d4c8af]">
+                            <RadarChart stats={stats} />
+                        </div>
 
-                {/* Attributes Grid */}
-                <div className="p-3 bg-white/70">
-                    <div className="text-[9px] font-bold uppercase tracking-widest text-[#854d0e] text-center mb-2">
-                        Attribute Scores
-                    </div>
-                    <div className="grid grid-cols-3 gap-1.5 text-center">
-                        {attributes.map((st) => (
-                            <div
-                                key={st.label}
-                                className="bg-[#fefce8] border border-[#d4c8af] rounded p-1.5 flex flex-col items-center justify-center"
-                            >
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#7a200d] leading-none">
-                                    {st.label}
-                                </span>
-                                <span className="text-base font-serif font-bold text-[#1a1a1a] my-1 leading-none">
-                                    {st.val}
-                                </span>
-                                <span className="text-[10px] font-mono font-semibold text-[#854d0e] leading-none">
-                                    {getMod(st.val)}
-                                </span>
+                        {/* Attributes Grid */}
+                        <div className="p-3 bg-white/70">
+                            <div className="text-[9px] font-bold uppercase tracking-widest text-[#854d0e] text-center mb-2">
+                                Attribute Scores
                             </div>
-                        ))}
-                    </div>
-                </div>
+                            <div className="grid grid-cols-3 gap-1.5 text-center">
+                                {attributes.map((st) => (
+                                    <div
+                                        key={st.label}
+                                        className="bg-[#fefce8] border border-[#d4c8af] rounded p-1.5 flex flex-col items-center justify-center"
+                                    >
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#7a200d] leading-none">
+                                            {st.label}
+                                        </span>
+                                        <span className="text-base font-serif font-bold text-[#1a1a1a] my-1 leading-none">
+                                            {st.val}
+                                        </span>
+                                        <span className="text-[10px] font-mono font-semibold text-[#854d0e] leading-none">
+                                            {getMod(st.val)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )}
 
                 {/* Skills / Languages minimal summary if present */}
                 {((char.pairedSkills && char.pairedSkills.length > 0) || (char.pairedLanguage && char.pairedLanguage.length > 0)) && (
@@ -439,35 +517,74 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                 </div>
             </div>
 
-            {/* Radar Chart */}
-            <div className="py-1 flex items-center justify-center relative">
-                <RadarChart stats={stats} />
-            </div>
+            {char.statBlockMode === 'custom' ? (
+                <div className="space-y-2.5">
+                    <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-slate-400 text-center mb-2.5">
+                        Character Vitals & Gauges
+                    </div>
+                    {(char.customStats && char.customStats.length > 0) ? (
+                        char.customStats.map(st => {
+                            const numVal = parseFloat(st.value);
+                            const numMax = st.max ? parseFloat(st.max) : null;
+                            const percent = (numMax && !isNaN(numVal) && !isNaN(numMax) && numMax > 0)
+                                ? Math.min(100, Math.max(0, (numVal / numMax) * 100))
+                                : null;
+                            return (
+                                <div key={st.id} className="p-2.5 bg-slate-950/60 border border-slate-800/80 rounded-xl space-y-1.5 shadow-inner">
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="font-bold text-slate-300 uppercase tracking-wider text-[11px]">{st.label}</span>
+                                        <span className="font-mono font-bold text-white">
+                                            {st.value} {st.max ? <span className="opacity-50 text-[10px]">/ {st.max}</span> : ''}
+                                        </span>
+                                    </div>
+                                    {percent !== null && (
+                                        <div className="w-full h-2 rounded-full bg-slate-900 border border-slate-800 overflow-hidden p-0.5">
+                                            <div
+                                                className="h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-300 shadow-[0_0_8px_rgba(251,191,36,0.5)] transition-all duration-500"
+                                                style={{ width: `${percent}%` }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="text-center text-xs text-slate-500 italic p-2">No custom stats defined.</div>
+                    )}
+                </div>
+            ) : (
+                <>
+                    {/* Radar Chart */}
+                    <div className="py-1 flex items-center justify-center relative">
+                        <RadarChart stats={stats} />
+                    </div>
 
-            {/* Core Attributes Grid */}
-            <div>
-                <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-slate-400 text-center mb-2.5">
-                    Core Attributes
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                    {attributes.map((st) => (
-                        <div
-                            key={st.label}
-                            className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5 flex flex-col items-center justify-center hover:border-slate-700/80 transition-all"
-                        >
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
-                                {st.label}
-                            </span>
-                            <span className="text-xl font-bold font-mono text-white my-1 leading-none">
-                                {st.val}
-                            </span>
-                            <span className="text-[10px] font-mono font-medium text-[#fef08a]/80 leading-none">
-                                {getMod(st.val)}
-                            </span>
+                    {/* Core Attributes Grid */}
+                    <div>
+                        <div className="text-[9px] font-bold uppercase tracking-[0.25em] text-slate-400 text-center mb-2.5">
+                            Core Attributes
                         </div>
-                    ))}
-                </div>
-            </div>
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                            {attributes.map((st) => (
+                                <div
+                                    key={st.label}
+                                    className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-2.5 flex flex-col items-center justify-center hover:border-slate-700/80 transition-all"
+                                >
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 leading-none">
+                                        {st.label}
+                                    </span>
+                                    <span className="text-xl font-bold font-mono text-white my-1 leading-none">
+                                        {st.val}
+                                    </span>
+                                    <span className="text-[10px] font-mono font-medium text-[#fef08a]/80 leading-none">
+                                        {getMod(st.val)}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </>
+            )}
 
             {/* Skills / Languages minimal summary if present */}
             {((char.pairedSkills && char.pairedSkills.length > 0) || (char.pairedLanguage && char.pairedLanguage.length > 0)) && (
