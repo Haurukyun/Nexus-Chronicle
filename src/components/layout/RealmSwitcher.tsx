@@ -57,6 +57,7 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
     const theme = propTheme || themeId;
     const isWikiMode = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
+    const isGrandVoyager = themeId === 'grand-voyager';
 
     // Click outside to dismiss
     useEffect(() => {
@@ -88,8 +89,24 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
     }, [worlds, search]);
 
     const accentText = isRoyal
-        ? 'text-[#d4af37]'
-        : isWikiMode ? 'text-[#b91c1c]' : 'text-[#fef08a]';
+        ? 'text-[#fcd34d]'
+        : isWikiMode ? 'text-[#b91c1c]' : isGrandVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]';
+
+    const subtitleText = isRoyal
+        ? 'text-[#ebd9bd]/80 group-hover:text-[#fff8e7]'
+        : isWikiMode
+            ? 'text-[#5c4033]/80 group-hover:text-[#2b1810]'
+            : isGrandVoyager
+                ? 'text-[#2dd4bf]/80 group-hover:text-[#2dd4bf]'
+                : 'text-slate-400 group-hover:text-slate-200';
+
+    const chevronColor = isRoyal
+        ? 'text-[#c8a96e]/70 group-hover:text-[#fff8e7]'
+        : isWikiMode
+            ? 'text-[#b91c1c]/70 group-hover:text-[#b91c1c]'
+            : isGrandVoyager
+                ? 'text-[#2dd4bf]/70 group-hover:text-[#2dd4bf]'
+                : 'text-slate-400 group-hover:text-white';
 
     const popoverBg = isRoyal
         ? 'bg-[#181410] border-[#c8a96e]/40 text-[#f5ebd7] shadow-[0_10px_30px_rgba(0,0,0,0.9)]'
@@ -98,10 +115,12 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
         : 'bg-slate-900 border-slate-700 text-slate-100 shadow-2xl';
 
     const triggerBg = isRoyal
-        ? 'hover:bg-[#251b14] border-[#c8a96e]/20'
+        ? 'bg-[#140b07]/90 hover:bg-[#25150c] border-[#c8a96e]/35 hover:border-[#c8a96e]/60 shadow-[inset_0_1px_0_rgba(200,169,110,0.15)] text-[#f5ebd7]'
         : isWikiMode
-        ? 'hover:bg-[#f0e8d8] border-[#d4c8af]/60'
-        : 'hover:bg-white/5 border-slate-700/50';
+        ? 'bg-[#fffcf5] hover:bg-[#f5ecdd] border-[#d4c8af] text-[#2b1810] shadow-sm'
+        : isGrandVoyager
+            ? 'bg-[#091617]/90 hover:bg-[#0f2426] border-[#2dd4bf]/30 hover:border-[#2dd4bf]/60 text-[#f5e9d0]'
+            : 'bg-slate-900/80 hover:bg-slate-800/80 border-slate-700/60 text-slate-200';
 
     const activePhaseColor = PHASE_COLORS[world.worldPhase] || '#fef08a';
 
@@ -167,9 +186,9 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
                                 {world.name}
                             </span>
                         </div>
-                        <p className="text-[9px] opacity-60 font-mono tracking-tight flex items-center gap-1.5 truncate">
+                        <p className={`text-[9px] font-mono tracking-tight flex items-center gap-1.5 truncate ${subtitleText}`}>
                             <span>{world.entities.length} entities</span>
-                            <span>•</span>
+                            <span className="opacity-40">•</span>
                             <span className="capitalize">{PHASE_LABELS[world.worldPhase] || world.worldPhase}</span>
                         </p>
                     </div>
@@ -177,7 +196,7 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
 
                 <ChevronDown
                     size={14}
-                    className={`opacity-50 group-hover:opacity-100 transition-transform shrink-0 ${isOpen ? 'rotate-180' : ''}`}
+                    className={`transition-transform shrink-0 ${chevronColor} ${isOpen ? 'rotate-180' : ''}`}
                 />
             </button>
 

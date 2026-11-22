@@ -210,36 +210,36 @@ const App = () => {
 
     // Architectural Toolbar Tokens — perfectly cohesive with Sidebar, Codex sheets, and theme registry
     const headerTrayCls = isRoyal
-        ? 'bg-[#18100a]/85 border border-[#c8a96e]/30 shadow-inner'
+        ? 'bg-[#140b07]/90 border border-[#c8a96e]/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8),0_1px_0_rgba(200,169,110,0.15)]'
         : isWiki
-            ? 'bg-[#e8dcce] border border-[#d4c8af] shadow-inner'
+            ? 'bg-[#fbf5eb] border border-[#d4c8af] shadow-inner'
             : isGrandVoyager
-                ? 'bg-[#0a181a]/85 border border-[#2dd4bf]/30 shadow-inner'
-                : 'bg-slate-950/70 border border-slate-800 shadow-inner';
+                ? 'bg-[#081517]/90 border border-[#2dd4bf]/40 shadow-inner'
+                : 'bg-slate-950/80 border border-slate-800/80 shadow-inner';
 
     const ribbonActiveCls = isRoyal
-        ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-sm font-serif font-bold uppercase tracking-wider'
+        ? 'bg-gradient-to-b from-[#881326] to-[#5b0e18] text-[#fff8e7] border border-[#c8a96e] shadow-[0_2px_6px_rgba(112,18,30,0.5),inset_0_1px_0_rgba(255,255,255,0.2)] font-serif font-bold uppercase tracking-wider'
         : isWiki
-            ? 'bg-[#b91c1c] text-white font-bold border border-red-800 shadow-sm font-serif uppercase tracking-wide'
+            ? 'bg-gradient-to-b from-[#b91c1c] to-[#991b1b] text-white font-bold border border-[#991b1b] shadow-sm font-serif uppercase tracking-wider'
             : isGrandVoyager
-                ? 'bg-[#2dd4bf] text-slate-950 font-bold border border-teal-300 shadow-sm font-serif uppercase tracking-wider'
-                : 'bg-[#fef08a] text-slate-950 font-bold border border-yellow-300 shadow-sm';
+                ? 'bg-gradient-to-b from-[#2dd4bf] to-[#14b8a6] text-[#041e1e] font-bold border border-teal-300 shadow-[0_2px_8px_rgba(45,212,191,0.4)] font-serif uppercase tracking-wider'
+                : 'bg-gradient-to-b from-[#fef08a] to-[#eab308] text-slate-950 font-bold border border-yellow-300 shadow-[0_2px_8px_rgba(254,240,138,0.3)]';
 
     const ribbonInactiveCls = isRoyal
-        ? 'text-[#c8a96e]/80 hover:text-[#fff8e7] hover:bg-[#70121e]/20 font-serif font-semibold tracking-wider transition-colors duration-150'
+        ? 'text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-black/5 font-serif font-medium tracking-wide transition-colors duration-150'
+            ? 'text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
             : isGrandVoyager
-                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-white/5 font-serif font-medium tracking-wider transition-colors duration-150'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60 font-medium transition-colors duration-150';
+                ? 'text-[#f5e9d0]/85 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
 
     const actionToolBtnCls = isRoyal
-        ? 'text-[#c8a96e]/80 hover:text-[#fff8e7] hover:bg-[#70121e]/20 font-serif font-semibold tracking-wider transition-colors duration-150'
+        ? 'text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-black/5 font-serif font-medium tracking-wide transition-colors duration-150'
+            ? 'text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
             : isGrandVoyager
-                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-white/5 font-serif font-medium tracking-wider transition-colors duration-150'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60 font-medium transition-colors duration-150';
+                ? 'text-[#f5e9d0]/85 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+                : 'text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
 
     const dossierBarCls = isRoyal
         ? 'bg-[#180e07] border-[#c8a96e]/20'
@@ -309,17 +309,24 @@ const App = () => {
                     {/* Top Header Bar */}
                     <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} shadow-sm`} data-interactive-ui="true">
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
-                        <div className="flex items-center justify-between px-3 py-2 gap-3">
+                        <div className="flex items-center justify-between px-3 py-2 gap-3 min-w-0">
                             {/* Realm Navigation Ribbon */}
-                            <nav className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} max-w-full overflow-x-auto custom-scrollbar-hidden min-w-0 gap-1`}>
+                            <nav 
+                                onWheel={(e) => {
+                                    if (e.deltaY !== 0) {
+                                        e.currentTarget.scrollLeft += e.deltaY;
+                                    }
+                                }}
+                                className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} max-w-full overflow-x-auto no-scrollbar custom-scrollbar-hidden min-w-0 gap-1`}
+                            >
                                 {[
                                     { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G' },
                                     { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5' },
                                     { id: 'timeline', label: 'Chronos', icon: History, shortcut: 'Alt+2' },
                                     { id: 'session-logs', label: 'Sessions', icon: BookOpen, shortcut: 'Alt+8' },
-                                    { id: 'plot-threads', label: 'Plot Threads', icon: Lightbulb, shortcut: 'Alt+9' },
+                                    { id: 'plot-threads', label: 'Threads', icon: Lightbulb, shortcut: 'Alt+9' },
                                     { id: 'faction-matrix', label: 'Factions', icon: Swords, shortcut: 'Alt+0' },
-                                    { id: 'nexus', label: 'Nexus Lines', icon: GitMerge, shortcut: 'Alt+3' },
+                                    { id: 'nexus', label: 'Nexus', icon: GitMerge, shortcut: 'Alt+3' },
                                     { id: 'journey', label: 'Journey', icon: Footprints, shortcut: 'Alt+4' },
                                     { id: 'dashboard', label: 'Ledger', icon: BarChart3, shortcut: 'Alt+1' },
                                 ].map(item => {
@@ -331,7 +338,7 @@ const App = () => {
                                             type="button"
                                             onClick={() => setActiveTabId(item.id)}
                                             title={`${item.label} (${item.shortcut})`}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${
+                                            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${
                                                 isActive ? ribbonActiveCls : ribbonInactiveCls
                                             }`}
                                         >
@@ -364,10 +371,9 @@ const App = () => {
                                     onClick={undo}
                                     disabled={!canUndo}
                                     title="Undo changes (Ctrl+Z)"
-                                    className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`flex items-center justify-center p-2 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
                                 >
                                     <Undo2 size={13} />
-                                    <span className="hidden xl:inline font-medium">Undo</span>
                                 </button>
 
                                 {/* Redo Button */}
@@ -375,43 +381,47 @@ const App = () => {
                                     onClick={redo}
                                     disabled={!canRedo}
                                     title="Redo changes (Ctrl+Y or Ctrl+Shift+Z)"
-                                    className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`flex items-center justify-center p-2 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
                                 >
                                     <Redo2 size={13} />
-                                    <span className="hidden xl:inline font-medium">Redo</span>
                                 </button>
 
                                 {/* Scratchpad / Lore Journal */}
                                 <button
                                     onClick={() => setShowScratchpad(true)}
                                     title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
+                                    className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
                                 >
                                     <BookMarked size={13} className="opacity-80" />
-                                    <span className="hidden sm:inline font-medium">Scratchpad</span>
+                                    <span className="hidden lg:inline font-medium">Scratchpad</span>
                                 </button>
 
                                 {/* Keybinds / Grimoire */}
                                 <button
                                     onClick={() => setShowKeybindsModal(true)}
                                     title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
+                                    className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
                                 >
                                     <Keyboard size={13} className="opacity-80" />
-                                    <span className="hidden sm:inline font-medium">Keybinds</span>
+                                    <span className="hidden lg:inline font-medium">Keybinds</span>
                                 </button>
 
                                 {/* Sleek divider */}
                                 <div className="w-px h-4 mx-0.5 bg-current opacity-20" />
 
-                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`} />
+                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`} />
                             </div>
                         </div>
+
+                        {/* Ornate Gold Accent Divider between Header & Content in Royal Codex */}
+                        {isRoyal && (
+                            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#c8a96e]/40 to-transparent pointer-events-none" />
+                        )}
 
                         {/* Tier 2: Entity Document Tabs Bar (Rendered only when open dossier tabs exist) */}
                         {openTabIds.length > 0 && (
                             <div className={`flex items-center justify-between px-3 py-1.5 border-t min-h-[36px] gap-2 ${dossierBarCls}`}>
-                                <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0 custom-scrollbar-hidden">
+                                <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0 no-scrollbar custom-scrollbar-hidden">
                                     {openTabIds.map(id => {
                                         const e = world.entities.find(ent => ent.id === id);
                                         if (!e) return null;

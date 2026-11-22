@@ -12,6 +12,16 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Header Bar Harmony, Grey Slider Elimination & Realm Switcher Contrast Fix (`App.tsx`, `RealmSwitcher.tsx`, `Sidebar.tsx`, `index.css`) (2026-11-22)**:
+  - Eliminated the ugly grey Windows WebView2 scrollbar slider beneath the navigation ribbon by enforcing `.no-scrollbar` and `.custom-scrollbar-hidden` with `display: none !important; width: 0 !important; scrollbar-width: none !important;`.
+  - Added natural `onWheel` horizontal scroll translation to the ribbon navigation container for fluid mousewheel and trackpad panning across all 9 realm views.
+  - Resolved invisible brown-on-dark metadata text in `RealmSwitcher.tsx` under realm titles (e.g. `8 entities • Golden Age`), styling it with crisp warm ivory `text-[#ebd9bd]/80` in Royal Codex and `text-[#2dd4bf]/80` in Grand Voyager.
+  - Set explicit `text-[#ebd9bd]` on the sidebar container to permanently prevent document body text color inheritance leakage.
+  - Streamlined ribbon labels ("Threads", "Nexus") and action tools tray (icon undo/redo, responsive scratchpad/keybinds) to preserve horizontal breathing room and prevent early ribbon truncation.
+  - Upgraded header trays with rich gilded manuscript framing (`bg-[#140b07]/90 border-[#c8a96e]/40 shadow-inner`) and added an illuminated gold hairline divider between the header and the manuscript page.
+  - Upgraded active ribbon button with rich imperial crimson gradient `bg-gradient-to-b from-[#881326] to-[#5b0e18]` and warm gilded ivory text on inactive items.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
+
 - **EntityViewer Read-Mode Quick-Jump Navigation Rail (`EntityViewer.tsx`, `ViewerSectionCard.tsx`, `CharacterSpecificsViewer.tsx`) (2026-11-22)**:
   - Brought the sticky category navigation rail into dossier reading mode, making long worldbuilding entries instantly navigable without endless scrolling.
   - Built responsive desktop sticky rail (`hidden xl:block`) supporting both full expanded mode (`w-52`) with text and chevron indicators, and ultra-compact collapsed strip (`w-11`) with centered icon buttons and hover tooltips.

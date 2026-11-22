@@ -639,7 +639,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     e.dataTransfer.dropEffect = 'move';
                 }
             }}
-            className={`w-56 border-r ${borderColor} flex flex-col ${sidebarBg} backdrop-blur-md z-20 select-none`}
+            className={`w-56 border-r ${borderColor} flex flex-col ${sidebarBg} backdrop-blur-md z-20 select-none ${(themeId === 'royal-codex') ? 'text-[#ebd9bd]' : (themeId === 'grand-voyager') ? 'text-[#f5e9d0]' : ''}`}
         >
             {/* Ornamental Gold Filigree Corners for Left Spine */}
             {(themeId === 'royal-codex') && (

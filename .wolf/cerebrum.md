@@ -32,6 +32,16 @@ budget_tokens: 2000
 
 ## Strict Multi-Theme & Prose Contrast Rules (MANDATORY)
 
+- **Scrollbar Elimination on Overflow Containers (MANDATORY — 2026-11-22):**
+  - Never use `overflow-x-auto` or `overflow-y-auto` on compact UI containers (like the top navigation ribbon, dossier tabs, or toolbars) without `.no-scrollbar` and `.custom-scrollbar-hidden`.
+  - Always enforce `scrollbar-width: none !important` and `::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }` in `index.css` so native Windows WebView2 never renders an ugly grey slider track over the UI.
+  - Always attach `onWheel` horizontal scroll translation (`e.currentTarget.scrollLeft += e.deltaY`) for natural wheel and trackpad navigation across tabs.
+
+- **Explicit Text Color Inheritance in Sidebar & Header Trigger Elements (MANDATORY — 2026-11-22):**
+  - Never leave secondary metadata elements like `<p>`, `<ChevronDown>`, or status badges uncolored inside `Sidebar.tsx` or `RealmSwitcher.tsx`.
+  - In dark book-spine backgrounds (Royal Codex `#181410`, Grand Voyager `#180c04`), untyped text inherits the body ink `#2b1810`, rendering subtitles like `8 entities • Golden Age` completely invisible.
+  - Always assign explicit high-contrast colors (`text-[#ebd9bd]/80` in Royal Codex, `text-[#f5e9d0]/80` / `text-[#2dd4bf]` in Grand Voyager, `text-slate-400` in Sovereign).
+
 - **Hover Latency & Nested Backdrop-Filter Elimination (2026-11-20):**
   - Never stack nested `backdrop-filter: blur(...)` containers inside elements with existing filters (like `world.worldPhase` aura styles). Doing so forces Blink/WebKit to re-rasterize heavy blur passes on every hover frame, creating severe cursor/hover lag.
   - Never use `transition-all` on elements sitting over filtered or blurred backgrounds. Use scoped `transition-colors duration-150` to keep composite rendering instantaneous.

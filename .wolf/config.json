@@ -110,9 +110,10 @@
     },
     "agents": [
       "claude",
-      "codex",
       "opencode",
-      "gemini"
+      "gemini",
+      "cursor",
+      "antigravity"
     ],
     "visibility": {
       "mode": "quiet"
