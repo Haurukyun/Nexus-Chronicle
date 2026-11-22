@@ -351,6 +351,10 @@ budget_tokens: 1000
 - [x] **EntityViewer Read-Mode Quick-Jump Rail:** Built collapsible sticky category nav rail on desktop and floating compass navigator on mobile/tablet with dynamic category indexing and Royal Codex auto-tab activation.
 - [x] **Location Specifics Polish:** Defenses, hazards, notable landmarks, climate notes as structured bullet lists with notes (like TraitListEditor).
 - [x] **Organization/Faction Specifics Polish:** Hierarchy ranks, assets, tenet lists as structured fields.
+- [x] **Viewer header buttons overlap & attribute score contour (`ViewerHeaders.tsx`, `CharacterStatBlock.tsx`, `ViewerSectionCard.tsx`)**:
+  - In `ViewerHeaders.tsx`, switched `RoyalHeader`, `WikiHeader`, and `CodexHeader` from `md:flex-row` to `lg:flex-row`, stacking the title and action buttons on viewports below 1024px so the action buttons no longer overlap the title text on compact windows. Added `min-w-0 [overflow-wrap:anywhere] break-words` to `h1`.
+  - In `CharacterStatBlock.tsx`, replaced clipped rectangular CSS borders on the 6 Attribute Score shield badges with an SVG `<polygon>` contour with `vectorEffect="non-scaling-stroke"`, fully drawing all 5 perimeter edges (including the bottom chevron slopes) with dual gold borders.
+  - In `ViewerSectionCard.tsx`, added the same SVG 5-sided shield contour to the letter shield badge.
 - [x] **Dropdown z-index / card overflow / editor buttons (`8207a39`)**: Nav dropdown panels now float cleanly above Tier 2 dossier tabs and page content. Cards (`ViewerSectionCard`) have `w-full min-w-0 max-w-full` and responsive padding. Vital Records / Inventory grids collapse at `md` breakpoint only. Editor header buttons wrap at `md`, labels shorten on `<sm`.
 - **Item & Spell Specifics Polish:** Attunement/components, spell school, rarity tier as compact chips.
 

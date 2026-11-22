@@ -117,10 +117,27 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                             ].map((st, idx) => (
                                 <div 
                                     key={idx} 
-                                    className="bg-gradient-to-b from-[#4a1c1c] to-[#260e0e] border border-[#d4c8af] py-2 px-1 text-center shadow-[inset_0_2px_5px_rgba(0,0,0,0.9)] transition-all cursor-default relative h-16 flex flex-col justify-center"
+                                    className="bg-gradient-to-b from-[#4a1c1c] to-[#260e0e] py-2 px-1 text-center shadow-[inset_0_2px_5px_rgba(0,0,0,0.9)] transition-all cursor-default relative h-16 flex flex-col justify-center"
                                     style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}
                                 >
-                                    <div className="absolute inset-[2px] border border-[#d4c8af]/40 pointer-events-none" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }} />
+                                    {/* Full 5-sided shield contour SVG with outer & inner gold border */}
+                                    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                        <polygon
+                                            points="1.5,1.5 98.5,1.5 98.5,74.5 50,98 1.5,74.5"
+                                            fill="none"
+                                            stroke="#d4c8af"
+                                            strokeWidth="1.5"
+                                            vectorEffect="non-scaling-stroke"
+                                        />
+                                        <polygon
+                                            points="4,4 96,4 96,72.5 50,94.5 4,72.5"
+                                            fill="none"
+                                            stroke="#d4c8af"
+                                            strokeOpacity="0.4"
+                                            strokeWidth="1"
+                                            vectorEffect="non-scaling-stroke"
+                                        />
+                                    </svg>
                                     <span className="block font-serif font-bold text-[#e6c687] text-[10px] tracking-wider uppercase leading-none mb-1 z-10">{st.label}</span>
                                     <span className="text-xl font-serif font-medium text-white leading-none drop-shadow z-10">{st.val}</span>
                                 </div>

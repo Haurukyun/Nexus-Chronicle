@@ -152,8 +152,8 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
     return (
     <>
         <header className="border-b border-slate-800/80 pb-6 mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 min-w-0 w-full">
-                <div>
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 min-w-0 w-full">
+                <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-3 mb-3">
                         <div className="flex items-center gap-2 text-[#fef08a] uppercase tracking-[0.4em] font-black text-[10px]">
                             {isCat ? <Folder size={14} className="text-amber-400" /> : <Scroll size={14} />}
@@ -170,7 +170,7 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                             </span>
                         )}
                     </div>
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-black text-white tracking-tighter uppercase leading-[0.9] mb-3 flex items-center gap-3">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-black text-white tracking-tighter uppercase leading-[0.9] mb-3 min-w-0 [overflow-wrap:anywhere] break-words flex flex-wrap items-center gap-3">
                         <span>{entity.name}</span>
                         {isDead && <span className="text-rose-500/80 select-none font-normal" title="Fallen / Deceased">†</span>}
                     </h1>
@@ -246,8 +246,8 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
 
     return (
     <>
-        <header className="border-b-4 border-[#b91c1c] pb-3 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 min-w-0 w-full">
-            <div>
+        <header className="border-b-4 border-[#b91c1c] pb-3 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4 mb-8 min-w-0 w-full">
+            <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                     {isCat && (
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
@@ -265,7 +265,7 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
                         </span>
                     )}
                 </div>
-                <h1 className="text-6xl font-serif font-bold text-[#b91c1c] uppercase tracking-tight leading-none flex items-center gap-2">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-[#b91c1c] uppercase tracking-tight leading-none min-w-0 [overflow-wrap:anywhere] break-words flex flex-wrap items-center gap-2">
                     <span>{entity.name}</span>
                     {isDead && <span className="text-rose-600/70 select-none" title="Deceased">†</span>}
                 </h1>
@@ -335,7 +335,7 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
 
     return (
     <>
-        <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 min-w-0 w-full">
+        <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex flex-col lg:flex-row justify-between lg:items-center gap-4 mb-6 min-w-0 w-full">
             <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                 {entity.imageUri && (
                     <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-[#c8a96e] bg-[#24050b] shadow-xl shrink-0 relative group">
@@ -360,9 +360,9 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                             </span>
                         )}
                     </div>
-                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-tight flex flex-wrap items-center gap-2 break-words">
-                        <span className="break-words">{entity.name}</span>
-                        {isDead && <span className="text-[#70121e]/80 select-none shrink-0" title="Fallen / Deceased">†</span>}
+                    <h1 className="text-xl sm:text-2xl md:text-3xl xl:text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-tight min-w-0 [overflow-wrap:anywhere] break-words">
+                        <span>{entity.name}</span>
+                        {isDead && <span className="text-[#70121e]/80 select-none ml-1.5 shrink-0" title="Fallen / Deceased">†</span>}
                     </h1>
                     {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1 truncate">"{entity.otherNames}"</p>}
                     {entity.tags && entity.tags.length > 0 && (
@@ -379,7 +379,7 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                     )}
                 </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0 self-start md:self-center">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0 self-start lg:self-center">
                 <ExportDropdown
                     entity={entity}
                     allEntities={allEntities}

@@ -31,8 +31,24 @@ export const ViewerSectionCard: React.FC<ViewerSectionCardProps> = ({ title, chi
 
                 <div className="relative flex items-center justify-between border-b border-[#d4c8af] pb-2 mb-4 mx-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-10 bg-gradient-to-b from-[#6e2c2c] to-[#471a1a] border border-[#d4c8af] text-[#f0ddb0] font-serif font-black text-xl flex items-center justify-center shadow-md shrink-0 relative" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%)' }}>
-                            <div className="absolute inset-[2px] border border-[#d4c8af]/50 pointer-events-none" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%)' }} />
+                        <div className="w-8 h-10 bg-gradient-to-b from-[#6e2c2c] to-[#471a1a] text-[#f0ddb0] font-serif font-black text-xl flex items-center justify-center shadow-md shrink-0 relative" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%)' }}>
+                            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <polygon
+                                    points="1.5,1.5 98.5,1.5 98.5,69.5 50,98 1.5,69.5"
+                                    fill="none"
+                                    stroke="#d4c8af"
+                                    strokeWidth="1.5"
+                                    vectorEffect="non-scaling-stroke"
+                                />
+                                <polygon
+                                    points="4,4 96,4 96,67.5 50,94.5 4,67.5"
+                                    fill="none"
+                                    stroke="#d4c8af"
+                                    strokeOpacity="0.5"
+                                    strokeWidth="1"
+                                    vectorEffect="non-scaling-stroke"
+                                />
+                            </svg>
                             {firstChar}
                         </div>
                         <h3 className="font-serif font-medium text-2xl text-[#2b1810] tracking-tight">{title}</h3>
