@@ -53,11 +53,27 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
         return (
             <>
                 <div 
-                    className="bg-gradient-to-b from-[#4a0d1b] via-[#300611] to-[#1b0207] border-4 border-[#c8a96e] rounded-t-2xl shadow-2xl p-5 pb-10 text-[#fff8e7] font-sans relative overflow-hidden"
+                    className="bg-gradient-to-b from-[#4a0d1b] via-[#300611] to-[#1b0207] rounded-t-2xl shadow-2xl p-5 pb-10 text-[#fff8e7] font-sans relative overflow-hidden"
                     style={{ clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 24px), 50% 100%, 0 calc(100% - 24px))' }}
                 >
-                    {/* Inner Decorative Gold Filigree Border */}
-                    <div className="absolute inset-1 border border-[#c8a96e]/30 pointer-events-none rounded-t-xl" />
+                    {/* Full 5-sided Pennant Vector Contour (Dual Gold Filigree Borders) */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <polygon
+                            points="2,2 98,2 98,96.5 50,99.2 2,96.5"
+                            fill="none"
+                            stroke="#c8a96e"
+                            strokeWidth="4"
+                            vectorEffect="non-scaling-stroke"
+                        />
+                        <polygon
+                            points="5,5 95,5 95,95 50,97.5 5,95"
+                            fill="none"
+                            stroke="#c8a96e"
+                            strokeOpacity="0.3"
+                            strokeWidth="1"
+                            vectorEffect="non-scaling-stroke"
+                        />
+                    </svg>
 
                     {/* Royal Portrait Frame */}
                     <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-[#c8a96e] bg-[#24050b] shadow-2xl mb-4 group">

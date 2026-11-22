@@ -2,6 +2,101 @@
   "version": 1,
   "bugs": [
     {
+      "id": "BUG-021",
+      "timestamp": "2026-11-22T09:30:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-22T09:35:00Z",
+      "error_message": "Top header realm navigation dropdowns (Chronicles, Cartography, The Web) clipped and rendered behind Tier 2 dossier tabs and manuscript page",
+      "file": "src/App.tsx",
+      "root_cause": "Tier 1 ribbon container had `overflow-x-auto`. Under CSS specification, setting overflow-x: auto forces overflow-y: auto, constraining the vertical box to the 40px ribbon height. Absolutely positioned dropdown children extending below were clipped inside the ribbon and painted under the DOM-following Tier 2 dossier bar.",
+      "fix": "Replaced `overflow-x-auto no-scrollbar` with `relative z-20 overflow-visible` on Tier 1 container, set `relative z-10` on Tier 2 bar, elevated active dropdown trigger to `z-[9995]`, and added a full-screen backdrop to handle click-outside dismissal.",
+      "tags": [
+        "ui",
+        "header",
+        "dropdown",
+        "z-index",
+        "css-overflow"
+      ],
+      "occurrences": 2,
+      "last_seen": "2026-11-22"
+    },
+    {
+      "id": "BUG-022",
+      "timestamp": "2026-11-22T09:30:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-22T09:35:00Z",
+      "error_message": "Viewer cards (Vital Records, Inventory & Conditions, Atlas Anchor Pin) bursting out past the right boundary of the manuscript page",
+      "file": "src/components/viewer/ViewerSectionCard.tsx, src/components/viewer/EntityViewer.tsx, src/components/viewer/specifics/CharacterSpecificsViewer.tsx",
+      "root_cause": "ViewerSectionCard lacked `w-full min-w-0 max-w-full` constraints. Simultaneously, EntityViewer triggered side-by-side `lg:flex-row` at 1024px while character/location grids enforced 2 columns at 640px (`sm:grid-cols-2 gap-x-12`). Accounting for the 256px sidebar and manuscript padding, the main column had only ~200px available, causing children to horizontally blowout past the vellum page border.",
+      "fix": "Added `w-full min-w-0 max-w-full` to all ViewerSectionCard variants. Deferred EntityViewer aside column from `lg` to `xl` (1280px). Changed CharacterSpecificsViewer grids to `md:grid-cols-2 gap-x-6 lg:gap-x-10` and trimmed LocationSpecificsViewer padding.",
+      "tags": [
+        "ui",
+        "responsive",
+        "layout",
+        "overflow",
+        "manuscript"
+      ],
+      "occurrences": 2,
+      "last_seen": "2026-11-22"
+    },
+    {
+      "id": "BUG-023",
+      "timestamp": "2026-11-22T10:40:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-22T10:45:00Z",
+      "error_message": "Parchment cream theme not extending to bottom of the window when scrolling down long entries; content lands on dark outer leather",
+      "file": "src/App.tsx",
+      "root_cause": "Outer leather binding and inner vellum page divs both used `flex-1 min-h-full`. In CSS flexbox, flex-1 sets `flex-basis: 0%` which constrains the container to the initial viewport height in a scroll container. Content taller than the viewport overflowed into the dark leather background while the cream background stayed viewport-height.",
+      "fix": "Replaced `flex-1` with `grow shrink-0` (`flex-grow: 1; flex-shrink: 0; flex-basis: auto`) on the body content wrapper, manuscript binding, and inner vellum page, allowing the parchment background to dynamically stretch to the full scrollable height.",
+      "tags": [
+        "ui",
+        "scroll",
+        "theme",
+        "css-flexbox",
+        "manuscript"
+      ],
+      "occurrences": 2,
+      "last_seen": "2026-11-22"
+    },
+    {
+      "id": "BUG-024",
+      "timestamp": "2026-11-22T11:00:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-22T11:09:00Z",
+      "error_message": "Viewer action buttons (Export, Edit Scroll, Lock, Delete) rendered directly over entity title text on narrow viewports",
+      "file": "src/components/viewer/ViewerHeaders.tsx",
+      "root_cause": "RoyalHeader, WikiHeader, and CodexHeader activated a side-by-side flex row at `md` (768px). With the 256px sidebar and manuscript padding subtracted, only ~450px of content width remained. The 5 action buttons require ~340px, squeezing the title to <120px and forcing title text to overflow horizontally under the action buttons.",
+      "fix": "Switched header layout from `md:flex-row` to `lg:flex-row`, keeping title and action buttons cleanly stacked below 1024px. Removed rigid flex wrapping on `h1` and added `min-w-0 [overflow-wrap:anywhere] break-words`.",
+      "tags": [
+        "ui",
+        "header",
+        "collision",
+        "responsive",
+        "typography"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-22"
+    },
+    {
+      "id": "BUG-025",
+      "timestamp": "2026-11-22T11:05:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-22T11:09:00Z",
+      "error_message": "Attribute score badges (STR, DEX, CON, INT, WIS, CHA) contour broken; bottom chevron slopes have no border lines with a disconnected 1px dot at the tip",
+      "file": "src/components/viewer/CharacterStatBlock.tsx, src/components/viewer/ViewerSectionCard.tsx",
+      "root_cause": "Badges relied on rectangular CSS `border` combined with `clipPath: polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)`. CSS rectangular border only traces the outer rectangle. The polygon cuts across the middle of the box where no border exists, leaving the two angled bottom edges borderless.",
+      "fix": "Replaced rectangular CSS borders with an inline SVG `<polygon>` with `vectorEffect='non-scaling-stroke'` and dual stroke overlays tracing all 5 edges of the shield perimeter seamlessly at any DPI scale.",
+      "tags": [
+        "ui",
+        "svg",
+        "clip-path",
+        "borders",
+        "vector-graphics"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-22"
+    },
+    {
       "id": "BUG-018",
       "timestamp": "2026-11-15T07:40:00Z",
       "status": "resolved",
