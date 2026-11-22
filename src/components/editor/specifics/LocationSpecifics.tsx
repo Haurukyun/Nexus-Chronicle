@@ -6,6 +6,7 @@ import { FormInput, SmartSelect } from '../../ui';
 import { TraitListEditor } from '../TraitListEditor';
 import { Info, MapPin, Calendar, Hourglass, Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe, Gem, Tent, UserCircle, User, Leaf, Globe, Compass, Crosshair, Trash2, Navigation, Shield, AlertTriangle, Landmark, CloudRain } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
+import { mergeSuggestions } from '../../../utils/suggestionUtils';
 import { useTheme } from '../../../theme';
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
 
 export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, onUpdate, onCreateNew }) => {
     const mapImage = useWorldStore(state => state.world.mapImage);
+    const customSuggestions = useWorldStore(state => state.world.customSuggestions || {});
     const { layoutMode, themeId } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
@@ -240,7 +242,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     label="Defenses & Fortifications"
                     value={loc.defenses || ''}
                     onChange={(v) => onUpdate({ ...loc, defenses: v })}
-                    suggestions={['Stone Walls', 'City Gates', 'Watchtowers', 'Moat', 'Drawbridge', 'Garrison', 'Magical Wards', 'Palisade', 'Portcullis', 'Arrow Slits']}
+                    suggestions={mergeSuggestions(['Stone Walls', 'City Gates', 'Watchtowers', 'Moat', 'Drawbridge', 'Garrison', 'Magical Wards', 'Palisade', 'Portcullis', 'Arrow Slits'], customSuggestions['location'])}
                     placeholder="Add a defense structure..."
                     gridSpan={6}
                 />
@@ -248,7 +250,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     label="Hazards & Dangers"
                     value={loc.hazards || ''}
                     onChange={(v) => onUpdate({ ...loc, hazards: v })}
-                    suggestions={['Cursed Ground', 'Miasma', 'Flood Prone', 'Earthquake Zone', 'Toxic Plants', 'Monster Den', 'Quicksand', 'Lava Fields', 'Haunted Area', 'Blizzard Season']}
+                    suggestions={mergeSuggestions(['Cursed Ground', 'Miasma', 'Flood Prone', 'Earthquake Zone', 'Toxic Plants', 'Monster Den', 'Quicksand', 'Lava Fields', 'Haunted Area', 'Blizzard Season'], customSuggestions['location'])}
                     placeholder="Add a hazard or danger..."
                     gridSpan={6}
                 />
@@ -256,7 +258,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     label="Notable Landmarks"
                     value={loc.notableLandmarks || ''}
                     onChange={(v) => onUpdate({ ...loc, notableLandmarks: v })}
-                    suggestions={['Ancient Ruins', 'Sacred Temple', 'Grand Marketplace', 'Royal Palace', 'Giant Statue', 'Mystic Fountain', 'Old Library', 'Lighthouse', 'Arena', 'Memorial']}
+                    suggestions={mergeSuggestions(['Ancient Ruins', 'Sacred Temple', 'Grand Marketplace', 'Royal Palace', 'Giant Statue', 'Mystic Fountain', 'Old Library', 'Lighthouse', 'Arena', 'Memorial'], customSuggestions['location'])}
                     placeholder="Add a landmark or point of interest..."
                     gridSpan={6}
                 />
@@ -264,7 +266,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     label="Climate & Weather Notes"
                     value={loc.climateNotes || ''}
                     onChange={(v) => onUpdate({ ...loc, climateNotes: v })}
-                    suggestions={['Perpetual Mist', 'Harsh Winters', 'Scorching Summers', 'Monsoon Season', 'Constant Drizzle', 'Magical Storms', 'Drought-Prone', 'Tropical', 'Arctic', 'Mild Year-Round']}
+                    suggestions={mergeSuggestions(['Perpetual Mist', 'Harsh Winters', 'Scorching Summers', 'Monsoon Season', 'Constant Drizzle', 'Magical Storms', 'Drought-Prone', 'Tropical', 'Arctic', 'Mild Year-Round'], customSuggestions['location'])}
                     placeholder="Add a climate or weather note..."
                     gridSpan={6}
                 />

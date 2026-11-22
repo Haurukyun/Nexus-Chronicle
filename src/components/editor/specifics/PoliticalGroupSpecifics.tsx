@@ -6,6 +6,8 @@ import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
 import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap, Crown } from 'lucide-react';
 import { TraitListEditor } from '../TraitListEditor';
+import { useWorldStore } from '../../../store/useWorldStore';
+import { mergeSuggestions } from '../../../utils/suggestionUtils';
 
 interface Props {
     entity: PoliticalGroup;
@@ -18,6 +20,7 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
     const { layoutMode, themeId } = useTheme();
     const isWiki = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
+    const customSuggestions = useWorldStore(state => state.world.customSuggestions || {});
 
     const textareaClass = isRoyal
         ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
@@ -90,7 +93,7 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                     label="Hierarchy & Leadership Ranks"
                     value={entity.hierarchyRanks || ''}
                     onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                    suggestions={['Chancellor', 'Senator', 'Consul', 'Magistrate', 'Speaker', 'Party Whip', 'Minister', 'Delegate', 'Ambassador', 'Tribune']}
+                    suggestions={mergeSuggestions(['Chancellor', 'Senator', 'Consul', 'Magistrate', 'Speaker', 'Party Whip', 'Minister', 'Delegate', 'Ambassador', 'Tribune'], customSuggestions['political'])}
                     placeholder="Add a political rank or title..."
                     gridSpan={6}
                 />
@@ -98,7 +101,7 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                     label="Core Tenets & Doctrine"
                     value={entity.coreTenets || ''}
                     onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                    suggestions={['Sovereignty', 'Egalitarianism', 'Imperial Expansion', 'Tradition & Ancestry', 'Isolationism', 'Free Commerce', 'Rule of Law', 'Radical Reform', 'Devotion to the Crown']}
+                    suggestions={mergeSuggestions(['Sovereignty', 'Egalitarianism', 'Imperial Expansion', 'Tradition & Ancestry', 'Isolationism', 'Free Commerce', 'Rule of Law', 'Radical Reform', 'Devotion to the Crown'], customSuggestions['political'])}
                     placeholder="Add a core tenet, manifesto or creed..."
                     gridSpan={6}
                 />
@@ -106,7 +109,7 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                     label="Faction Assets & Strongholds"
                     value={entity.factionAssets || ''}
                     onChange={(v) => onUpdate({ ...entity, factionAssets: v })}
-                    suggestions={['Parliament House', 'State Treasury', 'Provincial Embassies', 'Naval Fleet', 'Fortified Palace', 'Propaganda Press', 'Trade Concessions', 'Military Garrison']}
+                    suggestions={mergeSuggestions(['Parliament House', 'State Treasury', 'Provincial Embassies', 'Naval Fleet', 'Fortified Palace', 'Propaganda Press', 'Trade Concessions', 'Military Garrison'], customSuggestions['political'])}
                     placeholder="Add an asset, seat of power or stronghold..."
                     gridSpan={12}
                 />

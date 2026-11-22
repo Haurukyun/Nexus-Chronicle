@@ -1065,6 +1065,7 @@ export interface WorldData {
   activeEntityTypes?: EntityType[];
   activeModules?: RealmModuleConfig;
   hideEmptyFieldsDefault?: boolean;
+  customSuggestions?: Partial<Record<EntityType, string[]>>;
 }
 
 export interface UniverseArchive {

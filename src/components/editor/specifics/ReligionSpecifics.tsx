@@ -6,6 +6,8 @@ import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
 import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap, Crown } from 'lucide-react';
 import { TraitListEditor } from '../TraitListEditor';
+import { useWorldStore } from '../../../store/useWorldStore';
+import { mergeSuggestions } from '../../../utils/suggestionUtils';
 
 interface Props {
     entity: Religion;
@@ -18,6 +20,7 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
     const { layoutMode, themeId } = useTheme();
     const isWiki = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
+    const customSuggestions = useWorldStore(state => state.world.customSuggestions || {});
 
     const textareaClass = isRoyal
         ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
@@ -91,7 +94,7 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
                     label="Priesthood & Holy Hierarchy"
                     value={entity.hierarchyRanks || ''}
                     onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                    suggestions={['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic']}
+                    suggestions={mergeSuggestions(['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic'], customSuggestions['religion'])}
                     placeholder="Add a holy rank or title..."
                     gridSpan={6}
                 />
@@ -99,7 +102,7 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
                     label="Sacred Dogma & Commandments"
                     value={entity.coreTenets || ''}
                     onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                    suggestions={['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance']}
+                    suggestions={mergeSuggestions(['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance'], customSuggestions['religion'])}
                     placeholder="Add a sacred commandment, creed or dogma..."
                     gridSpan={6}
                 />
@@ -107,7 +110,7 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
                     label="Sacred Relics, Temples & Sanctuaries"
                     value={entity.factionAssets || ''}
                     onChange={(v) => onUpdate({ ...entity, factionAssets: v })}
-                    suggestions={['Grand Cathedral', 'High Altar', 'Divine Reliquary', 'Holy Sepulchre', 'Sacred Grove', 'Monastic Fortress', 'Sanctuary of Whispers', 'Temple Vault']}
+                    suggestions={mergeSuggestions(['Grand Cathedral', 'High Altar', 'Divine Reliquary', 'Holy Sepulchre', 'Sacred Grove', 'Monastic Fortress', 'Sanctuary of Whispers', 'Temple Vault'], customSuggestions['religion'])}
                     placeholder="Add a sacred relic, temple or holy site..."
                     gridSpan={12}
                 />

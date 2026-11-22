@@ -3,7 +3,7 @@ import {
     Palette, Skull, Globe, Layers, Plus, Copy,
     Download, Upload, Trash2, Edit2, Check, Sparkles, AlertTriangle, ArrowRight, BookOpen,
     Radio, FileArchive, Zap, Heart, FileText, FileCode2, ChevronDown,
-    Sliders, CheckSquare, Square, Shield, Swords, Cpu, MapPin
+    Sliders, CheckSquare, Square, Shield, Swords, Cpu, MapPin, Tag, X, Lightbulb
 } from 'lucide-react';
 import { WorldData, EntityType, WorldPhase, RealmModuleConfig } from '../types';
 import { TYPE_LABELS, HIERARCHY_CONFIG } from '../constants';
@@ -90,6 +90,50 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
     const [batchExportType, setBatchExportType] = useState<EntityType | 'all'>('all');
     const [batchExporting, setBatchExporting] = useState(false);
     const [batchNotice, setBatchNotice] = useState<{ text: string; isError?: boolean } | null>(null);
+
+    // Custom Suggestion Banks state (Approach 3)
+    const [selectedSuggestionType, setSelectedSuggestionType] = useState<EntityType>('character');
+    const [newSuggestionInput, setNewSuggestionInput] = useState('');
+
+    const handleAddSuggestion = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        const trimmed = newSuggestionInput.trim();
+        if (!trimmed) return;
+        const current = world.customSuggestions?.[selectedSuggestionType] || [];
+        if (current.some(s => s.toLowerCase() === trimmed.toLowerCase())) {
+            setNewSuggestionInput('');
+            return;
+        }
+        setWorld({
+            ...world,
+            customSuggestions: {
+                ...(world.customSuggestions || {}),
+                [selectedSuggestionType]: [...current, trimmed]
+            }
+        });
+        setNewSuggestionInput('');
+    };
+
+    const handleRemoveSuggestion = (type: EntityType, index: number) => {
+        const current = world.customSuggestions?.[type] || [];
+        setWorld({
+            ...world,
+            customSuggestions: {
+                ...(world.customSuggestions || {}),
+                [type]: current.filter((_, i) => i !== index)
+            }
+        });
+    };
+
+    const handleClearSuggestions = (type: EntityType) => {
+        setWorld({
+            ...world,
+            customSuggestions: {
+                ...(world.customSuggestions || {}),
+                [type]: []
+            }
+        });
+    };
 
     const handleBatchExport = async (format: 'markdown' | 'html') => {
         setBatchExporting(true);
@@ -933,6 +977,134 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 >
                                     {world.hideEmptyFieldsDefault ? '✓ Auto-Hide' : 'Show All'}
                                 </button>
+                            </div>
+
+                            {/* Custom Suggestion Banks (Approach 3) */}
+                            <div className={`p-5 rounded-2xl border space-y-4 ${
+                                isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'
+                            }`}>
+                                <div className="flex items-start justify-between gap-3">
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <Tag size={14} className={isLight ? 'text-[#70121e]' : 'text-amber-400'} />
+                                            <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-[#70121e]' : 'text-amber-300'}`}>
+                                                Custom Suggestion Banks
+                                            </span>
+                                            <span className="text-[9px] opacity-40 font-mono">Approach 3</span>
+                                        </div>
+                                        <p className="text-[11px] opacity-60 font-serif italic mt-1">
+                                            Create reusable traits, features, and keyword chips per entity category. Injected automatically into entity trait editors across your codex.
+                                        </p>
+                                    </div>
+                                    {world.customSuggestions?.[selectedSuggestionType]?.length ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleClearSuggestions(selectedSuggestionType)}
+                                            className="text-[9px] font-mono text-red-400 hover:text-red-300 transition-colors uppercase tracking-wider cursor-pointer"
+                                        >
+                                            Clear ({world.customSuggestions[selectedSuggestionType]?.length})
+                                        </button>
+                                    ) : null}
+                                </div>
+
+                                {/* Category Pills */}
+                                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1 no-scrollbar">
+                                    {ALL_ENTITY_TYPES.map(type => {
+                                        const count = world.customSuggestions?.[type]?.length || 0;
+                                        const isSelected = selectedSuggestionType === type;
+                                        return (
+                                            <button
+                                                key={type}
+                                                type="button"
+                                                onClick={() => setSelectedSuggestionType(type)}
+                                                className={`px-2.5 py-1 rounded-lg text-[10px] font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+                                                    isSelected
+                                                        ? isLight
+                                                            ? 'bg-[#70121e] text-[#fff8e7] font-bold shadow-sm'
+                                                            : 'bg-amber-500/20 text-amber-300 border border-amber-500/50 font-bold'
+                                                        : isLight
+                                                        ? 'bg-black/5 hover:bg-black/10 text-[#2b1810]/70'
+                                                        : 'bg-white/5 hover:bg-white/10 text-slate-400'
+                                                }`}
+                                            >
+                                                <span>{TYPE_LABELS[type] || type}</span>
+                                                {count > 0 && (
+                                                    <span className={`px-1 rounded-full text-[8px] font-bold ${
+                                                        isSelected
+                                                            ? isLight ? 'bg-black/20 text-white' : 'bg-amber-400/30 text-amber-200'
+                                                            : isLight ? 'bg-black/10 text-black/60' : 'bg-white/10 text-slate-300'
+                                                    }`}>
+                                                        {count}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Add New Suggestion Input */}
+                                <form onSubmit={handleAddSuggestion} className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={newSuggestionInput}
+                                        onChange={e => setNewSuggestionInput(e.target.value)}
+                                        placeholder={`Add new suggestion for ${TYPE_LABELS[selectedSuggestionType]} (e.g. Cybernetic, Arcane Crest)...`}
+                                        className={`flex-1 px-3 py-1.5 text-xs rounded-xl border outline-none font-serif ${
+                                            isLight
+                                                ? 'bg-[#fffdf9] border-[#c8a96e]/50 text-[#2b1810] focus:border-[#70121e]'
+                                                : 'bg-slate-900/60 border-slate-700 text-slate-200 focus:border-amber-400'
+                                        }`}
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={!newSuggestionInput.trim()}
+                                        className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-40 ${
+                                            isLight
+                                                ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e] hover:bg-[#851624]'
+                                                : 'bg-amber-500/20 text-amber-300 border-amber-500/60 hover:bg-amber-500/30'
+                                        }`}
+                                    >
+                                        <Plus size={12} /> Add
+                                    </button>
+                                </form>
+
+                                {/* Suggestions Chips Container */}
+                                <div className="space-y-1.5">
+                                    <div className="flex items-center justify-between text-[9px] font-mono opacity-50 uppercase">
+                                        <span>Active Suggestions for {TYPE_LABELS[selectedSuggestionType]}</span>
+                                        <span>{(world.customSuggestions?.[selectedSuggestionType] || []).length} registered</span>
+                                    </div>
+                                    <div className={`p-3 rounded-xl border min-h-[56px] flex flex-wrap gap-1.5 items-center ${
+                                        isLight ? 'bg-[#fffdf9]/70 border-[#c8a96e]/20' : 'bg-black/30 border-white/5'
+                                    }`}>
+                                        {(world.customSuggestions?.[selectedSuggestionType] || []).length === 0 ? (
+                                            <span className="text-[10px] opacity-40 font-serif italic">
+                                                No custom suggestions yet for this category. Type above to add one!
+                                            </span>
+                                        ) : (
+                                            (world.customSuggestions?.[selectedSuggestionType] || []).map((sugg, idx) => (
+                                                <span
+                                                    key={`${sugg}-${idx}`}
+                                                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-serif border shadow-xs animate-in fade-in duration-150 ${
+                                                        isLight
+                                                            ? 'bg-[#fbf7ed] border-[#c8a96e]/50 text-[#2b1810]'
+                                                            : 'bg-slate-800/80 border-slate-700 text-slate-200'
+                                                    }`}
+                                                >
+                                                    <span>{sugg}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveSuggestion(selectedSuggestionType, idx)}
+                                                        className="hover:text-red-400 opacity-60 hover:opacity-100 p-0.5 rounded cursor-pointer transition-opacity"
+                                                        title="Remove suggestion"
+                                                    >
+                                                        <X size={11} />
+                                                    </button>
+                                                </span>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

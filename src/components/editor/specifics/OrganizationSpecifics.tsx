@@ -6,6 +6,8 @@ import { useTheme } from '../../../theme';
 import { GroupRoleGroup } from '../GroupRoleGroup';
 import { Anchor, Gem, Globe, Info, Scroll, Tent, Zap, Crown } from 'lucide-react';
 import { TraitListEditor } from '../TraitListEditor';
+import { useWorldStore } from '../../../store/useWorldStore';
+import { mergeSuggestions } from '../../../utils/suggestionUtils';
 
 interface Props {
     entity: Organization;
@@ -18,6 +20,7 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
     const { layoutMode, themeId } = useTheme();
     const isWiki = layoutMode === 'wiki';
     const isRoyal = themeId === 'royal-codex';
+    const customSuggestions = useWorldStore(state => state.world.customSuggestions || {});
 
     const textareaClass = isRoyal
         ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
@@ -98,7 +101,7 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
                     label="Hierarchy & Leadership Ranks"
                     value={entity.hierarchyRanks || ''}
                     onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                    suggestions={['Grandmaster', 'High Council', 'Commander', 'Quartermaster', 'Envoy', 'Officer', 'Scribe', 'Initiate', 'Operative', 'Sentinel']}
+                    suggestions={mergeSuggestions(['Grandmaster', 'High Council', 'Commander', 'Quartermaster', 'Envoy', 'Officer', 'Scribe', 'Initiate', 'Operative', 'Sentinel'], customSuggestions['organization'])}
                     placeholder="Add an internal rank or title..."
                     gridSpan={6}
                 />
@@ -106,7 +109,7 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
                     label="Core Tenets & Doctrine"
                     value={entity.coreTenets || ''}
                     onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                    suggestions={['Absolute Secrecy', 'Mutual Defense', 'Strict Hierarchy', 'Total Loyalty', 'Protection of the Innocent', 'Pursuit of Forbidden Lore', 'Non-Interference', 'Blood Oath', 'Code of Honor', 'Sacred Silence']}
+                    suggestions={mergeSuggestions(['Absolute Secrecy', 'Mutual Defense', 'Strict Hierarchy', 'Total Loyalty', 'Protection of the Innocent', 'Pursuit of Forbidden Lore', 'Non-Interference', 'Blood Oath', 'Code of Honor', 'Sacred Silence'], customSuggestions['organization'])}
                     placeholder="Add a core tenet, law or creed..."
                     gridSpan={6}
                 />
@@ -114,7 +117,7 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
                     label="Faction Assets & Strongholds"
                     value={entity.factionAssets || ''}
                     onChange={(v) => onUpdate({ ...entity, factionAssets: v })}
-                    suggestions={['Grand Citadel', 'Secret Vault', 'War Fleet', 'Guildhouse', 'Hidden Archives', 'Armory', 'Smuggling Network', 'Sacred Relic', 'Trade Monopoly', 'Watchtowers']}
+                    suggestions={mergeSuggestions(['Grand Citadel', 'Secret Vault', 'War Fleet', 'Guildhouse', 'Hidden Archives', 'Armory', 'Smuggling Network', 'Sacred Relic', 'Trade Monopoly', 'Watchtowers'], customSuggestions['organization'])}
                     placeholder="Add a stronghold, fleet or asset..."
                     gridSpan={12}
                 />

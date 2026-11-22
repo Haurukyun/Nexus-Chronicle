@@ -6,11 +6,19 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-22 (18:40)
+> Last updated: 2026-11-22 (19:35)
 
 ---
 
 ## ✅ Done
+
+- **feat: Custom Suggestion Banks Engine (Step 3) (`types.ts`, `suggestionUtils.ts`, `OptionsView.tsx`, specifics editors) (2026-11-22)**:
+  - **Step 3 (Approach 3) — Custom Suggestion Banks**:
+    - Added `customSuggestions?: Partial<Record<EntityType, string[]>>` to `WorldData` in `src/types.ts`.
+    - Created `src/utils/suggestionUtils.ts` with `mergeSuggestions(builtIn, custom)` helper: prepends custom suggestions, deduplicates case-insensitively, and trims whitespace. Unit tested with 6/6 tests passing in `suggestionUtils.test.ts`.
+    - Added dedicated "Custom Suggestion Banks" manager section in `src/views/OptionsView.tsx` with all 21 category pills, active badge counters, inline text input with Enter support, interactive tag chips with removal, and category clear actions.
+    - Wired `mergeSuggestions` into `CharacterSpecifics.tsx` (traits, features, and custom stat suggestions), `LocationSpecifics.tsx` (defenses, hazards, landmarks, climate), `OrganizationSpecifics.tsx`, `PoliticalGroupSpecifics.tsx`, and `ReligionSpecifics.tsx`.
+    - Verified: `npm run typecheck` (0 errors), `npm run test` (78/78 passing across 16 test files), `npm run build` (clean).
 
 - **feat: Sidebar Category Manager & Stat Block Engine (Step 2) (`Sidebar.tsx`, `CharacterSpecifics.tsx`, `CharacterStatBlock.tsx`, `EntityViewer.tsx`, `types.ts`) (2026-11-22)**:
   - **In-Place Sidebar Category Manager**:

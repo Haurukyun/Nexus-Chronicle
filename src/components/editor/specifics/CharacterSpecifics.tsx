@@ -8,6 +8,7 @@ import { GroupRoleGroup } from '../GroupRoleGroup';
 import { Info, Zap, Heart, Swords, Scroll, Plus, Trash2, Sliders, BookOpen, X, Sparkles } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
 import { isModuleActive } from '../../../utils/realmConfig';
+import { mergeSuggestions } from '../../../utils/suggestionUtils';
 
 interface Props {
     entity: Character;
@@ -25,6 +26,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
     const customPresets = useWorldStore(state => state.world.customCalendarPresets);
     const world = useWorldStore(state => state.world);
     const showCombatStats = isModuleActive(world, 'combatStats');
+    const customSuggestions = world.customSuggestions || {};
 
     const textareaClass = isRoyal
         ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
@@ -113,7 +115,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                     label="Traits & Characteristics"
                     value={entity.personalityTraits || ''}
                     onChange={v => onUpdate({ ...entity, personalityTraits: v })}
-                    suggestions={['Honest', 'Stubborn', 'Cunning', 'Compassionate', 'Brave', 'Cynical', 'Charming', 'Loyal', 'Impulsive', 'Calculating', 'Pragmatic', 'Zealous', 'Stoic', 'Melancholic', 'Eccentric']}
+                    suggestions={mergeSuggestions(['Honest', 'Stubborn', 'Cunning', 'Compassionate', 'Brave', 'Cynical', 'Charming', 'Loyal', 'Impulsive', 'Calculating', 'Pragmatic', 'Zealous', 'Stoic', 'Melancholic', 'Eccentric'], customSuggestions['character'])}
                     placeholder="Add trait (e.g. Brave, Cynical)..."
                     gridSpan={6}
                 />
@@ -123,7 +125,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                     label="Unique / Unusual Features"
                     value={entity.traits || ''}
                     onChange={v => onUpdate({ ...entity, traits: v })}
-                    suggestions={['Heterochromia', 'Scar across eye', 'Mechanical prosthetic', 'Tattooed arcane runes', 'Silver hair', 'Pointed ears', 'Missing finger', 'Faint glowing aura', 'Burn marks', 'Golden irises', 'Intricate brand mark', 'Cybernetic ocular implant']}
+                    suggestions={mergeSuggestions(['Heterochromia', 'Scar across eye', 'Mechanical prosthetic', 'Tattooed arcane runes', 'Silver hair', 'Pointed ears', 'Missing finger', 'Faint glowing aura', 'Burn marks', 'Golden irises', 'Intricate brand mark', 'Cybernetic ocular implant'], customSuggestions['character'])}
                     placeholder="Add feature (e.g. Scar across eye, Pointed ears)..."
                     gridSpan={6}
                 />
@@ -132,7 +134,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                 {showCombatStats && (() => {
                     const mode = entity.statBlockMode || 'rpg-d20';
                     const customList = entity.customStats || [];
-                    const statSuggestions = ['Health (HP)', 'Mana (MP)', 'Sanity', 'Cyberware', 'Resolve', 'Street Cred', 'Humanity', 'Stress', 'Armor', 'Luck', 'Morale', 'Ammo'];
+                    const statSuggestions = mergeSuggestions(['Health (HP)', 'Mana (MP)', 'Sanity', 'Cyberware', 'Resolve', 'Street Cred', 'Humanity', 'Stress', 'Armor', 'Luck', 'Morale', 'Ammo'], customSuggestions['character']);
 
                     return (
                         <div className={`col-span-12 p-3 sm:p-4 rounded-2xl border space-y-3 ${isRoyal ? 'border-[#c8a96e]/40 bg-[#fbf8ef]' : isWiki ? 'border-[#d4c8af]/40 bg-white/60' : 'border-slate-500/10 bg-black/5'}`}>
