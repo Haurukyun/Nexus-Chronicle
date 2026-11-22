@@ -12,11 +12,15 @@ budget_tokens: 1000
 
 ## ✅ Done
 
-- **Fix: TraitListEditor 2-col overflow on thin windows (`LocationSpecifics.tsx`, `OrganizationSpecifics.tsx`, `PoliticalGroupSpecifics.tsx`, `ReligionSpecifics.tsx`) (2026-11-22)**:
-  - Root cause: `gridSpan={6}` placed children directly in the fixed `grid-cols-12` EditorGroup grid with no responsive breakpoint. At thin widths, the two side-by-side editors couldn't shrink below their intrinsic min-content, causing the grid to overflow horizontally and appear wider than the viewport.
-  - Fix: Wrapped the two side-by-side `TraitListEditor` pairs in `col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5` divs. They now stack to 1 column on narrow screens and return to 2 at `md` (768px+).
-  - Applied consistently across all 4 affected specifics files.
-  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing).
+- **Compact 2-Column TraitListEditor Scaling on Thin Windows (`TraitListEditor.tsx`, `EditorGroup.tsx`, `EntityEditor.tsx`, specifics) (2026-11-22)**:
+  - Preserved the user's preferred 2-column side-by-side layout (`gridSpan={6}`) across all specifics cards without collapsing into a single stacked column.
+  - Made the 2-column layout compact when the window is thin:
+    - Added `min-w-0` to `TraitListEditor` container, input row, `<input>`, chip list, and suggestions wrapper so CSS Grid tracks can shrink below content min-widths.
+    - Added `truncate` and responsive tracking to header labels and tags to prevent text width blowout.
+    - Hid repetitive `Click 📝 to annotate notes` helper text on `<sm` viewports (`hidden sm:inline`).
+    - Made `EditorGroup` padding and gap responsive (`p-3.5 sm:p-6`, `gap-3 sm:gap-5`) to reclaim ~25px of horizontal margin on narrow windows without overflow clipping.
+    - Added `min-w-0` to `EntityEditor` `<fieldset>` to prevent native browser fieldset min-content expansion.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
 
 - **UI Bug Fixes — Map Dropdown Z-Index & Location Viewer Atlas Anchor Layout (`App.tsx`, `LocationSpecificsViewer.tsx`) (2026-11-22)**:
   - Fixed nav dropdown panels being hidden behind the World Atlas map view by raising dropdown z-index from `z-50` → `z-[9999]` in `App.tsx`.

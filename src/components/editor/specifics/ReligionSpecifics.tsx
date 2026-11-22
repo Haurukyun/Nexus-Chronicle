@@ -25,9 +25,8 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
             ? 'w-full bg-white border border-[#d4c8af] rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm'
             : 'w-full bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm';
 
-    const labelClass = `text-[10px] uppercase tracking-widest pl-1 mb-1 block ${
-        isRoyal ? 'text-[#451a03] font-serif font-bold' : isWiki ? 'text-[#854d0e] font-black' : 'text-slate-500 font-black'
-    }`;
+    const labelClass = `text-[10px] uppercase tracking-widest pl-1 mb-1 block ${isRoyal ? 'text-[#451a03] font-serif font-bold' : isWiki ? 'text-[#854d0e] font-black' : 'text-slate-500 font-black'
+        }`;
     return (
         <>
             <EditorGroup title="Governance" icon={Anchor}>
@@ -88,22 +87,22 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
                 </div>
             </EditorGroup>
             <EditorGroup title="Priesthood, Dogma & Sacred Relics" icon={Crown}>
-                <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <TraitListEditor
-                        label="Priesthood & Holy Hierarchy"
-                        value={entity.hierarchyRanks || ''}
-                        onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                        suggestions={['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic']}
-                        placeholder="Add a holy rank or title..."
-                    />
-                    <TraitListEditor
-                        label="Sacred Dogma & Commandments"
-                        value={entity.coreTenets || ''}
-                        onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                        suggestions={['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance']}
-                        placeholder="Add a sacred commandment, creed or dogma..."
-                    />
-                </div>
+                <TraitListEditor
+                    label="Priesthood & Holy Hierarchy"
+                    value={entity.hierarchyRanks || ''}
+                    onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
+                    suggestions={['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic']}
+                    placeholder="Add a holy rank or title..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Sacred Dogma & Commandments"
+                    value={entity.coreTenets || ''}
+                    onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
+                    suggestions={['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance']}
+                    placeholder="Add a sacred commandment, creed or dogma..."
+                    gridSpan={6}
+                />
                 <TraitListEditor
                     label="Sacred Relics, Temples & Sanctuaries"
                     value={entity.factionAssets || ''}

@@ -25,9 +25,8 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
             ? 'w-full bg-white border border-[#d4c8af] rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm'
             : 'w-full bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm';
 
-    const labelClass = `text-[10px] uppercase tracking-widest pl-1 mb-1 block ${
-        isRoyal ? 'text-[#451a03] font-serif font-bold' : isWiki ? 'text-[#854d0e] font-black' : 'text-slate-500 font-black'
-    }`;
+    const labelClass = `text-[10px] uppercase tracking-widest pl-1 mb-1 block ${isRoyal ? 'text-[#451a03] font-serif font-bold' : isWiki ? 'text-[#854d0e] font-black' : 'text-slate-500 font-black'
+        }`;
     return (
         <>
             <EditorGroup title="Governance" icon={Anchor}>
@@ -87,22 +86,22 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                 </div>
             </EditorGroup>
             <EditorGroup title="Hierarchy, Doctrine & Assets" icon={Crown}>
-                <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <TraitListEditor
-                        label="Hierarchy & Leadership Ranks"
-                        value={entity.hierarchyRanks || ''}
-                        onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                        suggestions={['Chancellor', 'Senator', 'Consul', 'Magistrate', 'Speaker', 'Party Whip', 'Minister', 'Delegate', 'Ambassador', 'Tribune']}
-                        placeholder="Add a political rank or title..."
-                    />
-                    <TraitListEditor
-                        label="Core Tenets & Doctrine"
-                        value={entity.coreTenets || ''}
-                        onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                        suggestions={['Sovereignty', 'Egalitarianism', 'Imperial Expansion', 'Tradition & Ancestry', 'Isolationism', 'Free Commerce', 'Rule of Law', 'Radical Reform', 'Devotion to the Crown']}
-                        placeholder="Add a core tenet, manifesto or creed..."
-                    />
-                </div>
+                <TraitListEditor
+                    label="Hierarchy & Leadership Ranks"
+                    value={entity.hierarchyRanks || ''}
+                    onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
+                    suggestions={['Chancellor', 'Senator', 'Consul', 'Magistrate', 'Speaker', 'Party Whip', 'Minister', 'Delegate', 'Ambassador', 'Tribune']}
+                    placeholder="Add a political rank or title..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Core Tenets & Doctrine"
+                    value={entity.coreTenets || ''}
+                    onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
+                    suggestions={['Sovereignty', 'Egalitarianism', 'Imperial Expansion', 'Tradition & Ancestry', 'Isolationism', 'Free Commerce', 'Rule of Law', 'Radical Reform', 'Devotion to the Crown']}
+                    placeholder="Add a core tenet, manifesto or creed..."
+                    gridSpan={6}
+                />
                 <TraitListEditor
                     label="Faction Assets & Strongholds"
                     value={entity.factionAssets || ''}

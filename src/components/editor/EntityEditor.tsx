@@ -353,7 +353,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
             <div className="flex gap-8 items-start relative">
                 {/* Main Editor Form */}
                 <div className="flex-1 min-w-0">
-                    <fieldset disabled={entity.isReadOnly} className="space-y-12">
+                    <fieldset disabled={entity.isReadOnly} className="space-y-12 min-w-0">
                         {/* 1. MANDATORY DOCUMENT SETTINGS (UNIVERSAL) */}
                         <EditorGroup id="section-doc-settings" title="Document settings" icon={Settings}>
                             <FormInput label="Name" icon={Scale} value={entity.name} onChange={(v: string) => onUpdate({ ...entity, name: v })} gridSpan={6} />

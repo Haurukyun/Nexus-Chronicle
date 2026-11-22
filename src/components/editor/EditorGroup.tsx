@@ -45,7 +45,7 @@ export const EditorGroup = ({ title, icon: Icon, children, id }: EditorGroupProp
                 )}
                 <h3 className={`text-xs font-bold uppercase tracking-[0.15em] ${titleStyle}`}>{title}</h3>
             </div>
-            <div className="p-6 grid grid-cols-12 gap-5 items-start">
+            <div className="p-3.5 sm:p-6 grid grid-cols-12 gap-3 sm:gap-5 items-start">
                 {children}
             </div>
         </div>

@@ -33,9 +33,8 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
             ? 'w-full bg-white border border-[#d4c8af] rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm'
             : 'w-full bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-sm';
 
-    const labelClass = `text-[10px] font-black uppercase tracking-widest pl-1 mb-1 block ${
-        isRoyal ? 'text-[#451a03] font-serif font-bold' : isWikiMode ? 'text-[#854d0e]' : 'text-slate-500'
-    }`;
+    const labelClass = `text-[10px] font-black uppercase tracking-widest pl-1 mb-1 block ${isRoyal ? 'text-[#451a03] font-serif font-bold' : isWikiMode ? 'text-[#854d0e]' : 'text-slate-500'
+        }`;
 
     return (
         <>
@@ -46,9 +45,8 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold uppercase tracking-wider">Atlas Pin Status:</span>
                             {loc.coordinates ? (
-                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 ${
-                                    isRoyal ? 'bg-[#70121e]/10 text-[#70121e]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/20 text-[#fef08a]'
-                                }`}>
+                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1 ${isRoyal ? 'bg-[#70121e]/10 text-[#70121e]' : isWikiMode ? 'bg-[#b91c1c]/10 text-[#b91c1c]' : 'bg-[#fef08a]/20 text-[#fef08a]'
+                                    }`}>
                                     <MapPin size={11} /> Anchored (X: {loc.coordinates.x}%, Y: {loc.coordinates.y}%)
                                 </span>
                             ) : (
@@ -76,13 +74,12 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                             <button
                                 type="button"
                                 onClick={() => onUpdate({ ...loc, coordinates: { x: 50, y: 50 } })}
-                                className={`px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
-                                    isRoyal
-                                        ? 'border-[#c8a96e]/40 text-[#70121e] hover:bg-[#c8a96e]/10'
-                                        : isWikiMode
-                                            ? 'border-[#b91c1c]/40 text-[#b91c1c] hover:bg-[#b91c1c]/10'
-                                            : 'border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10'
-                                }`}
+                                className={`px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${isRoyal
+                                    ? 'border-[#c8a96e]/40 text-[#70121e] hover:bg-[#c8a96e]/10'
+                                    : isWikiMode
+                                        ? 'border-[#b91c1c]/40 text-[#b91c1c] hover:bg-[#b91c1c]/10'
+                                        : 'border-yellow-500/40 text-yellow-300 hover:bg-yellow-500/10'
+                                    }`}
                             >
                                 <Crosshair size={12} /> Pin at Center (50%, 50%)
                             </button>
@@ -157,9 +154,8 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                             const y = Math.round(((e.clientY - rect.top) / rect.height) * 1000) / 10;
                             onUpdate({ ...loc, coordinates: { x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) } });
                         }}
-                        className={`relative w-full aspect-[21/9] rounded-2xl overflow-hidden border-2 cursor-crosshair shadow-lg group select-none ${
-                            isRoyal ? 'border-[#c8a96e] bg-[#ede2cc]' : isWikiMode ? 'border-[#d4c8af] bg-[#eadecc]' : 'border-slate-700 bg-slate-950'
-                        }`}
+                        className={`relative w-full aspect-[21/9] rounded-2xl overflow-hidden border-2 cursor-crosshair shadow-lg group select-none ${isRoyal ? 'border-[#c8a96e] bg-[#ede2cc]' : isWikiMode ? 'border-[#d4c8af] bg-[#eadecc]' : 'border-slate-700 bg-slate-950'
+                            }`}
                     >
                         {/* Map Image */}
                         <img
@@ -180,14 +176,12 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                                 }}
                                 className="absolute -translate-x-1/2 -translate-y-full pointer-events-none flex flex-col items-center animate-in zoom-in duration-200"
                             >
-                                <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider mb-0.5 shadow-md whitespace-nowrap ${
-                                    isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-black/90 text-yellow-300 border border-yellow-500/40'
-                                }`}>
+                                <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider mb-0.5 shadow-md whitespace-nowrap ${isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-black/90 text-yellow-300 border border-yellow-500/40'
+                                    }`}>
                                     {loc.name || 'Location'}
                                 </div>
-                                <div className={`relative flex items-center justify-center p-1.5 rounded-full shadow-2xl ${
-                                    isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.8)]'
-                                }`}>
+                                <div className={`relative flex items-center justify-center p-1.5 rounded-full shadow-2xl ${isRoyal ? 'bg-[#70121e] text-[#fff8e7]' : isWikiMode ? 'bg-[#b91c1c] text-white' : 'bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.8)]'
+                                    }`}>
                                     <MapPin size={18} fill="currentColor" />
                                 </div>
                                 <div className={`w-1.5 h-1.5 rounded-full shadow-md -mt-0.5 ${isRoyal ? 'bg-[#70121e]' : 'bg-yellow-400'}`} />
@@ -205,10 +199,10 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
             <EditorGroup title="Basic information" icon={Info}>
                 <SmartSelect label="Succeeding Locations" icon={MapPin} ids={loc.succeedingLocationIds || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...loc, succeedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Preceding Locations" icon={MapPin} ids={loc.precedingLocationIds || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...loc, precedingLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
-                
+
                 <FormInput label="Date of creation" icon={Calendar} value={loc.dateOfCreation || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfCreation: v })} gridSpan={6} />
                 <FormInput label="Date of end" icon={Hourglass} value={loc.dateOfEnd || ""} onChange={(v: string) => onUpdate({ ...loc, dateOfEnd: v })} gridSpan={6} />
-                
+
                 <div className="col-span-12">
                     <label className={labelClass + ' flex items-center gap-2'}>
                         <Sparkles size={12} className="opacity-60" /> Unusual features/Traits
@@ -219,13 +213,13 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                 <FormInput label="Location type" icon={Anchor} value={loc.locationType || ""} options={['Settlement', 'Dungeon', 'Empire', 'Wilderness', 'Holy Ground', 'Ruins', 'Planar Overlay']} onChange={(v: string) => onUpdate({ ...loc, locationType: v })} gridSpan={4} />
                 <FormInput label="Population" icon={Users} value={loc.population || ""} onChange={(v: string) => onUpdate({ ...loc, population: v })} gridSpan={4} />
                 <FormInput label="Size" icon={Maximize} value={loc.size || ""} onChange={(v: string) => onUpdate({ ...loc, size: v })} gridSpan={4} />
-                
+
                 <SmartSelect label="Local Languages" icon={MessageSquare} ids={loc.localLanguageIds || []} type="language" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localLanguageIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Local Currencies" icon={Coins} ids={loc.localCurrencyIds || []} type="resource" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localCurrencyIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Local Cultures" icon={Home} ids={loc.localCultureIds || []} type="culture" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localCultureIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Common Occupations" icon={Pickaxe} ids={loc.commonOccupationIds || []} type="occupation" all={allEntities} onChange={(ids) => onUpdate({ ...loc, commonOccupationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Local Resources" icon={Gem} ids={loc.localResourceIds || []} type="resource" all={allEntities} onChange={(ids) => onUpdate({ ...loc, localResourceIds: ids })} onCreate={onCreateNew} gridSpan={12} />
-                
+
                 <SmartSelect label="Neighbouring Locations" icon={MapPin} ids={loc.neighbouringLocationIds || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...loc, neighbouringLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Other connected Locations" icon={MapPin} ids={loc.otherConnectedLocationIds || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...loc, otherConnectedLocationIds: ids })} onCreate={onCreateNew} gridSpan={6} />
             </EditorGroup>
@@ -242,36 +236,38 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
             </EditorGroup>
 
             <EditorGroup title="Defenses, Hazards & Landmarks" icon={Shield}>
-                <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <TraitListEditor
-                        label="Defenses & Fortifications"
-                        value={loc.defenses || ''}
-                        onChange={(v) => onUpdate({ ...loc, defenses: v })}
-                        suggestions={['Stone Walls', 'City Gates', 'Watchtowers', 'Moat', 'Drawbridge', 'Garrison', 'Magical Wards', 'Palisade', 'Portcullis', 'Arrow Slits']}
-                        placeholder="Add a defense structure..."
-                    />
-                    <TraitListEditor
-                        label="Hazards & Dangers"
-                        value={loc.hazards || ''}
-                        onChange={(v) => onUpdate({ ...loc, hazards: v })}
-                        suggestions={['Cursed Ground', 'Miasma', 'Flood Prone', 'Earthquake Zone', 'Toxic Plants', 'Monster Den', 'Quicksand', 'Lava Fields', 'Haunted Area', 'Blizzard Season']}
-                        placeholder="Add a hazard or danger..."
-                    />
-                    <TraitListEditor
-                        label="Notable Landmarks"
-                        value={loc.notableLandmarks || ''}
-                        onChange={(v) => onUpdate({ ...loc, notableLandmarks: v })}
-                        suggestions={['Ancient Ruins', 'Sacred Temple', 'Grand Marketplace', 'Royal Palace', 'Giant Statue', 'Mystic Fountain', 'Old Library', 'Lighthouse', 'Arena', 'Memorial']}
-                        placeholder="Add a landmark or point of interest..."
-                    />
-                    <TraitListEditor
-                        label="Climate & Weather Notes"
-                        value={loc.climateNotes || ''}
-                        onChange={(v) => onUpdate({ ...loc, climateNotes: v })}
-                        suggestions={['Perpetual Mist', 'Harsh Winters', 'Scorching Summers', 'Monsoon Season', 'Constant Drizzle', 'Magical Storms', 'Drought-Prone', 'Tropical', 'Arctic', 'Mild Year-Round']}
-                        placeholder="Add a climate or weather note..."
-                    />
-                </div>
+                <TraitListEditor
+                    label="Defenses & Fortifications"
+                    value={loc.defenses || ''}
+                    onChange={(v) => onUpdate({ ...loc, defenses: v })}
+                    suggestions={['Stone Walls', 'City Gates', 'Watchtowers', 'Moat', 'Drawbridge', 'Garrison', 'Magical Wards', 'Palisade', 'Portcullis', 'Arrow Slits']}
+                    placeholder="Add a defense structure..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Hazards & Dangers"
+                    value={loc.hazards || ''}
+                    onChange={(v) => onUpdate({ ...loc, hazards: v })}
+                    suggestions={['Cursed Ground', 'Miasma', 'Flood Prone', 'Earthquake Zone', 'Toxic Plants', 'Monster Den', 'Quicksand', 'Lava Fields', 'Haunted Area', 'Blizzard Season']}
+                    placeholder="Add a hazard or danger..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Notable Landmarks"
+                    value={loc.notableLandmarks || ''}
+                    onChange={(v) => onUpdate({ ...loc, notableLandmarks: v })}
+                    suggestions={['Ancient Ruins', 'Sacred Temple', 'Grand Marketplace', 'Royal Palace', 'Giant Statue', 'Mystic Fountain', 'Old Library', 'Lighthouse', 'Arena', 'Memorial']}
+                    placeholder="Add a landmark or point of interest..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Climate & Weather Notes"
+                    value={loc.climateNotes || ''}
+                    onChange={(v) => onUpdate({ ...loc, climateNotes: v })}
+                    suggestions={['Perpetual Mist', 'Harsh Winters', 'Scorching Summers', 'Monsoon Season', 'Constant Drizzle', 'Magical Storms', 'Drought-Prone', 'Tropical', 'Arctic', 'Mild Year-Round']}
+                    placeholder="Add a climate or weather note..."
+                    gridSpan={6}
+                />
             </EditorGroup>
 
             <EditorGroup title="Resident information" icon={UserCircle}>
@@ -288,11 +284,11 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     <p className="text-[9px] opacity-40 italic">Groups that wield primary power over this territory</p>
                 </div>
                 <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                    <GroupRoleGroup label="Governing Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} isCustomGoverning />
-                    <GroupRoleGroup label="Governing Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} isCustomGoverning />
-                    <GroupRoleGroup label="Governing Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} isCustomGoverning />
-                    <GroupRoleGroup label="Governing Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} isCustomGoverning />
-                    <GroupRoleGroup label="Governing Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, governingGroupConnections: {...loc.governingGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, governingGroupConnections: { ...loc.governingGroupConnections, political: d.groupConnections.political } })} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, governingGroupConnections: { ...loc.governingGroupConnections, organization: d.groupConnections.organization } })} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, governingGroupConnections: { ...loc.governingGroupConnections, religious: d.groupConnections.religious } })} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, governingGroupConnections: { ...loc.governingGroupConnections, magic: d.groupConnections.magic } })} onCreateNew={onCreateNew} isCustomGoverning />
+                    <GroupRoleGroup label="Governing Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, governingGroupConnections: { ...loc.governingGroupConnections, science: d.groupConnections.science } })} onCreateNew={onCreateNew} isCustomGoverning />
                 </div>
             </EditorGroup>
 
@@ -302,11 +298,11 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     <p className="text-[9px] opacity-40 italic">Groups with significant influence but no formal authority</p>
                 </div>
                 <div className="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                    <GroupRoleGroup label="Connected Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, political: d.groupConnections.political}})} onCreateNew={onCreateNew} />
-                    <GroupRoleGroup label="Connected Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, organization: d.groupConnections.organization}})} onCreateNew={onCreateNew} />
-                    <GroupRoleGroup label="Connected Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, religious: d.groupConnections.religious}})} onCreateNew={onCreateNew} />
-                    <GroupRoleGroup label="Connected Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, magic: d.groupConnections.magic}})} onCreateNew={onCreateNew} />
-                    <GroupRoleGroup label="Connected Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({...loc, connectedGroupConnections: {...loc.connectedGroupConnections, science: d.groupConnections.science}})} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Ideologies/Political groups" roleKey="political" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, connectedGroupConnections: { ...loc.connectedGroupConnections, political: d.groupConnections.political } })} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Organizations/Other groups" roleKey="organization" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, connectedGroupConnections: { ...loc.connectedGroupConnections, organization: d.groupConnections.organization } })} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Teachings/Religious groups" roleKey="religious" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, connectedGroupConnections: { ...loc.connectedGroupConnections, religious: d.groupConnections.religious } })} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Schools of Magic/Magical groups" roleKey="magic" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, connectedGroupConnections: { ...loc.connectedGroupConnections, magic: d.groupConnections.magic } })} onCreateNew={onCreateNew} />
+                    <GroupRoleGroup label="Connected Sciences/Technological groups" roleKey="science" entity={loc as any} allEntities={allEntities} onUpdate={(d: any) => onUpdate({ ...loc, connectedGroupConnections: { ...loc.connectedGroupConnections, science: d.groupConnections.science } })} onCreateNew={onCreateNew} />
                 </div>
             </EditorGroup>
         </>

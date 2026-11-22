@@ -106,29 +106,29 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
         : 'bg-slate-800 text-[#fef08a] border-slate-700';
 
     return (
-        <div className="space-y-2" style={{ gridColumn: `span ${gridSpan}` }}>
-            <div className="flex items-center justify-between">
-                <label className={`text-[10px] font-black uppercase tracking-widest ${labelStyle}`}>
+        <div className="space-y-2 min-w-0" style={{ gridColumn: `span ${gridSpan}` }}>
+            <div className="flex items-center justify-between gap-1 min-w-0">
+                <label className={`text-[10px] font-black uppercase tracking-wider sm:tracking-widest ${labelStyle} truncate min-w-0`}>
                     {label} ({items.length})
                 </label>
-                <span className="text-[9px] font-mono opacity-50">Click 📝 to annotate notes</span>
+                <span className="text-[9px] font-mono opacity-50 shrink-0 hidden sm:inline">Click 📝 to annotate notes</span>
             </div>
 
             {/* List Chips Display */}
-            <div className={`min-h-[46px] p-2 rounded-xl border flex flex-wrap gap-1.5 items-center ${
+            <div className={`min-h-[40px] sm:min-h-[46px] p-1.5 sm:p-2 rounded-xl border flex flex-wrap gap-1 sm:gap-1.5 items-center min-w-0 ${
                 isRoyal ? 'bg-[#fbf8ef] border-[#c8a96e]/50' : isWiki ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-700'
             }`}>
                 {items.length === 0 ? (
-                    <span className="text-xs opacity-40 italic font-serif px-1">None listed yet. Select suggestions or enter below.</span>
+                    <span className="text-xs opacity-40 italic font-serif px-1 line-clamp-1">None listed yet. Select suggestions or enter below.</span>
                 ) : (
                     items.map((item, idx) => (
                         <div
                             key={idx}
-                            className={`flex items-center gap-1.5 pl-2.5 pr-1 py-1 rounded-lg text-xs border transition-all ${tagStyle}`}
+                            className={`flex items-center gap-1 sm:gap-1.5 pl-2 sm:pl-2.5 pr-1 py-0.5 sm:py-1 rounded-lg text-xs border transition-all max-w-full ${tagStyle}`}
                         >
-                            <span className="font-bold tracking-tight">• {item.name}</span>
+                            <span className="font-bold tracking-tight truncate">• {item.name}</span>
                             {item.note && (
-                                <span className={`text-[10px] italic font-normal max-w-[120px] truncate opacity-75 ${isRoyal ? 'text-[#5c2a12]' : 'text-slate-400'}`}>
+                                <span className={`text-[10px] italic font-normal max-w-[80px] sm:max-w-[120px] truncate opacity-75 ${isRoyal ? 'text-[#5c2a12]' : 'text-slate-400'}`}>
                                     ({item.note})
                                 </span>
                             )}
@@ -136,7 +136,7 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
                                 type="button"
                                 title={item.note ? `Note: "${item.note}" (Click to edit)` : 'Add note/annotation'}
                                 onClick={() => openNoteModal(idx)}
-                                className={`p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${
+                                className={`p-0.5 sm:p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors shrink-0 ${
                                     item.note ? 'text-amber-600 dark:text-amber-400 font-bold' : 'opacity-40 hover:opacity-100'
                                 }`}
                             >
@@ -146,7 +146,7 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
                                 type="button"
                                 title="Remove"
                                 onClick={() => removeItem(idx)}
-                                className="p-1 rounded opacity-40 hover:opacity-100 hover:text-red-500 transition-colors"
+                                className="p-0.5 sm:p-1 rounded opacity-40 hover:opacity-100 hover:text-red-500 transition-colors shrink-0"
                             >
                                 <X size={11} />
                             </button>
@@ -156,7 +156,7 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
             </div>
 
             {/* Add Custom Input */}
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 sm:gap-2 min-w-0">
                 <input
                     type="text"
                     value={inputVal}
@@ -168,7 +168,7 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
                             addItem(inputVal);
                         }
                     }}
-                    className={`flex-1 px-3 py-1.5 rounded-xl border text-xs outline-none transition-all ${
+                    className={`min-w-0 flex-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border text-xs outline-none transition-all ${
                         isRoyal
                             ? 'bg-[#fbf8ef] border-[#c8a96e]/60 text-[#2b1810] placeholder-[#8c6d48]/50 focus:border-[#70121e] font-serif'
                             : isWiki
@@ -180,7 +180,7 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
                     type="button"
                     onClick={() => addItem(inputVal)}
                     disabled={!inputVal.trim()}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider disabled:opacity-30 transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider shrink-0 disabled:opacity-30 transition-all ${
                         isRoyal
                             ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e]'
                             : isWiki
@@ -194,7 +194,7 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
 
             {/* Suggestions Chips */}
             {suggestions.length > 0 && (
-                <div className="space-y-1 pt-1">
+                <div className="space-y-1 pt-1 min-w-0">
                     <span className="text-[9px] font-black uppercase tracking-wider block opacity-50 flex items-center gap-1">
                         <Sparkles size={10} /> Suggested Quick-Picks
                     </span>
@@ -207,7 +207,7 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
                                     type="button"
                                     onClick={() => !isAdded && addItem(s)}
                                     disabled={isAdded}
-                                    className={`px-2 py-0.5 rounded-md text-[10px] font-medium border transition-all ${
+                                    className={`px-1.5 sm:px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-medium border transition-all truncate max-w-full ${
                                         isAdded
                                             ? 'opacity-30 cursor-default bg-black/5 border-transparent line-through'
                                             : isRoyal
