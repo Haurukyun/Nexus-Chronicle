@@ -399,7 +399,7 @@ const App = () => {
 
                                             {isOpen && (
                                                 <div
-                                                    className={`absolute top-full ${group.id === 'the-web' ? 'right-0' : 'left-0'} mt-1.5 w-72 rounded-2xl border z-50 p-2 space-y-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
+                                                    className={`absolute top-full ${group.id === 'the-web' ? 'right-0' : 'left-0'} mt-1.5 w-72 rounded-2xl border z-[9999] p-2 space-y-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
                                                         isRoyal
                                                             ? 'bg-[#18100a] border-[#c8a96e]/50 text-[#f5ebd7]'
                                                             : isWiki

@@ -100,10 +100,14 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                         <FieldRow label="Size" value={loc.size} />
                         <FieldRow label="Founded" value={loc.dateOfCreation} />
                         <FieldRow label="Ended" value={loc.dateOfEnd} />
-                        <FieldRow 
-                            label="Atlas Anchor" 
-                            value={loc.coordinates ? `X: ${loc.coordinates.x}%, Y: ${loc.coordinates.y}%` : "Unanchored"} 
-                        />
+                        {loc.coordinates ? (
+                            <>
+                                <FieldRow label="Anchor X" value={`${loc.coordinates.x}%`} />
+                                <FieldRow label="Anchor Y" value={`${loc.coordinates.y}%`} />
+                            </>
+                        ) : (
+                            <FieldRow label="Atlas Anchor" value="Unanchored" />
+                        )}
                         <div className="col-span-2 mt-4 space-y-4">
                             <FieldRow label="Unusual Layout/Features" value={loc.unusualFeatures} />
                             <LinksDisplay label="Preceding Geography" ids={loc.precedingLocationIds || []} all={allEntities} onNav={onNavigate} />
@@ -111,12 +115,21 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                         </div>
                     </div>
 
-                    {/* Mini visual map preview if coordinates exist */}
+                    {/* Mini visual map preview if coordinates exist — always full-width, outside the 2-col grid */}
                     {loc.coordinates && (
                         <div className="mt-6 pt-6 border-t border-slate-800/80">
-                            <span className={`text-[10px] font-black uppercase tracking-widest ${t.colors.textMuted} mb-3 flex items-center gap-1.5`}>
-                                <MapPin size={12} className={t.colors.textAccent} /> Atlas Anchor Pin
-                            </span>
+                            <div className="flex items-center justify-between mb-3">
+                                <span className={`text-[10px] font-black uppercase tracking-widest ${t.colors.textMuted} flex items-center gap-1.5`}>
+                                    <MapPin size={12} className={t.colors.textAccent} /> Atlas Anchor Pin
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => useWorldStore.getState().focusMapLocation(loc.id)}
+                                    className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-colors ${t.colors.textAccent} hover:underline cursor-pointer shrink-0`}
+                                >
+                                    <Compass size={13} /> Open in World Atlas
+                                </button>
+                            </div>
                             <div className={`relative w-full aspect-[21/9] rounded-xl overflow-hidden ${t.colors.borderDefault} border bg-slate-950 shadow-inner`}>
                                 <img
                                     src={useWorldStore.getState().world.mapImage}
@@ -134,15 +147,6 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                                         <MapPin size={14} fill="currentColor" />
                                     </div>
                                 </div>
-                            </div>
-                            <div className="flex justify-end mt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => useWorldStore.getState().focusMapLocation(loc.id)}
-                                    className={`text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-colors ${t.colors.textAccent} hover:underline cursor-pointer`}
-                                >
-                                    <Compass size={13} /> Open in World Atlas
-                                </button>
                             </div>
                         </div>
                     )}

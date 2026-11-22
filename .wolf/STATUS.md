@@ -12,6 +12,12 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **UI Bug Fixes — Map Dropdown Z-Index & Location Viewer Atlas Anchor Layout (`App.tsx`, `LocationSpecificsViewer.tsx`) (2026-11-22)**:
+  - Fixed nav dropdown panels being hidden behind the World Atlas map view by raising dropdown z-index from `z-50` → `z-[9999]` in `App.tsx`.
+  - Fixed Atlas Anchor coordinates rendering as awkwardly wrapped multi-line text (`X:`, newline, `42.4%,`, newline, `Y:`, newline, `31.2%`) in the Royal Codex two-column grid — split into two separate `FieldRow` rows (`Anchor X` / `Anchor Y`).
+  - Fixed "ATLAS ANCHOR PIN" and "OPEN IN WORLD ATLAS" text stacking in a narrow column in the Royal Codex layout — moved the entire map preview section out of the 2-column grid into a full-width block below, with the label and "Open in World Atlas" button inline in the same header row.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
+
 - **Faction & Organization Specifics Polish — Hierarchy, Tenets & Assets (`OrganizationSpecifics.tsx`, `PoliticalGroupSpecifics.tsx`, `ReligionSpecifics.tsx`, `OrganizationSpecificsViewer.tsx`, `PoliticalGroupSpecificsViewer.tsx`, `ReligionSpecificsViewer.tsx`, `EntityViewer.tsx`, `types.ts`) (2026-11-22)**:
   - Extended `Organization`, `PoliticalGroup`, and `Religion` models with structured fields: `hierarchyRanks`, `coreTenets`, and `factionAssets`.
   - Added interactive `TraitListEditor` groups across Organization, Political Group, and Religion editors with customized quick-pick suggestions and note annotation modals.
