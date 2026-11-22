@@ -106,16 +106,16 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
         : 'bg-slate-800 text-[#fef08a] border-slate-700';
 
     return (
-        <div className="space-y-2 min-w-0" style={{ gridColumn: `span ${gridSpan}` }}>
+        <div className="space-y-1.5 sm:space-y-2 min-w-0 w-full" style={{ gridColumn: `span ${gridSpan}` }}>
             <div className="flex items-center justify-between gap-1 min-w-0">
                 <label className={`text-[10px] font-black uppercase tracking-wider sm:tracking-widest ${labelStyle} truncate min-w-0`}>
                     {label} ({items.length})
                 </label>
-                <span className="text-[9px] font-mono opacity-50 shrink-0 hidden sm:inline">Click 📝 to annotate notes</span>
+                <span className="text-[9px] font-mono opacity-50 shrink-0 hidden xl:inline">Click 📝 to annotate notes</span>
             </div>
 
             {/* List Chips Display */}
-            <div className={`min-h-[40px] sm:min-h-[46px] p-1.5 sm:p-2 rounded-xl border flex flex-wrap gap-1 sm:gap-1.5 items-center min-w-0 ${
+            <div className={`min-h-[38px] sm:min-h-[46px] p-1.5 sm:p-2 rounded-xl border flex flex-wrap gap-1 sm:gap-1.5 items-center min-w-0 w-full ${
                 isRoyal ? 'bg-[#fbf8ef] border-[#c8a96e]/50' : isWiki ? 'bg-white border-[#d4c8af]' : 'bg-slate-900/40 border-slate-700'
             }`}>
                 {items.length === 0 ? (
@@ -156,7 +156,7 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
             </div>
 
             {/* Add Custom Input */}
-            <div className="flex gap-1.5 sm:gap-2 min-w-0">
+            <div className="flex gap-1.5 sm:gap-2 min-w-0 w-full">
                 <input
                     type="text"
                     value={inputVal}
@@ -194,11 +194,11 @@ export const TraitListEditor: React.FC<TraitListEditorProps> = ({
 
             {/* Suggestions Chips */}
             {suggestions.length > 0 && (
-                <div className="space-y-1 pt-1 min-w-0">
+                <div className="space-y-1 pt-0.5 sm:pt-1 min-w-0 w-full">
                     <span className="text-[9px] font-black uppercase tracking-wider block opacity-50 flex items-center gap-1">
                         <Sparkles size={10} /> Suggested Quick-Picks
                     </span>
-                    <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto">
+                    <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto min-w-0 w-full">
                         {suggestions.map(s => {
                             const isAdded = items.some(i => i.name.toLowerCase() === s.toLowerCase());
                             return (

@@ -34,8 +34,8 @@ export const EditorGroup = ({ title, icon: Icon, children, id }: EditorGroupProp
     }
 
     return (
-        <div id={id} className={`mb-8 border rounded-2xl shadow-lg scroll-mt-24 ${containerStyle}`}>
-            <div className={`px-6 py-3.5 border-b flex items-center gap-3.5 rounded-t-2xl ${headerStyle}`}>
+        <div id={id} className={`mb-6 sm:mb-8 border rounded-2xl shadow-lg scroll-mt-24 min-w-0 w-full ${containerStyle}`}>
+            <div className={`px-4 sm:px-6 py-3 sm:py-3.5 border-b flex items-center gap-2.5 sm:gap-3.5 rounded-t-2xl min-w-0 ${headerStyle}`}>
                 {isRoyal ? (
                     <div className="w-7 h-7 rounded-md bg-[#70121e] border border-[#c8a96e] text-[#fff8e7] font-serif font-black text-sm flex items-center justify-center shadow-sm shrink-0">
                         {firstChar}
@@ -43,9 +43,9 @@ export const EditorGroup = ({ title, icon: Icon, children, id }: EditorGroupProp
                 ) : (
                     <Icon size={16} className={iconStyle} />
                 )}
-                <h3 className={`text-xs font-bold uppercase tracking-[0.15em] ${titleStyle}`}>{title}</h3>
+                <h3 className={`text-xs font-bold uppercase tracking-[0.15em] truncate min-w-0 ${titleStyle}`}>{title}</h3>
             </div>
-            <div className="p-3.5 sm:p-6 grid grid-cols-12 gap-3 sm:gap-5 items-start">
+            <div className="p-3 sm:p-4 md:p-6 grid grid-cols-12 gap-2.5 sm:gap-4 md:gap-5 items-start min-w-0">
                 {children}
             </div>
         </div>

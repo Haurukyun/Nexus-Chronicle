@@ -335,13 +335,13 @@ const App = () => {
     return (
         <div
             style={{ filter: auraStyles.filter }}
-            className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${isManuscript ? 'p-1 sm:p-2 md:p-3 items-center justify-center' : ''}`}>
+            className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${isManuscript ? 'p-0 sm:p-1 md:p-2 items-center justify-center' : ''}`}>
 
             {auraStyles.bg !== 'none' && (
                 <div className="absolute inset-0 pointer-events-none opacity-10 z-0" style={{ background: auraStyles.bg }} />
             )}
 
-            <div className={`flex w-full h-full ${isManuscript ? 'w-full max-w-none 2xl:max-w-[2400px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
+            <div className={`flex w-full h-full min-w-0 ${isManuscript ? 'w-full max-w-none 2xl:max-w-[2400px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
                 <Sidebar
                     world={world}
                     searchQuery={searchQuery}
@@ -356,7 +356,7 @@ const App = () => {
                 />
 
                 {/* Main Content Area */}
-                <main className={`flex-1 flex flex-col relative overflow-y-auto ${isGrandVoyager ? 'bg-transparent' : t.layout.pageBg}`}>
+                <main className={`flex-1 min-w-0 flex flex-col relative overflow-y-auto ${isGrandVoyager ? 'bg-transparent' : t.layout.pageBg}`}>
 
                     {/* Grand Voyager tropical scene background */}
                     {isGrandVoyager && <TropicalSceneBackground />}
@@ -603,7 +603,7 @@ const App = () => {
                     </header>
 
                     {/* Body Content */}
-                    <div className={`flex-1 min-h-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'p-2 sm:p-3 overflow-hidden' : 'p-4 md:p-6'}`}>
+                    <div className={`flex-1 min-h-0 min-w-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'p-2 sm:p-3 overflow-hidden' : 'p-2 sm:p-4 md:p-6'}`}>
                         {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
                         {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
                         {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
@@ -619,13 +619,13 @@ const App = () => {
                         {activeEntity && (
                             isManuscript ? (
 
-                                <div className="relative flex-1 flex flex-col p-2 sm:p-4 md:p-6 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl">
-                                    {/* Stacked Parchment Page Layers Behind Book */}
-                                    <div className="absolute -bottom-3 -left-4 w-80 h-48 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform -rotate-2 shadow-lg pointer-events-none z-0" />
-                                    <div className="absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
+                                <div className="relative flex-1 min-w-0 w-full flex flex-col p-1.5 sm:p-3 md:p-5 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full rounded-2xl sm:rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl overflow-hidden">
+                                    {/* Stacked Parchment Page Layers Behind Book — visible on extra large viewports */}
+                                    <div className="hidden 2xl:block absolute -bottom-3 -left-4 w-80 h-48 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform -rotate-2 shadow-lg pointer-events-none z-0" />
+                                    <div className="hidden 2xl:block absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
 
                                     {/* Inner Vellum Parchment Page — Wraps Full Scroll Height Seamlessly */}
-                                    <div className="relative flex-1 flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-2xl p-4 sm:p-6 md:p-10 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
+                                    <div className="relative flex-1 min-w-0 w-full flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-8 lg:p-10 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
 
                                         {/* Four Ornamental Gold Filigree Corners (Vector HD) */}
                                         <VectorFiligreeCorner position="top-left" className="absolute top-2 left-2 z-10" size={24} />
@@ -678,8 +678,8 @@ const App = () => {
                                         </div>
                                     </div>
 
-                                    {/* Realistic Feather Quill Pen Overlay Bottom Right */}
-                                    <div className="absolute -bottom-8 -right-8 w-44 h-44 pointer-events-none z-30 transform rotate-12 drop-shadow-[0_15px_15px_rgba(0,0,0,0.8)]">
+                                    {/* Realistic Feather Quill Pen Overlay Bottom Right — hidden on small screens to prevent clipping */}
+                                    <div className="hidden sm:block absolute -bottom-8 -right-8 w-44 h-44 pointer-events-none z-30 transform rotate-12 drop-shadow-[0_15px_15px_rgba(0,0,0,0.8)]">
                                         <svg viewBox="0 0 100 100" className="w-full h-full">
                                             <path d="M85 10 C 60 30, 30 65, 10 90 L 14 92 C 35 70, 65 35, 88 12 Z" fill="url(#quillGrad)" />
                                             <path d="M85 10 Q 55 25, 40 55 Q 60 45, 88 12 Z" fill="#2d261e" opacity="0.8" />
@@ -695,7 +695,7 @@ const App = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full max-w-none 2xl:max-w-7xl mx-auto px-6 md:px-12 py-8 md:py-12 min-h-full">
+                                <div className="w-full min-w-0 max-w-none 2xl:max-w-7xl mx-auto px-3 sm:px-6 md:px-12 py-4 sm:py-8 md:py-12 min-h-full">
                                     <ErrorBoundary fallbackLabel="Error rendering character scroll or details. Click below to recover.">
                                         {editingTabIds.includes(activeTabId as string) ? (
                                             <EntityEditor

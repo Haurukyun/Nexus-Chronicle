@@ -12,6 +12,15 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Eliminate UI Cutoff & Overflow Across Viewport Widths and Heights (`App.tsx`, `EntityEditor.tsx`, `EntityViewer.tsx`, `TraitListEditor.tsx`, `EditorGroup.tsx`) (2026-11-22)**:
+  - Fixed root cause of horizontal cutoff at thin widths: nested containers lacked `min-w-0`, and cumulative nested horizontal padding (outer shell + body content + leather binding + inner vellum + editor cards) consumed ~250px before content began, forcing child cards outside the window bounds.
+  - Added `min-w-0 w-full` across all flex levels: app container flex row, `<main>`, body content container, manuscript leather binding, inner vellum page, `EntityEditor`, and `EntityViewer`.
+  - Streamlined nested padding across breakpoints (`p-1.5 sm:p-3 md:p-5` on leather binding, `p-3 sm:p-5 md:p-8 lg:p-10` on inner vellum, `p-3 sm:p-4 md:p-6` on EditorGroup), recovering over 120px of usable content width on narrow viewports.
+  - Made decorative manuscript fanning layers (`-bottom-3 -left-4`, `-top-3 -right-4`) visible only on `2xl` viewports (`hidden 2xl:block`) and added `overflow-hidden` to the manuscript wrapper, eliminating the cream corner poking into the window border and getting chopped off.
+  - Made `EntityEditor` header wrap responsively (`flex-col sm:flex-row items-start sm:items-end`) with responsive title scaling and button padding, preventing the header from enforcing a 750px minimum width.
+  - Hid `Click 📝 to annotate notes` helper text on `<xl` screens (`hidden xl:inline`), allowing TraitListEditor columns to shrink cleanly without title line overflow.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
+
 - **Compact 2-Column TraitListEditor Scaling on Thin Windows (`TraitListEditor.tsx`, `EditorGroup.tsx`, `EntityEditor.tsx`, specifics) (2026-11-22)**:
   - Preserved the user's preferred 2-column side-by-side layout (`gridSpan={6}`) across all specifics cards without collapsing into a single stacked column.
   - Made the 2-column layout compact when the window is thin:
