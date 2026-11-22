@@ -12,6 +12,13 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Fix: Restore Document Vertical Scrolling & Header Collisions on Small Windows (`App.tsx`, `ViewerHeaders.tsx`, `EntityEditor.tsx`, `WorldMap.tsx`) (2026-11-22)**:
+  - Fixed frozen vertical scroll ("can't even scroll down"): removed inadvertent `overflow-hidden` on the manuscript wrapper (`App.tsx`), allowing the manuscript to expand to full content height and trigger `<main>`'s vertical scrollbar cleanly.
+  - Fixed title/buttons collision and overlap in Codex Record viewer headers (`ViewerHeaders.tsx`): changed from rigid `sm:flex-row` to `md:flex-row` with `break-words` on title, and `flex-wrap` on action buttons. Below 768px, buttons sit cleanly on their own row without overlapping the title text.
+  - Fixed Editor header button cutoff in narrow windows (`EntityEditor.tsx`): buttons now have responsive padding, `w-full sm:w-auto`, and wrap naturally without pushing "Abandon Scrawl" off the right edge.
+  - Fixed Atlas header instruction text wrapping awkwardly (`WorldMap.tsx`): hidden on `<lg` screens (`hidden lg:flex`) to preserve clean title, anchor count, and search controls.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
+
 - **Eliminate UI Cutoff & Overflow Across Viewport Widths and Heights (`App.tsx`, `EntityEditor.tsx`, `EntityViewer.tsx`, `TraitListEditor.tsx`, `EditorGroup.tsx`) (2026-11-22)**:
   - Fixed root cause of horizontal cutoff at thin widths: nested containers lacked `min-w-0`, and cumulative nested horizontal padding (outer shell + body content + leather binding + inner vellum + editor cards) consumed ~250px before content began, forcing child cards outside the window bounds.
   - Added `min-w-0 w-full` across all flex levels: app container flex row, `<main>`, body content container, manuscript leather binding, inner vellum page, `EntityEditor`, and `EntityViewer`.

@@ -151,8 +151,8 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
 
     return (
     <>
-        <header className="border-b border-slate-800/80 pb-8 mb-8">
-            <div className="flex justify-between items-end gap-6">
+        <header className="border-b border-slate-800/80 pb-6 mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 min-w-0 w-full">
                 <div>
                     <div className="flex flex-wrap items-center gap-3 mb-3">
                         <div className="flex items-center gap-2 text-[#fef08a] uppercase tracking-[0.4em] font-black text-[10px]">
@@ -246,7 +246,7 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
 
     return (
     <>
-        <header className="border-b-4 border-[#b91c1c] pb-2 flex justify-between items-end mb-10">
+        <header className="border-b-4 border-[#b91c1c] pb-3 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 min-w-0 w-full">
             <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                     {isCat && (
@@ -335,51 +335,51 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
 
     return (
     <>
-        <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
-            <div className="flex items-center gap-4 min-w-0">
+        <header className="border-b-2 border-[#c8a96e]/40 pb-4 flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 min-w-0 w-full">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                 {entity.imageUri && (
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-[#c8a96e] bg-[#24050b] shadow-xl shrink-0 relative group">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-[#c8a96e] bg-[#24050b] shadow-xl shrink-0 relative group">
                         <NexusImage src={entity.imageUri} className="w-full h-full object-cover" containerClassName="w-full h-full" />
                         <div className="absolute inset-0.5 border border-[#c8a96e]/30 rounded-xl pointer-events-none" />
                     </div>
                 )}
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <div className="flex items-center gap-2 text-[#70121e] uppercase tracking-[0.2em] font-serif font-bold text-xs">
-                        {isCat ? <Folder size={14} className="text-[#a0522d]" /> : <Scroll size={14} />}
-                        {isCat ? 'Folder Container' : 'Codex Record'}
+                        <div className="flex items-center gap-2 text-[#70121e] uppercase tracking-[0.2em] font-serif font-bold text-xs">
+                            {isCat ? <Folder size={14} className="text-[#a0522d]" /> : <Scroll size={14} />}
+                            {isCat ? 'Folder Container' : 'Codex Record'}
+                        </div>
+                        {isDead && (
+                            <span className="px-2 py-0.5 rounded text-[9px] font-serif font-bold tracking-wider uppercase bg-[#3f1d1d] text-[#ffcdd2] border border-[#a83232]/50">
+                                † Fallen / Deceased
+                            </span>
+                        )}
+                        {isDone && (
+                            <span className="px-2 py-0.5 rounded text-[9px] font-serif font-bold tracking-wider uppercase bg-[#1d3f27] text-[#c8e6c9] border border-[#2e7d32]/50">
+                                ● Completed
+                            </span>
+                        )}
                     </div>
-                    {isDead && (
-                        <span className="px-2 py-0.5 rounded text-[9px] font-serif font-bold tracking-wider uppercase bg-[#3f1d1d] text-[#ffcdd2] border border-[#a83232]/50">
-                            † Fallen / Deceased
-                        </span>
-                    )}
-                    {isDone && (
-                        <span className="px-2 py-0.5 rounded text-[9px] font-serif font-bold tracking-wider uppercase bg-[#1d3f27] text-[#c8e6c9] border border-[#2e7d32]/50">
-                            ● Completed
-                        </span>
+                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-tight flex flex-wrap items-center gap-2 break-words">
+                        <span className="break-words">{entity.name}</span>
+                        {isDead && <span className="text-[#70121e]/80 select-none shrink-0" title="Fallen / Deceased">†</span>}
+                    </h1>
+                    {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1 truncate">"{entity.otherNames}"</p>}
+                    {entity.tags && entity.tags.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                            {entity.tags.map((tag, idx) => (
+                                <span
+                                    key={idx}
+                                    className="px-2 py-0.5 rounded text-[9px] font-serif font-bold tracking-wider bg-[#ede0c4] border border-[#c8a96e]/50 text-[#70121e]"
+                                >
+                                    #{tag}
+                                </span>
+                            ))}
+                        </div>
                     )}
                 </div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-black text-[#2b1810] tracking-tight uppercase leading-tight flex items-center gap-2 break-words">
-                    <span>{entity.name}</span>
-                    {isDead && <span className="text-[#70121e]/80 select-none shrink-0" title="Fallen / Deceased">†</span>}
-                </h1>
-                {entity.otherNames && <p className="text-[#7a4f2a] text-sm font-serif italic mt-1 truncate">"{entity.otherNames}"</p>}
-                {entity.tags && entity.tags.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                        {entity.tags.map((tag, idx) => (
-                            <span
-                                key={idx}
-                                className="px-2 py-0.5 rounded text-[9px] font-serif font-bold tracking-wider bg-[#ede0c4] border border-[#c8a96e]/50 text-[#70121e]"
-                            >
-                                #{tag}
-                            </span>
-                        ))}
-                    </div>
-                )}
             </div>
-            </div>
-            <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0 self-start md:self-center">
                 <ExportDropdown
                     entity={entity}
                     allEntities={allEntities}
@@ -392,14 +392,14 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                 {entity.isReadOnly ? (
                     <button
                         onClick={onToggleLock}
-                        className="flex items-center gap-2 bg-[#3f2210] text-[#fff8e7] border border-[#d4af37] px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#522d16] transition-all shadow-md"
+                        className="flex items-center gap-2 bg-[#3f2210] text-[#fff8e7] border border-[#d4af37] px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#522d16] transition-all shadow-md"
                         title="Entry is locked. Click to Unlock and edit."
                     >
                         <Lock size={14} /> Locked (Click to Unlock)
                     </button>
                 ) : (
                     <>
-                        <button onClick={onEdit} className="bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] px-5 py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#881337] transition-all shadow-md">
+                        <button onClick={onEdit} className="bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-serif font-bold text-xs uppercase tracking-wider hover:bg-[#881337] transition-all shadow-md">
                             Edit Scroll
                         </button>
                         <button onClick={onToggleLock} className="p-2 text-[#70121e]/60 hover:text-[#70121e] hover:bg-[#70121e]/10 rounded-full transition-all" title="Lock Entry">

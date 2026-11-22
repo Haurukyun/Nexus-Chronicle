@@ -603,7 +603,7 @@ const App = () => {
                     </header>
 
                     {/* Body Content */}
-                    <div className={`flex-1 min-h-0 min-w-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'p-2 sm:p-3 overflow-hidden' : 'p-2 sm:p-4 md:p-6'}`}>
+                    <div className={`flex-1 min-w-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'min-h-0 p-2 sm:p-3 overflow-hidden' : 'min-h-full p-2 sm:p-4 md:p-6'}`}>
                         {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
                         {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
                         {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
@@ -619,7 +619,7 @@ const App = () => {
                         {activeEntity && (
                             isManuscript ? (
 
-                                <div className="relative flex-1 min-w-0 w-full flex flex-col p-1.5 sm:p-3 md:p-5 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full rounded-2xl sm:rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl overflow-hidden">
+                                <div className="relative flex-1 min-w-0 w-full flex flex-col p-1.5 sm:p-3 md:p-5 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full rounded-2xl sm:rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl">
                                     {/* Stacked Parchment Page Layers Behind Book — visible on extra large viewports */}
                                     <div className="hidden 2xl:block absolute -bottom-3 -left-4 w-80 h-48 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform -rotate-2 shadow-lg pointer-events-none z-0" />
                                     <div className="hidden 2xl:block absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
@@ -678,8 +678,8 @@ const App = () => {
                                         </div>
                                     </div>
 
-                                    {/* Realistic Feather Quill Pen Overlay Bottom Right — hidden on small screens to prevent clipping */}
-                                    <div className="hidden sm:block absolute -bottom-8 -right-8 w-44 h-44 pointer-events-none z-30 transform rotate-12 drop-shadow-[0_15px_15px_rgba(0,0,0,0.8)]">
+                                    {/* Realistic Feather Quill Pen Overlay Bottom Right — positioned cleanly within manuscript bounds */}
+                                    <div className="hidden lg:block absolute bottom-0 right-0 w-36 h-36 pointer-events-none z-30 transform rotate-12 drop-shadow-[0_15px_15px_rgba(0,0,0,0.8)]">
                                         <svg viewBox="0 0 100 100" className="w-full h-full">
                                             <path d="M85 10 C 60 30, 30 65, 10 90 L 14 92 C 35 70, 65 35, 88 12 Z" fill="url(#quillGrad)" />
                                             <path d="M85 10 Q 55 25, 40 55 Q 60 45, 88 12 Z" fill="#2d261e" opacity="0.8" />

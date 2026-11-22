@@ -302,9 +302,9 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
             onKeyDown={handleKeyDown}
             className="max-w-7xl mx-auto pb-40 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 min-w-0 w-full"
         >
-            <header className={`flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b pb-4 sm:pb-8 min-w-0 w-full ${isRoyal ? 'border-[#c8a96e]/40' : 'border-slate-500/20'}`}>
-                <div className="min-w-0">
-                    <h2 className={`text-2xl sm:text-3xl md:text-5xl font-serif font-black uppercase tracking-tight sm:tracking-tighter truncate ${
+            <header className={`flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 border-b pb-4 sm:pb-6 min-w-0 w-full ${isRoyal ? 'border-[#c8a96e]/40' : 'border-slate-500/20'}`}>
+                <div className="min-w-0 flex-1">
+                    <h2 className={`text-xl sm:text-2xl md:text-4xl font-serif font-black uppercase tracking-tight truncate ${
                         isRoyal 
                             ? 'text-[#3d0a10]' 
                             : isWikiMode 
@@ -317,18 +317,18 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                         Inscribing the essence of: <span className="font-bold underline">{entity.name}</span>
                     </p>
                 </div>
-                <div className="flex flex-wrap gap-2 sm:gap-4 items-center shrink-0">
+                <div className="flex flex-wrap gap-2 sm:gap-3 items-center w-full sm:w-auto justify-start sm:justify-end shrink-0">
                     <FormToggle label={entity.isReadOnly ? "LOCKED" : "Lock Entry"} checked={entity.isReadOnly} onChange={(v: boolean) => onUpdate({ ...entity, isReadOnly: v })} />
                     <button 
                         onClick={onSave} 
                         title="Commit to Chronicle (Ctrl+Enter or Ctrl+S)"
-                        className={`px-4 sm:px-6 md:px-10 py-2.5 sm:py-3.5 md:py-5 rounded-2xl font-black text-xs uppercase tracking-wider sm:tracking-widest ${
+                        className={`px-3.5 sm:px-5 md:px-7 py-2 sm:py-2.5 md:py-3 rounded-xl font-black text-[11px] sm:text-xs uppercase tracking-wider ${
                             isRoyal
                                 ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] hover:bg-[#881337] shadow-xl'
                                 : isWikiMode
                                     ? 'bg-[#b91c1c] text-white shadow-xl hover:bg-[#991b1b]'
                                     : 'bg-[#fef08a] text-black shadow-2xl hover:scale-105'
-                        } transition-all active:scale-95 flex items-center gap-2 cursor-pointer`}
+                        } transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0`}
                     >
                         <span>Commit to Chronicle</span>
                         <kbd className={`text-[9px] font-mono tracking-normal px-1.5 py-0.5 rounded ${
@@ -338,7 +338,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                     <button 
                         onClick={onCancel} 
                         title="Abandon Scrawl (Esc)"
-                        className={`p-2.5 sm:p-4 transition-colors uppercase font-black text-[10px] tracking-wider sm:tracking-widest flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-2.5 sm:px-3 py-2 transition-colors uppercase font-black text-[10px] tracking-wider flex items-center gap-1 cursor-pointer shrink-0 ${
                             isRoyal 
                                 ? 'text-[#70121e] hover:text-[#991b1b] font-serif' 
                                 : 'text-slate-500 hover:text-red-500'

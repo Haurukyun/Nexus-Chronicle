@@ -607,20 +607,20 @@ export const WorldMap: React.FC<WorldMapProps> = ({ world, setWorld, onNavigate 
         <div className="w-full h-full min-h-0 flex-1 flex flex-col animate-in fade-in duration-300 p-2 sm:p-3 space-y-2 relative select-none overflow-hidden">
             {/* Top Atlas Header & Control Bar */}
             <div data-interactive-ui="true" className="flex flex-col md:flex-row md:items-center justify-between gap-2 z-20 shrink-0">
-                <div className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-2">
-                        <h2 className={`text-2xl sm:text-3xl font-serif font-black uppercase tracking-tight ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'}`}>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <h2 className={`text-xl sm:text-2xl md:text-3xl font-serif font-black uppercase tracking-tight truncate ${isRoyal ? 'text-[#3d0a10]' : isWiki ? 'text-[#b91c1c]' : isVoyager ? 'text-[#2dd4bf]' : 'text-[#fef08a]'}`}>
                             {world.name} Atlas
                         </h2>
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest border ${
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-widest border shrink-0 ${
                             isRoyal ? 'border-[#c8a96e]/40 bg-[#ede2cc]/60 text-[#70121e] font-bold' : 'border-current/20 bg-black/20 opacity-70'
                         }`}>
                             {anchoredLocations.length} Anchors
                         </span>
                     </div>
 
-                    {/* Instruction & Gesture Hint Banner */}
-                    <div className="flex items-center gap-2 text-[10px] font-mono tracking-wider opacity-75">
+                    {/* Instruction & Gesture Hint Banner — hidden on compact screens to prevent header blowout */}
+                    <div className="hidden lg:flex items-center gap-2 text-[10px] font-mono tracking-wider opacity-75">
                         <span className={`px-2 py-0.5 rounded-md font-sans font-bold flex items-center gap-1.5 border ${
                             isRoyal ? 'bg-[#ede2cc]/70 border-[#c8a96e]/50 text-[#451a03]' : 'bg-black/10 border-current/10'
                         }`}>
