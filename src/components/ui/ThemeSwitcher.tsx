@@ -7,6 +7,7 @@ interface ThemeSwitcherProps {
     setTheme: (theme: ThemeMode) => void;
     compact?: boolean;
     buttonClassName?: string;
+    labelClassName?: string;
 }
 
 const THEME_OPTIONS: { id: ThemeMode; label: string; sub: string; icon: React.FC<{ size?: number; className?: string }>; badgeColor: string }[] = [
@@ -40,7 +41,7 @@ const THEME_OPTIONS: { id: ThemeMode; label: string; sub: string; icon: React.FC
     }
 ];
 
-export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, compact = false, buttonClassName }) => {
+export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, compact = false, buttonClassName, labelClassName }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -73,9 +74,9 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ theme, setTheme, c
                 }`}
                 title="Switch Application Theme"
             >
-                <Palette size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100" />
-                {!compact && <span className="font-medium">{currentOption.label}</span>}
-                <span className="text-[8px] opacity-40 group-hover:opacity-80 transition-opacity ml-0.5">▼</span>
+                <Palette size={13} className="transition-transform duration-200 group-hover:scale-110 opacity-75 group-hover:opacity-100 shrink-0" />
+                {!compact && <span className={labelClassName || "font-medium"}>{currentOption.label}</span>}
+                <span className="text-[8px] opacity-40 group-hover:opacity-80 transition-opacity ml-0.5 shrink-0">▼</span>
             </button>
 
             {isOpen && (

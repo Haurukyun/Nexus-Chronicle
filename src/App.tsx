@@ -281,20 +281,20 @@ const App = () => {
                 : 'bg-gradient-to-b from-[#fef08a] to-[#eab308] text-slate-950 font-bold border border-yellow-300 shadow-[0_2px_8px_rgba(254,240,138,0.3)]';
 
     const ribbonInactiveCls = isRoyal
-        ? 'text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+        ? 'border border-transparent text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
+            ? 'border border-transparent text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
             : isGrandVoyager
-                ? 'text-[#f5e9d0]/85 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
+                ? 'border border-transparent text-[#f5e9d0]/85 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+                : 'border border-transparent text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
 
     const actionToolBtnCls = isRoyal
-        ? 'text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+        ? 'border border-transparent text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
+            ? 'border border-transparent text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
             : isGrandVoyager
-                ? 'text-[#f5e9d0]/85 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
+                ? 'border border-transparent text-[#f5e9d0]/85 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+                : 'border border-transparent text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
 
     const dossierBarCls = isRoyal
         ? 'bg-[#180e07] border-[#c8a96e]/20'
@@ -364,9 +364,9 @@ const App = () => {
                     {/* Top Header Bar */}
                     <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} shadow-sm`} data-interactive-ui="true">
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
-                        <div className="flex items-center justify-between px-3 py-2 gap-3 min-w-0">
+                        <div className="flex items-center justify-between px-3 py-2 gap-2 min-w-0 overflow-x-auto no-scrollbar custom-scrollbar-hidden">
                             {/* Realm Navigation Categorized Dropdowns (Fandom/Codex Sphere style) */}
-                            <nav className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} min-w-0 gap-1`} data-nav-dropdown="true">
+                            <nav className={`h-9 inline-flex items-center p-1 rounded-xl ${headerTrayCls} shrink-0 gap-1`} data-nav-dropdown="true">
                                 {REALM_NAV_GROUPS.map(group => {
                                     const activeChild = group.items.find(item => item.id === activeTabId);
                                     const isGroupActive = Boolean(activeChild);
@@ -378,17 +378,19 @@ const App = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setOpenNavDropdown(prev => prev === group.id ? null : group.id)}
-                                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs tracking-tight transition-colors duration-150 cursor-pointer ${
+                                                className={`h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 whitespace-nowrap ${
                                                     isGroupActive ? ribbonActiveCls : ribbonInactiveCls
                                                 }`}
                                                 title={`${group.label} Codex Sphere (${group.items.map(i => i.label).join(', ')})`}
                                             >
                                                 <TriggerIcon size={13} className={`shrink-0 ${isGroupActive ? 'opacity-100' : 'opacity-80'}`} />
-                                                <span className="font-serif font-bold">
+                                                <span className={`font-serif font-bold whitespace-nowrap ${
+                                                    isGroupActive ? 'inline' : 'hidden md:inline'
+                                                }`}>
                                                     {activeChild ? activeChild.label : group.label}
                                                 </span>
                                                 {activeChild && (
-                                                    <span className="text-[10px] opacity-60 hidden xl:inline font-sans font-normal">
+                                                    <span className="text-[10px] opacity-60 hidden 2xl:inline font-sans font-normal">
                                                         · {group.label}
                                                     </span>
                                                 )}
@@ -397,7 +399,7 @@ const App = () => {
 
                                             {isOpen && (
                                                 <div
-                                                    className={`absolute top-full left-0 mt-2 w-72 rounded-2xl border z-50 p-2 space-y-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
+                                                    className={`absolute top-full ${group.id === 'the-web' ? 'right-0' : 'left-0'} mt-1.5 w-72 rounded-2xl border z-50 p-2 space-y-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
                                                         isRoyal
                                                             ? 'bg-[#18100a] border-[#c8a96e]/50 text-[#f5ebd7]'
                                                             : isWiki
@@ -484,16 +486,16 @@ const App = () => {
                             </nav>
 
                             {/* Header Action Tools */}
-                            <div className={`inline-flex items-center gap-0.5 p-1 rounded-xl ${headerTrayCls} shrink-0`}>
+                            <div className={`h-9 inline-flex items-center gap-0.5 p-1 rounded-xl ${headerTrayCls} shrink-0`}>
                                 {/* Jump / Command Palette */}
                                 <button
                                     onClick={() => setShowCommandPalette(true)}
                                     title="Command Palette & Fast Search (Ctrl+K)"
-                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
+                                    className={`h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls}`}
                                 >
-                                    <Search size={13} className="opacity-80" />
-                                    <span className="hidden md:inline font-medium">Jump</span>
-                                    <kbd className={`hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded border ${
+                                    <Search size={13} className="opacity-80 shrink-0" />
+                                    <span className="hidden lg:inline font-medium whitespace-nowrap">Jump</span>
+                                    <kbd className={`hidden 2xl:inline text-[9px] font-mono px-1.5 py-0.5 rounded border leading-none ${
                                         isRoyal ? 'bg-black/50 text-[#e6c687] border-[#c8a96e]/40'
                                         : isWiki ? 'bg-white/80 text-stone-600 border-stone-300'
                                             : 'bg-white/[0.08] text-slate-300 border-white/[0.10]'
@@ -505,7 +507,7 @@ const App = () => {
                                     onClick={undo}
                                     disabled={!canUndo}
                                     title="Undo changes (Ctrl+Z)"
-                                    className={`flex items-center justify-center p-2 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`w-7 h-7 inline-flex items-center justify-center rounded-lg text-xs transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${actionToolBtnCls}`}
                                 >
                                     <Undo2 size={13} />
                                 </button>
@@ -515,7 +517,7 @@ const App = () => {
                                     onClick={redo}
                                     disabled={!canRedo}
                                     title="Redo changes (Ctrl+Y or Ctrl+Shift+Z)"
-                                    className={`flex items-center justify-center p-2 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`w-7 h-7 inline-flex items-center justify-center rounded-lg text-xs transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${actionToolBtnCls}`}
                                 >
                                     <Redo2 size={13} />
                                 </button>
@@ -524,26 +526,31 @@ const App = () => {
                                 <button
                                     onClick={() => setShowScratchpad(true)}
                                     title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                    className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
+                                    className={`h-7 inline-flex items-center gap-1.5 px-2 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls}`}
                                 >
-                                    <BookMarked size={13} className="opacity-80" />
-                                    <span className="hidden lg:inline font-medium">Scratchpad</span>
+                                    <BookMarked size={13} className="opacity-80 shrink-0" />
+                                    <span className="hidden xl:inline font-medium whitespace-nowrap">Scratchpad</span>
                                 </button>
 
                                 {/* Keybinds / Grimoire */}
                                 <button
                                     onClick={() => setShowKeybindsModal(true)}
                                     title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                    className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
+                                    className={`h-7 inline-flex items-center gap-1.5 px-2 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls}`}
                                 >
-                                    <Keyboard size={13} className="opacity-80" />
-                                    <span className="hidden lg:inline font-medium">Keybinds</span>
+                                    <Keyboard size={13} className="opacity-80 shrink-0" />
+                                    <span className="hidden xl:inline font-medium whitespace-nowrap">Keybinds</span>
                                 </button>
 
                                 {/* Sleek divider */}
-                                <div className="w-px h-4 mx-0.5 bg-current opacity-20" />
+                                <div className="w-px h-3.5 mx-0.5 bg-current opacity-20 shrink-0" />
 
-                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`} />
+                                <ThemeSwitcher
+                                    theme={theme}
+                                    setTheme={setTheme}
+                                    buttonClassName={`h-7 inline-flex items-center gap-1.5 px-2 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls}`}
+                                    labelClassName="font-medium hidden xl:inline whitespace-nowrap"
+                                />
                             </div>
                         </div>
 

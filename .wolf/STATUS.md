@@ -12,6 +12,15 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Header Trays Vertical Harmony & Responsive Thin Scaling (`App.tsx`, `ThemeSwitcher.tsx`) (2026-11-22)**:
+  - Unified both header trays (Nav Dropdowns & Action Tools) to exact pixel-matched `h-9` (36px) bounding containers with identical `p-1` padding.
+  - Standardized all child buttons across both trays to uniform `h-7` (28px) with `border border-transparent` base state to eliminate fractional-pixel height mismatches and layout shifting.
+  - Eliminated text wrapping and button collision on thin/narrow viewports via `whitespace-nowrap shrink-0` across all dropdown triggers.
+  - Added responsive label collapsing: inactive dropdown triggers show icons only on narrow viewports (`hidden md:inline` for label), while active views always remain explicitly visible.
+  - Added responsive collapsing for Action Tools (`Jump` label hidden on `<lg`, `Ctrl+K` on `<2xl`, `Scratchpad`/`Keybinds` text on `<xl`, `ThemeSwitcher` label on `<xl`).
+  - Right-aligned "The Web" dropdown panel on edge viewports (`right-0`) to prevent off-screen horizontal clipping.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
+
 - **Location Specifics Polish — Defenses, Hazards, Landmarks & Climate (`LocationSpecifics.tsx`, `LocationSpecificsViewer.tsx`, `EntityViewer.tsx`, `types.ts`) (2026-11-22)**:
   - Extended `Location` model with structured fields: `defenses`, `hazards`, `notableLandmarks`, and `climateNotes`.
   - Built interactive `TraitListEditor` groups inside `LocationSpecifics.tsx` with curated quick-pick suggestions and note annotation modals.
