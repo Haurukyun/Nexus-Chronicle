@@ -2,6 +2,25 @@
   "version": 1,
   "bugs": [
     {
+      "id": "BUG-026",
+      "timestamp": "2026-11-22T17:35:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-22T17:38:00Z",
+      "error_message": "Application displays only a blank/blue screen on launch or render crash without error details",
+      "file": "src/index.tsx",
+      "root_cause": "The root <App /> in index.tsx was mounted directly without a top-level React ErrorBoundary or window error listeners. When any uncaught runtime exception occurred during mount/render, React unmounted the DOM tree inside <div id='root'></div>, leaving only the body background (#0f172a, slate blue) with zero visual feedback or diagnostics for the user.",
+      "fix": "Wrapped root <App /> in an ErrorBoundary in src/index.tsx with custom fallback label, and added global window 'error' and 'unhandledrejection' listeners that render a visible diagnostic crash banner with full stack trace and a one-click reload button.",
+      "tags": [
+        "startup",
+        "error-handling",
+        "error-boundary",
+        "webview",
+        "diagnostics"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-22"
+    },
+    {
       "id": "BUG-021",
       "timestamp": "2026-11-22T09:30:00Z",
       "status": "resolved",

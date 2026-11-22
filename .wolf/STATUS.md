@@ -6,11 +6,16 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-22 (17:00)
+> Last updated: 2026-11-22 (17:50)
 
 ---
 
 ## ✅ Done
+
+- **Fix: Add Root ErrorBoundary and Diagnostic Crash Banner (`src/index.tsx`, BUG-026) (2026-11-22)**:
+  - Fixed blue screen (#0f172a body background) when unhandled runtime exceptions occur during mount or render: wrapped root `<App />` in `<ErrorBoundary>` and added global window `error` and `unhandledrejection` listeners that render a visible diagnostic crash banner with stack trace and reload button.
+  - Recorded in `.wolf/buglog.json` as `BUG-026`.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (66/66 passing), `npm run build` (passing).
 
 - **feat: Realm Blueprints & Engine Module system — Step 1 (`types.ts`, `constants.ts`, `realmConfig.ts`, `Sidebar.tsx`, `CommandPalette.tsx`, `App.tsx`, `CharacterSpecifics.tsx`, `EntityViewer.tsx`, `OptionsView.tsx`) (2026-11-22)**:
   - Added `RealmModuleConfig` interface + `activeEntityTypes`, `activeModules`, `hideEmptyFieldsDefault` to `WorldData` in `types.ts`.
