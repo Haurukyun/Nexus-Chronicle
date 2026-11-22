@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Location, WorldEntity } from '../../../types';
 import { FieldRow, LinksDisplay } from '../../ui';
 import { useTheme } from '../../../theme';
-import { Compass, MapPin } from 'lucide-react';
+import { Compass, MapPin, Shield, AlertTriangle, Landmark, CloudRain } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
+import { ViewerSectionCard } from '../ViewerSectionCard';
 
 interface Props {
     entity: Location;
@@ -12,9 +13,80 @@ interface Props {
     backlinks?: any;
 }
 
+const parseTraitList = (raw: string | undefined): { name: string; note?: string }[] => {
+    if (!raw || !raw.trim()) return [];
+    try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+            return parsed.map((item: any) => {
+                if (typeof item === 'string') return { name: item };
+                return { name: item.name || item.title || '', note: item.note || '' };
+            }).filter(i => i.name.trim());
+        }
+    } catch {
+        return raw
+            .split('\n')
+            .map(line => line.trim())
+            .filter(Boolean)
+            .map(line => {
+                const clean = line.replace(/^[•\-\*]\s*/, '');
+                const parts = clean.split(/:\s*(.+)/);
+                return {
+                    name: parts[0]?.trim() || clean,
+                    note: parts[1]?.trim() || '',
+                };
+            });
+    }
+    return [];
+};
+
+const StructuredListDisplay: React.FC<{
+    items: { name: string; note?: string }[];
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    isRoyal: boolean;
+}> = ({ items, icon: Icon, isRoyal }) => {
+    return (
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {items.map((item, idx) => (
+                <li
+                    key={idx}
+                    className={`flex items-start gap-3 p-3 rounded-xl border text-sm transition-all ${
+                        isRoyal
+                            ? 'bg-[#f7f0e1]/90 border-[#c8a96e]/50 text-[#2b1810]'
+                            : 'bg-black/10 border-white/10 text-inherit'
+                    }`}
+                >
+                    <div className={`p-1.5 rounded-lg shrink-0 mt-0.5 ${
+                        isRoyal ? 'bg-[#70121e]/10 text-[#70121e]' : 'bg-amber-400/10 text-amber-400'
+                    }`}>
+                        <Icon size={16} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="font-bold leading-snug">{item.name}</div>
+                        {item.note && (
+                            <div className={`text-xs mt-1 leading-relaxed italic opacity-85 ${
+                                isRoyal ? 'text-[#5c2a12]' : 'text-slate-400'
+                            }`}>
+                                {item.note}
+                            </div>
+                        )}
+                    </div>
+                </li>
+            ))}
+        </ul>
+    );
+};
+
 export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntities, onNavigate, backlinks }) => {
-    const { t, layoutMode } = useTheme();
+    const { t, layoutMode, themeId } = useTheme();
     const isWikiMode = layoutMode === 'wiki';
+    const isRoyal = themeId === 'royal-codex';
+
+    const defenses = useMemo(() => parseTraitList(loc.defenses), [loc.defenses]);
+    const hazards = useMemo(() => parseTraitList(loc.hazards), [loc.hazards]);
+    const landmarks = useMemo(() => parseTraitList(loc.notableLandmarks), [loc.notableLandmarks]);
+    const climate = useMemo(() => parseTraitList(loc.climateNotes), [loc.climateNotes]);
+
     return (
         <div className="space-y-8">
             {!isWikiMode && (
@@ -77,11 +149,34 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                 </div>
             )}
 
+            {defenses.length > 0 && (
+                <ViewerSectionCard id="section-defenses" title="Defenses & Fortifications" badgeText={`${defenses.length}`}>
+                    <StructuredListDisplay items={defenses} icon={Shield} isRoyal={isRoyal} />
+                </ViewerSectionCard>
+            )}
+
+            {hazards.length > 0 && (
+                <ViewerSectionCard id="section-hazards" title="Hazards & Environmental Dangers" badgeText={`${hazards.length}`}>
+                    <StructuredListDisplay items={hazards} icon={AlertTriangle} isRoyal={isRoyal} />
+                </ViewerSectionCard>
+            )}
+
+            {landmarks.length > 0 && (
+                <ViewerSectionCard id="section-landmarks" title="Notable Landmarks" badgeText={`${landmarks.length}`}>
+                    <StructuredListDisplay items={landmarks} icon={Landmark} isRoyal={isRoyal} />
+                </ViewerSectionCard>
+            )}
+
+            {climate.length > 0 && (
+                <ViewerSectionCard id="section-climate" title="Climate & Weather" badgeText={`${climate.length}`}>
+                    <StructuredListDisplay items={climate} icon={CloudRain} isRoyal={isRoyal} />
+                </ViewerSectionCard>
+            )}
+
             {loc.traditionsAndCustoms && (
-                <div className={`${t.card.panel} p-10 rounded-[2rem] mb-12`}>
-                    <h3 className={`text-2xl font-serif font-bold ${t.colors.textHeading} mb-6 tracking-tight`}>Traditions & Customs</h3>
-                    <p className={`${t.typography.body} whitespace-pre-wrap`}>{loc.traditionsAndCustoms}</p>
-                </div>
+                <ViewerSectionCard id="section-traditions" title="Traditions & Customs">
+                    <p className={`${t.typography.body} whitespace-pre-wrap leading-relaxed`}>{loc.traditionsAndCustoms}</p>
+                </ViewerSectionCard>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

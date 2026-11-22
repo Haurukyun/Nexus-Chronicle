@@ -3,7 +3,8 @@ import { Location, WorldEntity, EntityType } from '../../../types';
 import { EditorGroup } from '../EditorGroup';
 import { GroupRoleGroup } from '../GroupRoleGroup';
 import { FormInput, SmartSelect } from '../../ui';
-import { Info, MapPin, Calendar, Hourglass, Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe, Gem, Tent, UserCircle, User, Leaf, Globe, Compass, Crosshair, Trash2, Navigation } from 'lucide-react';
+import { TraitListEditor } from '../TraitListEditor';
+import { Info, MapPin, Calendar, Hourglass, Sparkles, Anchor, Users, Maximize, MessageSquare, Coins, Home, Pickaxe, Gem, Tent, UserCircle, User, Leaf, Globe, Compass, Crosshair, Trash2, Navigation, Shield, AlertTriangle, Landmark, CloudRain } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
 import { useTheme } from '../../../theme';
 
@@ -238,6 +239,41 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                         placeholder="Describe the heartbeat of this place..."
                         value={loc.traditionsAndCustoms || ""} onChange={e => onUpdate({ ...loc, traditionsAndCustoms: e.target.value })} />
                 </div>
+            </EditorGroup>
+
+            <EditorGroup title="Defenses, Hazards & Landmarks" icon={Shield}>
+                <TraitListEditor
+                    label="Defenses & Fortifications"
+                    value={loc.defenses || ''}
+                    onChange={(v) => onUpdate({ ...loc, defenses: v })}
+                    suggestions={['Stone Walls', 'City Gates', 'Watchtowers', 'Moat', 'Drawbridge', 'Garrison', 'Magical Wards', 'Palisade', 'Portcullis', 'Arrow Slits']}
+                    placeholder="Add a defense structure..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Hazards & Dangers"
+                    value={loc.hazards || ''}
+                    onChange={(v) => onUpdate({ ...loc, hazards: v })}
+                    suggestions={['Cursed Ground', 'Miasma', 'Flood Prone', 'Earthquake Zone', 'Toxic Plants', 'Monster Den', 'Quicksand', 'Lava Fields', 'Haunted Area', 'Blizzard Season']}
+                    placeholder="Add a hazard or danger..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Notable Landmarks"
+                    value={loc.notableLandmarks || ''}
+                    onChange={(v) => onUpdate({ ...loc, notableLandmarks: v })}
+                    suggestions={['Ancient Ruins', 'Sacred Temple', 'Grand Marketplace', 'Royal Palace', 'Giant Statue', 'Mystic Fountain', 'Old Library', 'Lighthouse', 'Arena', 'Memorial']}
+                    placeholder="Add a landmark or point of interest..."
+                    gridSpan={6}
+                />
+                <TraitListEditor
+                    label="Climate & Weather Notes"
+                    value={loc.climateNotes || ''}
+                    onChange={(v) => onUpdate({ ...loc, climateNotes: v })}
+                    suggestions={['Perpetual Mist', 'Harsh Winters', 'Scorching Summers', 'Monsoon Season', 'Constant Drizzle', 'Magical Storms', 'Drought-Prone', 'Tropical', 'Arctic', 'Mild Year-Round']}
+                    placeholder="Add a climate or weather note..."
+                    gridSpan={6}
+                />
             </EditorGroup>
 
             <EditorGroup title="Resident information" icon={UserCircle}>

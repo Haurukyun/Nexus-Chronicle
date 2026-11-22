@@ -6,11 +6,27 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-19 (05:00)
+> Last updated: 2026-11-22 (02:00)
 
 ---
 
 ## ✅ Done
+
+- **Location Specifics Polish — Defenses, Hazards, Landmarks & Climate (`LocationSpecifics.tsx`, `LocationSpecificsViewer.tsx`, `EntityViewer.tsx`, `types.ts`) (2026-11-22)**:
+  - Extended `Location` model with structured fields: `defenses`, `hazards`, `notableLandmarks`, and `climateNotes`.
+  - Built interactive `TraitListEditor` groups inside `LocationSpecifics.tsx` with curated quick-pick suggestions and note annotation modals.
+  - Implemented rich `StructuredListDisplay` with `ViewerSectionCard` in `LocationSpecificsViewer.tsx` across all 4 themes (Royal Codex, Wiki, Sovereign, Grand Voyager).
+  - Integrated location specific sections into `EntityViewer.tsx` quick-jump navigation rail and dynamic intersection observer.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing), `npm run build` (passing).
+
+- **Categorized Dropdown Nav & Full VectorFiligreeCorner Rollout (`App.tsx`, `Sidebar.tsx`, `ViewerSectionCard.tsx`, `GazetteView.tsx`, `CharacterStatBlock.tsx`, `ThemeCard.tsx`, `VectorFiligreeCorner.tsx`) (2026-11-22)**:
+  - Replaced flat scrollable header ribbon with 3 categorized dropdown menus: **Chronicles** (Gazette, Chronos, Sessions), **Cartography** (Atlas, Journey), **The Web** (Threads, Factions, Nexus Lines, Ledger).
+  - Each dropdown button shows active child label and group badge; panels have item icon, label, description, shortcut kbd.
+  - Added `VectorFiligreeCorner` SVG component (`geometricPrecision`, `non-scaling-stroke`) — crisp HD corner ornaments at any DPI, eliminating pixelated WebView2 fractional-pixel CSS corners.
+  - Rolled out VectorFiligreeCorner to all remaining CSS bracket corners: GazetteView broadsheet masthead (size=28), CharacterStatBlock portrait frame (size=16), ThemeCard ornate prop (size=10), Sidebar spine (size=20), manuscript page (size=24), ViewerSectionCard (size=10).
+  - Applied global antialiased font/shape rendering in `index.css`.
+  - Commits: `26fb6c7` (dropdown nav + initial corners), `0e8c603` (remaining corner sweep).
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing).
 
 - **Header Bar Harmony, Grey Slider Elimination & Realm Switcher Contrast Fix (`App.tsx`, `RealmSwitcher.tsx`, `Sidebar.tsx`, `index.css`) (2026-11-22)**:
   - Eliminated the ugly grey Windows WebView2 scrollbar slider beneath the navigation ribbon by enforcing `.no-scrollbar` and `.custom-scrollbar-hidden` with `display: none !important; width: 0 !important; scrollbar-width: none !important;`.
@@ -285,7 +301,7 @@ budget_tokens: 1000
 
 ### 🔴 Active: Option 1 — Sheet & Viewer Consistency Pass
 - [x] **EntityViewer Read-Mode Quick-Jump Rail:** Built collapsible sticky category nav rail on desktop and floating compass navigator on mobile/tablet with dynamic category indexing and Royal Codex auto-tab activation.
-- **Location Specifics Polish:** Defenses, hazards, notable landmarks, climate notes as structured bullet lists with notes (like TraitListEditor).
+- [x] **Location Specifics Polish:** Defenses, hazards, notable landmarks, climate notes as structured bullet lists with notes (like TraitListEditor).
 - **Organization/Faction Specifics Polish:** Hierarchy ranks, assets, tenet lists as structured fields.
 - **Item & Spell Specifics Polish:** Attunement/components, spell school, rarity tier as compact chips.
 

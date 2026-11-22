@@ -502,6 +502,10 @@ export interface Location extends BaseEntity {
   commonOccupationIds?: string[];
   localResourceIds?: string[];
   otherConnectedLocationIds?: string[];
+  defenses?: string;         // Structured list of defensive structures / military assets
+  hazards?: string;          // Environmental dangers, cursed zones, natural hazards
+  notableLandmarks?: string; // Famous or significant landmarks and points of interest
+  climateNotes?: string;     // Climate patterns, seasonal notes, weather phenomena
 }
 
 export interface Note extends BaseEntity {

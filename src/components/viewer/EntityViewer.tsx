@@ -2,7 +2,8 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { 
     Folder, Hash, Printer, Compass, BookOpen, Shield, 
     Sparkles, Package, Heart, Swords, Ghost, GitMerge, 
-    EyeOff, ChevronRight, ChevronLeft, ChevronsRight, X 
+    EyeOff, ChevronRight, ChevronLeft, ChevronsRight, X,
+    AlertTriangle, Landmark, CloudRain
 } from 'lucide-react';
 import { CodexHeader, WikiHeader, RoyalHeader } from './ViewerHeaders';
 import { CharacterStatBlock } from './CharacterStatBlock';
@@ -92,6 +93,13 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                 { id: 'section-interpersonal', label: 'Kinship & Ties', icon: Heart },
                 { id: 'section-affiliations', label: 'Affiliations', icon: Swords }
             );
+        } else if (isLoc) {
+            items.push({ id: 'section-specifics', label: 'Atlas Anchor & Vitals', icon: Compass });
+            if (loc.defenses?.trim()) items.push({ id: 'section-defenses', label: 'Defenses', icon: Shield });
+            if (loc.hazards?.trim()) items.push({ id: 'section-hazards', label: 'Hazards', icon: AlertTriangle });
+            if (loc.notableLandmarks?.trim()) items.push({ id: 'section-landmarks', label: 'Landmarks', icon: Landmark });
+            if (loc.climateNotes?.trim()) items.push({ id: 'section-climate', label: 'Climate', icon: CloudRain });
+            if (loc.traditionsAndCustoms?.trim()) items.push({ id: 'section-traditions', label: 'Traditions', icon: BookOpen });
         } else {
             items.push({
                 id: 'section-specifics',
@@ -119,7 +127,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
         }
 
         return items;
-    }, [entity, isCategory, isChar, childEntities.length, totalBacklinkCount]);
+    }, [entity, isCategory, isChar, isLoc, childEntities.length, totalBacklinkCount]);
 
     useEffect(() => {
         const sectionIds = navItems.map(item => item.id);

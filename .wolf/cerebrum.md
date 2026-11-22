@@ -30,6 +30,14 @@ budget_tokens: 2000
   3. *NEVER omit the description:* Every commit MUST have a substantive, well-structured description explaining the changes made, why they were made, and the components affected. Commits with empty or missing descriptions are strictly forbidden.
 - **No standalone .wolf commits rule (Updated 2026-11-16):** NEVER create a git commit that contains ONLY `.wolf` files (such as `.wolf/STATUS.md`, `.wolf/cerebrum.md`, `.wolf/memory.md`, etc.). Documentation in `.wolf/` must ALWAYS be bundled and committed together with the corresponding application code changes. If only `.wolf` files are modified, do NOT commit.
 
+## HD Rendering — VectorFiligreeCorner (MANDATORY — 2026-11-22)
+
+- **No CSS corner bracket divs:** NEVER use raw `<div>` elements with `border-t border-l`, `border-t-2 border-l-2`, or similar to create decorative bracket/filigree corner ornaments. On Windows WebView2 at 125%/150% DPI scaling, fractional pixel border widths produce jagged stair-step (pixelated) rendering that breaks the visual quality of the app.
+- **Always use `VectorFiligreeCorner`:** The `src/components/ui/VectorFiligreeCorner.tsx` component is the canonical replacement. It uses SVG with `vectorEffect="non-scaling-stroke"` and `shapeRendering="geometricPrecision"` for pixel-perfect crisp rendering at any DPI and scaling factor.
+- **API:** `<VectorFiligreeCorner position="top-left|top-right|bottom-left|bottom-right" size={N} color="#hex" className="absolute top-X left-X" />`. Always position with `className` using Tailwind absolute positioning. Exported from `../ui` barrel.
+- **Standard sizes:** `size=28` for large cards (Gazette masthead), `size=24` for manuscript page, `size=20` for Sidebar spine, `size=16` for portrait frames, `size=10` for small ornate cards (ThemeCard, ViewerSectionCard).
+- **All CSS corners have been eliminated** as of commit `0e8c603`. Do not re-introduce them.
+
 ## Strict Multi-Theme & Prose Contrast Rules (MANDATORY)
 
 - **Scrollbar Elimination on Overflow Containers (MANDATORY — 2026-11-22):**
