@@ -87,22 +87,22 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                 </div>
             </EditorGroup>
             <EditorGroup title="Hierarchy, Doctrine & Assets" icon={Crown}>
-                <TraitListEditor
-                    label="Hierarchy & Leadership Ranks"
-                    value={entity.hierarchyRanks || ''}
-                    onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                    suggestions={['Chancellor', 'Senator', 'Consul', 'Magistrate', 'Speaker', 'Party Whip', 'Minister', 'Delegate', 'Ambassador', 'Tribune']}
-                    placeholder="Add a political rank or title..."
-                    gridSpan={6}
-                />
-                <TraitListEditor
-                    label="Core Tenets & Doctrine"
-                    value={entity.coreTenets || ''}
-                    onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                    suggestions={['Sovereignty', 'Egalitarianism', 'Imperial Expansion', 'Tradition & Ancestry', 'Isolationism', 'Free Commerce', 'Rule of Law', 'Radical Reform', 'Devotion to the Crown']}
-                    placeholder="Add a core tenet, manifesto or creed..."
-                    gridSpan={6}
-                />
+                <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <TraitListEditor
+                        label="Hierarchy & Leadership Ranks"
+                        value={entity.hierarchyRanks || ''}
+                        onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
+                        suggestions={['Chancellor', 'Senator', 'Consul', 'Magistrate', 'Speaker', 'Party Whip', 'Minister', 'Delegate', 'Ambassador', 'Tribune']}
+                        placeholder="Add a political rank or title..."
+                    />
+                    <TraitListEditor
+                        label="Core Tenets & Doctrine"
+                        value={entity.coreTenets || ''}
+                        onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
+                        suggestions={['Sovereignty', 'Egalitarianism', 'Imperial Expansion', 'Tradition & Ancestry', 'Isolationism', 'Free Commerce', 'Rule of Law', 'Radical Reform', 'Devotion to the Crown']}
+                        placeholder="Add a core tenet, manifesto or creed..."
+                    />
+                </div>
                 <TraitListEditor
                     label="Faction Assets & Strongholds"
                     value={entity.factionAssets || ''}

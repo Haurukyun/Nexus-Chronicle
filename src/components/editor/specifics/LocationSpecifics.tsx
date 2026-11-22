@@ -242,38 +242,36 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
             </EditorGroup>
 
             <EditorGroup title="Defenses, Hazards & Landmarks" icon={Shield}>
-                <TraitListEditor
-                    label="Defenses & Fortifications"
-                    value={loc.defenses || ''}
-                    onChange={(v) => onUpdate({ ...loc, defenses: v })}
-                    suggestions={['Stone Walls', 'City Gates', 'Watchtowers', 'Moat', 'Drawbridge', 'Garrison', 'Magical Wards', 'Palisade', 'Portcullis', 'Arrow Slits']}
-                    placeholder="Add a defense structure..."
-                    gridSpan={6}
-                />
-                <TraitListEditor
-                    label="Hazards & Dangers"
-                    value={loc.hazards || ''}
-                    onChange={(v) => onUpdate({ ...loc, hazards: v })}
-                    suggestions={['Cursed Ground', 'Miasma', 'Flood Prone', 'Earthquake Zone', 'Toxic Plants', 'Monster Den', 'Quicksand', 'Lava Fields', 'Haunted Area', 'Blizzard Season']}
-                    placeholder="Add a hazard or danger..."
-                    gridSpan={6}
-                />
-                <TraitListEditor
-                    label="Notable Landmarks"
-                    value={loc.notableLandmarks || ''}
-                    onChange={(v) => onUpdate({ ...loc, notableLandmarks: v })}
-                    suggestions={['Ancient Ruins', 'Sacred Temple', 'Grand Marketplace', 'Royal Palace', 'Giant Statue', 'Mystic Fountain', 'Old Library', 'Lighthouse', 'Arena', 'Memorial']}
-                    placeholder="Add a landmark or point of interest..."
-                    gridSpan={6}
-                />
-                <TraitListEditor
-                    label="Climate & Weather Notes"
-                    value={loc.climateNotes || ''}
-                    onChange={(v) => onUpdate({ ...loc, climateNotes: v })}
-                    suggestions={['Perpetual Mist', 'Harsh Winters', 'Scorching Summers', 'Monsoon Season', 'Constant Drizzle', 'Magical Storms', 'Drought-Prone', 'Tropical', 'Arctic', 'Mild Year-Round']}
-                    placeholder="Add a climate or weather note..."
-                    gridSpan={6}
-                />
+                <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <TraitListEditor
+                        label="Defenses & Fortifications"
+                        value={loc.defenses || ''}
+                        onChange={(v) => onUpdate({ ...loc, defenses: v })}
+                        suggestions={['Stone Walls', 'City Gates', 'Watchtowers', 'Moat', 'Drawbridge', 'Garrison', 'Magical Wards', 'Palisade', 'Portcullis', 'Arrow Slits']}
+                        placeholder="Add a defense structure..."
+                    />
+                    <TraitListEditor
+                        label="Hazards & Dangers"
+                        value={loc.hazards || ''}
+                        onChange={(v) => onUpdate({ ...loc, hazards: v })}
+                        suggestions={['Cursed Ground', 'Miasma', 'Flood Prone', 'Earthquake Zone', 'Toxic Plants', 'Monster Den', 'Quicksand', 'Lava Fields', 'Haunted Area', 'Blizzard Season']}
+                        placeholder="Add a hazard or danger..."
+                    />
+                    <TraitListEditor
+                        label="Notable Landmarks"
+                        value={loc.notableLandmarks || ''}
+                        onChange={(v) => onUpdate({ ...loc, notableLandmarks: v })}
+                        suggestions={['Ancient Ruins', 'Sacred Temple', 'Grand Marketplace', 'Royal Palace', 'Giant Statue', 'Mystic Fountain', 'Old Library', 'Lighthouse', 'Arena', 'Memorial']}
+                        placeholder="Add a landmark or point of interest..."
+                    />
+                    <TraitListEditor
+                        label="Climate & Weather Notes"
+                        value={loc.climateNotes || ''}
+                        onChange={(v) => onUpdate({ ...loc, climateNotes: v })}
+                        suggestions={['Perpetual Mist', 'Harsh Winters', 'Scorching Summers', 'Monsoon Season', 'Constant Drizzle', 'Magical Storms', 'Drought-Prone', 'Tropical', 'Arctic', 'Mild Year-Round']}
+                        placeholder="Add a climate or weather note..."
+                    />
+                </div>
             </EditorGroup>
 
             <EditorGroup title="Resident information" icon={UserCircle}>

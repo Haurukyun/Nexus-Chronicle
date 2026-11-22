@@ -88,22 +88,22 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
                 </div>
             </EditorGroup>
             <EditorGroup title="Priesthood, Dogma & Sacred Relics" icon={Crown}>
-                <TraitListEditor
-                    label="Priesthood & Holy Hierarchy"
-                    value={entity.hierarchyRanks || ''}
-                    onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                    suggestions={['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic']}
-                    placeholder="Add a holy rank or title..."
-                    gridSpan={6}
-                />
-                <TraitListEditor
-                    label="Sacred Dogma & Commandments"
-                    value={entity.coreTenets || ''}
-                    onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                    suggestions={['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance']}
-                    placeholder="Add a sacred commandment, creed or dogma..."
-                    gridSpan={6}
-                />
+                <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <TraitListEditor
+                        label="Priesthood & Holy Hierarchy"
+                        value={entity.hierarchyRanks || ''}
+                        onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
+                        suggestions={['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic']}
+                        placeholder="Add a holy rank or title..."
+                    />
+                    <TraitListEditor
+                        label="Sacred Dogma & Commandments"
+                        value={entity.coreTenets || ''}
+                        onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
+                        suggestions={['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance']}
+                        placeholder="Add a sacred commandment, creed or dogma..."
+                    />
+                </div>
                 <TraitListEditor
                     label="Sacred Relics, Temples & Sanctuaries"
                     value={entity.factionAssets || ''}

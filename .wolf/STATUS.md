@@ -12,6 +12,12 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **Fix: TraitListEditor 2-col overflow on thin windows (`LocationSpecifics.tsx`, `OrganizationSpecifics.tsx`, `PoliticalGroupSpecifics.tsx`, `ReligionSpecifics.tsx`) (2026-11-22)**:
+  - Root cause: `gridSpan={6}` placed children directly in the fixed `grid-cols-12` EditorGroup grid with no responsive breakpoint. At thin widths, the two side-by-side editors couldn't shrink below their intrinsic min-content, causing the grid to overflow horizontally and appear wider than the viewport.
+  - Fix: Wrapped the two side-by-side `TraitListEditor` pairs in `col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5` divs. They now stack to 1 column on narrow screens and return to 2 at `md` (768px+).
+  - Applied consistently across all 4 affected specifics files.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (61/61 passing).
+
 - **UI Bug Fixes — Map Dropdown Z-Index & Location Viewer Atlas Anchor Layout (`App.tsx`, `LocationSpecificsViewer.tsx`) (2026-11-22)**:
   - Fixed nav dropdown panels being hidden behind the World Atlas map view by raising dropdown z-index from `z-50` → `z-[9999]` in `App.tsx`.
   - Fixed Atlas Anchor coordinates rendering as awkwardly wrapped multi-line text (`X:`, newline, `42.4%,`, newline, `Y:`, newline, `31.2%`) in the Royal Codex two-column grid — split into two separate `FieldRow` rows (`Anchor X` / `Anchor Y`).

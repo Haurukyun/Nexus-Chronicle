@@ -95,22 +95,22 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
             </EditorGroup>
 
             <EditorGroup title="Hierarchy, Doctrine & Assets" icon={Crown}>
-                <TraitListEditor
-                    label="Hierarchy & Leadership Ranks"
-                    value={entity.hierarchyRanks || ''}
-                    onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                    suggestions={['Grandmaster', 'High Council', 'Commander', 'Quartermaster', 'Envoy', 'Officer', 'Scribe', 'Initiate', 'Operative', 'Sentinel']}
-                    placeholder="Add an internal rank or title..."
-                    gridSpan={6}
-                />
-                <TraitListEditor
-                    label="Core Tenets & Doctrine"
-                    value={entity.coreTenets || ''}
-                    onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                    suggestions={['Absolute Secrecy', 'Mutual Defense', 'Strict Hierarchy', 'Total Loyalty', 'Protection of the Innocent', 'Pursuit of Forbidden Lore', 'Non-Interference', 'Blood Oath', 'Code of Honor', 'Sacred Silence']}
-                    placeholder="Add a core tenet, law or creed..."
-                    gridSpan={6}
-                />
+                <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <TraitListEditor
+                        label="Hierarchy & Leadership Ranks"
+                        value={entity.hierarchyRanks || ''}
+                        onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
+                        suggestions={['Grandmaster', 'High Council', 'Commander', 'Quartermaster', 'Envoy', 'Officer', 'Scribe', 'Initiate', 'Operative', 'Sentinel']}
+                        placeholder="Add an internal rank or title..."
+                    />
+                    <TraitListEditor
+                        label="Core Tenets & Doctrine"
+                        value={entity.coreTenets || ''}
+                        onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
+                        suggestions={['Absolute Secrecy', 'Mutual Defense', 'Strict Hierarchy', 'Total Loyalty', 'Protection of the Innocent', 'Pursuit of Forbidden Lore', 'Non-Interference', 'Blood Oath', 'Code of Honor', 'Sacred Silence']}
+                        placeholder="Add a core tenet, law or creed..."
+                    />
+                </div>
                 <TraitListEditor
                     label="Faction Assets & Strongholds"
                     value={entity.factionAssets || ''}
