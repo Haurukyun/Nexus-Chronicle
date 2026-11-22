@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { WorldData, WorldEntity, FactionRelation, PlotThread, Event } from '../types';
 import { useTheme } from '../theme';
+import { VectorFiligreeCorner } from '../components/ui/VectorFiligreeCorner';
 
 interface Props {
     world: WorldData;
@@ -269,10 +270,10 @@ export const GazetteView: React.FC<Props> = ({ world, onNavigate }) => {
                 {/* Ornamental Filigree Corners */}
                 {isRoyal && (
                     <>
-                        <div className="absolute top-2 left-2 w-7 h-7 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                        <div className="absolute top-2 right-2 w-7 h-7 border-t-2 border-r-2 border-[#c8a96e] pointer-events-none" />
-                        <div className="absolute bottom-2 left-2 w-7 h-7 border-b-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                        <div className="absolute bottom-2 right-2 w-7 h-7 border-b-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+                        <VectorFiligreeCorner position="top-left"     size={28} color="#c8a96e" className="absolute top-2 left-2"     />
+                        <VectorFiligreeCorner position="top-right"    size={28} color="#c8a96e" className="absolute top-2 right-2"    />
+                        <VectorFiligreeCorner position="bottom-left"  size={28} color="#c8a96e" className="absolute bottom-2 left-2"  />
+                        <VectorFiligreeCorner position="bottom-right" size={28} color="#c8a96e" className="absolute bottom-2 right-2" />
                     </>
                 )}
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Users, Maximize2, Printer } from 'lucide-react';
-import { TaperedDivider, WikiStatRow, LinksDisplay, RadarChart, EmeraldGem } from '../ui';
+import { TaperedDivider, WikiStatRow, LinksDisplay, RadarChart, EmeraldGem, VectorFiligreeCorner } from '../ui';
 import { NexusImage } from '../ui/NexusImage';
 import { ExpandedImageModal } from '../ui/ExpandedImageModal';
 import { Character, WorldEntity } from '../../types';
@@ -74,10 +74,10 @@ export const CharacterStatBlock = ({ entity, allEntities, onNavigate, hideName =
                             </div>
                         )}
                         {/* Filigree Corner Accents */}
-                        <div className="absolute top-1.5 left-1.5 w-4 h-4 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                        <div className="absolute top-1.5 right-1.5 w-4 h-4 border-t-2 border-r-2 border-[#c8a96e] pointer-events-none" />
-                        <div className="absolute bottom-1.5 left-1.5 w-4 h-4 border-b-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                        <div className="absolute bottom-1.5 right-1.5 w-4 h-4 border-b-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+                        <VectorFiligreeCorner position="top-left"     size={16} color="#c8a96e" className="absolute top-1.5 left-1.5"     />
+                        <VectorFiligreeCorner position="top-right"    size={16} color="#c8a96e" className="absolute top-1.5 right-1.5"    />
+                        <VectorFiligreeCorner position="bottom-left"  size={16} color="#c8a96e" className="absolute bottom-1.5 left-1.5"  />
+                        <VectorFiligreeCorner position="bottom-right" size={16} color="#c8a96e" className="absolute bottom-1.5 right-1.5" />
 
                         {char.imageUri && (
                             <button
