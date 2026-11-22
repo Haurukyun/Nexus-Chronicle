@@ -18,7 +18,7 @@ export const ViewerSectionCard: React.FC<ViewerSectionCardProps> = ({ title, chi
 
     if ((themeId === 'royal-codex')) {
         return (
-            <div id={id} className="bg-[#fcf5e9] rounded-md p-5 shadow-sm mb-6 text-[#2b1810] relative">
+            <div id={id} className="w-full min-w-0 max-w-full bg-[#fcf5e9] rounded-md p-3 sm:p-5 shadow-sm mb-6 text-[#2b1810] relative">
                 {/* Double Gold Border Effect */}
                 <div className="absolute inset-1 border-2 border-[#d4c8af]" />
                 <div className="absolute inset-[6px] border border-[#d4c8af]/50" />
@@ -52,7 +52,7 @@ export const ViewerSectionCard: React.FC<ViewerSectionCardProps> = ({ title, chi
 
     if (isWiki) {
         return (
-            <div id={id} className="mb-8 p-6 bg-white border border-[#d4c8af] rounded-xl shadow-sm space-y-4 text-[#1a1a1a]">
+            <div id={id} className="w-full min-w-0 max-w-full mb-8 p-4 sm:p-6 bg-white border border-[#d4c8af] rounded-xl shadow-sm space-y-4 text-[#1a1a1a]">
                 <div className="flex items-center justify-between border-b-2 border-[#e69a28] pb-2 mb-4">
                     <h3 className="font-serif font-bold text-2xl text-[#e69a28] uppercase tracking-tight">{title}</h3>
                     {badgeText && (
@@ -69,7 +69,7 @@ export const ViewerSectionCard: React.FC<ViewerSectionCardProps> = ({ title, chi
     }
 
     return (
-        <div id={id} className="bg-slate-900/20 border border-slate-800 p-8 rounded-2xl mb-8 space-y-4 text-slate-300">
+        <div id={id} className="w-full min-w-0 max-w-full bg-slate-900/20 border border-slate-800 p-4 sm:p-6 md:p-8 rounded-2xl mb-8 space-y-4 text-slate-300">
             <div className="flex items-center justify-between border-b border-slate-800/60 pb-3 mb-4">
                 <h3 className="text-xs font-black uppercase tracking-widest text-[#fef08a]">{title}</h3>
                 {badgeText && (

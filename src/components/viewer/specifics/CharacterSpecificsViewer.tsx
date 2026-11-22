@@ -72,7 +72,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
         <div className="space-y-6">
             <ViewerSectionCard id="section-vitals" title="Vital Records">
                 {isRoyal ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-3 py-1 font-serif">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 lg:gap-x-10 gap-y-3 py-1 font-serif min-w-0">
                         <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                             <span className="font-bold text-[#2b1810] text-sm">Name:</span>
                             <span className="text-[#3d271d] text-sm font-medium">{entity.name}</span>
@@ -214,7 +214,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
             <ViewerSectionCard id="section-inventory" title="Inventory & Conditions">
                 {isRoyal ? (
                     <div className="space-y-4 font-serif">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 py-1">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 lg:gap-x-8 gap-y-3 py-1 min-w-0">
                             <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
                                 <span className="text-sm font-bold text-[#2b1810]">Equipment / Items:</span>
                                 <span className="text-sm text-[#3d271d]">{entity.possessedItems || '—'}</span>

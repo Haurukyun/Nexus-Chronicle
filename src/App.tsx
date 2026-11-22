@@ -363,8 +363,13 @@ const App = () => {
 
                     {/* Top Header Bar */}
                     <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} shadow-sm`} data-interactive-ui="true">
+                        {/* Backdrop for closing realm navigation dropdowns */}
+                        {openNavDropdown && (
+                            <div className="fixed inset-0 z-[9990] cursor-default" onClick={() => setOpenNavDropdown(null)} />
+                        )}
+
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
-                        <div className="flex items-center justify-between px-3 py-2 gap-2 min-w-0 overflow-x-auto no-scrollbar custom-scrollbar-hidden">
+                        <div className="relative z-20 flex items-center justify-between px-3 py-2 gap-2 min-w-0">
                             {/* Realm Navigation Categorized Dropdowns (Fandom/Codex Sphere style) */}
                             <nav className={`h-9 inline-flex items-center p-1 rounded-xl ${headerTrayCls} shrink-0 gap-1`} data-nav-dropdown="true">
                                 {REALM_NAV_GROUPS.map(group => {
@@ -374,7 +379,7 @@ const App = () => {
                                     const TriggerIcon = activeChild ? activeChild.icon : group.icon;
 
                                     return (
-                                        <div key={group.id} className="relative">
+                                        <div key={group.id} className={`relative ${isOpen ? 'z-[9995]' : ''}`}>
                                             <button
                                                 type="button"
                                                 onClick={() => setOpenNavDropdown(prev => prev === group.id ? null : group.id)}
@@ -561,7 +566,7 @@ const App = () => {
 
                         {/* Tier 2: Entity Document Tabs Bar (Rendered only when open dossier tabs exist) */}
                         {openTabIds.length > 0 && (
-                            <div className={`flex items-center justify-between px-3 py-1.5 border-t min-h-[36px] gap-2 ${dossierBarCls}`}>
+                            <div className={`relative z-10 flex items-center justify-between px-3 py-1.5 border-t min-h-[36px] gap-2 ${dossierBarCls}`}>
                                 <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0 no-scrollbar custom-scrollbar-hidden">
                                     {openTabIds.map(id => {
                                         const e = world.entities.find(ent => ent.id === id);
@@ -625,7 +630,7 @@ const App = () => {
                                     <div className="hidden 2xl:block absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
 
                                     {/* Inner Vellum Parchment Page — Wraps Full Scroll Height Seamlessly */}
-                                    <div className="relative flex-1 min-w-0 w-full flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-8 lg:p-10 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
+                                    <div className="relative flex-1 min-w-0 w-full flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 lg:p-8 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
 
                                         {/* Four Ornamental Gold Filigree Corners (Vector HD) */}
                                         <VectorFiligreeCorner position="top-left" className="absolute top-2 left-2 z-10" size={24} />

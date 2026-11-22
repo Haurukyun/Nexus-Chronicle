@@ -202,9 +202,9 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     const royalTabs = ['Overview', 'Biography', 'Relations', 'Inventory'];
 
     const MainView = () => (
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 xl:gap-12 items-start relative min-w-0 w-full">
+        <div className="flex flex-col xl:flex-row gap-6 lg:gap-8 items-start relative min-w-0 w-full">
             {/* Desktop Sticky Quick-Jump Navigation Rail */}
-            <aside className={`hidden xl:block shrink-0 sticky top-6 z-20 transition-all duration-200 self-start ${isNavExpanded ? 'w-52' : 'w-11'}`}>
+            <aside className={`hidden 2xl:block shrink-0 sticky top-6 z-20 transition-all duration-200 self-start ${isNavExpanded ? 'w-52' : 'w-11'}`}>
                 <div className={`rounded-2xl border backdrop-blur-md shadow-xl transition-all ${
                     isNavExpanded ? 'p-3' : 'p-1.5'
                 } ${
@@ -473,7 +473,7 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
             </div>
 
             {/* Right Column Stat Block / Infobox */}
-            <aside className="w-full lg:w-80 xl:w-96 2xl:w-[420px] shrink-0 space-y-6">
+            <aside className="w-full xl:w-80 2xl:w-96 shrink-0 space-y-6 min-w-0 max-w-full">
                 {(themeId === 'royal-codex') ? (
                     <>
                         {isChar && <CharacterStatBlock entity={entity} allEntities={allEntities} onNavigate={onNavigate} hideName={true} backlinks={backlinks} />}

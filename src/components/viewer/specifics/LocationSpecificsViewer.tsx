@@ -90,11 +90,11 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
     return (
         <div className="space-y-8">
             {!isWikiMode && (
-                <div className={`${t.card.base} p-8 rounded-2xl`}>
+                <div className={`${t.card.base} p-4 sm:p-6 md:p-8 rounded-2xl w-full min-w-0 max-w-full`}>
                     <h3 className={`text-xs font-black uppercase mb-6 tracking-widest ${t.colors.textAccent} flex items-center gap-2`}>
                         <Compass size={14} /> Geographic Intelligence & Atlas Anchor
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 lg:gap-x-10">
                         <FieldRow label="Type" value={loc.locationType} />
                         <FieldRow label="Population" value={loc.population} />
                         <FieldRow label="Size" value={loc.size} />

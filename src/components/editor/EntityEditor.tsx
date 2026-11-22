@@ -302,7 +302,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
             onKeyDown={handleKeyDown}
             className="max-w-7xl mx-auto pb-40 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 min-w-0 w-full"
         >
-            <header className={`flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 border-b pb-4 sm:pb-6 min-w-0 w-full ${isRoyal ? 'border-[#c8a96e]/40' : 'border-slate-500/20'}`}>
+            <header className={`flex flex-col md:flex-row justify-between items-start md:items-end gap-3 sm:gap-4 border-b pb-4 sm:pb-6 min-w-0 w-full ${isRoyal ? 'border-[#c8a96e]/40' : 'border-slate-500/20'}`}>
                 <div className="min-w-0 flex-1">
                     <h2 className={`text-xl sm:text-2xl md:text-4xl font-serif font-black uppercase tracking-tight truncate ${
                         isRoyal 
@@ -317,7 +317,7 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                         Inscribing the essence of: <span className="font-bold underline">{entity.name}</span>
                     </p>
                 </div>
-                <div className="flex flex-wrap gap-2 sm:gap-3 items-center w-full sm:w-auto justify-start sm:justify-end shrink-0">
+                <div className="flex flex-wrap gap-2 sm:gap-3 items-center w-full md:w-auto justify-start md:justify-end min-w-0">
                     <FormToggle label={entity.isReadOnly ? "LOCKED" : "Lock Entry"} checked={entity.isReadOnly} onChange={(v: boolean) => onUpdate({ ...entity, isReadOnly: v })} />
                     <button 
                         onClick={onSave} 
@@ -330,7 +330,8 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                                     : 'bg-[#fef08a] text-black shadow-2xl hover:scale-105'
                         } transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0`}
                     >
-                        <span>Commit to Chronicle</span>
+                        <span className="hidden sm:inline">Commit to Chronicle</span>
+                        <span className="sm:hidden">Commit</span>
                         <kbd className={`text-[9px] font-mono tracking-normal px-1.5 py-0.5 rounded ${
                             isRoyal ? 'bg-[#400a11] text-[#fff8e7] border border-[#c8a96e]/40' : 'bg-black/20 opacity-60'
                         }`}>Ctrl+↵</kbd>
@@ -344,7 +345,8 @@ export const EntityEditor = ({ entity, allEntities, onSave, onCancel, onCreateNe
                                 : 'text-slate-500 hover:text-red-500'
                         }`}
                     >
-                        <span>Abandon Scrawl</span>
+                        <span className="hidden sm:inline">Abandon Scrawl</span>
+                        <span className="sm:hidden">Abandon</span>
                         <kbd className="opacity-40 text-[9px] font-mono tracking-normal">(Esc)</kbd>
                     </button>
                 </div>
