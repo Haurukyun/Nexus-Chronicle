@@ -1,5 +1,6 @@
 import React from 'react';
 import { useWorldStore } from '../../store/useWorldStore';
+import { VectorFiligreeCorner } from '../ui/VectorFiligreeCorner';
 
 interface ViewerSectionCardProps {
     title: string;
@@ -22,11 +23,11 @@ export const ViewerSectionCard: React.FC<ViewerSectionCardProps> = ({ title, chi
                 <div className="absolute inset-1 border-2 border-[#d4c8af]" />
                 <div className="absolute inset-[6px] border border-[#d4c8af]/50" />
                 
-                {/* 4 corner ornaments */}
-                <div className="absolute top-[3px] left-[3px] w-2 h-2 border-t border-l border-[#855325]" />
-                <div className="absolute top-[3px] right-[3px] w-2 h-2 border-t border-r border-[#855325]" />
-                <div className="absolute bottom-[3px] left-[3px] w-2 h-2 border-b border-l border-[#855325]" />
-                <div className="absolute bottom-[3px] right-[3px] w-2 h-2 border-b border-r border-[#855325]" />
+                {/* 4 vector corner ornaments (Vector HD) */}
+                <VectorFiligreeCorner position="top-left" className="absolute top-[3px] left-[3px]" size={10} color="#855325" />
+                <VectorFiligreeCorner position="top-right" className="absolute top-[3px] right-[3px]" size={10} color="#855325" />
+                <VectorFiligreeCorner position="bottom-left" className="absolute bottom-[3px] left-[3px]" size={10} color="#855325" />
+                <VectorFiligreeCorner position="bottom-right" className="absolute bottom-[3px] right-[3px]" size={10} color="#855325" />
 
                 <div className="relative flex items-center justify-between border-b border-[#d4c8af] pb-2 mb-4 mx-3">
                     <div className="flex items-center gap-3">

@@ -13,6 +13,7 @@ import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { RealmSwitcher } from './RealmSwitcher';
+import { VectorFiligreeCorner } from '../ui/VectorFiligreeCorner';
 import { generateEntityMarkdown, downloadTextFile } from '../../utils/exportUtils';
 
 interface SidebarProps {
@@ -641,13 +642,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }}
             className={`w-56 border-r ${borderColor} flex flex-col ${sidebarBg} backdrop-blur-md z-20 select-none ${(themeId === 'royal-codex') ? 'text-[#ebd9bd]' : (themeId === 'grand-voyager') ? 'text-[#f5e9d0]' : ''}`}
         >
-            {/* Ornamental Gold Filigree Corners for Left Spine */}
+            {/* Ornamental Gold Filigree Corners for Left Spine (Vector HD) */}
             {(themeId === 'royal-codex') && (
                 <>
-                    <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                    <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-[#c8a96e] pointer-events-none" />
-                    <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                    <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+                    <VectorFiligreeCorner position="top-left" className="absolute top-2 left-2 z-20" size={20} />
+                    <VectorFiligreeCorner position="top-right" className="absolute top-2 right-2 z-20" size={20} />
+                    <VectorFiligreeCorner position="bottom-left" className="absolute bottom-2 left-2 z-20" size={20} />
+                    <VectorFiligreeCorner position="bottom-right" className="absolute bottom-2 right-2 z-20" size={20} />
                 </>
             )}
 

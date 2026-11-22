@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import {
     Search, Plus, Globe, Trash2, Settings,
     BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints, Keyboard,
-    Undo2, Redo2, BookOpen, Lightbulb, Swords, Newspaper
+    Undo2, Redo2, BookOpen, Lightbulb, Swords, Newspaper, ChevronDown
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
 import { useTheme } from './theme';
@@ -27,6 +27,7 @@ import { KeybindsModal } from './components/ui/KeybindsModal';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { ScratchpadDrawer } from './components/ui/ScratchpadDrawer';
 import { TropicalSceneBackground } from './components/ui/TropicalSceneBackground';
+import { VectorFiligreeCorner } from './components/ui/VectorFiligreeCorner';
 
 
 const App = () => {
@@ -47,6 +48,60 @@ const App = () => {
     const [showCommandPalette, setShowCommandPalette] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
     const [showKeybindsModal, setShowKeybindsModal] = useState(false);
+    const [openNavDropdown, setOpenNavDropdown] = useState<string | null>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest('[data-nav-dropdown]')) {
+                setOpenNavDropdown(null);
+            }
+        };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setOpenNavDropdown(null);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
+    const REALM_NAV_GROUPS = useMemo(() => [
+        {
+            id: 'chronicles',
+            label: 'Chronicles',
+            icon: BookOpen,
+            items: [
+                { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G', description: 'Living World Broadsheet & Dispatches' },
+                { id: 'timeline', label: 'Chronos', icon: History, shortcut: 'Alt+2', description: 'Timeline Ruler & Planetary Calendar' },
+                { id: 'session-logs', label: 'Sessions', icon: BookOpen, shortcut: 'Alt+8', description: 'Session Codex & Campaign Notes' },
+            ]
+        },
+        {
+            id: 'cartography',
+            label: 'Cartography',
+            icon: Globe,
+            items: [
+                { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5', description: 'Interactive Map & Cartography Overlays' },
+                { id: 'journey', label: 'Journey', icon: Footprints, shortcut: 'Alt+4', description: 'Expedition Routes & Distance Calculator' },
+            ]
+        },
+        {
+            id: 'web',
+            label: 'The Web',
+            icon: GitMerge,
+            items: [
+                { id: 'plot-threads', label: 'Threads', icon: Lightbulb, shortcut: 'Alt+9', description: 'The Conspiracy Board & Clue Web' },
+                { id: 'faction-matrix', label: 'Factions', icon: Swords, shortcut: 'Alt+0', description: 'Balance of Power & Tension Matrix' },
+                { id: 'nexus', label: 'Nexus Lines', icon: GitMerge, shortcut: 'Alt+3', description: 'Lineage Tree & Relational Graph' },
+                { id: 'dashboard', label: 'Ledger', icon: BarChart3, shortcut: 'Alt+1', description: 'Realm Codex Records & Vital Statistics' },
+            ]
+        }
+    ], []);
 
     const { t, layoutMode, themeId } = useTheme();
     const isManuscript = layoutMode === 'manuscript';
@@ -310,41 +365,120 @@ const App = () => {
                     <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} shadow-sm`} data-interactive-ui="true">
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
                         <div className="flex items-center justify-between px-3 py-2 gap-3 min-w-0">
-                            {/* Realm Navigation Ribbon */}
-                            <nav 
-                                onWheel={(e) => {
-                                    if (e.deltaY !== 0) {
-                                        e.currentTarget.scrollLeft += e.deltaY;
-                                    }
-                                }}
-                                className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} max-w-full overflow-x-auto no-scrollbar custom-scrollbar-hidden min-w-0 gap-1`}
-                            >
-                                {[
-                                    { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G' },
-                                    { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5' },
-                                    { id: 'timeline', label: 'Chronos', icon: History, shortcut: 'Alt+2' },
-                                    { id: 'session-logs', label: 'Sessions', icon: BookOpen, shortcut: 'Alt+8' },
-                                    { id: 'plot-threads', label: 'Threads', icon: Lightbulb, shortcut: 'Alt+9' },
-                                    { id: 'faction-matrix', label: 'Factions', icon: Swords, shortcut: 'Alt+0' },
-                                    { id: 'nexus', label: 'Nexus', icon: GitMerge, shortcut: 'Alt+3' },
-                                    { id: 'journey', label: 'Journey', icon: Footprints, shortcut: 'Alt+4' },
-                                    { id: 'dashboard', label: 'Ledger', icon: BarChart3, shortcut: 'Alt+1' },
-                                ].map(item => {
-                                    const isActive = activeTabId === item.id;
-                                    const IconComponent = item.icon;
+                            {/* Realm Navigation Categorized Dropdowns (Fandom/Codex Sphere style) */}
+                            <nav className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} min-w-0 gap-1`} data-nav-dropdown="true">
+                                {REALM_NAV_GROUPS.map(group => {
+                                    const activeChild = group.items.find(item => item.id === activeTabId);
+                                    const isGroupActive = Boolean(activeChild);
+                                    const isOpen = openNavDropdown === group.id;
+                                    const TriggerIcon = activeChild ? activeChild.icon : group.icon;
+
                                     return (
-                                        <button
-                                            key={item.id}
-                                            type="button"
-                                            onClick={() => setActiveTabId(item.id)}
-                                            title={`${item.label} (${item.shortcut})`}
-                                            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${
-                                                isActive ? ribbonActiveCls : ribbonInactiveCls
-                                            }`}
-                                        >
-                                            <IconComponent size={13} className={`shrink-0 ${isActive ? 'opacity-100' : 'opacity-80'}`} />
-                                            <span>{item.label}</span>
-                                        </button>
+                                        <div key={group.id} className="relative">
+                                            <button
+                                                type="button"
+                                                onClick={() => setOpenNavDropdown(prev => prev === group.id ? null : group.id)}
+                                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs tracking-tight transition-colors duration-150 cursor-pointer ${
+                                                    isGroupActive ? ribbonActiveCls : ribbonInactiveCls
+                                                }`}
+                                                title={`${group.label} Codex Sphere (${group.items.map(i => i.label).join(', ')})`}
+                                            >
+                                                <TriggerIcon size={13} className={`shrink-0 ${isGroupActive ? 'opacity-100' : 'opacity-80'}`} />
+                                                <span className="font-serif font-bold">
+                                                    {activeChild ? activeChild.label : group.label}
+                                                </span>
+                                                {activeChild && (
+                                                    <span className="text-[10px] opacity-60 hidden xl:inline font-sans font-normal">
+                                                        · {group.label}
+                                                    </span>
+                                                )}
+                                                <ChevronDown size={11} className={`transition-transform opacity-70 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+                                            </button>
+
+                                            {isOpen && (
+                                                <div
+                                                    className={`absolute top-full left-0 mt-2 w-72 rounded-2xl border z-50 p-2 space-y-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
+                                                        isRoyal
+                                                            ? 'bg-[#18100a] border-[#c8a96e]/50 text-[#f5ebd7]'
+                                                            : isWiki
+                                                                ? 'bg-[#fcf7ee] border-[#d4c8af] text-[#2b1810]'
+                                                                : isGrandVoyager
+                                                                    ? 'bg-[#091719] border-[#2dd4bf]/40 text-[#f5e9d0]'
+                                                                    : 'bg-slate-900 border-slate-700 text-slate-100'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center justify-between px-2 pt-1 pb-1.5 border-b border-current/10">
+                                                        <span className={`text-[10px] font-black uppercase tracking-wider ${
+                                                            isRoyal ? 'font-serif text-[#fcd34d]' : isGrandVoyager ? 'text-[#2dd4bf]' : isWiki ? 'text-[#b91c1c]' : 'text-[#fef08a]'
+                                                        }`}>
+                                                            {group.label}
+                                                        </span>
+                                                        <span className="text-[9px] font-mono opacity-50">
+                                                            {group.items.length} tools
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="space-y-1 pt-1">
+                                                        {group.items.map(item => {
+                                                            const isItemActive = activeTabId === item.id;
+                                                            const ItemIcon = item.icon;
+                                                            return (
+                                                                <button
+                                                                    key={item.id}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setActiveTabId(item.id);
+                                                                        setOpenNavDropdown(null);
+                                                                    }}
+                                                                    className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors cursor-pointer ${
+                                                                        isItemActive
+                                                                            ? isRoyal
+                                                                                ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e]/40 font-serif font-bold'
+                                                                                : isWiki
+                                                                                    ? 'bg-[#b91c1c] text-white font-serif font-bold'
+                                                                                    : isGrandVoyager
+                                                                                        ? 'bg-[#2dd4bf] text-[#041e1e] font-bold'
+                                                                                        : 'bg-[#fef08a] text-black font-bold'
+                                                                            : isRoyal
+                                                                                ? 'hover:bg-[#2e180d] text-[#ebd9bd]'
+                                                                                : isWiki
+                                                                                    ? 'hover:bg-[#efe1cf] text-[#2b1810]'
+                                                                                    : isGrandVoyager
+                                                                                        ? 'hover:bg-[#14282a] text-[#f5e9d0]'
+                                                                                        : 'hover:bg-slate-800 text-slate-200'
+                                                                    }`}
+                                                                >
+                                                                    <div className="flex items-center gap-2.5 min-w-0">
+                                                                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                                                                            isItemActive ? 'bg-black/20' : 'bg-black/10 dark:bg-white/10'
+                                                                        }`}>
+                                                                            <ItemIcon size={14} />
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <div className="text-xs font-serif font-bold truncate flex items-center gap-1.5">
+                                                                                <span>{item.label}</span>
+                                                                                {isItemActive && <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />}
+                                                                            </div>
+                                                                            <div className="text-[10px] opacity-60 truncate">
+                                                                                {item.description}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <kbd className={`text-[9px] font-mono px-1.5 py-0.5 rounded border shrink-0 ml-2 ${
+                                                                        isItemActive
+                                                                            ? 'bg-black/30 border-white/20 text-current'
+                                                                            : 'bg-black/20 dark:bg-white/10 border-current/20 opacity-60'
+                                                                    }`}>
+                                                                        {item.shortcut}
+                                                                    </kbd>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     );
                                 })}
                             </nav>
@@ -486,11 +620,11 @@ const App = () => {
                                     {/* Inner Vellum Parchment Page — Wraps Full Scroll Height Seamlessly */}
                                     <div className="relative flex-1 flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-2xl p-4 sm:p-6 md:p-10 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
 
-                                        {/* Four Ornamental Gold Filigree Corners */}
-                                        <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                                        <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-[#c8a96e] pointer-events-none" />
-                                        <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                                        <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+                                        {/* Four Ornamental Gold Filigree Corners (Vector HD) */}
+                                        <VectorFiligreeCorner position="top-left" className="absolute top-2 left-2 z-10" size={24} />
+                                        <VectorFiligreeCorner position="top-right" className="absolute top-2 right-2 z-10" size={24} />
+                                        <VectorFiligreeCorner position="bottom-left" className="absolute bottom-2 left-2 z-10" size={24} />
+                                        <VectorFiligreeCorner position="bottom-right" className="absolute bottom-2 right-2 z-10" size={24} />
 
                                         <ErrorBoundary fallbackLabel="Error rendering character scroll or details. Click below to recover.">
                                             {editingTabIds.includes(activeTabId as string) ? (
