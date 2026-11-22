@@ -6,11 +6,22 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-22 (02:00)
+> Last updated: 2026-11-22 (17:00)
 
 ---
 
 ## ✅ Done
+
+- **feat: Realm Blueprints & Engine Module system — Step 1 (`types.ts`, `constants.ts`, `realmConfig.ts`, `Sidebar.tsx`, `CommandPalette.tsx`, `App.tsx`, `CharacterSpecifics.tsx`, `EntityViewer.tsx`, `OptionsView.tsx`) (2026-11-22)**:
+  - Added `RealmModuleConfig` interface + `activeEntityTypes`, `activeModules`, `hideEmptyFieldsDefault` to `WorldData` in `types.ts`.
+  - New `src/utils/realmConfig.ts`: `isEntityTypeActive`, `isModuleActive`, `getActiveEntityTypes`, `getActiveModules`, `REALM_PRESETS` (6 presets: All, High Fantasy, Sci-Fi, Modern, Alien Invasion, Cosmic Horror). Covered by 5 unit tests in `realmConfig.test.ts`.
+  - `Sidebar.tsx`: filters `HIERARCHY_CONFIG` groups/types to only render active entity types per realm.
+  - `CommandPalette.tsx`: filters quick-create list and system realm suggestions by active modules/types.
+  - `App.tsx`: `activeRealmNavGroups` memo filtering module-gated nav items; auto-redirect from deactivated tab to dashboard.
+  - `CharacterSpecifics.tsx` + `EntityViewer.tsx`: Core Attributes / CharacterStatBlock gated on `combatStats` module across all 3 theme branches.
+  - `OptionsView.tsx`: Full "Realm Blueprints & Engine Modules" section — 6 genre preset cards, 5 engine module toggles, 21-type blueprint matrix, global hide-empty-fields toggle.
+  - Commit `222c8c9` pushed to `origin/main`. 66/66 tests, 0 TS errors, build clean.
+  - **Next quest:** Step 2 — Approach 4 (Stat Block Engine / Flexible Attributes): `statBlockMode` + `customStats` on Character type, Stat Block Mode selector in `CharacterSpecifics.tsx`, dynamic rendering in `CharacterStatBlock.tsx`.
 
 - **Fix: Restore Document Vertical Scrolling & Header Collisions on Small Windows (`App.tsx`, `ViewerHeaders.tsx`, `EntityEditor.tsx`, `WorldMap.tsx`) (2026-11-22)**:
   - Fixed frozen vertical scroll ("can't even scroll down"): removed inadvertent `overflow-hidden` on the manuscript wrapper (`App.tsx`), allowing the manuscript to expand to full content height and trigger `<main>`'s vertical scrollbar cleanly.
