@@ -2,6 +2,27 @@
   "version": 1,
   "bugs": [
     {
+      "id": "BUG-027",
+      "timestamp": "2026-11-22T18:18:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-22T18:19:00Z",
+      "error_message": "Selected entity text rendered pitch black/illegible on dark sidebar in Royal Codex, and entity multi-select checkboxes rendered as generic modern slate wireframe squares out of theme",
+      "file": "src/components/layout/Sidebar.tsx, src/components/ui/CodexCheckbox.tsx",
+      "root_cause": "1) EntityItem applied customStyle with color: entity.documentColor || undefined. When an entity had documentColor set to #000000 (common default from Fantasia Archive imports) or dark hexes, the inline style overrode Tailwind's active text class (text-[#fff8e7]), rendering active entity text black on dark brown leather gradient. 2) Checkbox elements rendered raw Lucide <Square> and <CheckSquare> with hardcoded slate-400 styles, clashing with medieval illuminated manuscript, nautical, and scholastic themes.",
+      "fix": "1) In Sidebar.tsx, set customStyle.color to undefined whenever isActive is true so the theme's radiant active text color always rules, and added isColorLegibleOnDark / isColorLegibleOnLight luminance checks so dark document colors never override inactive item text on dark sidebars. 2) Created dedicated CodexCheckbox component adapted across all 4 themes (Royal Codex velvet/gold aura, Grand Voyager nautical teal, Wiki scholastic rubricated crimson, Sovereign amber/slate) and wired it into Sidebar, OptionsView, and TrashView.",
+      "tags": [
+        "ui",
+        "theme",
+        "sidebar",
+        "typography",
+        "contrast",
+        "checkbox",
+        "royal-codex"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-22"
+    },
+    {
       "id": "BUG-026",
       "timestamp": "2026-11-22T17:35:00Z",
       "status": "resolved",

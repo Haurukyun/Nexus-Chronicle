@@ -6,11 +6,23 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-22 (17:50)
+> Last updated: 2026-11-22 (18:20)
 
 ---
 
 ## ✅ Done
+
+- **Fix: Restore Active Sidebar Contrast & Thematic Checkbox Architecture (`Sidebar.tsx`, `CodexCheckbox.tsx`, `OptionsView.tsx`, `TrashView.tsx`, BUG-027) (2026-11-22)**:
+  - Fixed active entity in sidebar displaying as black/illegible text: `customStyle` was applying `color: entity.documentColor` unconditionally, allowing dark/black hex values (common from Fantasia Archive defaults) to override the theme's active text color (`text-[#fff8e7]` on Royal Codex). Now `isActive` forces `color: undefined` so active styles always rule, and inactive custom colors are guarded by `isColorLegibleOnDark` / `isColorLegibleOnLight` luminance checks.
+  - Replaced generic Lucide slate `<Square>` / `<CheckSquare>` wireframe checkboxes with a custom `CodexCheckbox` component adapted across all 4 themes:
+    - Royal Codex: illuminated gold antique border, deep velvet crimson fill (`#611620`), glowing gold checkmark (`#fef08a`), and golden aura shadow.
+    - Grand Voyager: nautical deep teal fill (`#0f766e`), turquoise border (`#2dd4bf`), oceanic aura shadow.
+    - Wiki: scholastic rubricated ledger mark (`#8b0000`).
+    - Sovereign: gold/amber illuminated mark on slate.
+  - Replaced checkboxes in Sidebar tree items, Sidebar multi-select toggle, OptionsView blueprint matrix, and TrashView.
+  - Added unit test `src/components/ui/CodexCheckbox.test.tsx` (3 tests).
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (69/69 passing), `npm run build` (passing).
+  - Recorded in `.wolf/buglog.json` as `BUG-027`.
 
 - **Fix: Add Root ErrorBoundary and Diagnostic Crash Banner (`src/index.tsx`, BUG-026) (2026-11-22)**:
   - Fixed blue screen (#0f172a body background) when unhandled runtime exceptions occur during mount or render: wrapped root `<App />` in `<ErrorBoundary>` and added global window `error` and `unhandledrejection` listeners that render a visible diagnostic crash banner with stack trace and reload button.

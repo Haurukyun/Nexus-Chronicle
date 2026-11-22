@@ -15,6 +15,7 @@ import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { RealmSwitcher } from './RealmSwitcher';
 import { VectorFiligreeCorner } from '../ui/VectorFiligreeCorner';
+import { CodexCheckbox } from '../ui/CodexCheckbox';
 import { generateEntityMarkdown, downloadTextFile } from '../../utils/exportUtils';
 
 interface SidebarProps {
@@ -69,6 +70,36 @@ function getSafeParentId(entity: WorldEntity, allEntities: WorldEntity[]): strin
 let activeDraggedId: string | null = null;
 let activeDraggedType: EntityType | null = null;
 
+function isColorLegibleOnDark(color?: string): boolean {
+    if (!color || typeof color !== 'string') return false;
+    const lower = color.trim().toLowerCase();
+    if (lower === 'black' || lower === '#000' || lower === '#000000' || lower.startsWith('rgb(0')) return false;
+    if (!lower.startsWith('#')) return true;
+    const clean = lower.replace('#', '');
+    if (clean.length !== 6 && clean.length !== 3) return true;
+    const r = parseInt(clean.length === 3 ? clean[0] + clean[0] : clean.slice(0, 2), 16);
+    const g = parseInt(clean.length === 3 ? clean[1] + clean[1] : clean.slice(2, 4), 16);
+    const b = parseInt(clean.length === 3 ? clean[2] + clean[2] : clean.slice(4, 6), 16);
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return true;
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return lum >= 0.35; // Bright enough to read on dark sidebar
+}
+
+function isColorLegibleOnLight(color?: string): boolean {
+    if (!color || typeof color !== 'string') return false;
+    const lower = color.trim().toLowerCase();
+    if (lower === 'white' || lower === '#fff' || lower === '#ffffff' || lower.startsWith('rgb(255')) return false;
+    if (!lower.startsWith('#')) return true;
+    const clean = lower.replace('#', '');
+    if (clean.length !== 6 && clean.length !== 3) return true;
+    const r = parseInt(clean.length === 3 ? clean[0] + clean[0] : clean.slice(0, 2), 16);
+    const g = parseInt(clean.length === 3 ? clean[1] + clean[1] : clean.slice(2, 4), 16);
+    const b = parseInt(clean.length === 3 ? clean[2] + clean[2] : clean.slice(4, 6), 16);
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return true;
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return lum <= 0.65; // Dark enough to read on light parchment
+}
+
 const EntityItem: React.FC<{
     entity: WorldEntity;
     depth: number;
@@ -120,9 +151,14 @@ const EntityItem: React.FC<{
         return false;
     }, [draggedEntityId, entity.id, entity.type, allEntities]);
     
+    const isDarkSidebar = layoutMode !== 'wiki';
+    const isLegibleCustomColor = isDarkSidebar
+        ? isColorLegibleOnDark(entity.documentColor)
+        : isColorLegibleOnLight(entity.documentColor);
+
     const customStyle: React.CSSProperties = {
         paddingLeft: `${depth * 12 + 6}px`,
-        color: entity.documentColor || undefined,
+        color: isActive ? undefined : (isLegibleCustomColor ? entity.documentColor : undefined),
         backgroundColor: isActive ? undefined : (entity.documentBackgroundColor || undefined)
     };
 
@@ -288,14 +324,10 @@ const EntityItem: React.FC<{
                                 e.stopPropagation();
                                 onToggleSelect(entity.id);
                             }}
-                            className="p-1 text-slate-400 hover:text-amber-400 transition-colors shrink-0 cursor-pointer -mr-0.5"
+                            className="p-1 -mr-0.5 shrink-0 cursor-pointer flex items-center justify-center transition-transform active:scale-95"
                             title={isSelected ? "Deselect" : "Select"}
                         >
-                            {isSelected ? (
-                                <CheckSquare size={13} className="text-amber-400" />
-                            ) : (
-                                <Square size={13} />
-                            )}
+                            <CodexCheckbox checked={isSelected} size="md" />
                         </button>
                     )}
 
@@ -682,14 +714,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             }
                             setIsSelectMode(!isSelectMode);
                         }}
-                        className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                        className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-center ${
                             isSelectMode || selectedEntityIds.size > 0
-                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                                : 'bg-white/5 text-slate-400 hover:text-white border-white/5'
+                                ? (themeId === 'royal-codex')
+                                    ? 'bg-[#70121e]/40 text-[#fef08a] border-[#c8a96e]/70 shadow-[0_0_10px_rgba(200,169,110,0.3)]'
+                                    : (themeId === 'grand-voyager')
+                                    ? 'bg-[#0f766e]/30 text-[#2dd4bf] border-[#2dd4bf]/60 shadow-[0_0_10px_rgba(45,212,191,0.3)]'
+                                    : (layoutMode === 'wiki')
+                                    ? 'bg-[#b91c1c]/15 text-[#b91c1c] border-[#b91c1c]/50'
+                                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                : (themeId === 'royal-codex')
+                                    ? 'bg-[#180d07] text-[#c8a96e]/60 hover:text-[#fef08a] border-[#c8a96e]/20 hover:border-[#c8a96e]/40'
+                                    : (themeId === 'grand-voyager')
+                                    ? 'bg-[#081517] text-[#2dd4bf]/60 hover:text-[#2dd4bf] border-[#2dd4bf]/20 hover:border-[#2dd4bf]/40'
+                                    : (layoutMode === 'wiki')
+                                    ? 'bg-white/60 text-stone-600 hover:text-black border-[#d4c8af]'
+                                    : 'bg-white/5 text-slate-400 hover:text-white border-white/5'
                         }`}
                         title={isSelectMode ? "Exit multi-select mode" : "Multi-select entities (or Ctrl+click)"}
                     >
-                        <CheckSquare size={13} />
+                        <CodexCheckbox checked={isSelectMode || selectedEntityIds.size > 0} size="sm" />
                     </button>
                 </div>
             </div>

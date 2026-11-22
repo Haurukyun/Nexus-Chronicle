@@ -22,3 +22,4 @@ export * from './CommandPalette';
 export * from './ScratchpadDrawer';
 export * from './FantasyDatePicker';
 export * from './VectorFiligreeCorner';
+export * from './CodexCheckbox';

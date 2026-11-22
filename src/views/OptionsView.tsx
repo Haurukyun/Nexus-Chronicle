@@ -16,7 +16,7 @@ import {
     getActiveModules,
     REALM_PRESETS
 } from '../utils/realmConfig';
-import { FormInput } from '../components/ui';
+import { FormInput, CodexCheckbox } from '../components/ui';
 import { useWorldStore } from '../store/useWorldStore';
 import { useTheme } from '../theme';
 import { NewRealmModal } from '../components/ui/NewRealmModal';
@@ -884,11 +884,7 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                                                 }`}
                                                             >
                                                                 <div className="flex items-center gap-1.5 min-w-0">
-                                                                    {isActive ? (
-                                                                        <CheckSquare size={12} className={isLight ? 'text-[#70121e]' : 'text-amber-400'} />
-                                                                    ) : (
-                                                                        <Square size={12} className="opacity-40" />
-                                                                    )}
+                                                                    <CodexCheckbox checked={isActive} size="sm" />
                                                                     <span className="text-[10px] font-semibold truncate">
                                                                         {TYPE_LABELS[type]}
                                                                     </span>

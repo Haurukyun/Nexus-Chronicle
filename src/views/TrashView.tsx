@@ -3,7 +3,7 @@ import { RefreshCw, Trash, AlertTriangle, CheckSquare, Square, Filter, RotateCcw
 import { WorldEntity, WorldData, EntityType } from '../types';
 import { TYPE_LABELS } from '../constants';
 import { useTheme } from '../theme';
-import { ThemeCard } from '../components/ui';
+import { ThemeCard, CodexCheckbox } from '../components/ui';
 
 interface TrashViewProps {
     trash: WorldEntity[];
@@ -195,14 +195,12 @@ export const TrashView = ({ trash, setWorld }: TrashViewProps) => {
                             className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-white/10 transition-colors cursor-pointer text-slate-200"
                             title={allFilteredSelected ? "Deselect all" : "Select all in view"}
                         >
-                            {allFilteredSelected ? (
-                                <CheckSquare size={16} className="text-amber-400" />
-                            ) : someFilteredSelected ? (
-                                <div className="w-4 h-4 rounded border border-amber-400/60 flex items-center justify-center">
-                                    <div className="w-2 h-2 bg-amber-400 rounded-sm" />
+                            {someFilteredSelected && !allFilteredSelected ? (
+                                <div className="w-3.5 h-3.5 rounded-[3px] border border-amber-400/60 bg-amber-500/20 flex items-center justify-center">
+                                    <div className="w-1.5 h-1.5 bg-amber-400 rounded-sm" />
                                 </div>
                             ) : (
-                                <Square size={16} className="text-slate-400" />
+                                <CodexCheckbox checked={allFilteredSelected} size="md" />
                             )}
                             <span>{allFilteredSelected ? "Deselect All" : "Select All"}</span>
                         </button>
@@ -296,11 +294,7 @@ export const TrashView = ({ trash, setWorld }: TrashViewProps) => {
                                     onClick={() => toggleSelectItem(e.id)}
                                     className="text-slate-400 hover:text-amber-400 p-0.5 cursor-pointer transition-colors"
                                 >
-                                    {isSelected ? (
-                                        <CheckSquare size={18} className="text-amber-400" />
-                                    ) : (
-                                        <Square size={18} />
-                                    )}
+                                    <CodexCheckbox checked={isSelected} size="md" />
                                 </button>
 
                                 <div>
