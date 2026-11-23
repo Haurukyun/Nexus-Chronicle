@@ -6,13 +6,30 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-22 (19:35)
+> Last updated: 2026-11-23 (17:15)
 
 ---
 
 ## ✅ Done
 
-- **feat: Custom Suggestion Banks Engine (Step 3) (`types.ts`, `suggestionUtils.ts`, `OptionsView.tsx`, specifics editors) (2026-11-22)**:
+- **feat: Sidebar Group Ordering, Field Visibility Engine & Genre Templates (Approaches 2, 6, 7) (`sidebarConfig.ts`, `fieldVisibilityUtils.ts`, `genreTemplates.ts`, `Sidebar.tsx`, `EntityViewer.tsx`, `ViewerHeaders.tsx`, specifics, `OptionsView.tsx`) (2026-11-23)**:
+  - **Approach 2 (Sidebar Group Custom Reordering)**:
+    - Added `sidebarGroupOrder?: string[]` to `WorldData` in `types.ts`.
+    - Implemented `src/utils/sidebarConfig.ts` with `getOrderedHierarchy()`, `reorderGroups()`, and `moveGroup()`. Tested with 5/5 unit tests in `sidebarConfig.test.ts`.
+    - Added two-tab manager to `Sidebar.tsx` (Categories tab + Group Order tab with up/down controls and reset).
+  - **Approach 6 (Field-Level Visibility & Hide Empty Fields Engine)**:
+    - Added `hiddenFields?: Partial<Record<EntityType, string[]>>` and `hideEmptyFieldsDefault?: boolean` to `WorldData`; added `hideEmptyFieldsOverride?: boolean` to `BaseEntity`.
+    - Created `src/utils/fieldVisibilityUtils.ts` with `CONFIGURABLE_FIELDS`, `isFieldVisible()`, `toggleFieldHidden()`, `isFieldValueEmpty()`, and `shouldHideEmptyFields()`. Tested with 5/5 unit tests.
+    - Added per-entry `Eye`/`EyeOff` toggle button across all three viewer headers (`CodexHeader`, `WikiHeader`, `RoyalHeader`).
+    - Gated vital records, traits, features, and inventory sections in `CharacterSpecificsViewer.tsx`, `LocationSpecificsViewer.tsx`, and `OrganizationSpecificsViewer.tsx`.
+    - Gated editor fields in `CharacterSpecifics.tsx` using `showField()`.
+    - Added dedicated "Field Visibility per Entity Type" manager in `OptionsView.tsx`.
+  - **Approach 7 (Genre-Switchable Entity & Realm Templates)**:
+    - Added `genreTemplate?: 'fantasy' | 'scifi' | 'modern' | 'horror' | 'universal'` to `WorldData` and `entityTemplate?: 'inherit' | 'fantasy' | 'scifi' | 'modern' | 'horror'` to `BaseEntity`.
+    - Implemented `src/utils/genreTemplates.ts` with `GENRE_TEMPLATES` (universal, fantasy, scifi, modern, horror), field label overrides, suggested hidden field presets, and `getActiveGenreTemplate()`, `getGenreFieldLabel()`, and `applyGenreTemplateToWorld()`. Tested with 3/3 unit tests.
+    - Added interactive 5-tile "Genre-Switchable Realm Template" selector in `OptionsView.tsx` with one-click activation and optional recommended field visibility sync.
+    - Integrated adaptive genre labels across `CharacterSpecifics.tsx` and `CharacterSpecificsViewer.tsx` (e.g. Threat Level vs Combat Rating in Sci-Fi, Arcane Tier in Fantasy).
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (91/91 passing across 19 test files), `npm run build` (clean in 2.63s).
   - **Step 3 (Approach 3) — Custom Suggestion Banks**:
     - Added `customSuggestions?: Partial<Record<EntityType, string[]>>` to `WorldData` in `src/types.ts`.
     - Created `src/utils/suggestionUtils.ts` with `mergeSuggestions(builtIn, custom)` helper: prepends custom suggestions, deduplicates case-insensitively, and trims whitespace. Unit tested with 6/6 tests passing in `suggestionUtils.test.ts`.

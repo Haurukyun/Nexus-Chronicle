@@ -4,6 +4,8 @@ import { FieldRow, LinksDisplay } from '../../ui';
 import { useTheme } from '../../../theme';
 import { Crown, Scroll, Castle } from 'lucide-react';
 import { ViewerSectionCard } from '../ViewerSectionCard';
+import { useWorldStore } from '../../../store/useWorldStore';
+import { isFieldVisible, shouldHideEmptyFields } from '../../../utils/fieldVisibilityUtils';
 
 interface Props {
     entity: Organization;
@@ -80,6 +82,10 @@ export const OrganizationSpecificsViewer: React.FC<Props> = ({ entity, allEntiti
     const { t, themeId } = useTheme();
     const isRoyal = themeId === 'royal-codex';
 
+    const world = useWorldStore(state => state.world);
+    const hideEmpty = shouldHideEmptyFields(world, entity);
+    const show = (fieldKey: string) => isFieldVisible(world, 'organization', fieldKey);
+
     const hierarchyRanks = useMemo(() => parseTraitList(entity.hierarchyRanks), [entity.hierarchyRanks]);
     const coreTenets = useMemo(() => parseTraitList(entity.coreTenets), [entity.coreTenets]);
     const factionAssets = useMemo(() => parseTraitList(entity.factionAssets), [entity.factionAssets]);
@@ -114,19 +120,19 @@ export const OrganizationSpecificsViewer: React.FC<Props> = ({ entity, allEntiti
                 </div>
             </div>
 
-            {hierarchyRanks.length > 0 && (
+            {show('hierarchyRanks') && hierarchyRanks.length > 0 && (
                 <ViewerSectionCard id="section-hierarchy" title="Hierarchy & Leadership Ranks" badgeText={`${hierarchyRanks.length}`}>
                     <StructuredListDisplay items={hierarchyRanks} icon={Crown} isRoyal={isRoyal} />
                 </ViewerSectionCard>
             )}
 
-            {coreTenets.length > 0 && (
+            {show('coreTenets') && coreTenets.length > 0 && (
                 <ViewerSectionCard id="section-tenets" title="Core Tenets & Doctrine" badgeText={`${coreTenets.length}`}>
                     <StructuredListDisplay items={coreTenets} icon={Scroll} isRoyal={isRoyal} />
                 </ViewerSectionCard>
             )}
 
-            {factionAssets.length > 0 && (
+            {show('factionAssets') && factionAssets.length > 0 && (
                 <ViewerSectionCard id="section-assets" title="Faction Assets & Strongholds" badgeText={`${factionAssets.length}`}>
                     <StructuredListDisplay items={factionAssets} icon={Castle} isRoyal={isRoyal} />
                 </ViewerSectionCard>

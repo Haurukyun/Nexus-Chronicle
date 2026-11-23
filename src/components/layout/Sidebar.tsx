@@ -5,12 +5,13 @@ import {
     Footprints, Globe, Settings, BookMarked, Compass, 
     ChevronRight, ChevronDown, GripVertical, Folder,
     CheckSquare, Square, Tag, ArrowRightLeft, Download, X, Layers, Check, BookOpen,
-    Lightbulb, Swords, Sliders, Eye, EyeOff
+    Lightbulb, Swords, Sliders, Eye, EyeOff, ArrowUp, ArrowDown, RotateCcw
 } from 'lucide-react';
 import { isEntityDeceased, isEntityCategory, isEntityFinished, isEntityMinor, getEntityAliases } from '../../utils/documentModeUtils';
 import { EntityType, ThemeMode, WorldData, WorldEntity } from '../../types';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from '../../constants';
 import { isEntityTypeActive, getActiveEntityTypes, ALL_ENTITY_TYPES, REALM_PRESETS } from '../../utils/realmConfig';
+import { getOrderedHierarchy, reorderGroups, DEFAULT_GROUP_ORDER } from '../../utils/sidebarConfig';
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { RealmSwitcher } from './RealmSwitcher';
@@ -446,6 +447,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const [selectedEntityIds, setSelectedEntityIds] = useState<Set<string>>(new Set());
     const [isSelectMode, setIsSelectMode] = useState<boolean>(false);
     const [showCategoryManager, setShowCategoryManager] = useState<boolean>(false);
+    const [customizerTab, setCustomizerTab] = useState<'categories' | 'order'>('categories');
     const [showMoveModal, setShowMoveModal] = useState<boolean>(false);
     const [showTagModal, setShowTagModal] = useState<boolean>(false);
     const [tagInput, setTagInput] = useState<string>('');
@@ -464,6 +466,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const selectedEntities = useMemo(() => {
         return world.entities.filter(e => selectedEntityIds.has(e.id));
     }, [world.entities, selectedEntityIds]);
+
+    const orderedHierarchy = useMemo(() => {
+        return getOrderedHierarchy(world.sidebarGroupOrder);
+    }, [world.sidebarGroupOrder]);
 
     // Check if all selected entities share the same type
     const sharedSelectedType = useMemo(() => {
@@ -774,25 +780,62 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             : 'bg-slate-900 border-slate-700 text-slate-100 shadow-2xl'
                     }`}>
                         <div className="flex items-center justify-between pb-1.5 border-b border-current/15">
-                            <span className="text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 font-serif">
-                                <Sliders size={11} /> Visible Categories
-                            </span>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 bg-black/20 p-0.5 rounded-lg border border-current/10">
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        useWorldStore.setState(state => ({
-                                            world: { ...state.world, activeEntityTypes: [...ALL_ENTITY_TYPES] }
-                                        }));
-                                    }}
-                                    className="text-[9px] font-bold text-amber-500 hover:underline cursor-pointer"
+                                    onClick={() => setCustomizerTab('categories')}
+                                    className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                                        customizerTab === 'categories'
+                                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                            : 'opacity-50 hover:opacity-100'
+                                    }`}
                                 >
-                                    All (21)
+                                    Categories
                                 </button>
                                 <button
                                     type="button"
+                                    onClick={() => setCustomizerTab('order')}
+                                    className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                                        customizerTab === 'order'
+                                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                            : 'opacity-50 hover:opacity-100'
+                                    }`}
+                                >
+                                    Group Order
+                                </button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {customizerTab === 'categories' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            useWorldStore.setState(state => ({
+                                                world: { ...state.world, activeEntityTypes: [...ALL_ENTITY_TYPES] }
+                                            }));
+                                        }}
+                                        className="text-[9px] font-bold text-amber-500 hover:underline cursor-pointer"
+                                    >
+                                        All (21)
+                                    </button>
+                                )}
+                                {customizerTab === 'order' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            useWorldStore.setState(state => ({
+                                                world: { ...state.world, sidebarGroupOrder: [...DEFAULT_GROUP_ORDER] }
+                                            }));
+                                        }}
+                                        className="text-[9px] font-bold text-amber-500 hover:underline cursor-pointer flex items-center gap-0.5"
+                                        title="Reset to default order"
+                                    >
+                                        <RotateCcw size={10} /> Reset
+                                    </button>
+                                )}
+                                <button
+                                    type="button"
                                     onClick={() => setShowCategoryManager(false)}
-                                    className="opacity-50 hover:opacity-100 cursor-pointer"
+                                    className="opacity-50 hover:opacity-100 cursor-pointer ml-1"
                                     title="Close"
                                 >
                                     <X size={11} />
@@ -800,72 +843,146 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             </div>
                         </div>
 
-                        {/* Preset Quick-Picks */}
-                        <div className="space-y-1">
-                            <span className="text-[8px] font-mono opacity-50 uppercase tracking-widest block">Quick Presets</span>
-                            <div className="grid grid-cols-3 gap-1">
-                                {REALM_PRESETS.slice(0, 6).map(preset => (
-                                    <button
-                                        key={preset.id}
-                                        type="button"
-                                        onClick={() => {
-                                            useWorldStore.setState(state => ({
-                                                world: {
-                                                    ...state.world,
-                                                    activeEntityTypes: [...preset.activeEntityTypes],
-                                                    activeModules: { ...preset.activeModules }
-                                                }
-                                            }));
-                                        }}
-                                        className="px-1.5 py-1 rounded border text-[9px] font-semibold text-center truncate hover:opacity-100 transition-all cursor-pointer bg-white/5 border-current/10 hover:border-amber-400/50"
-                                        title={preset.description}
-                                    >
-                                        <span className="mr-0.5">{preset.icon}</span> {preset.label.split(' ')[0]}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        {customizerTab === 'categories' ? (
+                            <>
+                                {/* Preset Quick-Picks */}
+                                <div className="space-y-1">
+                                    <span className="text-[8px] font-mono opacity-50 uppercase tracking-widest block">Quick Presets</span>
+                                    <div className="grid grid-cols-3 gap-1">
+                                        {REALM_PRESETS.slice(0, 6).map(preset => (
+                                            <button
+                                                key={preset.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    useWorldStore.setState(state => ({
+                                                        world: {
+                                                            ...state.world,
+                                                            activeEntityTypes: [...preset.activeEntityTypes],
+                                                            activeModules: { ...preset.activeModules }
+                                                        }
+                                                    }));
+                                                }}
+                                                className="px-1.5 py-1 rounded border text-[9px] font-semibold text-center truncate hover:opacity-100 transition-all cursor-pointer bg-white/5 border-current/10 hover:border-amber-400/50"
+                                                title={preset.description}
+                                            >
+                                                <span className="mr-0.5">{preset.icon}</span> {preset.label.split(' ')[0]}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
 
-                        {/* 4 Category Groups with Checkboxes */}
-                        <div className="space-y-2 pt-1 border-t border-current/10">
-                            {HIERARCHY_CONFIG.map(group => {
-                                const currentActive = getActiveEntityTypes(world);
-                                return (
-                                    <div key={group.id} className="space-y-1">
-                                        <div className="flex items-center justify-between text-[8px] font-mono font-black uppercase opacity-60">
-                                            <span>{group.label}</span>
-                                        </div>
-                                        <div className="grid grid-cols-1 gap-0.5">
-                                            {group.types.map(type => {
-                                                const isActive = currentActive.includes(type);
-                                                return (
+                                {/* Category Groups with Checkboxes in Ordered Sequence */}
+                                <div className="space-y-2 pt-1 border-t border-current/10">
+                                    {orderedHierarchy.map(group => {
+                                        const currentActive = getActiveEntityTypes(world);
+                                        return (
+                                            <div key={group.id} className="space-y-1">
+                                                <div className="flex items-center justify-between text-[8px] font-mono font-black uppercase opacity-60">
+                                                    <span>{group.label}</span>
+                                                </div>
+                                                <div className="grid grid-cols-1 gap-0.5">
+                                                    {group.types.map(type => {
+                                                        const isActive = currentActive.includes(type);
+                                                        return (
+                                                            <button
+                                                                key={type}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const next = isActive
+                                                                        ? currentActive.filter(t => t !== type)
+                                                                        : [...currentActive, type];
+                                                                    useWorldStore.setState(state => ({
+                                                                        world: { ...state.world, activeEntityTypes: next }
+                                                                    }));
+                                                                }}
+                                                                className={`flex items-center justify-between px-2 py-1 rounded text-[10px] text-left transition-all cursor-pointer ${
+                                                                    isActive
+                                                                        ? 'bg-current/10 font-bold opacity-100'
+                                                                        : 'opacity-40 hover:opacity-75'
+                                                                }`}
+                                                            >
+                                                                <span className="truncate">{TYPE_LABELS[type]}</span>
+                                                                <CodexCheckbox checked={isActive} size="sm" />
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </>
+                        ) : (
+                            /* Group Order Tab */
+                            <div className="space-y-2">
+                                <span className="text-[8px] font-mono opacity-50 uppercase tracking-widest block">
+                                    Sidebar Group Display Order
+                                </span>
+                                <div className="space-y-1.5">
+                                    {orderedHierarchy.map((group, idx) => {
+                                        const isFirst = idx === 0;
+                                        const isLast = idx === orderedHierarchy.length - 1;
+                                        const activeCount = group.types.filter(t => isEntityTypeActive(world, t)).length;
+
+                                        return (
+                                            <div
+                                                key={group.id}
+                                                className="flex items-center justify-between p-2 rounded-xl bg-black/20 border border-current/10 hover:border-amber-400/30 transition-all"
+                                            >
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    <span className="text-[10px] font-mono font-bold opacity-40 w-3">
+                                                        {idx + 1}
+                                                    </span>
+                                                    <group.icon size={13} className="text-amber-400 shrink-0" />
+                                                    <div className="min-w-0">
+                                                        <div className="text-xs font-serif font-bold truncate">
+                                                            {group.label}
+                                                        </div>
+                                                        <div className="text-[9px] opacity-50 truncate">
+                                                            {activeCount}/{group.types.length} active types
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-1 shrink-0">
                                                     <button
-                                                        key={type}
                                                         type="button"
+                                                        disabled={isFirst}
                                                         onClick={() => {
-                                                            const next = isActive
-                                                                ? currentActive.filter(t => t !== type)
-                                                                : [...currentActive, type];
+                                                            const newOrder = reorderGroups(world.sidebarGroupOrder, group.id, 'up');
                                                             useWorldStore.setState(state => ({
-                                                                world: { ...state.world, activeEntityTypes: next }
+                                                                world: { ...state.world, sidebarGroupOrder: newOrder }
                                                             }));
                                                         }}
-                                                        className={`flex items-center justify-between px-2 py-1 rounded text-[10px] text-left transition-all cursor-pointer ${
-                                                            isActive
-                                                                ? 'bg-current/10 font-bold opacity-100'
-                                                                : 'opacity-40 hover:opacity-75'
+                                                        className={`p-1 rounded hover:bg-white/10 transition-colors ${
+                                                            isFirst ? 'opacity-20 cursor-not-allowed' : 'opacity-70 hover:opacity-100 cursor-pointer'
                                                         }`}
+                                                        title="Move group up"
                                                     >
-                                                        <span className="truncate">{TYPE_LABELS[type]}</span>
-                                                        <CodexCheckbox checked={isActive} size="sm" />
+                                                        <ArrowUp size={12} />
                                                     </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                                    <button
+                                                        type="button"
+                                                        disabled={isLast}
+                                                        onClick={() => {
+                                                            const newOrder = reorderGroups(world.sidebarGroupOrder, group.id, 'down');
+                                                            useWorldStore.setState(state => ({
+                                                                world: { ...state.world, sidebarGroupOrder: newOrder }
+                                                            }));
+                                                        }}
+                                                        className={`p-1 rounded hover:bg-white/10 transition-colors ${
+                                                            isLast ? 'opacity-20 cursor-not-allowed' : 'opacity-70 hover:opacity-100 cursor-pointer'
+                                                        }`}
+                                                        title="Move group down"
+                                                    >
+                                                        <ArrowDown size={12} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -886,7 +1003,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
                 className="flex-1 overflow-y-auto p-3 custom-scrollbar select-none"
             >
-                {HIERARCHY_CONFIG.map(group => {
+                {orderedHierarchy.map(group => {
                     const activeGroupTypes = group.types.filter(type => isEntityTypeActive(world, type));
                     if (activeGroupTypes.length === 0) return null;
 

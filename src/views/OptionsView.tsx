@@ -1,9 +1,9 @@
-import React, { useMemo, useState, useRef } from 'react';
+﻿import React, { useMemo, useState, useRef } from 'react';
 import {
     Palette, Skull, Globe, Layers, Plus, Copy,
     Download, Upload, Trash2, Edit2, Check, Sparkles, AlertTriangle, ArrowRight, BookOpen,
     Radio, FileArchive, Zap, Heart, FileText, FileCode2, ChevronDown,
-    Sliders, CheckSquare, Square, Shield, Swords, Cpu, MapPin, Tag, X, Lightbulb
+    Sliders, CheckSquare, Square, Shield, Swords, Cpu, MapPin, Tag, X, Lightbulb, Eye, EyeOff
 } from 'lucide-react';
 import { WorldData, EntityType, WorldPhase, RealmModuleConfig } from '../types';
 import { TYPE_LABELS, HIERARCHY_CONFIG } from '../constants';
@@ -29,6 +29,8 @@ import { pruneOrphanAssets, extractActiveAssetUris } from '../utils/assetStore';
 import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../utils/exportUtils';
 import { importFantasiaArchiveProject, FaInputFile } from '../utils/fantasiaArchiveMigration';
 import { reconcileAllBidirectionalRelations } from '../utils/bidirectionalSync';
+import { CONFIGURABLE_FIELDS, toggleFieldHidden } from '../utils/fieldVisibilityUtils';
+import { GENRE_TEMPLATE_LIST, applyGenreTemplateToWorld, getActiveGenreTemplate, GenreTemplateId } from '../utils/genreTemplates';
 import { AssetVaultModal } from '../components/vault/AssetVaultModal';
 
 interface OptionsViewProps {
@@ -94,6 +96,12 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
     // Custom Suggestion Banks state (Approach 3)
     const [selectedSuggestionType, setSelectedSuggestionType] = useState<EntityType>('character');
     const [newSuggestionInput, setNewSuggestionInput] = useState('');
+
+    // Field Visibility Config state (Approach 6)
+    const [selectedFieldType, setSelectedFieldType] = useState<EntityType>('character');
+
+    // Genre Template Selector state (Approach 7)
+    const [applyGenreFieldDefaults, setApplyGenreFieldDefaults] = useState(false);
 
     const handleAddSuggestion = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -979,6 +987,229 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                                 </button>
                             </div>
 
+                            {/* Field Visibility Config (Approach 6) */}
+                            {(() => {
+                                const fields = CONFIGURABLE_FIELDS[selectedFieldType] || [];
+                                const hiddenForType = world.hiddenFields?.[selectedFieldType] || [];
+                                const fieldTypePills: EntityType[] = Object.keys(CONFIGURABLE_FIELDS) as EntityType[];
+                                return (
+                                    <div className={`p-5 rounded-2xl border space-y-4 ${
+                                        isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'
+                                    }`}>
+                                        <div className="flex items-center gap-2">
+                                            <Eye size={14} className={isLight ? 'text-[#70121e]' : 'text-amber-400'} />
+                                            <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-[#70121e]' : 'text-amber-300'}`}>
+                                                Field Visibility per Entity Type
+                                            </span>
+                                            <span className="text-[9px] opacity-40 font-mono">Approach 6</span>
+                                        </div>
+                                        <p className="text-[11px] opacity-60 font-serif italic">
+                                            Hide specific fields globally across all entities of the selected type. Hidden fields disappear from both the editor and viewer.
+                                        </p>
+                                        {/* Entity type pills */}
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {fieldTypePills.map(ft => (
+                                                <button
+                                                    key={ft}
+                                                    type="button"
+                                                    onClick={() => setSelectedFieldType(ft)}
+                                                    className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all cursor-pointer border ${
+                                                        selectedFieldType === ft
+                                                            ? isLight
+                                                                ? 'bg-[#70121e] text-[#fff8e7] border-[#c8a96e]'
+                                                                : 'bg-amber-500/20 text-amber-300 border-amber-500/60'
+                                                            : isLight
+                                                            ? 'bg-black/5 text-[#2b1810]/60 border-black/15 hover:bg-black/10'
+                                                            : 'bg-white/5 text-slate-400 border-white/8 hover:bg-white/10'
+                                                    }`}
+                                                >
+                                                    {ft}
+                                                    {(world.hiddenFields?.[ft]?.length ?? 0) > 0 && (
+                                                        <span className={`ml-1 text-[8px] font-mono ${isLight ? 'text-[#c8a96e]' : 'text-amber-500'}`}>
+                                                            {world.hiddenFields![ft]!.length}
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {/* Field list */}
+                                        {fields.length > 0 ? (
+                                            <div className="space-y-1.5">
+                                                {fields.map(field => {
+                                                    const isHidden = hiddenForType.includes(field.key);
+                                                    return (
+                                                        <div
+                                                            key={field.key}
+                                                            className={`flex items-center justify-between gap-3 px-3 py-2 rounded-lg border transition-all ${
+                                                                isHidden
+                                                                    ? isLight
+                                                                        ? 'bg-[#f5e8d0]/60 border-[#c8a96e]/20 opacity-60'
+                                                                        : 'bg-white/3 border-white/5 opacity-50'
+                                                                    : isLight
+                                                                    ? 'bg-white/50 border-[#c8a96e]/20'
+                                                                    : 'bg-white/5 border-white/8'
+                                                            }`}
+                                                        >
+                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                {isHidden
+                                                                    ? <EyeOff size={12} className="shrink-0 opacity-50" />
+                                                                    : <Eye size={12} className={`shrink-0 ${isLight ? 'text-[#70121e]' : 'text-amber-400'}`} />
+                                                                }
+                                                                <span className={`text-[11px] font-serif truncate ${isHidden ? 'line-through opacity-50' : ''}`}>
+                                                                    {field.label}
+                                                                </span>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const newHiddenFields = toggleFieldHidden(world.hiddenFields, selectedFieldType, field.key);
+                                                                    setWorld({ ...world, hiddenFields: newHiddenFields });
+                                                                }}
+                                                                className={`shrink-0 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border transition-all cursor-pointer ${
+                                                                    isHidden
+                                                                        ? isLight
+                                                                            ? 'bg-[#70121e]/10 text-[#70121e] border-[#70121e]/30 hover:bg-[#70121e]/20'
+                                                                            : 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                                                                        : isLight
+                                                                        ? 'bg-black/5 text-[#2b1810]/60 border-black/15 hover:bg-red-50 hover:text-red-700 hover:border-red-300'
+                                                                        : 'bg-white/5 text-slate-400 border-white/8 hover:bg-red-900/20 hover:text-red-400 hover:border-red-700/40'
+                                                                }`}
+                                                            >
+                                                                {isHidden ? 'Show' : 'Hide'}
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                })}
+                                                {hiddenForType.length > 0 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setWorld({ ...world, hiddenFields: { ...world.hiddenFields, [selectedFieldType]: [] } })}
+                                                        className="text-[9px] font-mono text-red-400 hover:text-red-300 transition-colors uppercase tracking-wider cursor-pointer mt-1"
+                                                    >
+                                                        Reset {selectedFieldType} ({hiddenForType.length} hidden)
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <p className="text-[11px] opacity-40 italic text-center py-2">No configurable fields for this type.</p>
+                                        )}
+                                    </div>
+                                );
+                            })()}
+                            {/* Genre-Switchable Entity Templates (Approach 7) */}
+                            {(() => {
+                                const currentGenre = getActiveGenreTemplate(world);
+                                const getGenreIcon = (iconName: string) => {
+                                    switch (iconName) {
+                                        case 'Sparkles': return Sparkles;
+                                        case 'Cpu': return Cpu;
+                                        case 'MapPin': return MapPin;
+                                        case 'Skull': return Skull;
+                                        default: return Globe;
+                                    }
+                                };
+                                return (
+                                    <div className={`p-5 rounded-2xl border space-y-4 ${
+                                        isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'
+                                    }`}>
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <Globe size={14} className={isLight ? 'text-[#70121e]' : 'text-amber-400'} />
+                                                    <span className={`text-[10px] font-black uppercase tracking-wider ${isLight ? 'text-[#70121e]' : 'text-amber-300'}`}>
+                                                        Genre-Switchable Realm Template
+                                                    </span>
+                                                    <span className="text-[9px] opacity-40 font-mono">Approach 7</span>
+                                                </div>
+                                                <p className="text-[11px] opacity-60 font-serif italic mt-1">
+                                                    Dynamically adapts entity terminology, threat ratings, equipment classifications, and recommended field visibility to match your setting's tone without modifying your underlying data.
+                                                </p>
+                                            </div>
+                                            <span className={`px-2.5 py-1 rounded-full text-[9px] font-mono uppercase tracking-wider shrink-0 border ${
+                                                isLight ? 'bg-[#70121e]/10 text-[#70121e] border-[#70121e]/25' : 'bg-amber-400/10 text-amber-300 border-amber-400/25'
+                                            }`}>
+                                                Active: {currentGenre}
+                                            </span>
+                                        </div>
+
+                                        {/* Genre Template Cards */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                                            {GENRE_TEMPLATE_LIST.map(tmpl => {
+                                                const isSelected = currentGenre === tmpl.id;
+                                                const IconComponent = getGenreIcon(tmpl.icon);
+                                                return (
+                                                    <div
+                                                        key={tmpl.id}
+                                                        onClick={() => {
+                                                            const nextWorld = applyGenreTemplateToWorld(world, tmpl.id, applyGenreFieldDefaults);
+                                                            setWorld(nextWorld);
+                                                        }}
+                                                        className={`p-3.5 rounded-xl border flex flex-col justify-between transition-all cursor-pointer select-none text-left ${
+                                                            isSelected
+                                                                ? isLight
+                                                                    ? 'bg-[#f7efe0] border-[#70121e] shadow-md ring-1 ring-[#70121e]/30'
+                                                                    : 'bg-amber-500/15 border-amber-500 shadow-md ring-1 ring-amber-500/40'
+                                                                : isLight
+                                                                ? 'bg-white/40 border-[#c8a96e]/20 hover:bg-white/70 hover:border-[#c8a96e]/40'
+                                                                : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/15'
+                                                        }`}
+                                                    >
+                                                        <div className="space-y-1.5">
+                                                            <div className="flex items-center justify-between">
+                                                                <div className={`p-1.5 rounded-lg ${
+                                                                    isSelected
+                                                                        ? isLight ? 'bg-[#70121e] text-[#fff8e7]' : 'bg-amber-400 text-black'
+                                                                        : isLight ? 'bg-black/5 text-[#70121e]' : 'bg-white/10 text-slate-300'
+                                                                }`}>
+                                                                    <IconComponent size={14} />
+                                                                </div>
+                                                                {isSelected && (
+                                                                    <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                                                                        isLight ? 'bg-[#70121e]/15 text-[#70121e]' : 'bg-amber-400/20 text-amber-300'
+                                                                    }`}>
+                                                                        Active
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="font-bold text-xs leading-snug">{tmpl.label}</div>
+                                                            <div className="text-[10px] font-serif italic opacity-75">{tmpl.tagline}</div>
+                                                            <p className="text-[10px] opacity-60 leading-relaxed line-clamp-3">
+                                                                {tmpl.description}
+                                                            </p>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            className={`mt-3 w-full py-1 rounded text-[9px] font-black uppercase tracking-wider transition-all border ${
+                                                                isSelected
+                                                                    ? isLight
+                                                                        ? 'bg-[#70121e] text-[#fff8e7] border-[#70121e]'
+                                                                        : 'bg-amber-400 text-black border-amber-400 font-bold'
+                                                                    : isLight
+                                                                    ? 'bg-black/5 text-[#2b1810]/70 border-black/10 hover:bg-black/10'
+                                                                    : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10 hover:text-white'
+                                                            }`}
+                                                        >
+                                                            {isSelected ? '✓ Current Genre' : 'Select'}
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {/* Optional field auto-hide sync checkbox */}
+                                        <div className="flex items-center gap-2 pt-1">
+                                            <CodexCheckbox
+                                                checked={applyGenreFieldDefaults}
+                                                onChange={setApplyGenreFieldDefaults}
+                                                size="sm"
+                                            />
+                                            <span className="text-[11px] font-serif opacity-80 cursor-pointer" onClick={() => setApplyGenreFieldDefaults(!applyGenreFieldDefaults)}>
+                                                Auto-apply recommended field visibility defaults when switching genre (e.g. hides cybernetics in fantasy, hides magic in sci-fi).
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
                             {/* Custom Suggestion Banks (Approach 3) */}
                             <div className={`p-5 rounded-2xl border space-y-4 ${
                                 isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'

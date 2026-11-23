@@ -3,6 +3,8 @@ import { Character, WorldEntity } from '../../../types';
 import { FieldRow, LinksDisplay } from '../../ui';
 import { ViewerSectionCard } from '../ViewerSectionCard';
 import { useWorldStore } from '../../../store/useWorldStore';
+import { shouldHideEmptyFields, isFieldVisible, isFieldValueEmpty } from '../../../utils/fieldVisibilityUtils';
+import { getActiveGenreTemplate, getGenreFieldLabel } from '../../../utils/genreTemplates';
 
 interface Props {
     entity: Character;
@@ -68,6 +70,11 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
         return Array.from(set);
     }, [entity.childOfCharacter, entity.childrenIds, entity.id, allEntities, backlinks]);
 
+    const world = useWorldStore(state => state.world);
+    const hideEmpty = shouldHideEmptyFields(world, entity);
+    const show = (fieldKey: string) => isFieldVisible(world, 'character', fieldKey);
+    const genre = getActiveGenreTemplate(world, entity);
+
     return (
         <div className="space-y-6">
             <ViewerSectionCard id="section-vitals" title="Vital Records">
@@ -81,37 +88,87 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                             <span className="font-bold text-[#2b1810] text-sm">Status:</span>
                             <span className="text-[#3d271d] text-sm font-medium">{isDeceased ? 'Deceased' : 'Living'}</span>
                         </div>
-                        <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                            <span className="font-bold text-[#2b1810] text-sm">Species:</span>
-                            {renderEntityLinks(entity.pairedRace, (entity as any).species)}
-                        </div>
-                        <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                            <span className="font-bold text-[#2b1810] text-sm">Occupation:</span>
-                            {renderEntityLinks(entity.pairedProfession, (entity as any).occupation)}
-                        </div>
-                        <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                            <span className="font-bold text-[#2b1810] text-sm">Age:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{entity.age || '—'}</span>
-                        </div>
-                        <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                            <span className="font-bold text-[#2b1810] text-sm">Origin:</span>
-                            {renderEntityLinks(entity.pairedOriginLocationNew, (entity as any).placeOfOrigin)}
-                        </div>
-                        <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                            <span className="font-bold text-[#2b1810] text-sm">Residence:</span>
-                            {renderEntityLinks(entity.pairedCurrentLocationNew, (entity as any).placeOfResidence)}
-                        </div>
-                        <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                            <span className="font-bold text-[#2b1810] text-sm">Birth:</span>
-                            <span className="text-[#3d271d] text-sm font-medium">{entity.birthDate || '—'}</span>
-                        </div>
-                        {isDeceased && (
+                        {show('titles') && (!hideEmpty || !isFieldValueEmpty(entity.titles)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Titles:</span>
+                                <span className="text-[#3d271d] text-sm font-medium">{entity.titles || '—'}</span>
+                            </div>
+                        )}
+                        {show('species') && (!hideEmpty || !isFieldValueEmpty(entity.pairedRace)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">{getGenreFieldLabel(genre, 'pairedRace', 'Species')}:</span>
+                                {renderEntityLinks(entity.pairedRace, (entity as any).species)}
+                            </div>
+                        )}
+                        {show('occupation') && (!hideEmpty || !isFieldValueEmpty(entity.pairedProfession)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">{getGenreFieldLabel(genre, 'pairedProfession', 'Occupation')}:</span>
+                                {renderEntityLinks(entity.pairedProfession, (entity as any).occupation)}
+                            </div>
+                        )}
+                        {show('sex') && (!hideEmpty || !isFieldValueEmpty(entity.sex)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Sex:</span>
+                                <span className="text-[#3d271d] text-sm font-medium">{entity.sex || '—'}</span>
+                            </div>
+                        )}
+                        {show('age') && (!hideEmpty || !isFieldValueEmpty(entity.age)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Age:</span>
+                                <span className="text-[#3d271d] text-sm font-medium">{entity.age || '—'}</span>
+                            </div>
+                        )}
+                        {show('height') && (!hideEmpty || !isFieldValueEmpty(entity.height)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Height:</span>
+                                <span className="text-[#3d271d] text-sm font-medium">{entity.height || '—'}</span>
+                            </div>
+                        )}
+                        {show('weight') && (!hideEmpty || !isFieldValueEmpty(entity.weight)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Weight:</span>
+                                <span className="text-[#3d271d] text-sm font-medium">{entity.weight || '—'}</span>
+                            </div>
+                        )}
+                        {show('ethnicity') && (!hideEmpty || !isFieldValueEmpty(entity.ethnicity)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Ethnicity:</span>
+                                <span className="text-[#3d271d] text-sm font-medium">{entity.ethnicity || '—'}</span>
+                            </div>
+                        )}
+                        {show('powerLevel') && (!hideEmpty || !isFieldValueEmpty(entity.powerLevel)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">{getGenreFieldLabel(genre, 'powerLevel', 'Combat Rating')}:</span>
+                                <span className="text-[#70121e] font-bold text-sm">{entity.powerLevel || '—'}</span>
+                            </div>
+                        )}
+                        {show('origin') && (!hideEmpty || !isFieldValueEmpty(entity.pairedOriginLocationNew)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Origin:</span>
+                                {renderEntityLinks(entity.pairedOriginLocationNew, (entity as any).placeOfOrigin)}
+                            </div>
+                        )}
+                        {show('residence') && (!hideEmpty || !isFieldValueEmpty(entity.pairedCurrentLocationNew)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Residence:</span>
+                                {renderEntityLinks(entity.pairedCurrentLocationNew, (entity as any).placeOfResidence)}
+                            </div>
+                        )}
+                        {show('birthDate') && (!hideEmpty || !isFieldValueEmpty(entity.birthDate)) && (
+                            <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                <span className="font-bold text-[#2b1810] text-sm">Birth:</span>
+                                <span className="text-[#3d271d] text-sm font-medium">{entity.birthDate || '—'}</span>
+                            </div>
+                        )}
+                        {show('demise') && isDeceased && (
                             <>
-                                <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
-                                    <span className="font-bold text-[#2b1810] text-sm">Death:</span>
-                                    <span className="text-[#3d271d] text-sm font-medium">{entity.deathDate || (entity as any).dateOfDeath || '—'}</span>
-                                </div>
-                                {(entity.pairedDemiseLocationNew && entity.pairedDemiseLocationNew.length > 0) && (
+                                {(!hideEmpty || !isFieldValueEmpty(entity.deathDate || (entity as any).dateOfDeath)) && (
+                                    <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
+                                        <span className="font-bold text-[#2b1810] text-sm">Death:</span>
+                                        <span className="text-[#3d271d] text-sm font-medium">{entity.deathDate || (entity as any).dateOfDeath || '—'}</span>
+                                    </div>
+                                )}
+                                {(!hideEmpty || !isFieldValueEmpty(entity.pairedDemiseLocationNew)) && (entity.pairedDemiseLocationNew && entity.pairedDemiseLocationNew.length > 0) && (
                                     <div className="flex items-baseline justify-between border-b border-[#c8a96e]/20 pb-1.5">
                                         <span className="font-bold text-[#2b1810] text-sm">Place of Demise:</span>
                                         {renderEntityLinks(entity.pairedDemiseLocationNew)}
@@ -122,28 +179,38 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
-                        <FieldRow label="Titles" value={entity.titles} />
-                        <FieldRow label="Sex" value={entity.sex} />
-                        <FieldRow label="Age" value={entity.age} />
-                        <FieldRow label="Height" value={entity.height} />
-                        <FieldRow label="Weight" value={entity.weight} />
-                        <FieldRow label="Ethnicity" value={entity.ethnicity} />
-                        <FieldRow label="Combat Rating" value={entity.powerLevel} />
-                        <FieldRow label="Birth" value={entity.birthDate} />
-                        <FieldRow label="Death" value={entity.deathDate} />
+                        {show('titles') && (!hideEmpty || !isFieldValueEmpty(entity.titles)) && <FieldRow label="Titles" value={entity.titles} />}
+                        {show('sex') && (!hideEmpty || !isFieldValueEmpty(entity.sex)) && <FieldRow label="Sex" value={entity.sex} />}
+                        {show('age') && (!hideEmpty || !isFieldValueEmpty(entity.age)) && <FieldRow label="Age" value={entity.age} />}
+                        {show('height') && (!hideEmpty || !isFieldValueEmpty(entity.height)) && <FieldRow label="Height" value={entity.height} />}
+                        {show('weight') && (!hideEmpty || !isFieldValueEmpty(entity.weight)) && <FieldRow label="Weight" value={entity.weight} />}
+                        {show('ethnicity') && (!hideEmpty || !isFieldValueEmpty(entity.ethnicity)) && <FieldRow label="Ethnicity" value={entity.ethnicity} />}
+                        {show('powerLevel') && (!hideEmpty || !isFieldValueEmpty(entity.powerLevel)) && <FieldRow label={getGenreFieldLabel(genre, 'powerLevel', 'Combat Rating')} value={entity.powerLevel} />}
+                        {show('birthDate') && (!hideEmpty || !isFieldValueEmpty(entity.birthDate)) && <FieldRow label="Birth" value={entity.birthDate} />}
+                        {show('demise') && (!hideEmpty || !isFieldValueEmpty(entity.deathDate)) && <FieldRow label="Death" value={entity.deathDate} />}
                         <div className="col-span-full mt-2 space-y-3 border-t border-current/10 pt-3">
-                            <LinksDisplay label="Species/Races" ids={entity.pairedRace || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Occupation/Class" ids={entity.pairedProfession || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Place of Residence" ids={entity.pairedCurrentLocationNew || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Place of Origin" ids={entity.pairedOriginLocationNew || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Place of Demise" ids={entity.pairedDemiseLocationNew || []} all={allEntities} onNav={onNavigate} />
+                            {show('species') && (!hideEmpty || !isFieldValueEmpty(entity.pairedRace)) && (
+                                <LinksDisplay label={getGenreFieldLabel(genre, 'pairedRace', 'Species/Races')} ids={entity.pairedRace || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('occupation') && (!hideEmpty || !isFieldValueEmpty(entity.pairedProfession)) && (
+                                <LinksDisplay label={getGenreFieldLabel(genre, 'pairedProfession', 'Occupation/Class')} ids={entity.pairedProfession || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('residence') && (!hideEmpty || !isFieldValueEmpty(entity.pairedCurrentLocationNew)) && (
+                                <LinksDisplay label="Place of Residence" ids={entity.pairedCurrentLocationNew || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('origin') && (!hideEmpty || !isFieldValueEmpty(entity.pairedOriginLocationNew)) && (
+                                <LinksDisplay label="Place of Origin" ids={entity.pairedOriginLocationNew || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('demise') && (!hideEmpty || !isFieldValueEmpty(entity.pairedDemiseLocationNew)) && (
+                                <LinksDisplay label="Place of Demise" ids={entity.pairedDemiseLocationNew || []} all={allEntities} onNav={onNavigate} />
+                            )}
                         </div>
                     </div>
                 )}
             </ViewerSectionCard>
 
 
-            {entity.personalityTraits && (
+            {show('personalityTraits') && entity.personalityTraits && (!hideEmpty || !isFieldValueEmpty(entity.personalityTraits)) && (
                 <ViewerSectionCard id="section-traits" title="Traits & Characteristics">
                     {(() => {
                         try {
@@ -177,7 +244,7 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                 </ViewerSectionCard>
             )}
 
-            {entity.traits && (
+            {show('traits') && entity.traits && (!hideEmpty || !isFieldValueEmpty(entity.traits)) && (
                 <ViewerSectionCard id="section-features" title="Unique / Unusual Features">
                     {(() => {
                         try {
@@ -215,56 +282,82 @@ export const CharacterSpecificsViewer: React.FC<Props> = ({ entity, allEntities,
                 {isRoyal ? (
                     <div className="space-y-4 font-serif">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 lg:gap-x-8 gap-y-3 py-1 min-w-0">
-                            <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
-                                <span className="text-sm font-bold text-[#2b1810]">Equipment / Items:</span>
-                                <span className="text-sm text-[#3d271d]">{entity.possessedItems || '—'}</span>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
-                                <span className="text-sm font-bold text-[#2b1810]">Wealth / Currencies:</span>
-                                <span className="text-sm text-[#3d271d]">{entity.possessedCurrencies || '—'}</span>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
-                                <span className="text-sm font-bold text-[#2b1810]">Known Skills:</span>
-                                <span className="text-sm text-[#3d271d]">{entity.knownSkills || '—'}</span>
-                            </div>
-                            <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
-                                <span className="text-sm font-bold text-[#2b1810]">Known Spells:</span>
-                                <span className="text-sm text-[#3d271d]">{entity.knownSpells || '—'}</span>
-                            </div>
+                            {show('possessedItems') && (!hideEmpty || !isFieldValueEmpty(entity.possessedItems)) && (
+                                <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
+                                    <span className="text-sm font-bold text-[#2b1810]">{getGenreFieldLabel(genre, 'possessedItems', 'Equipment / Items')}:</span>
+                                    <span className="text-sm text-[#3d271d]">{entity.possessedItems || '—'}</span>
+                                </div>
+                            )}
+                            {show('possessedCurrencies') && (!hideEmpty || !isFieldValueEmpty(entity.possessedCurrencies)) && (
+                                <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
+                                    <span className="text-sm font-bold text-[#2b1810]">{getGenreFieldLabel(genre, 'possessedCurrencies', 'Wealth / Currencies')}:</span>
+                                    <span className="text-sm text-[#3d271d]">{entity.possessedCurrencies || '—'}</span>
+                                </div>
+                            )}
+                            {show('knownSkills') && (!hideEmpty || !isFieldValueEmpty(entity.knownSkills)) && (
+                                <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
+                                    <span className="text-sm font-bold text-[#2b1810]">Known Skills:</span>
+                                    <span className="text-sm text-[#3d271d]">{entity.knownSkills || '—'}</span>
+                                </div>
+                            )}
+                            {show('knownMagic') && (!hideEmpty || !isFieldValueEmpty(entity.knownSpells)) && (
+                                <div className="flex items-center justify-between border-b border-[#c8a96e]/30 pb-2">
+                                    <span className="text-sm font-bold text-[#2b1810]">{getGenreFieldLabel(genre, 'knownMagic', 'Known Spells')}:</span>
+                                    <span className="text-sm text-[#3d271d]">{entity.knownSpells || '—'}</span>
+                                </div>
+                            )}
                         </div>
                         <div className="space-y-3 border-t border-[#c8a96e]/30 pt-4">
-                            <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Schools of Magic / Teachings" ids={entity.pairedMagic || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Sciences & Technologies" ids={entity.pairedTech || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} />
+                            {(!hideEmpty || !isFieldValueEmpty(entity.pairedConnectedItems)) && (
+                                <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {(!hideEmpty || !isFieldValueEmpty(entity.pairedResources)) && (
+                                <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {(!hideEmpty || !isFieldValueEmpty(entity.pairedSkills)) && (
+                                <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('knownLanguage') && (!hideEmpty || !isFieldValueEmpty(entity.pairedLanguage)) && (
+                                <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('knownMagic') && (!hideEmpty || !isFieldValueEmpty(entity.pairedMagic)) && (
+                                <LinksDisplay label={getGenreFieldLabel(genre, 'knownMagic', 'Schools of Magic / Teachings')} ids={entity.pairedMagic || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('knownTech') && (!hideEmpty || !isFieldValueEmpty(entity.pairedTech)) && (
+                                <LinksDisplay label={getGenreFieldLabel(genre, 'knownTech', 'Sciences & Technologies')} ids={entity.pairedTech || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('conditions') && (!hideEmpty || !isFieldValueEmpty(entity.pairedConditionsPositive)) && (
+                                <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('conditions') && (!hideEmpty || !isFieldValueEmpty(entity.pairedConditionsNegative)) && (
+                                <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} />
+                            )}
+                            {show('conditions') && (!hideEmpty || !isFieldValueEmpty(entity.pairedConditionsOther)) && (
+                                <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} />
+                            )}
                         </div>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
-                        <FieldRow label="Stats/Attributes (Legacy Text)" value={entity.statsList} />
-                        <FieldRow label="Equipment/Owned Items" value={entity.possessedItems} />
-                        <FieldRow label="Wealth/Owned Currencies" value={entity.possessedCurrencies} />
-                        <FieldRow label="Known Skills/Abilities" value={entity.knownSkills} />
-                        <FieldRow label="Known Spells" value={entity.knownSpells} />
-                        <FieldRow label="Known Languages" value={entity.knownLanguage} />
-                        <FieldRow label="Known Magical Teachings" value={entity.knownMagic} />
-                        <FieldRow label="Known Technologies" value={entity.knownTech} />
+                        {(!hideEmpty || !isFieldValueEmpty(entity.statsList)) && <FieldRow label="Stats/Attributes (Legacy Text)" value={entity.statsList} />}
+                        {show('possessedItems') && (!hideEmpty || !isFieldValueEmpty(entity.possessedItems)) && <FieldRow label={getGenreFieldLabel(genre, 'possessedItems', 'Equipment/Owned Items')} value={entity.possessedItems} />}
+                        {show('possessedCurrencies') && (!hideEmpty || !isFieldValueEmpty(entity.possessedCurrencies)) && <FieldRow label={getGenreFieldLabel(genre, 'possessedCurrencies', 'Wealth/Owned Currencies')} value={entity.possessedCurrencies} />}
+                        {show('knownSkills') && (!hideEmpty || !isFieldValueEmpty(entity.knownSkills)) && <FieldRow label="Known Skills/Abilities" value={entity.knownSkills} />}
+                        {show('knownMagic') && (!hideEmpty || !isFieldValueEmpty(entity.knownSpells)) && <FieldRow label={getGenreFieldLabel(genre, 'knownMagic', 'Known Spells')} value={entity.knownSpells} />}
+                        {show('knownLanguage') && (!hideEmpty || !isFieldValueEmpty(entity.knownLanguage)) && <FieldRow label="Known Languages" value={entity.knownLanguage} />}
+                        {show('knownMagic') && (!hideEmpty || !isFieldValueEmpty(entity.knownMagic)) && <FieldRow label={getGenreFieldLabel(genre, 'knownMagic', 'Known Magical Teachings')} value={entity.knownMagic} />}
+                        {show('knownTech') && (!hideEmpty || !isFieldValueEmpty(entity.knownTech)) && <FieldRow label={getGenreFieldLabel(genre, 'knownTech', 'Known Technologies')} value={entity.knownTech} />}
                         
                         <div className="col-span-full mt-2 space-y-3 border-t border-current/10 pt-3">
-                            <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Schools of Magic / Teachings" ids={entity.pairedMagic || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Sciences & Technologies" ids={entity.pairedTech || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} />
-                            <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} />
+                            {(!hideEmpty || !isFieldValueEmpty(entity.pairedConnectedItems)) && <LinksDisplay label="Connected Items" ids={entity.pairedConnectedItems || []} all={allEntities} onNav={onNavigate} />}
+                            {(!hideEmpty || !isFieldValueEmpty(entity.pairedResources)) && <LinksDisplay label="Connected Wealth/Resources" ids={entity.pairedResources || []} all={allEntities} onNav={onNavigate} />}
+                            {(!hideEmpty || !isFieldValueEmpty(entity.pairedSkills)) && <LinksDisplay label="Connected Skills" ids={entity.pairedSkills || []} all={allEntities} onNav={onNavigate} />}
+                            {show('knownLanguage') && (!hideEmpty || !isFieldValueEmpty(entity.pairedLanguage)) && <LinksDisplay label="Connected Languages" ids={entity.pairedLanguage || []} all={allEntities} onNav={onNavigate} />}
+                            {show('knownMagic') && (!hideEmpty || !isFieldValueEmpty(entity.pairedMagic)) && <LinksDisplay label={getGenreFieldLabel(genre, 'knownMagic', 'Schools of Magic / Teachings')} ids={entity.pairedMagic || []} all={allEntities} onNav={onNavigate} />}
+                            {show('knownTech') && (!hideEmpty || !isFieldValueEmpty(entity.pairedTech)) && <LinksDisplay label={getGenreFieldLabel(genre, 'knownTech', 'Sciences & Technologies')} ids={entity.pairedTech || []} all={allEntities} onNav={onNavigate} />}
+                            {show('conditions') && (!hideEmpty || !isFieldValueEmpty(entity.pairedConditionsPositive)) && <LinksDisplay label="Affected by Boons" ids={entity.pairedConditionsPositive || []} all={allEntities} onNav={onNavigate} />}
+                            {show('conditions') && (!hideEmpty || !isFieldValueEmpty(entity.pairedConditionsNegative)) && <LinksDisplay label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} all={allEntities} onNav={onNavigate} />}
+                            {show('conditions') && (!hideEmpty || !isFieldValueEmpty(entity.pairedConditionsOther)) && <LinksDisplay label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} all={allEntities} onNav={onNavigate} />}
                         </div>
                     </div>
                 )}

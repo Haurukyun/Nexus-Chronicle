@@ -105,6 +105,8 @@ export interface BaseEntity {
   isDead?: boolean;
   isCategory?: boolean;
   documentTemplate?: string;
+  entityTemplate?: 'inherit' | 'fantasy' | 'scifi' | 'modern' | 'horror';
+  hideEmptyFieldsOverride?: boolean;
   extraHtmlClasses?: string;
   otherNamesAndEpithets?: string;
   textColor?: string;
@@ -1065,6 +1067,9 @@ export interface WorldData {
   activeEntityTypes?: EntityType[];
   activeModules?: RealmModuleConfig;
   hideEmptyFieldsDefault?: boolean;
+  sidebarGroupOrder?: string[];
+  hiddenFields?: Partial<Record<EntityType, string[]>>;
+  genreTemplate?: 'fantasy' | 'scifi' | 'modern' | 'horror' | 'universal';
   customSuggestions?: Partial<Record<EntityType, string[]>>;
 }
 

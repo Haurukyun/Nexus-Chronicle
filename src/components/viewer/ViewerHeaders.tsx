@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2, Printer, Edit3, Users } from 'lucide-react';
+import { Scroll, Trash2, Save, Lock, Unlock, Folder, Download, FileText, FileCode2, Printer, Edit3, Users, Eye, EyeOff } from 'lucide-react';
 import { WorldEntity, Character } from '../../types';
 import { isEntityCategory, isEntityDeceased, isEntityFinished } from '../../utils/documentModeUtils';
 import { generateEntityMarkdown, generateEntityHtml, downloadTextFile } from '../../utils/exportUtils';
@@ -15,6 +15,8 @@ interface HeaderProps {
     onEdit: () => void;
     onDelete: () => void;
     onToggleLock: () => void;
+    hideEmptyFields?: boolean;
+    onToggleHideEmptyFields?: () => void;
 }
 
 /** Two-click delete confirm. First click shows "Sure?", second confirms, blur cancels. */
@@ -140,7 +142,7 @@ const ExportDropdown: React.FC<{ entity: WorldEntity; allEntities: WorldEntity[]
     );
 };
 
-export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => {
+export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock, hideEmptyFields, onToggleHideEmptyFields }: HeaderProps) => {
     const isCat = isEntityCategory(entity);
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
@@ -189,6 +191,20 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                     )}
                 </div>
                 <div className="flex items-center gap-4 shrink-0">
+                    {onToggleHideEmptyFields && (
+                        <button
+                            type="button"
+                            onClick={onToggleHideEmptyFields}
+                            className={`p-3 rounded-xl transition-all cursor-pointer ${
+                                hideEmptyFields
+                                    ? 'bg-amber-400/20 text-amber-300 border border-amber-400/50 shadow-sm'
+                                    : 'opacity-40 hover:opacity-100 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
+                            }`}
+                            title={hideEmptyFields ? "Hiding empty fields (Click to show all)" : "Showing all fields (Click to hide empty)"}
+                        >
+                            {hideEmptyFields ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                    )}
                     <ExportDropdown entity={entity} allEntities={allEntities} theme="sovereign" />
                     {!entity.isReadOnly && (
                         <button
@@ -235,7 +251,7 @@ export const CodexHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
     );
 };
 
-export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => {
+export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock, hideEmptyFields, onToggleHideEmptyFields }: HeaderProps) => {
     const isCat = isEntityCategory(entity);
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
@@ -284,6 +300,20 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
                 )}
             </div>
             <div className="flex items-center gap-3 pb-2 shrink-0">
+                {onToggleHideEmptyFields && (
+                    <button
+                        type="button"
+                        onClick={onToggleHideEmptyFields}
+                        className={`p-2 rounded transition-all cursor-pointer ${
+                            hideEmptyFields
+                                ? 'bg-[#b91c1c]/15 text-[#b91c1c] border border-[#b91c1c]/40 font-bold'
+                                : 'opacity-40 hover:opacity-100 text-stone-600 hover:bg-black/5'
+                        }`}
+                        title={hideEmptyFields ? "Hiding empty fields (Click to show all)" : "Showing all fields (Click to hide empty)"}
+                    >
+                        {hideEmptyFields ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                )}
                 <ExportDropdown
                     entity={entity}
                     allEntities={allEntities}
@@ -324,7 +354,7 @@ export const WikiHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPro
     );
 };
 
-export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderProps) => {
+export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock, hideEmptyFields, onToggleHideEmptyFields }: HeaderProps) => {
     const isCat = isEntityCategory(entity);
     const isDead = isEntityDeceased(entity);
     const isDone = isEntityFinished(entity);
@@ -380,6 +410,20 @@ export const RoyalHeader = ({ entity, onEdit, onDelete, onToggleLock }: HeaderPr
                 </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 shrink-0 self-start lg:self-center">
+                {onToggleHideEmptyFields && (
+                    <button
+                        type="button"
+                        onClick={onToggleHideEmptyFields}
+                        className={`p-2 rounded-full transition-all cursor-pointer ${
+                            hideEmptyFields
+                                ? 'bg-[#70121e]/20 text-[#70121e] border border-[#c8a96e] shadow-inner font-serif'
+                                : 'text-[#70121e]/50 hover:text-[#70121e] hover:bg-[#70121e]/10'
+                        }`}
+                        title={hideEmptyFields ? "Hiding empty fields (Click to show all)" : "Showing all fields (Click to hide empty)"}
+                    >
+                        {hideEmptyFields ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                )}
                 <ExportDropdown
                     entity={entity}
                     allEntities={allEntities}

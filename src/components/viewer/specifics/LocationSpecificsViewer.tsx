@@ -5,6 +5,7 @@ import { useTheme } from '../../../theme';
 import { Compass, MapPin, Shield, AlertTriangle, Landmark, CloudRain } from 'lucide-react';
 import { useWorldStore } from '../../../store/useWorldStore';
 import { ViewerSectionCard } from '../ViewerSectionCard';
+import { isFieldVisible, shouldHideEmptyFields } from '../../../utils/fieldVisibilityUtils';
 
 interface Props {
     entity: Location;
@@ -87,6 +88,10 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
     const landmarks = useMemo(() => parseTraitList(loc.notableLandmarks), [loc.notableLandmarks]);
     const climate = useMemo(() => parseTraitList(loc.climateNotes), [loc.climateNotes]);
 
+    const world = useWorldStore(state => state.world);
+    const hideEmpty = shouldHideEmptyFields(world, loc);
+    const show = (fieldKey: string) => isFieldVisible(world, 'location', fieldKey);
+
     return (
         <div className="space-y-8">
             {!isWikiMode && (
@@ -153,25 +158,25 @@ export const LocationSpecificsViewer: React.FC<Props> = ({ entity: loc, allEntit
                 </div>
             )}
 
-            {defenses.length > 0 && (
+            {show('defenses') && defenses.length > 0 && (
                 <ViewerSectionCard id="section-defenses" title="Defenses & Fortifications" badgeText={`${defenses.length}`}>
                     <StructuredListDisplay items={defenses} icon={Shield} isRoyal={isRoyal} />
                 </ViewerSectionCard>
             )}
 
-            {hazards.length > 0 && (
+            {show('hazards') && hazards.length > 0 && (
                 <ViewerSectionCard id="section-hazards" title="Hazards & Environmental Dangers" badgeText={`${hazards.length}`}>
                     <StructuredListDisplay items={hazards} icon={AlertTriangle} isRoyal={isRoyal} />
                 </ViewerSectionCard>
             )}
 
-            {landmarks.length > 0 && (
+            {show('notableLandmarks') && landmarks.length > 0 && (
                 <ViewerSectionCard id="section-landmarks" title="Notable Landmarks" badgeText={`${landmarks.length}`}>
                     <StructuredListDisplay items={landmarks} icon={Landmark} isRoyal={isRoyal} />
                 </ViewerSectionCard>
             )}
 
-            {climate.length > 0 && (
+            {show('climateNotes') && climate.length > 0 && (
                 <ViewerSectionCard id="section-climate" title="Climate & Weather" badgeText={`${climate.length}`}>
                     <StructuredListDisplay items={climate} icon={CloudRain} isRoyal={isRoyal} />
                 </ViewerSectionCard>

@@ -9,6 +9,8 @@ import { Info, Zap, Heart, Swords, Scroll, Plus, Trash2, Sliders, BookOpen, X, S
 import { useWorldStore } from '../../../store/useWorldStore';
 import { isModuleActive } from '../../../utils/realmConfig';
 import { mergeSuggestions } from '../../../utils/suggestionUtils';
+import { isFieldVisible } from '../../../utils/fieldVisibilityUtils';
+import { getActiveGenreTemplate, getGenreFieldLabel } from '../../../utils/genreTemplates';
 
 interface Props {
     entity: Character;
@@ -27,6 +29,8 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
     const world = useWorldStore(state => state.world);
     const showCombatStats = isModuleActive(world, 'combatStats');
     const customSuggestions = world.customSuggestions || {};
+    const showField = (key: string) => isFieldVisible(world, 'character', key);
+    const genre = getActiveGenreTemplate(world, entity);
 
     const textareaClass = isRoyal
         ? 'w-full bg-[#fbf8ef] border border-[#c8a96e]/60 rounded-xl px-4 py-3 outline-none resize-none text-sm shadow-inner text-[#2b1810] font-serif focus:ring-1 focus:ring-[#70121e]'
@@ -63,15 +67,17 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
     return (
         <>
             <EditorGroup id="section-basic-info" title="Basic information" icon={Info}>
-                <div className="col-span-12">
-                    <label className={labelClass}>Titles</label>
-                    <textarea className={`${textareaClass} h-20`} value={entity.titles || ""} onChange={e => onUpdate({ ...entity, titles: e.target.value })} />
-                </div>
+                {showField('titles') && (
+                    <div className="col-span-12">
+                        <label className={labelClass}>Titles</label>
+                        <textarea className={`${textareaClass} h-20`} value={entity.titles || ""} onChange={e => onUpdate({ ...entity, titles: e.target.value })} />
+                    </div>
+                )}
 
-                <FormInput label="Sex" value={entity.sex || ""} options={['Male', 'Female', 'Non-binary', 'Fluid', 'Other']} onChange={(v: string) => onUpdate({ ...entity, sex: v })} gridSpan={3} />
-                <FormInput label="Age" value={entity.age || ""} onChange={(v: string) => onUpdate({ ...entity, age: v })} gridSpan={3} />
-                <FormInput label="Height" value={entity.height || ""} onChange={(v: string) => onUpdate({ ...entity, height: v })} gridSpan={3} />
-                <FormInput label="Weight" value={entity.weight || ""} onChange={(v: string) => onUpdate({ ...entity, weight: v })} gridSpan={3} />
+                {showField('sex') && <FormInput label="Sex" value={entity.sex || ""} options={['Male', 'Female', 'Non-binary', 'Fluid', 'Other']} onChange={(v: string) => onUpdate({ ...entity, sex: v })} gridSpan={3} />}
+                {showField('age') && <FormInput label="Age" value={entity.age || ""} onChange={(v: string) => onUpdate({ ...entity, age: v })} gridSpan={3} />}
+                {showField('height') && <FormInput label="Height" value={entity.height || ""} onChange={(v: string) => onUpdate({ ...entity, height: v })} gridSpan={3} />}
+                {showField('weight') && <FormInput label="Weight" value={entity.weight || ""} onChange={(v: string) => onUpdate({ ...entity, weight: v })} gridSpan={3} />}
 
                 {/* ── CHARACTER LIFECYCLE DATE COMPOSER ── */}
                 <FantasyDatePicker
@@ -85,19 +91,23 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                     customPresets={customPresets ?? undefined}
                 />
 
-                <SmartSelect label="Species/Races" ids={entity.pairedRace || []} type="species" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedRace: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Occupation/Class" ids={entity.pairedProfession || []} type="occupation" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedProfession: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label={getGenreFieldLabel(genre, 'pairedRace', 'Species/Races')} ids={entity.pairedRace || []} type="species" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedRace: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label={getGenreFieldLabel(genre, 'pairedProfession', 'Occupation/Class')} ids={entity.pairedProfession || []} type="occupation" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedProfession: ids })} onCreate={onCreateNew} gridSpan={6} />
 
-                <FormInput label="Ethnicity" value={entity.ethnicity || ""} onChange={(v: string) => onUpdate({ ...entity, ethnicity: v })} gridSpan={6} />
-                <FormInput label="Combat rating" value={entity.powerLevel || ""} options={['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS', 'SSS']} onChange={(v: string) => onUpdate({ ...entity, powerLevel: v })} gridSpan={6} />
+                {showField('ethnicity') && <FormInput label="Ethnicity" value={entity.ethnicity || ""} onChange={(v: string) => onUpdate({ ...entity, ethnicity: v })} gridSpan={6} />}
+                {showField('powerLevel') && <FormInput label={getGenreFieldLabel(genre, 'powerLevel', 'Combat rating')} value={entity.powerLevel || ""} options={['F', 'E', 'D', 'C', 'B', 'A', 'S', 'SS', 'SSS']} onChange={(v: string) => onUpdate({ ...entity, powerLevel: v })} gridSpan={6} />}
 
-                <SmartSelect label="Place of residence" ids={entity.pairedCurrentLocationNew || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedCurrentLocationNew: ids })} onCreate={onCreateNew} gridSpan={4} />
-                <SmartSelect label="Place of origin" ids={entity.pairedOriginLocationNew || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedOriginLocationNew: ids })} onCreate={onCreateNew} gridSpan={4} />
-                <SmartSelect label="Place of demise" ids={entity.pairedDemiseLocationNew || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedDemiseLocationNew: ids })} onCreate={onCreateNew} gridSpan={4} />
+                <SmartSelect label="Place of residence" ids={entity.pairedCurrentLocationNew || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedCurrentLocationNew: ids })} onCreate={onCreateNew} gridSpan={showField('demise') ? 4 : 6} />
+                <SmartSelect label="Place of origin" ids={entity.pairedOriginLocationNew || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedOriginLocationNew: ids })} onCreate={onCreateNew} gridSpan={showField('demise') ? 4 : 6} />
+                {showField('demise') && <SmartSelect label="Place of demise" ids={entity.pairedDemiseLocationNew || []} type="location" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedDemiseLocationNew: ids })} onCreate={onCreateNew} gridSpan={4} />}
 
-                <SmartSelect label="Affected by Boons" ids={entity.pairedConditionsPositive || []} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConditionsPositive: ids })} onCreate={onCreateNew} gridSpan={4} />
-                <SmartSelect label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConditionsNegative: ids })} onCreate={onCreateNew} gridSpan={4} />
-                <SmartSelect label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConditionsOther: ids })} onCreate={onCreateNew} gridSpan={4} />
+                {showField('conditions') && (
+                    <>
+                        <SmartSelect label="Affected by Boons" ids={entity.pairedConditionsPositive || []} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConditionsPositive: ids })} onCreate={onCreateNew} gridSpan={4} />
+                        <SmartSelect label="Affected by Afflictions" ids={entity.pairedConditionsNegative || []} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConditionsNegative: ids })} onCreate={onCreateNew} gridSpan={4} />
+                        <SmartSelect label="Affected by Other conditions" ids={entity.pairedConditionsOther || []} type="condition" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConditionsOther: ids })} onCreate={onCreateNew} gridSpan={4} />
+                    </>
+                )}
 
                 {/* Legacy String fields from FAv1 */}
                 <div className={`col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-xl border border-dashed mt-4 ${isRoyal ? 'border-[#c8a96e]/30 bg-[#fbf8ef]' : isWiki ? 'border-[#d4c8af]/50 bg-white/60' : 'border-slate-500/20 bg-black/5'}`}>
@@ -111,24 +121,28 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
 
             <EditorGroup id="section-characteristics" title="Characteristics & Knowledge" icon={Zap}>
                 {/* Traits & Characteristics List with Notes & Suggestions */}
-                <TraitListEditor
-                    label="Traits & Characteristics"
-                    value={entity.personalityTraits || ''}
-                    onChange={v => onUpdate({ ...entity, personalityTraits: v })}
-                    suggestions={mergeSuggestions(['Honest', 'Stubborn', 'Cunning', 'Compassionate', 'Brave', 'Cynical', 'Charming', 'Loyal', 'Impulsive', 'Calculating', 'Pragmatic', 'Zealous', 'Stoic', 'Melancholic', 'Eccentric'], customSuggestions['character'])}
-                    placeholder="Add trait (e.g. Brave, Cynical)..."
-                    gridSpan={6}
-                />
+                {showField('personalityTraits') && (
+                    <TraitListEditor
+                        label="Traits & Characteristics"
+                        value={entity.personalityTraits || ''}
+                        onChange={v => onUpdate({ ...entity, personalityTraits: v })}
+                        suggestions={mergeSuggestions(['Honest', 'Stubborn', 'Cunning', 'Compassionate', 'Brave', 'Cynical', 'Charming', 'Loyal', 'Impulsive', 'Calculating', 'Pragmatic', 'Zealous', 'Stoic', 'Melancholic', 'Eccentric'], customSuggestions['character'])}
+                        placeholder="Add trait (e.g. Brave, Cynical)..."
+                        gridSpan={showField('traits') ? 6 : 12}
+                    />
+                )}
 
                 {/* Unique / Unusual Features List with Notes & Suggestions */}
-                <TraitListEditor
-                    label="Unique / Unusual Features"
-                    value={entity.traits || ''}
-                    onChange={v => onUpdate({ ...entity, traits: v })}
-                    suggestions={mergeSuggestions(['Heterochromia', 'Scar across eye', 'Mechanical prosthetic', 'Tattooed arcane runes', 'Silver hair', 'Pointed ears', 'Missing finger', 'Faint glowing aura', 'Burn marks', 'Golden irises', 'Intricate brand mark', 'Cybernetic ocular implant'], customSuggestions['character'])}
-                    placeholder="Add feature (e.g. Scar across eye, Pointed ears)..."
-                    gridSpan={6}
-                />
+                {showField('traits') && (
+                    <TraitListEditor
+                        label="Unique / Unusual Features"
+                        value={entity.traits || ''}
+                        onChange={v => onUpdate({ ...entity, traits: v })}
+                        suggestions={mergeSuggestions(['Heterochromia', 'Scar across eye', 'Mechanical prosthetic', 'Tattooed arcane runes', 'Silver hair', 'Pointed ears', 'Missing finger', 'Faint glowing aura', 'Burn marks', 'Golden irises', 'Intricate brand mark', 'Cybernetic ocular implant'], customSuggestions['character'])}
+                        placeholder="Add feature (e.g. Scar across eye, Pointed ears)..."
+                        gridSpan={showField('personalityTraits') ? 6 : 12}
+                    />
+                )}
 
                 {/* Flexible Stat Block Engine (Standard D20 / Custom Stats & Meters / None) */}
                 {showCombatStats && (() => {
@@ -392,20 +406,21 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                     );
                 })()}
 
-                <FormInput label="Equipment" value={entity.possessedItems || ""} onChange={(v: string) => onUpdate({ ...entity, possessedItems: v })} gridSpan={4} />
-                <FormInput label="Wealth" value={entity.possessedCurrencies || ""} onChange={(v: string) => onUpdate({ ...entity, possessedCurrencies: v })} gridSpan={4} />
-                <FormInput label="Legacy Skills" value={entity.knownSkills || ""} onChange={(v: string) => onUpdate({ ...entity, knownSkills: v })} gridSpan={4} />
+                {showField('possessedItems') && <FormInput label={getGenreFieldLabel(genre, 'possessedItems', 'Equipment')} value={entity.possessedItems || ""} onChange={(v: string) => onUpdate({ ...entity, possessedItems: v })} gridSpan={4} />}
+                {showField('possessedCurrencies') && <FormInput label={getGenreFieldLabel(genre, 'possessedCurrencies', 'Wealth')} value={entity.possessedCurrencies || ""} onChange={(v: string) => onUpdate({ ...entity, possessedCurrencies: v })} gridSpan={4} />}
+                {showField('knownSkills') && <FormInput label="Legacy Skills" value={entity.knownSkills || ""} onChange={(v: string) => onUpdate({ ...entity, knownSkills: v })} gridSpan={4} />}
 
-                <FormInput label="Spells" value={entity.knownSpells || ""} onChange={(v: string) => onUpdate({ ...entity, knownSpells: v })} gridSpan={4} />
-                <FormInput label="Languages" value={entity.knownLanguage || ""} onChange={(v: string) => onUpdate({ ...entity, knownLanguage: v })} gridSpan={4} />
-                <FormInput label="Teachings" value={entity.knownMagic || ""} onChange={(v: string) => onUpdate({ ...entity, knownMagic: v })} gridSpan={4} />
+                {showField('knownMagic') && <FormInput label={getGenreFieldLabel(genre, 'knownMagic', 'Spells')} value={entity.knownSpells || ""} onChange={(v: string) => onUpdate({ ...entity, knownSpells: v })} gridSpan={4} />}
+                {showField('knownLanguage') && <FormInput label="Languages" value={entity.knownLanguage || ""} onChange={(v: string) => onUpdate({ ...entity, knownLanguage: v })} gridSpan={4} />}
+                {showField('knownMagic') && <FormInput label="Teachings" value={entity.knownMagic || ""} onChange={(v: string) => onUpdate({ ...entity, knownMagic: v })} gridSpan={4} />}
+                {showField('knownTech') && <FormInput label={getGenreFieldLabel(genre, 'knownTech', 'Technologies / Cyberware')} value={entity.knownTech || ""} onChange={(v: string) => onUpdate({ ...entity, knownTech: v })} gridSpan={4} />}
 
                 <SmartSelect label="Connected Items" ids={entity.pairedConnectedItems || []} type="item" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedConnectedItems: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Resources" ids={entity.pairedResources || []} type="resource" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedResources: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Linked Skills" ids={entity.pairedSkills || []} type="ability" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedSkills: ids })} onCreate={onCreateNew} gridSpan={6} />
                 <SmartSelect label="Linked Languages" ids={entity.pairedLanguage || []} type="language" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedLanguage: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Schools of Magic / Teachings" ids={entity.pairedMagic || []} type="magic" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedMagic: ids })} onCreate={onCreateNew} gridSpan={6} />
-                <SmartSelect label="Sciences & Technologies" ids={entity.pairedTech || []} type="science" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedTech: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label={getGenreFieldLabel(genre, 'knownMagic', 'Schools of Magic / Teachings')} ids={entity.pairedMagic || []} type="magic" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedMagic: ids })} onCreate={onCreateNew} gridSpan={6} />
+                <SmartSelect label={getGenreFieldLabel(genre, 'knownTech', 'Sciences & Technologies')} ids={entity.pairedTech || []} type="science" all={allEntities} onChange={(ids) => onUpdate({ ...entity, pairedTech: ids })} onCreate={onCreateNew} gridSpan={6} />
             </EditorGroup>
 
             <EditorGroup id="section-relationships" title="Relationships" icon={Heart}>

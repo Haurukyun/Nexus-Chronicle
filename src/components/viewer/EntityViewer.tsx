@@ -21,6 +21,7 @@ import { useTheme } from '../../theme';
 import { isEntityDeceased, isEntityCategory, isEntityFinished } from '../../utils/documentModeUtils';
 import { generateRelationSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
 import { isModuleActive } from '../../utils/realmConfig';
+import { shouldHideEmptyFields } from '../../utils/fieldVisibilityUtils';
 
 export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
@@ -610,14 +611,46 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
         </div>
     );
 
+    const hideEmptyFields = shouldHideEmptyFields(world, entity);
+    const handleToggleHideEmptyFields = () => {
+        const nextVal = !hideEmptyFields;
+        useWorldStore.getState().setWorld(prev => ({
+            ...prev,
+            entities: prev.entities.map(e =>
+                e.id === entity.id ? { ...e, hideEmptyFieldsOverride: nextVal } : e
+            )
+        }));
+    };
+
     return (
         <article className="animate-in fade-in slide-in-from-bottom-4 duration-1000 relative">
             {(themeId === 'royal-codex') ? (
-                <RoyalHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
+                <RoyalHeader 
+                    entity={entity} 
+                    onEdit={onEdit} 
+                    onDelete={onDelete} 
+                    onToggleLock={handleToggleLock} 
+                    hideEmptyFields={hideEmptyFields}
+                    onToggleHideEmptyFields={handleToggleHideEmptyFields}
+                />
             ) : isWiki ? (
-                <WikiHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
+                <WikiHeader 
+                    entity={entity} 
+                    onEdit={onEdit} 
+                    onDelete={onDelete} 
+                    onToggleLock={handleToggleLock} 
+                    hideEmptyFields={hideEmptyFields}
+                    onToggleHideEmptyFields={handleToggleHideEmptyFields}
+                />
             ) : (
-                <CodexHeader entity={entity} onEdit={onEdit} onDelete={onDelete} onToggleLock={handleToggleLock} />
+                <CodexHeader 
+                    entity={entity} 
+                    onEdit={onEdit} 
+                    onDelete={onDelete} 
+                    onToggleLock={handleToggleLock} 
+                    hideEmptyFields={hideEmptyFields}
+                    onToggleHideEmptyFields={handleToggleHideEmptyFields}
+                />
             )}
             <MainView />
 
