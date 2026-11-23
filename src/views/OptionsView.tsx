@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import {
     Palette, Skull, Globe, Layers, Plus, Copy,
     Download, Upload, Trash2, Edit2, Check, Sparkles, AlertTriangle, ArrowRight, BookOpen,

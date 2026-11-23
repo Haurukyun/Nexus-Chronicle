@@ -12,6 +12,12 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **fix: restore header dropdown nav groups and VectorFiligreeCorner (`src/App.tsx`, `src/views/OptionsView.tsx`) (2026-11-23)**:
+  - Restored categorized header navigation dropdowns (`Chronicles` [Gazette, Chronos, Sessions], `Cartography` [Atlas, Journey], `The Web` [Threads, Factions, Nexus Lines, Ledger]) in `src/App.tsx`.
+  - Restored click-outside backdrop listener and active group indicator badges.
+  - Restored `VectorFiligreeCorner` (size 24) on all 4 corners of the manuscript parchment view.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (91/91 passing across 19 test files), `npm run build` (clean).
+
 - **feat: Sidebar Group Ordering, Field Visibility Engine & Genre Templates (Approaches 2, 6, 7) (`sidebarConfig.ts`, `fieldVisibilityUtils.ts`, `genreTemplates.ts`, `Sidebar.tsx`, `EntityViewer.tsx`, `ViewerHeaders.tsx`, specifics, `OptionsView.tsx`) (2026-11-23)**:
   - **Approach 2 (Sidebar Group Custom Reordering)**:
     - Added `sidebarGroupOrder?: string[]` to `WorldData` in `types.ts`.

@@ -2,11 +2,12 @@ import React, { useMemo, useEffect, useState } from 'react';
 import {
     Search, Plus, Globe, Trash2, Settings,
     BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints, Keyboard,
-    Undo2, Redo2, BookOpen, Lightbulb, Swords, Newspaper
+    Undo2, Redo2, BookOpen, Lightbulb, Swords, Newspaper, ChevronDown
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
 import { useTheme } from './theme';
 import { HIERARCHY_CONFIG, TYPE_LABELS } from './constants';
+import { isModuleActive } from './utils/realmConfig';
 import { WorldMap } from './views/WorldMap';
 import { TrashView } from './views/TrashView';
 import { OptionsView } from './views/OptionsView';
@@ -27,6 +28,7 @@ import { KeybindsModal } from './components/ui/KeybindsModal';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { ScratchpadDrawer } from './components/ui/ScratchpadDrawer';
 import { TropicalSceneBackground } from './components/ui/TropicalSceneBackground';
+import { VectorFiligreeCorner } from './components/ui/VectorFiligreeCorner';
 
 
 const App = () => {
@@ -47,6 +49,71 @@ const App = () => {
     const [showCommandPalette, setShowCommandPalette] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
     const [showKeybindsModal, setShowKeybindsModal] = useState(false);
+    const [openNavDropdown, setOpenNavDropdown] = useState<string | null>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest('[data-nav-dropdown]')) {
+                setOpenNavDropdown(null);
+            }
+        };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setOpenNavDropdown(null);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
+    const REALM_NAV_GROUPS = useMemo(() => [
+        {
+            id: 'chronicles',
+            label: 'Chronicles',
+            icon: BookOpen,
+            items: [
+                { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G', description: 'Living World Broadsheet & Dispatches' },
+                { id: 'timeline', label: 'Chronos', icon: History, shortcut: 'Alt+2', description: 'Timeline Ruler & Planetary Calendar' },
+                { id: 'session-logs', label: 'Sessions', icon: BookOpen, shortcut: 'Alt+8', description: 'Session Codex & Campaign Notes' },
+            ]
+        },
+        {
+            id: 'cartography',
+            label: 'Cartography',
+            icon: Globe,
+            items: [
+                { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5', description: 'Interactive Map & Cartography Overlays' },
+                { id: 'journey', label: 'Journey', icon: Footprints, shortcut: 'Alt+4', description: 'Expedition Routes & Distance Calculator' },
+            ]
+        },
+        {
+            id: 'web',
+            label: 'The Web',
+            icon: GitMerge,
+            items: [
+                { id: 'plot-threads', label: 'Threads', icon: Lightbulb, shortcut: 'Alt+9', description: 'The Conspiracy Board & Clue Web' },
+                { id: 'faction-matrix', label: 'Factions', icon: Swords, shortcut: 'Alt+0', description: 'Balance of Power & Tension Matrix' },
+                { id: 'nexus', label: 'Nexus Lines', icon: GitMerge, shortcut: 'Alt+3', description: 'Lineage Tree & Relational Graph' },
+                { id: 'dashboard', label: 'Ledger', icon: BarChart3, shortcut: 'Alt+1', description: 'Realm Codex Records & Vital Statistics' },
+            ]
+        }
+    ], []);
+
+    const activeRealmNavGroups = useMemo(() => {
+        return REALM_NAV_GROUPS.map(group => {
+            const items = group.items.filter(item => {
+                if (item.id === 'faction-matrix') return isModuleActive(world, 'factionMatrix');
+                if (item.id === 'map' || item.id === 'journey') return isModuleActive(world, 'atlasCoordinates');
+                return true;
+            });
+            return { ...group, items };
+        }).filter(group => group.items.length > 0);
+    }, [REALM_NAV_GROUPS, world]);
 
     const { t, layoutMode, themeId } = useTheme();
     const isManuscript = layoutMode === 'manuscript';
@@ -58,6 +125,16 @@ const App = () => {
     const canRedo = Boolean(historyFuture && historyFuture.length > 0);
 
     useEffect(() => {
+        // If current tab is a module that was deactivated, redirect to dashboard
+        if (activeTabId === 'faction-matrix' && !isModuleActive(world, 'factionMatrix')) {
+            setActiveTabId('dashboard');
+            return;
+        }
+        if ((activeTabId === 'map' || activeTabId === 'journey') && !isModuleActive(world, 'atlasCoordinates')) {
+            setActiveTabId('dashboard');
+            return;
+        }
+
         const systemTabs = ['map', 'trash', 'options', 'dashboard', 'timeline', 'nexus', 'journey', 'session-logs', 'plot-threads', 'faction-matrix', 'gazette'];
         if (!systemTabs.includes(activeTabId)) {
             const exists = world.entities.some(e => e.id === activeTabId);
@@ -69,7 +146,7 @@ const App = () => {
                 }
             }
         }
-    }, [activeTabId, world.entities, setActiveTabId]);
+    }, [activeTabId, world, setActiveTabId]);
 
     const activeEntity = useMemo(() => {
         if (editingTabIds.includes(activeTabId as string)) return drafts[activeTabId as string];
@@ -210,36 +287,36 @@ const App = () => {
 
     // Architectural Toolbar Tokens — perfectly cohesive with Sidebar, Codex sheets, and theme registry
     const headerTrayCls = isRoyal
-        ? 'bg-[#18100a]/85 border border-[#c8a96e]/30 shadow-inner'
+        ? 'bg-[#140b07]/90 border border-[#c8a96e]/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8),0_1px_0_rgba(200,169,110,0.15)]'
         : isWiki
-            ? 'bg-[#e8dcce] border border-[#d4c8af] shadow-inner'
+            ? 'bg-[#fbf5eb] border border-[#d4c8af] shadow-inner'
             : isGrandVoyager
-                ? 'bg-[#0a181a]/85 border border-[#2dd4bf]/30 shadow-inner'
-                : 'bg-slate-950/70 border border-slate-800 shadow-inner';
+                ? 'bg-[#081517]/90 border border-[#2dd4bf]/40 shadow-inner'
+                : 'bg-slate-950/80 border border-slate-800/80 shadow-inner';
 
     const ribbonActiveCls = isRoyal
-        ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e] shadow-sm font-serif font-bold uppercase tracking-wider'
+        ? 'bg-gradient-to-b from-[#881326] to-[#5b0e18] text-[#fff8e7] border border-[#c8a96e] shadow-[0_2px_6px_rgba(112,18,30,0.5),inset_0_1px_0_rgba(255,255,255,0.2)] font-serif font-bold uppercase tracking-wider'
         : isWiki
-            ? 'bg-[#b91c1c] text-white font-bold border border-red-800 shadow-sm font-serif uppercase tracking-wide'
+            ? 'bg-gradient-to-b from-[#b91c1c] to-[#991b1b] text-white font-bold border border-[#991b1b] shadow-sm font-serif uppercase tracking-wider'
             : isGrandVoyager
-                ? 'bg-[#2dd4bf] text-slate-950 font-bold border border-teal-300 shadow-sm font-serif uppercase tracking-wider'
-                : 'bg-[#fef08a] text-slate-950 font-bold border border-yellow-300 shadow-sm';
+                ? 'bg-gradient-to-b from-[#2dd4bf] to-[#14b8a6] text-[#041e1e] font-bold border border-teal-300 shadow-[0_2px_8px_rgba(45,212,191,0.4)] font-serif uppercase tracking-wider'
+                : 'bg-gradient-to-b from-[#fef08a] to-[#eab308] text-slate-950 font-bold border border-yellow-300 shadow-[0_2px_8px_rgba(254,240,138,0.3)]';
 
     const ribbonInactiveCls = isRoyal
-        ? 'text-[#c8a96e]/80 hover:text-[#fff8e7] hover:bg-[#70121e]/20 font-serif font-semibold tracking-wider transition-colors duration-150'
+        ? 'border border-transparent text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-black/5 font-serif font-medium tracking-wide transition-colors duration-150'
+            ? 'border border-transparent text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
             : isGrandVoyager
-                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-white/5 font-serif font-medium tracking-wider transition-colors duration-150'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60 font-medium transition-colors duration-150';
+                ? 'border border-transparent text-[#f5e9d0]/85 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+                : 'border border-transparent text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
 
     const actionToolBtnCls = isRoyal
-        ? 'text-[#c8a96e]/80 hover:text-[#fff8e7] hover:bg-[#70121e]/20 font-serif font-semibold tracking-wider transition-colors duration-150'
+        ? 'border border-transparent text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
         : isWiki
-            ? 'text-stone-700 hover:text-stone-950 hover:bg-black/5 font-serif font-medium tracking-wide transition-colors duration-150'
+            ? 'border border-transparent text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
             : isGrandVoyager
-                ? 'text-amber-100/70 hover:text-[#2dd4bf] hover:bg-white/5 font-serif font-medium tracking-wider transition-colors duration-150'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60 font-medium transition-colors duration-150';
+                ? 'border border-transparent text-[#f5e9d0]/85 hover:text-[#2dd4bf] hover:bg-[#2dd4bf]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+                : 'border border-transparent text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
 
     const dossierBarCls = isRoyal
         ? 'bg-[#180e07] border-[#c8a96e]/20'
@@ -280,13 +357,13 @@ const App = () => {
     return (
         <div
             style={{ filter: auraStyles.filter }}
-            className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${isManuscript ? 'p-1 sm:p-2 md:p-3 items-center justify-center' : ''}`}>
+            className={`flex h-screen ${bgClass} ${textColor} transition-all duration-700 overflow-hidden font-sans relative ${isManuscript ? 'p-0 sm:p-1 md:p-2 items-center justify-center' : ''}`}>
 
             {auraStyles.bg !== 'none' && (
                 <div className="absolute inset-0 pointer-events-none opacity-10 z-0" style={{ background: auraStyles.bg }} />
             )}
 
-            <div className={`flex w-full h-full ${isManuscript ? 'w-full max-w-none 2xl:max-w-[2400px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
+            <div className={`flex w-full h-full min-w-0 ${isManuscript ? 'w-full max-w-none 2xl:max-w-[2400px] bg-[#1a0f0a] rounded-r-3xl shadow-[0_40px_100px_rgba(0,0,0,0.95)] overflow-hidden relative' : ''}`}>
                 <Sidebar
                     world={world}
                     searchQuery={searchQuery}
@@ -301,57 +378,152 @@ const App = () => {
                 />
 
                 {/* Main Content Area */}
-                <main className={`flex-1 flex flex-col relative overflow-y-auto ${isGrandVoyager ? 'bg-transparent' : t.layout.pageBg}`}>
+                <main className={`flex-1 min-w-0 flex flex-col relative overflow-y-auto ${isGrandVoyager ? 'bg-transparent' : t.layout.pageBg}`}>
 
                     {/* Grand Voyager tropical scene background */}
                     {isGrandVoyager && <TropicalSceneBackground />}
 
                     {/* Top Header Bar */}
                     <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} shadow-sm`} data-interactive-ui="true">
+                        {/* Backdrop for closing realm navigation dropdowns */}
+                        {openNavDropdown && (
+                            <div className="fixed inset-0 z-[9990] cursor-default" onClick={() => setOpenNavDropdown(null)} />
+                        )}
+
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
-                        <div className="flex items-center justify-between px-3 py-2 gap-3">
-                            {/* Realm Navigation Ribbon */}
-                            <nav className={`inline-flex items-center p-1 rounded-xl ${headerTrayCls} max-w-full overflow-x-auto custom-scrollbar-hidden min-w-0 gap-1`}>
-                                {[
-                                    { id: 'gazette', label: 'Gazette', icon: Newspaper, shortcut: 'Alt+G' },
-                                    { id: 'map', label: 'Atlas', icon: Globe, shortcut: 'Alt+5' },
-                                    { id: 'timeline', label: 'Chronos', icon: History, shortcut: 'Alt+2' },
-                                    { id: 'session-logs', label: 'Sessions', icon: BookOpen, shortcut: 'Alt+8' },
-                                    { id: 'plot-threads', label: 'Plot Threads', icon: Lightbulb, shortcut: 'Alt+9' },
-                                    { id: 'faction-matrix', label: 'Factions', icon: Swords, shortcut: 'Alt+0' },
-                                    { id: 'nexus', label: 'Nexus Lines', icon: GitMerge, shortcut: 'Alt+3' },
-                                    { id: 'journey', label: 'Journey', icon: Footprints, shortcut: 'Alt+4' },
-                                    { id: 'dashboard', label: 'Ledger', icon: BarChart3, shortcut: 'Alt+1' },
-                                ].map(item => {
-                                    const isActive = activeTabId === item.id;
-                                    const IconComponent = item.icon;
+                        <div className="relative z-20 flex items-center justify-between px-3 py-2 gap-2 min-w-0">
+                            {/* Realm Navigation Categorized Dropdowns (Fandom/Codex Sphere style) */}
+                            <nav className={`h-9 inline-flex items-center p-1 rounded-xl ${headerTrayCls} shrink-0 gap-1`} data-nav-dropdown="true">
+                                {activeRealmNavGroups.map(group => {
+                                    const activeChild = group.items.find(item => item.id === activeTabId);
+                                    const isGroupActive = Boolean(activeChild);
+                                    const isOpen = openNavDropdown === group.id;
+                                    const TriggerIcon = activeChild ? activeChild.icon : group.icon;
+
                                     return (
-                                        <button
-                                            key={item.id}
-                                            type="button"
-                                            onClick={() => setActiveTabId(item.id)}
-                                            title={`${item.label} (${item.shortcut})`}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${isActive ? ribbonActiveCls : ribbonInactiveCls
+                                        <div key={group.id} className={`relative ${isOpen ? 'z-[9995]' : ''}`}>
+                                            <button
+                                                type="button"
+                                                onClick={() => setOpenNavDropdown(prev => prev === group.id ? null : group.id)}
+                                                className={`h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 whitespace-nowrap ${
+                                                    isGroupActive ? ribbonActiveCls : ribbonInactiveCls
                                                 }`}
-                                        >
-                                            <IconComponent size={13} className={`shrink-0 ${isActive ? 'opacity-100' : 'opacity-80'}`} />
-                                            <span>{item.label}</span>
-                                        </button>
+                                                title={`${group.label} Codex Sphere (${group.items.map(i => i.label).join(', ')})`}
+                                            >
+                                                <TriggerIcon size={13} className={`shrink-0 ${isGroupActive ? 'opacity-100' : 'opacity-80'}`} />
+                                                <span className={`font-serif font-bold whitespace-nowrap ${
+                                                    isGroupActive ? 'inline' : 'hidden md:inline'
+                                                }`}>
+                                                    {activeChild ? activeChild.label : group.label}
+                                                </span>
+                                                {activeChild && (
+                                                    <span className="text-[10px] opacity-60 hidden 2xl:inline font-sans font-normal">
+                                                        · {group.label}
+                                                    </span>
+                                                )}
+                                                <ChevronDown size={11} className={`transition-transform opacity-70 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+                                            </button>
+
+                                            {isOpen && (
+                                                <div
+                                                    className={`absolute top-full ${group.id === 'the-web' ? 'right-0' : 'left-0'} mt-1.5 w-72 rounded-2xl border z-[9999] p-2 space-y-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
+                                                        isRoyal
+                                                            ? 'bg-[#18100a] border-[#c8a96e]/50 text-[#f5ebd7]'
+                                                            : isWiki
+                                                                ? 'bg-[#fcf7ee] border-[#d4c8af] text-[#2b1810]'
+                                                                : isGrandVoyager
+                                                                    ? 'bg-[#091719] border-[#2dd4bf]/40 text-[#f5e9d0]'
+                                                                    : 'bg-slate-900 border-slate-700 text-slate-100'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center justify-between px-2 pt-1 pb-1.5 border-b border-current/10">
+                                                        <span className={`text-[10px] font-black uppercase tracking-wider ${
+                                                            isRoyal ? 'font-serif text-[#fcd34d]' : isGrandVoyager ? 'text-[#2dd4bf]' : isWiki ? 'text-[#b91c1c]' : 'text-[#fef08a]'
+                                                        }`}>
+                                                            {group.label}
+                                                        </span>
+                                                        <span className="text-[9px] font-mono opacity-50">
+                                                            {group.items.length} tools
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="space-y-1 pt-1">
+                                                        {group.items.map(item => {
+                                                            const isItemActive = activeTabId === item.id;
+                                                            const ItemIcon = item.icon;
+                                                            return (
+                                                                <button
+                                                                    key={item.id}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setActiveTabId(item.id);
+                                                                        setOpenNavDropdown(null);
+                                                                    }}
+                                                                    className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-colors cursor-pointer ${
+                                                                        isItemActive
+                                                                            ? isRoyal
+                                                                                ? 'bg-[#70121e] text-[#fff8e7] border border-[#c8a96e]/40 font-serif font-bold'
+                                                                                : isWiki
+                                                                                    ? 'bg-[#b91c1c] text-white font-serif font-bold'
+                                                                                    : isGrandVoyager
+                                                                                        ? 'bg-[#2dd4bf] text-[#041e1e] font-bold'
+                                                                                        : 'bg-[#fef08a] text-black font-bold'
+                                                                            : isRoyal
+                                                                                ? 'hover:bg-[#2e180d] text-[#ebd9bd]'
+                                                                                : isWiki
+                                                                                    ? 'hover:bg-[#efe1cf] text-[#2b1810]'
+                                                                                    : isGrandVoyager
+                                                                                        ? 'hover:bg-[#14282a] text-[#f5e9d0]'
+                                                                                        : 'hover:bg-slate-800 text-slate-200'
+                                                                    }`}
+                                                                >
+                                                                    <div className="flex items-center gap-2.5 min-w-0">
+                                                                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                                                                            isItemActive ? 'bg-black/20' : 'bg-black/10 dark:bg-white/10'
+                                                                        }`}>
+                                                                            <ItemIcon size={14} />
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <div className="text-xs font-serif font-bold truncate flex items-center gap-1.5">
+                                                                                <span>{item.label}</span>
+                                                                                {isItemActive && <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />}
+                                                                            </div>
+                                                                            <div className="text-[10px] opacity-60 truncate">
+                                                                                {item.description}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <kbd className={`text-[9px] font-mono px-1.5 py-0.5 rounded border shrink-0 ml-2 ${
+                                                                        isItemActive
+                                                                            ? 'bg-black/30 border-white/20 text-current'
+                                                                            : 'bg-black/20 dark:bg-white/10 border-current/20 opacity-60'
+                                                                    }`}>
+                                                                        {item.shortcut}
+                                                                    </kbd>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     );
                                 })}
                             </nav>
 
                             {/* Header Action Tools */}
-                            <div className={`inline-flex items-center gap-0.5 p-1 rounded-xl ${headerTrayCls} shrink-0`}>
+                            <div className={`h-9 inline-flex items-center gap-0.5 p-1 rounded-xl ${headerTrayCls} shrink-0`}>
                                 {/* Jump / Command Palette */}
                                 <button
                                     onClick={() => setShowCommandPalette(true)}
                                     title="Command Palette & Fast Search (Ctrl+K)"
-                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
+                                    className={`h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls}`}
                                 >
-                                    <Search size={13} className="opacity-80" />
-                                    <span className="hidden md:inline font-medium">Jump</span>
-                                    <kbd className={`hidden lg:inline text-[9px] font-mono px-1.5 py-0.5 rounded border ${isRoyal ? 'bg-black/50 text-[#e6c687] border-[#c8a96e]/40'
+                                    <Search size={13} className="opacity-80 shrink-0" />
+                                    <span className="hidden lg:inline font-medium whitespace-nowrap">Jump</span>
+                                    <kbd className={`hidden 2xl:inline text-[9px] font-mono px-1.5 py-0.5 rounded border leading-none ${
+                                        isRoyal ? 'bg-black/50 text-[#e6c687] border-[#c8a96e]/40'
                                         : isWiki ? 'bg-white/80 text-stone-600 border-stone-300'
                                             : 'bg-white/[0.08] text-slate-300 border-white/[0.10]'
                                         }`}>Ctrl+K</kbd>
@@ -362,10 +534,9 @@ const App = () => {
                                     onClick={undo}
                                     disabled={!canUndo}
                                     title="Undo changes (Ctrl+Z)"
-                                    className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`w-7 h-7 inline-flex items-center justify-center rounded-lg text-xs transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${actionToolBtnCls}`}
                                 >
                                     <Undo2 size={13} />
-                                    <span className="hidden xl:inline font-medium">Undo</span>
                                 </button>
 
                                 {/* Redo Button */}
@@ -373,43 +544,52 @@ const App = () => {
                                     onClick={redo}
                                     disabled={!canRedo}
                                     title="Redo changes (Ctrl+Y or Ctrl+Shift+Z)"
-                                    className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${actionToolBtnCls}`}
+                                    className={`w-7 h-7 inline-flex items-center justify-center rounded-lg text-xs transition-colors duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${actionToolBtnCls}`}
                                 >
                                     <Redo2 size={13} />
-                                    <span className="hidden xl:inline font-medium">Redo</span>
                                 </button>
 
                                 {/* Scratchpad / Lore Journal */}
                                 <button
                                     onClick={() => setShowScratchpad(true)}
                                     title="DM Scratchpad & Lore Journal (Ctrl+J)"
-                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
+                                    className={`h-7 inline-flex items-center gap-1.5 px-2 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls}`}
                                 >
-                                    <BookMarked size={13} className="opacity-80" />
-                                    <span className="hidden sm:inline font-medium">Scratchpad</span>
+                                    <BookMarked size={13} className="opacity-80 shrink-0" />
+                                    <span className="hidden xl:inline font-medium whitespace-nowrap">Scratchpad</span>
                                 </button>
 
                                 {/* Keybinds / Grimoire */}
                                 <button
                                     onClick={() => setShowKeybindsModal(true)}
                                     title="Grimoire of Shortcuts & Gestures (? or Ctrl+/)"
-                                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`}
+                                    className={`h-7 inline-flex items-center gap-1.5 px-2 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls}`}
                                 >
-                                    <Keyboard size={13} className="opacity-80" />
-                                    <span className="hidden sm:inline font-medium">Keybinds</span>
+                                    <Keyboard size={13} className="opacity-80 shrink-0" />
+                                    <span className="hidden xl:inline font-medium whitespace-nowrap">Keybinds</span>
                                 </button>
 
                                 {/* Sleek divider */}
-                                <div className="w-px h-4 mx-0.5 bg-current opacity-20" />
+                                <div className="w-px h-3.5 mx-0.5 bg-current opacity-20 shrink-0" />
 
-                                <ThemeSwitcher theme={theme} setTheme={setTheme} buttonClassName={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium tracking-tight transition-colors duration-150 cursor-pointer ${actionToolBtnCls}`} />
+                                <ThemeSwitcher
+                                    theme={theme}
+                                    setTheme={setTheme}
+                                    buttonClassName={`h-7 inline-flex items-center gap-1.5 px-2 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls}`}
+                                    labelClassName="font-medium hidden xl:inline whitespace-nowrap"
+                                />
                             </div>
                         </div>
 
+                        {/* Ornate Gold Accent Divider between Header & Content in Royal Codex */}
+                        {isRoyal && (
+                            <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#c8a96e]/40 to-transparent pointer-events-none" />
+                        )}
+
                         {/* Tier 2: Entity Document Tabs Bar (Rendered only when open dossier tabs exist) */}
                         {openTabIds.length > 0 && (
-                            <div className={`flex items-center justify-between px-3 py-1.5 border-t min-h-[36px] gap-2 ${dossierBarCls}`}>
-                                <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0 custom-scrollbar-hidden">
+                            <div className={`relative z-10 flex items-center justify-between px-3 py-1.5 border-t min-h-[36px] gap-2 ${dossierBarCls}`}>
+                                <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 flex-1 min-w-0 no-scrollbar custom-scrollbar-hidden">
                                     {openTabIds.map(id => {
                                         const e = world.entities.find(ent => ent.id === id);
                                         if (!e) return null;
@@ -420,8 +600,9 @@ const App = () => {
                                             <div
                                                 key={id}
                                                 onClick={() => setActiveTabId(id)}
-                                                className={`flex items-center gap-2 px-3 py-1 rounded-lg text-xs cursor-pointer transition-colors duration-150 border shrink-0 ${isActive ? dossierActiveCls : dossierInactiveCls
-                                                    }`}
+                                                className={`flex items-center gap-2 px-3 py-1 rounded-lg text-xs cursor-pointer transition-colors duration-150 border shrink-0 ${
+                                                    isActive ? dossierActiveCls : dossierInactiveCls
+                                                }`}
                                             >
                                                 <span className="flex items-center gap-1.5">
                                                     {isEditing ? <Edit3 size={11} className="text-amber-400 animate-pulse" /> : <Eye size={11} />}
@@ -449,7 +630,7 @@ const App = () => {
                     </header>
 
                     {/* Body Content */}
-                    <div className={`flex-1 min-h-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'p-2 sm:p-3 overflow-hidden' : 'p-4 md:p-6'}`}>
+                    <div className={`grow shrink-0 min-w-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'min-h-0 p-2 sm:p-3 overflow-hidden shrink' : 'p-2 sm:p-4 md:p-6'}`}>
                         {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
                         {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
                         {activeTabId === 'options' && <OptionsView world={world} setWorld={setWorld} />}
@@ -465,19 +646,19 @@ const App = () => {
                         {activeEntity && (
                             isManuscript ? (
 
-                                <div className="relative flex-1 flex flex-col p-2 sm:p-4 md:p-6 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] min-h-full rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl">
-                                    {/* Stacked Parchment Page Layers Behind Book */}
-                                    <div className="absolute -bottom-3 -left-4 w-80 h-48 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform -rotate-2 shadow-lg pointer-events-none z-0" />
-                                    <div className="absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
+                                <div className="relative grow shrink-0 min-w-0 w-full flex flex-col p-1.5 sm:p-3 md:p-5 bg-gradient-to-br from-[#4a0d1b] via-[#330712] to-[#1c0207] rounded-2xl sm:rounded-3xl border-2 border-[#c8a96e]/40 shadow-2xl">
+                                    {/* Stacked Parchment Page Layers Behind Book — visible on extra large viewports */}
+                                    <div className="hidden 2xl:block absolute -bottom-3 -left-4 w-80 h-48 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform -rotate-2 shadow-lg pointer-events-none z-0" />
+                                    <div className="hidden 2xl:block absolute -top-3 -right-4 w-72 h-40 bg-[#ebd9bd] border border-[#c8a96e]/50 rounded-xl transform rotate-1 shadow-lg pointer-events-none z-0" />
 
                                     {/* Inner Vellum Parchment Page — Wraps Full Scroll Height Seamlessly */}
-                                    <div className="relative flex-1 flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-2xl p-4 sm:p-6 md:p-10 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] min-h-full pb-16">
+                                    <div className="relative grow shrink-0 min-w-0 w-full flex flex-col bg-gradient-to-b from-[#fbf6ea] via-[#f7efe0] to-[#eee2cb] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 lg:p-8 border-2 border-[#c8a96e]/70 shadow-[inset_0_0_30px_rgba(180,140,80,0.15)] text-[#2b1810] pb-16">
 
-                                        {/* Four Ornamental Gold Filigree Corners */}
-                                        <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                                        <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-[#c8a96e] pointer-events-none" />
-                                        <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-[#c8a96e] pointer-events-none" />
-                                        <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-[#c8a96e] pointer-events-none" />
+                                        {/* Four Ornamental Gold Filigree Corners (Vector HD) */}
+                                        <VectorFiligreeCorner position="top-left" className="absolute top-2 left-2 z-10" size={24} />
+                                        <VectorFiligreeCorner position="top-right" className="absolute top-2 right-2 z-10" size={24} />
+                                        <VectorFiligreeCorner position="bottom-left" className="absolute bottom-2 left-2 z-10" size={24} />
+                                        <VectorFiligreeCorner position="bottom-right" className="absolute bottom-2 right-2 z-10" size={24} />
 
                                         <ErrorBoundary fallbackLabel="Error rendering character scroll or details. Click below to recover.">
                                             {editingTabIds.includes(activeTabId as string) ? (
@@ -524,8 +705,8 @@ const App = () => {
                                         </div>
                                     </div>
 
-                                    {/* Realistic Feather Quill Pen Overlay Bottom Right */}
-                                    <div className="absolute -bottom-8 -right-8 w-44 h-44 pointer-events-none z-30 transform rotate-12 drop-shadow-[0_15px_15px_rgba(0,0,0,0.8)]">
+                                    {/* Realistic Feather Quill Pen Overlay Bottom Right — positioned cleanly within manuscript bounds */}
+                                    <div className="hidden lg:block absolute bottom-0 right-0 w-36 h-36 pointer-events-none z-30 transform rotate-12 drop-shadow-[0_15px_15px_rgba(0,0,0,0.8)]">
                                         <svg viewBox="0 0 100 100" className="w-full h-full">
                                             <path d="M85 10 C 60 30, 30 65, 10 90 L 14 92 C 35 70, 65 35, 88 12 Z" fill="url(#quillGrad)" />
                                             <path d="M85 10 Q 55 25, 40 55 Q 60 45, 88 12 Z" fill="#2d261e" opacity="0.8" />
@@ -541,7 +722,7 @@ const App = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full max-w-none 2xl:max-w-7xl mx-auto px-6 md:px-12 py-8 md:py-12 min-h-full">
+                                <div className="w-full min-w-0 max-w-none 2xl:max-w-7xl mx-auto px-3 sm:px-6 md:px-12 py-4 sm:py-8 md:py-12 min-h-full">
                                     <ErrorBoundary fallbackLabel="Error rendering character scroll or details. Click below to recover.">
                                         {editingTabIds.includes(activeTabId as string) ? (
                                             <EntityEditor
