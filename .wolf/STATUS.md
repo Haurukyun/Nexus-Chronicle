@@ -12,6 +12,13 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **fix: anti-alias vector filigrees and enable direct dropdown switching (`VectorFiligreeCorner.tsx`, `App.tsx`) (2026-11-23)**:
+  - Eliminated pixelated/stair-stepped SVG corners: replaced CSS element rotations (`rotate-90`) with native SVG coordinate transformations (`rotate(angle 12 12)`), preventing HTML rasterization aliasing; added subtle Gaussian metallic illumination aura (`feDropShadow`) and `strokeLinejoin="round"`.
+  - Anti-aliased header and active ribbon gold borders with `[background-clip:padding-box]` and subpixel coverage ring shadows (`shadow-[0_0_0_1px_rgba(200,169,110,0.25)]`), eliminating jagged borders on Windows display scaling.
+  - Fixed dropdown switching: elevated navigation ribbon to `z-[9995]` above backdrop (`z-[9990]`), enabling direct 1-click switching to another dropdown (and auto-switching on hover when a dropdown is already active) without requiring a click-away first.
+  - Added unit test `src/components/ui/VectorFiligreeCorner.test.tsx` (3 tests).
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (94/94 passing across 20 test files), `npm run build` (clean).
+
 - **fix: restore header dropdown nav groups and VectorFiligreeCorner (`src/App.tsx`, `src/views/OptionsView.tsx`) (2026-11-23)**:
   - Restored categorized header navigation dropdowns (`Chronicles` [Gazette, Chronos, Sessions], `Cartography` [Atlas, Journey], `The Web` [Threads, Factions, Nexus Lines, Ledger]) in `src/App.tsx`.
   - Restored click-outside backdrop listener and active group indicator badges.

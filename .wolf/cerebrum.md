@@ -29,6 +29,10 @@ budget_tokens: 2000
   2. *Strict separation of title and body:* Always separate title and description cleanly using two separate `-m` arguments: `git commit -m "short title under 65 chars" -m "Detailed multi-line bulleted description"`. Never blend or concatenate title and description into a single argument.
   3. *NEVER omit the description:* Every commit MUST have a substantive, well-structured description explaining the changes made, why they were made, and the components affected. Commits with empty or missing descriptions are strictly forbidden.
 - **No standalone .wolf commits rule (Updated 2026-11-16):** NEVER create a git commit that contains ONLY `.wolf` files (such as `.wolf/STATUS.md`, `.wolf/cerebrum.md`, `.wolf/memory.md`, etc.). Documentation in `.wolf/` must ALWAYS be bundled and committed together with the corresponding application code changes. If only `.wolf` files are modified, do NOT commit.
+- **Explicit File Staging & Pre-Commit Diff Review (MANDATORY — Updated 2026-11-23):**
+  1. *Never use broad wildcards (`git add .`, `git add src/`, `git add -A`):* Broad directory staging can inadvertently pull in dirty or stale files (e.g. an uncommitted `App.tsx` from an editor undo buffer or concurrent task). Always explicitly list the exact files touched for the active quest: `git add <file1> <file2>`.
+  2. *Mandatory pre-commit review:* Always run `git diff --cached --stat` before executing `git commit` to verify that only the intentionally edited files are staged, and that no core layout files or unrelated components are altered.
+  3. *Pre-existing dirty tree check:* Check `git status` at the start of any multi-file task. If files outside the task scope are already dirty, diff and resolve or discard them first so they never leak into feature commits.
 
 ## HD Rendering — VectorFiligreeCorner (MANDATORY — 2026-11-22)
 

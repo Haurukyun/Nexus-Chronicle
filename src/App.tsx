@@ -287,15 +287,15 @@ const App = () => {
 
     // Architectural Toolbar Tokens — perfectly cohesive with Sidebar, Codex sheets, and theme registry
     const headerTrayCls = isRoyal
-        ? 'bg-[#140b07]/90 border border-[#c8a96e]/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8),0_1px_0_rgba(200,169,110,0.15)]'
+        ? 'bg-[#140b07]/95 border border-[#c8a96e]/35 [background-clip:padding-box] shadow-[0_0_0_1px_rgba(200,169,110,0.2),inset_0_1px_2px_rgba(0,0,0,0.8),0_2px_8px_rgba(0,0,0,0.5)]'
         : isWiki
-            ? 'bg-[#fbf5eb] border border-[#d4c8af] shadow-inner'
+            ? 'bg-[#fbf5eb] border border-[#d4c8af] [background-clip:padding-box] shadow-inner'
             : isGrandVoyager
-                ? 'bg-[#081517]/90 border border-[#2dd4bf]/40 shadow-inner'
-                : 'bg-slate-950/80 border border-slate-800/80 shadow-inner';
+                ? 'bg-[#081517]/95 border border-[#2dd4bf]/40 [background-clip:padding-box] shadow-[0_0_0_1px_rgba(45,212,191,0.2),inset_0_1px_2px_rgba(0,0,0,0.8)]'
+                : 'bg-slate-950/90 border border-slate-800/80 [background-clip:padding-box] shadow-inner';
 
     const ribbonActiveCls = isRoyal
-        ? 'bg-gradient-to-b from-[#881326] to-[#5b0e18] text-[#fff8e7] border border-[#c8a96e] shadow-[0_2px_6px_rgba(112,18,30,0.5),inset_0_1px_0_rgba(255,255,255,0.2)] font-serif font-bold uppercase tracking-wider'
+        ? 'bg-gradient-to-b from-[#881326] to-[#5b0e18] text-[#fff8e7] border border-[#c8a96e]/80 [background-clip:padding-box] shadow-[0_0_0_1px_rgba(200,169,110,0.3),0_2px_8px_rgba(112,18,30,0.6),inset_0_1px_0_rgba(255,255,255,0.25)] font-serif font-bold uppercase tracking-wider'
         : isWiki
             ? 'bg-gradient-to-b from-[#b91c1c] to-[#991b1b] text-white font-bold border border-[#991b1b] shadow-sm font-serif uppercase tracking-wider'
             : isGrandVoyager
@@ -303,7 +303,7 @@ const App = () => {
                 : 'bg-gradient-to-b from-[#fef08a] to-[#eab308] text-slate-950 font-bold border border-yellow-300 shadow-[0_2px_8px_rgba(254,240,138,0.3)]';
 
     const ribbonInactiveCls = isRoyal
-        ? 'border border-transparent text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+        ? 'border border-transparent hover:border-[#c8a96e]/30 [background-clip:padding-box] text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-all duration-150'
         : isWiki
             ? 'border border-transparent text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
             : isGrandVoyager
@@ -311,7 +311,7 @@ const App = () => {
                 : 'border border-transparent text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-colors duration-150';
 
     const actionToolBtnCls = isRoyal
-        ? 'border border-transparent text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-colors duration-150'
+        ? 'border border-transparent hover:border-[#c8a96e]/30 [background-clip:padding-box] text-[#ebd9bd] hover:text-[#fff8e7] hover:bg-[#c8a96e]/15 font-serif font-semibold tracking-wider transition-all duration-150'
         : isWiki
             ? 'border border-transparent text-stone-700 hover:text-stone-950 hover:bg-stone-200/60 font-serif font-semibold tracking-wide transition-colors duration-150'
             : isGrandVoyager
@@ -391,9 +391,9 @@ const App = () => {
                         )}
 
                         {/* Tier 1: Primary Realm Navigation Ribbon & Action Tools */}
-                        <div className="relative z-20 flex items-center justify-between px-3 py-2 gap-2 min-w-0">
+                        <div className="relative z-[9995] flex items-center justify-between px-3 py-2 gap-2 min-w-0">
                             {/* Realm Navigation Categorized Dropdowns (Fandom/Codex Sphere style) */}
-                            <nav className={`h-9 inline-flex items-center p-1 rounded-xl ${headerTrayCls} shrink-0 gap-1`} data-nav-dropdown="true">
+                            <nav className={`h-9 inline-flex items-center p-1 rounded-xl ${headerTrayCls} shrink-0 gap-1 relative z-[9995]`} data-nav-dropdown="true">
                                 {activeRealmNavGroups.map(group => {
                                     const activeChild = group.items.find(item => item.id === activeTabId);
                                     const isGroupActive = Boolean(activeChild);
@@ -401,11 +401,19 @@ const App = () => {
                                     const TriggerIcon = activeChild ? activeChild.icon : group.icon;
 
                                     return (
-                                        <div key={group.id} className={`relative ${isOpen ? 'z-[9995]' : ''}`}>
+                                        <div key={group.id} className="relative">
                                             <button
                                                 type="button"
-                                                onClick={() => setOpenNavDropdown(prev => prev === group.id ? null : group.id)}
-                                                className={`h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 whitespace-nowrap ${
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setOpenNavDropdown(prev => prev === group.id ? null : group.id);
+                                                }}
+                                                onMouseEnter={() => {
+                                                    if (openNavDropdown && openNavDropdown !== group.id) {
+                                                        setOpenNavDropdown(group.id);
+                                                    }
+                                                }}
+                                                className={`h-7 inline-flex items-center gap-1.5 px-2.5 rounded-lg text-xs leading-none tracking-tight transition-all duration-150 cursor-pointer shrink-0 whitespace-nowrap ${
                                                     isGroupActive ? ribbonActiveCls : ribbonInactiveCls
                                                 }`}
                                                 title={`${group.label} Codex Sphere (${group.items.map(i => i.label).join(', ')})`}
@@ -426,13 +434,13 @@ const App = () => {
 
                                             {isOpen && (
                                                 <div
-                                                    className={`absolute top-full ${group.id === 'the-web' ? 'right-0' : 'left-0'} mt-1.5 w-72 rounded-2xl border z-[9999] p-2 space-y-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${
+                                                    className={`absolute top-full ${group.id === 'the-web' ? 'right-0' : 'left-0'} mt-1.5 w-72 rounded-2xl border z-[9999] p-2 space-y-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150 [background-clip:padding-box] ${
                                                         isRoyal
-                                                            ? 'bg-[#18100a] border-[#c8a96e]/50 text-[#f5ebd7]'
+                                                            ? 'bg-[#18100a] border-[#c8a96e]/40 shadow-[0_0_0_1px_rgba(200,169,110,0.2),0_15px_35px_rgba(0,0,0,0.85)] text-[#f5ebd7]'
                                                             : isWiki
                                                                 ? 'bg-[#fcf7ee] border-[#d4c8af] text-[#2b1810]'
                                                                 : isGrandVoyager
-                                                                    ? 'bg-[#091719] border-[#2dd4bf]/40 text-[#f5e9d0]'
+                                                                    ? 'bg-[#091719] border-[#2dd4bf]/40 shadow-[0_0_0_1px_rgba(45,212,191,0.2),0_15px_35px_rgba(0,0,0,0.85)] text-[#f5e9d0]'
                                                                     : 'bg-slate-900 border-slate-700 text-slate-100'
                                                     }`}
                                                 >
