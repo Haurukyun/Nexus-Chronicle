@@ -6,11 +6,28 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-24 (06:55)
+> Last updated: 2026-11-24 (08:30)
 
 ---
 
 ## ✅ Done
+
+- **feat: Portable Install-Folder Data Vault (Choice 1) & Mairimashita Reference Test Realm (`lib.rs`, `portableVault.ts`, `tauriAssetVault.ts`, `OptionsView.tsx`, `mairimashitaWorld.ts`) (2026-11-24)**:
+  - **Portable Vault Engine (Choice 1 Architecture)**:
+    - Added Rust native backend vault resolver in `src-tauri/src/lib.rs` that detects whether the application is running from a portable directory (e.g. USB drive or custom folder outside `Program Files`) with write permissions.
+    - Stores all codex JSON data and media assets directly in `./data/` alongside the executable (`./data/codex.json` and `./data/assets/`).
+    - Gracefully falls back to system AppData if installed in read-only directories like `C:\Program Files\`.
+    - Added atomic file write with `.tmp` staging and replace, plus `open_vault_folder` command to reveal data in Windows Explorer.
+    - Created `src/utils/portableVault.ts` bridging Zustand and disk with debounced auto-save subscriptions and hydration on startup.
+    - Integrated with `tauriAssetVault.ts` so all media attachments route to `./data/assets/` in portable mode.
+    - Added Storage & Vault dashboard in `src/views/OptionsView.tsx` with directory display, Explorer reveal, and manual sync buttons.
+  - **Mairimashita! Iruma-kun Reference World Dataset (`src/data/mairimashitaWorld.ts`)**:
+    - Created complete, rich test realm based on *Mairimashita! Iruma-kun* (Babyls Demon School, Netherworld).
+    - Fully populated at least 2 entries for **every single one of the 21 entity categories** (Chapters, Lore Notes, Myths, Characters, Locations, Events, Species, Languages, Cultures, Political Groups, Religious Groups, Organizations, Magic Groups, Science Groups, Technologies, Skills/Spells, Items, Occupations, Conditions, Resources, Currencies).
+    - Every field filled: combat ratings, RPG-d20 stats, custom stats (Crisis Evasion, Ring Charge), relationships, bloodline traits, etc.
+    - Added 1-click "Load Iruma-kun Realm" button in `OptionsView.tsx` header.
+  - Added unit tests: `src/data/mairimashitaWorld.test.ts` (4 tests) and `src/utils/portableVault.test.ts` (1 test).
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (116/116 passing across 25 test files), `npm run build` (clean), `cargo check` (clean).
 
 - **feat: Continuity & Timeline Conflict Detector (`continuityDetector.ts`, `ContinuityAuditorModal.tsx`, `EntityViewer.tsx`, `App.tsx`) (2026-11-24)**:
   - **Conflict Detection Engine (`src/utils/continuityDetector.ts`)**:

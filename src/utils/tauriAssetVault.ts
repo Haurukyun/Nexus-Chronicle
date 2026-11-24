@@ -22,6 +22,7 @@
 
 import { invoke, convertFileSrc } from '@tauri-apps/api/core';
 import { isDesktopApp } from './nativeFileBridge';
+import { getVaultInfo } from './portableVault';
 
 // Cached resolved AppData path so we only invoke the Rust command once per session.
 let _vaultDir: string | null = null;
@@ -34,9 +35,8 @@ let _vaultDir: string | null = null;
 export async function getVaultDir(): Promise<string> {
     if (_vaultDir) return _vaultDir;
 
-    // Call our custom Rust command registered in lib.rs via tauri::generate_handler!
-    const appDataDir = await invoke<string>('get_app_data_dir');
-    const dir = `${appDataDir}/assets`;
+    const info = await getVaultInfo();
+    const dir = info ? info.assets_dir : (await invoke<string>('get_app_data_dir')) + '/assets';
 
     try {
         await invoke('plugin:fs|mkdir', { path: dir, options: { recursive: true } });

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef } from 'react';
 import {
     Palette, Skull, Globe, Layers, Plus, Copy,
     Download, Upload, Trash2, Edit2, Check, Sparkles, AlertTriangle, ArrowRight, BookOpen,
-    Radio, FileArchive, Zap, Heart, FileText, FileCode2, ChevronDown,
+    Radio, FileArchive, Zap, Heart, FileText, FileCode2, ChevronDown, FolderOpen,
     Sliders, CheckSquare, Square, Shield, Swords, Cpu, MapPin, Tag, X, Lightbulb, Eye, EyeOff
 } from 'lucide-react';
 import { WorldData, EntityType, WorldPhase, RealmModuleConfig } from '../types';
@@ -32,6 +32,8 @@ import { reconcileAllBidirectionalRelations } from '../utils/bidirectionalSync';
 import { CONFIGURABLE_FIELDS, toggleFieldHidden } from '../utils/fieldVisibilityUtils';
 import { GENRE_TEMPLATE_LIST, applyGenreTemplateToWorld, getActiveGenreTemplate, GenreTemplateId } from '../utils/genreTemplates';
 import { AssetVaultModal } from '../components/vault/AssetVaultModal';
+import { getVaultInfo, openVaultFolder, saveCodexToDisk, VaultInfo } from '../utils/portableVault';
+import { mairimashitaWorld } from '../data/mairimashitaWorld';
 
 interface OptionsViewProps {
     world: WorldData;
@@ -102,6 +104,51 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
 
     // Genre Template Selector state (Approach 7)
     const [applyGenreFieldDefaults, setApplyGenreFieldDefaults] = useState(false);
+
+    // Desktop Storage & Portable Vault state (Choice 1 Architecture)
+    const [vaultInfo, setVaultInfo] = useState<VaultInfo | null>(null);
+    const [isSavingToVault, setIsSavingToVault] = useState(false);
+    const [vaultNotice, setVaultNotice] = useState<string | null>(null);
+
+    React.useEffect(() => {
+        getVaultInfo().then(info => setVaultInfo(info));
+    }, []);
+
+    const handleOpenVault = async () => {
+        await openVaultFolder();
+    };
+
+    const handleForceVaultSave = async () => {
+        setIsSavingToVault(true);
+        const state = useWorldStore.getState();
+        const success = await saveCodexToDisk({
+            worlds: state.worlds,
+            activeWorldId: state.activeWorldId,
+            world: state.world,
+            theme: state.theme,
+            scratchpadNote: state.scratchpadNote
+        });
+        setIsSavingToVault(false);
+        if (success) {
+            setVaultNotice('✓ Synced actively to codex.json on disk');
+            setTimeout(() => setVaultNotice(null), 3000);
+        }
+    };
+
+    const handleLoadMairimashitaWorld = () => {
+        const existing = worlds.find(w => w.id === mairimashitaWorld.id);
+        if (existing) {
+            switchWorld(existing.id);
+            setImportNotice({ text: '✓ Switched to existing Netherworld (Mairimashita! Iruma-kun) Realm' });
+            return;
+        }
+        useWorldStore.setState(prev => ({
+            worlds: [...prev.worlds, mairimashitaWorld],
+            world: mairimashitaWorld,
+            activeWorldId: mairimashitaWorld.id
+        }));
+        setImportNotice({ text: '✓ Successfully spawned and loaded Netherworld (Mairimashita! Iruma-kun) Realm' });
+    };
 
     const handleAddSuggestion = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -437,18 +484,37 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
                     <p className="opacity-50 text-sm mt-2 italic font-serif">Configure parameters, manage multi-campaign realms, and curate backups.</p>
                 </div>
 
-                <button
-                    onClick={() => setIsNewModalOpen(true)}
-                    className={`px-5 py-3 rounded-2xl flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all ${
-                        (themeId === 'royal-codex')
-                            ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border border-[#c8a96e] shadow-md'
-                            : (layoutMode === 'wiki')
-                            ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
-                            : 'bg-[#fef08a] text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20'
-                    }`}
-                >
-                    <Plus size={16} /> Found New Realm
-                </button>
+                <div className="flex flex-wrap items-center gap-2.5">
+                    <button
+                        type="button"
+                        onClick={handleLoadMairimashitaWorld}
+                        className={`px-4 py-3 rounded-2xl flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all cursor-pointer ${
+                            (themeId === 'royal-codex')
+                                ? 'bg-[#5b0e18] text-[#ebd9bd] hover:bg-[#70121e] border border-[#c8a96e]/60 shadow-md'
+                                : (layoutMode === 'wiki')
+                                ? 'bg-stone-200 text-stone-800 hover:bg-stone-300 border border-stone-400'
+                                : 'bg-slate-800 text-yellow-300 hover:bg-slate-700 border border-slate-700'
+                        }`}
+                        title="Load complete reference realm based on Mairimashita! Iruma-kun with all 21 categories populated"
+                    >
+                        <Sparkles size={15} className="text-yellow-400" />
+                        <span>Load Iruma-kun Realm</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setIsNewModalOpen(true)}
+                        className={`px-5 py-3 rounded-2xl flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all cursor-pointer ${
+                            (themeId === 'royal-codex')
+                                ? 'bg-[#70121e] text-[#fff8e7] hover:bg-[#881337] border border-[#c8a96e] shadow-md'
+                                : (layoutMode === 'wiki')
+                                ? 'bg-[#b91c1c] text-white hover:bg-[#991b1b]'
+                                : 'bg-[#fef08a] text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20'
+                        }`}
+                    >
+                        <Plus size={16} /> Found New Realm
+                    </button>
+                </div>
             </header>
 
             {/* Import Feedback Banner */}
@@ -1341,6 +1407,70 @@ export const OptionsView = ({ world, setWorld }: OptionsViewProps) => {
 
                         {/* Universe Backup & Restore */}
                         <div className="pt-2 space-y-4">
+                            {/* Desktop Storage & Portable Vault (Choice 1 Architecture) */}
+                            {isDesktopApp() && (
+                                <div className={`p-5 rounded-2xl border space-y-4 ${isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'}`}>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-black uppercase tracking-wider opacity-60 block">
+                                                    {vaultInfo?.is_portable ? 'Portable Vault Storage (Active)' : 'Application Storage Vault'}
+                                                </span>
+                                                {vaultInfo?.is_portable && (
+                                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                                                        Portable Drive Mode
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-[11px] opacity-40 font-serif italic mt-0.5">
+                                                {vaultInfo?.is_portable
+                                                    ? 'Data sits in the ./data/ directory beside the executable. All campaign codex entries and media assets travel portably with your app folder.'
+                                                    : 'Standard installation storage in platform AppData.'}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {vaultInfo && (
+                                        <div className="text-[11px] font-mono p-2.5 rounded-xl bg-black/10 dark:bg-black/40 border border-current/10 truncate select-all" title={vaultInfo.vault_dir}>
+                                            📁 {vaultInfo.vault_dir}
+                                        </div>
+                                    )}
+
+                                    <div className="flex flex-wrap gap-2.5 pt-1">
+                                        <button
+                                            type="button"
+                                            onClick={handleOpenVault}
+                                            className={`py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                                isLight
+                                                    ? 'border-[#c8a96e]/50 hover:border-[#70121e] hover:bg-[#70121e]/10 text-[#2b1810]'
+                                                    : 'border-slate-700 hover:border-yellow-400'
+                                            }`}
+                                        >
+                                            <FolderOpen size={13} /> Open Vault Folder
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={handleForceVaultSave}
+                                            disabled={isSavingToVault}
+                                            className={`py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                                isLight
+                                                    ? 'border-[#c8a96e]/50 hover:border-[#70121e] hover:bg-[#70121e]/10 text-[#2b1810]'
+                                                    : 'border-slate-700 hover:border-yellow-400'
+                                            }`}
+                                        >
+                                            <Check size={13} /> {isSavingToVault ? 'Saving…' : 'Sync Codex to Disk'}
+                                        </button>
+
+                                        {vaultNotice && (
+                                            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-serif italic self-center">
+                                                {vaultNotice}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Classic JSON Backups */}
                             <div className={`p-5 rounded-2xl border space-y-4 ${isLight ? 'bg-[#ede2cb]/60 border-[#c8a96e]/30' : 'bg-black/20 border-white/5'}`}>
                                 <div>

@@ -29,6 +29,7 @@ import { CommandPalette } from './components/ui/CommandPalette';
 import { ScratchpadDrawer } from './components/ui/ScratchpadDrawer';
 import { ContinuityAuditorModal } from './components/continuity/ContinuityAuditorModal';
 import { detectContinuityIssues } from './utils/continuityDetector';
+import { initPortableVault } from './utils/portableVault';
 import { TropicalSceneBackground } from './components/ui/TropicalSceneBackground';
 import { VectorFiligreeCorner } from './components/ui/VectorFiligreeCorner';
 
@@ -53,6 +54,10 @@ const App = () => {
     const [showKeybindsModal, setShowKeybindsModal] = useState(false);
     const [showContinuityAuditor, setShowContinuityAuditor] = useState(false);
     const [openNavDropdown, setOpenNavDropdown] = useState<string | null>(null);
+
+    useEffect(() => {
+        initPortableVault();
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
