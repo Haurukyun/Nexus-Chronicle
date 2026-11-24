@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState } from 'react';
 import {
     Search, Plus, Globe, Trash2, Settings,
     BookMarked, Compass, Eye, Edit3, BarChart3, History, GitMerge, Footprints, Keyboard,
-    Undo2, Redo2, BookOpen, Lightbulb, Swords, Newspaper, ChevronDown
+    Undo2, Redo2, BookOpen, Lightbulb, Swords, Newspaper, ChevronDown, AlertTriangle
 } from 'lucide-react';
 import { useWorldStore } from './store/useWorldStore';
 import { useTheme } from './theme';
@@ -27,6 +27,8 @@ import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import { KeybindsModal } from './components/ui/KeybindsModal';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { ScratchpadDrawer } from './components/ui/ScratchpadDrawer';
+import { ContinuityAuditorModal } from './components/continuity/ContinuityAuditorModal';
+import { detectContinuityIssues } from './utils/continuityDetector';
 import { TropicalSceneBackground } from './components/ui/TropicalSceneBackground';
 import { VectorFiligreeCorner } from './components/ui/VectorFiligreeCorner';
 
@@ -49,6 +51,7 @@ const App = () => {
     const [showCommandPalette, setShowCommandPalette] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
     const [showKeybindsModal, setShowKeybindsModal] = useState(false);
+    const [showContinuityAuditor, setShowContinuityAuditor] = useState(false);
     const [openNavDropdown, setOpenNavDropdown] = useState<string | null>(null);
 
     useEffect(() => {
@@ -123,6 +126,11 @@ const App = () => {
 
     const canUndo = Boolean(historyPast && historyPast.length > 0);
     const canRedo = Boolean(historyFuture && historyFuture.length > 0);
+
+    const continuityAlertCount = useMemo(() => {
+        const issues = detectContinuityIssues(world);
+        return issues.filter(i => i.severity === 'critical' || i.severity === 'warning').length;
+    }, [world]);
 
     useEffect(() => {
         // If current tab is a module that was deactivated, redirect to dashboard
@@ -573,6 +581,23 @@ const App = () => {
                                     <span className="hidden xl:inline font-medium whitespace-nowrap">Keybinds</span>
                                 </button>
 
+                                {/* Continuity Auditor Button */}
+                                <button
+                                    onClick={() => setShowContinuityAuditor(true)}
+                                    title="Continuity & Chronology Conflict Auditor"
+                                    className={`h-7 inline-flex items-center gap-1.5 px-2 rounded-lg text-xs leading-none tracking-tight transition-colors duration-150 cursor-pointer shrink-0 ${actionToolBtnCls} ${
+                                        continuityAlertCount > 0 ? 'text-amber-400 hover:text-amber-300' : ''
+                                    }`}
+                                >
+                                    <AlertTriangle size={13} className={continuityAlertCount > 0 ? 'text-amber-400' : 'opacity-80'} />
+                                    <span className="hidden xl:inline font-medium whitespace-nowrap">Continuity</span>
+                                    {continuityAlertCount > 0 && (
+                                        <span className="text-[9px] font-black bg-amber-400 text-black rounded-full px-1.5 py-0.2 leading-tight">
+                                            {continuityAlertCount}
+                                        </span>
+                                    )}
+                                </button>
+
                                 {/* Sleek divider */}
                                 <div className="w-px h-3.5 mx-0.5 bg-current opacity-20 shrink-0" />
 
@@ -766,6 +791,13 @@ const App = () => {
             <KeybindsModal
                 isOpen={showKeybindsModal}
                 onClose={() => setShowKeybindsModal(false)}
+            />
+
+            <ContinuityAuditorModal
+                isOpen={showContinuityAuditor}
+                onClose={() => setShowContinuityAuditor(false)}
+                world={world}
+                onNavigate={handleOpenEntity}
             />
 
             <CommandPalette

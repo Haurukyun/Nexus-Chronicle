@@ -6,11 +6,34 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-23 (17:15)
+> Last updated: 2026-11-24 (06:55)
 
 ---
 
 ## ✅ Done
+
+- **feat: Continuity & Timeline Conflict Detector (`continuityDetector.ts`, `ContinuityAuditorModal.tsx`, `EntityViewer.tsx`, `App.tsx`) (2026-11-24)**:
+  - **Conflict Detection Engine (`src/utils/continuityDetector.ts`)**:
+    - Comprehensive offline, local rule-based engine detecting 9 distinct conflict types:
+      - Inverted lifespans (birth year after death year).
+      - Inverted event durations (start year after end year).
+      - Posthumous and pre-natal event participation.
+      - Temporal kinship paradoxes (parent born after child, or child born >1 year posthumously).
+      - Self-referential kinship paradoxes (entity listed as its own parent/child/relative).
+      - Circular ancestry loops (DFS cycle detection).
+      - Deceased characters listed as active residents of locations.
+      - Dangling broken entity references to deleted or missing entity IDs across relationship and residency arrays.
+    - Exports `detectContinuityIssues(world)`, `getEntityContinuityIssues(entityId, world)`, and `getContinuitySummary(issues)`.
+  - **Diagnostic Modal (`src/components/continuity/ContinuityAuditorModal.tsx`)**:
+    - Portal-mounted full diagnostic auditor modal with 4 health counters (Total, Critical, Warnings, Broken Links).
+    - Category filtering pills (All, Lifespans, Event Sync, Ancestry, Broken Links) and real-time search filter.
+    - Issue cards with severity accent borders, suggested fix hints, "Jump to Entity" and "View Related Entity" navigation triggers.
+    - Royal Codex styling with `VectorFiligreeCorner` decorations.
+  - **Passive Inline Entity Alerts & Header Action Trigger**:
+    - Embedded passive continuity alert pills directly below the header in `EntityViewer.tsx` flagging entity-specific issues.
+    - Added header action tool button with dynamic live counter badge in `App.tsx` tray.
+  - Added unit tests in `src/utils/continuityDetector.test.ts` (12 tests) and `src/components/continuity/ContinuityAuditorModal.test.tsx` (2 tests).
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (111/111 passing across 23 test files), `npm run build` (clean).
 
 - **fix: eliminate corner halo bleed, overhaul category customizer & add in-context suggestions (`App.tsx`, `Sidebar.tsx`, `CategoryManagerModal.tsx`, `TraitListEditor.tsx`, `constants.ts`, `themeRegistry.ts`, `specifics`) (2026-11-24)**:
   - **Eliminated top-right corner halo bleed & jagged edges**:

@@ -22,6 +22,7 @@ import { isEntityDeceased, isEntityCategory, isEntityFinished } from '../../util
 import { generateRelationSheetHtml, openPrintableDocument } from '../../utils/characterSheetUtils';
 import { isModuleActive } from '../../utils/realmConfig';
 import { shouldHideEmptyFields } from '../../utils/fieldVisibilityUtils';
+import { getEntityContinuityIssues } from '../../utils/continuityDetector';
 
 export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate, onFocusMap }: EntityViewerProps) => {
     const isChar = entity.type === 'character';
@@ -47,6 +48,10 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
     // Calculate categorized backlinks
     const backlinks = useMemo(() => getCategorizedBacklinks(entity.id, allEntities), [entity.id, allEntities]);
     const parentEntity = allEntities.find(e => e.id === (entity.parentId || (entity as any).belongsUnderId));
+
+    const entityIssues = useMemo(() => {
+        return getEntityContinuityIssues(entity.id, { entities: allEntities } as any);
+    }, [entity.id, allEntities]);
 
     const isRoyal = themeId === 'royal-codex';
     const isVoyager = themeId === 'grand-voyager';
@@ -651,6 +656,31 @@ export const EntityViewer = ({ entity, allEntities, onEdit, onDelete, onNavigate
                     hideEmptyFields={hideEmptyFields}
                     onToggleHideEmptyFields={handleToggleHideEmptyFields}
                 />
+            )}
+            {entityIssues.length > 0 && (
+                <div className="mx-6 mt-3 flex flex-wrap gap-2">
+                    {entityIssues.slice(0, 3).map(issue => (
+                        <div
+                            key={issue.id}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-serif border ${
+                                issue.severity === 'critical'
+                                    ? 'bg-red-500/15 border-red-500/40 text-red-500 dark:text-red-400'
+                                    : issue.severity === 'warning'
+                                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-400'
+                                    : 'bg-sky-500/15 border-sky-500/40 text-sky-600 dark:text-sky-400'
+                            }`}
+                            title={issue.description}
+                        >
+                            <AlertTriangle size={12} className="shrink-0" />
+                            <span className="font-medium">{issue.title}</span>
+                        </div>
+                    ))}
+                    {entityIssues.length > 3 && (
+                        <span className="text-xs opacity-60 font-mono self-center">
+                            +{entityIssues.length - 3} more issues
+                        </span>
+                    )}
+                </div>
             )}
             <MainView />
 
