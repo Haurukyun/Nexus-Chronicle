@@ -33,10 +33,11 @@ export const VectorFiligreeCorner: React.FC<VectorFiligreeCornerProps> = ({
             fill="none"
             className={`pointer-events-none select-none shrink-0 ${className}`}
             style={{ overflow: 'visible' }}
+            shapeRendering="geometricPrecision"
             aria-hidden="true"
         >
             <defs>
-                {/* Micro-glow filter that eliminates stair-stepping on fractional Windows display scaling */}
+                {/* Micro-glow filter that softens subpixel boundaries and eliminates stair-stepping on Windows scaling */}
                 <filter id={filterId} x="-30%" y="-30%" width="160%" height="160%">
                     <feDropShadow dx="0" dy="0" stdDeviation="0.65" floodColor={color} floodOpacity="0.45" />
                 </filter>
@@ -49,6 +50,7 @@ export const VectorFiligreeCorner: React.FC<VectorFiligreeCornerProps> = ({
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    vectorEffect="non-scaling-stroke"
                 />
                 {/* Delicate inner accent arc */}
                 <path
@@ -58,6 +60,7 @@ export const VectorFiligreeCorner: React.FC<VectorFiligreeCornerProps> = ({
                     strokeOpacity="0.7"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    vectorEffect="non-scaling-stroke"
                 />
                 {/* Micro filigree accent node */}
                 <circle cx="8" cy="8" r="1.5" fill={color} />

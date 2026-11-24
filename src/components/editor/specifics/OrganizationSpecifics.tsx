@@ -104,6 +104,7 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
                     suggestions={mergeSuggestions(['Grandmaster', 'High Council', 'Commander', 'Quartermaster', 'Envoy', 'Officer', 'Scribe', 'Initiate', 'Operative', 'Sentinel'], customSuggestions['organization'])}
                     placeholder="Add an internal rank or title..."
                     gridSpan={6}
+                    suggestionCategory="organization"
                 />
                 <TraitListEditor
                     label="Core Tenets & Doctrine"
@@ -112,6 +113,7 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
                     suggestions={mergeSuggestions(['Absolute Secrecy', 'Mutual Defense', 'Strict Hierarchy', 'Total Loyalty', 'Protection of the Innocent', 'Pursuit of Forbidden Lore', 'Non-Interference', 'Blood Oath', 'Code of Honor', 'Sacred Silence'], customSuggestions['organization'])}
                     placeholder="Add a core tenet, law or creed..."
                     gridSpan={6}
+                    suggestionCategory="organization"
                 />
                 <TraitListEditor
                     label="Faction Assets & Strongholds"
@@ -120,6 +122,7 @@ export const OrganizationSpecifics: React.FC<Props> = ({ entity, allEntities, on
                     suggestions={mergeSuggestions(['Grand Citadel', 'Secret Vault', 'War Fleet', 'Guildhouse', 'Hidden Archives', 'Armory', 'Smuggling Network', 'Sacred Relic', 'Trade Monopoly', 'Watchtowers'], customSuggestions['organization'])}
                     placeholder="Add a stronghold, fleet or asset..."
                     gridSpan={12}
+                    suggestionCategory="organization"
                 />
             </EditorGroup>
 

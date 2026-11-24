@@ -135,7 +135,7 @@ export const royalCodexTheme: ThemeDefinition = {
   layout: {
     appBg: 'bg-[#3b2b20] bg-[url("https://www.transparenttextures.com/patterns/wood-pattern.png")] bg-blend-multiply shadow-[inset_0_0_150px_rgba(0,0,0,0.8)]',
     pageBg: 'bg-[#eee2cb]',
-    sidebarBg: 'bg-[#181410] border-r-2 border-[#110e0b] shadow-[5px_0_15px_rgba(0,0,0,0.8)]',
+    sidebarBg: 'bg-[#181410] shadow-[5px_0_15px_rgba(0,0,0,0.8)]',
     sidebarBorder: 'border-[#c8a96e]/20',
     headerBg: 'bg-[#2a170d] border-b border-[#c8a96e]/30',
     bookFramePadding: 'p-4 md:p-8 lg:p-12',

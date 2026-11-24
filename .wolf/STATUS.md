@@ -12,6 +12,26 @@ budget_tokens: 1000
 
 ## ✅ Done
 
+- **fix: eliminate corner halo bleed, overhaul category customizer & add in-context suggestions (`App.tsx`, `Sidebar.tsx`, `CategoryManagerModal.tsx`, `TraitListEditor.tsx`, `constants.ts`, `themeRegistry.ts`, `specifics`) (2026-11-24)**:
+  - **Eliminated top-right corner halo bleed & jagged edges**:
+    - Restructured content layout in `src/App.tsx`: elevated `<header>` to the content column's root (`shrink-0 z-[100]`), spanning 100% full width above `<main>`'s scrollable viewport. Completely eliminated the vertical scrollbar gutter and light cream `#eee2cb` bleed beside the dark header bar, ensuring the top-right corner clips `<header>` seamlessly against the outer dark shell.
+    - Added `shapeRendering="geometricPrecision"` and `vectorEffect="non-scaling-stroke"` to `VectorFiligreeCorner.tsx`.
+    - Removed stray `top-right` and `bottom-right` filigree corner brackets from `Sidebar.tsx` (left book spine now has clean `top-left` and `bottom-left` corners only).
+    - Removed conflicting `border-r-2 border-[#110e0b]` from `royalCodexTheme` sidebar layout in `src/theme/themeRegistry.ts`.
+  - **Fixed duplicate category labels in `src/constants.ts`**:
+    - Resolved duplicate `'Technological Groups'` label by renaming `science` to `'Scientific Groups'` while preserving `tech` as `'Technologies & Inventions'`.
+  - **Overhauled Category & Blueprints Customization UI (`src/components/layout/CategoryManagerModal.tsx`)**:
+    - Replaced the cramped `w-56` inline popover with a spacious, illuminated Royal Codex modal (`w-[768px] max-w-[95vw]` via `createPortal`).
+    - Features full genre preset titles (`✨ All Categories`, `⚔️ High Fantasy`, `🚀 Sci-Fi & Cyberpunk`, `☕ Modern & Urban`, `🛸 Alien Invasion`, `👁️ Cosmic Horror`) without text truncation.
+    - Two organized tabs: `Categories & Blueprints` (2-column category grid with entity counters and `CodexCheckbox` switches) and `Sidebar Group Order` (reordering groups up/down with reset).
+  - **Implemented in-context Suggestion Editor for Pages (`src/components/editor/TraitListEditor.tsx`)**:
+    - Added `suggestionCategory?: EntityType` prop to `TraitListEditor.tsx`.
+    - Added in-context "Edit Suggestions" button with live counter badge next to suggested quick-picks.
+    - Added dedicated in-place "Suggestion Bank" modal for adding, removing, and clearing custom suggestions on the fly, syncing reactively with `world.customSuggestions` in Zustand.
+    - Wired `suggestionCategory` into `CharacterSpecifics.tsx` (`character`), `LocationSpecifics.tsx` (`location`), `OrganizationSpecifics.tsx` (`organization`), `PoliticalGroupSpecifics.tsx` (`political`), and `ReligionSpecifics.tsx` (`religious`).
+  - Added unit test `src/components/layout/CategoryManagerModal.test.tsx` (3 tests).
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (97/97 passing across 21 test files), `npm run build` (clean in 3.93s).
+
 - **fix: anti-alias vector filigrees and enable direct dropdown switching (`VectorFiligreeCorner.tsx`, `App.tsx`) (2026-11-23)**:
   - Eliminated pixelated/stair-stepped SVG corners: replaced CSS element rotations (`rotate-90`) with native SVG coordinate transformations (`rotate(angle 12 12)`), preventing HTML rasterization aliasing; added subtle Gaussian metallic illumination aura (`feDropShadow`) and `strokeLinejoin="round"`.
   - Anti-aliased header and active ribbon gold borders with `[background-clip:padding-box]` and subpixel coverage ring shadows (`shadow-[0_0_0_1px_rgba(200,169,110,0.25)]`), eliminating jagged borders on Windows display scaling.

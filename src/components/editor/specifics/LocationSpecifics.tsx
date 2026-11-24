@@ -245,6 +245,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     suggestions={mergeSuggestions(['Stone Walls', 'City Gates', 'Watchtowers', 'Moat', 'Drawbridge', 'Garrison', 'Magical Wards', 'Palisade', 'Portcullis', 'Arrow Slits'], customSuggestions['location'])}
                     placeholder="Add a defense structure..."
                     gridSpan={6}
+                    suggestionCategory="location"
                 />
                 <TraitListEditor
                     label="Hazards & Dangers"
@@ -253,6 +254,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     suggestions={mergeSuggestions(['Cursed Ground', 'Miasma', 'Flood Prone', 'Earthquake Zone', 'Toxic Plants', 'Monster Den', 'Quicksand', 'Lava Fields', 'Haunted Area', 'Blizzard Season'], customSuggestions['location'])}
                     placeholder="Add a hazard or danger..."
                     gridSpan={6}
+                    suggestionCategory="location"
                 />
                 <TraitListEditor
                     label="Notable Landmarks"
@@ -261,6 +263,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     suggestions={mergeSuggestions(['Ancient Ruins', 'Sacred Temple', 'Grand Marketplace', 'Royal Palace', 'Giant Statue', 'Mystic Fountain', 'Old Library', 'Lighthouse', 'Arena', 'Memorial'], customSuggestions['location'])}
                     placeholder="Add a landmark or point of interest..."
                     gridSpan={6}
+                    suggestionCategory="location"
                 />
                 <TraitListEditor
                     label="Climate & Weather Notes"
@@ -269,6 +272,7 @@ export const LocationSpecifics: React.FC<Props> = ({ entity: loc, allEntities, o
                     suggestions={mergeSuggestions(['Perpetual Mist', 'Harsh Winters', 'Scorching Summers', 'Monsoon Season', 'Constant Drizzle', 'Magical Storms', 'Drought-Prone', 'Tropical', 'Arctic', 'Mild Year-Round'], customSuggestions['location'])}
                     placeholder="Add a climate or weather note..."
                     gridSpan={6}
+                    suggestionCategory="location"
                 />
             </EditorGroup>
 

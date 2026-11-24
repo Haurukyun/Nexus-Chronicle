@@ -94,25 +94,28 @@ export const ReligionSpecifics: React.FC<Props> = ({ entity, allEntities, onUpda
                     label="Priesthood & Holy Hierarchy"
                     value={entity.hierarchyRanks || ''}
                     onChange={(v) => onUpdate({ ...entity, hierarchyRanks: v })}
-                    suggestions={mergeSuggestions(['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic'], customSuggestions['religion'])}
+                    suggestions={mergeSuggestions(['High Priest', 'Arch-Prelate', 'Cardinal', 'Inquisitor', 'Cleric', 'Oracle', 'Paladin', 'Templar', 'Acolyte', 'Monastic'], customSuggestions['religious'])}
                     placeholder="Add a holy rank or title..."
                     gridSpan={6}
+                    suggestionCategory="religious"
                 />
                 <TraitListEditor
                     label="Sacred Dogma & Commandments"
                     value={entity.coreTenets || ''}
                     onChange={(v) => onUpdate({ ...entity, coreTenets: v })}
-                    suggestions={mergeSuggestions(['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance'], customSuggestions['religion'])}
+                    suggestions={mergeSuggestions(['Divine Right', 'Holy Crusade', 'Sacred Pacifism', 'Charity & Healing', 'Cleansing of Heresy', 'Ancestor Veneration', 'Sacred Pilgrimage', 'Celestial Harmony', 'Fasting & Penance'], customSuggestions['religious'])}
                     placeholder="Add a sacred commandment, creed or dogma..."
                     gridSpan={6}
+                    suggestionCategory="religious"
                 />
                 <TraitListEditor
                     label="Sacred Relics, Temples & Sanctuaries"
                     value={entity.factionAssets || ''}
                     onChange={(v) => onUpdate({ ...entity, factionAssets: v })}
-                    suggestions={mergeSuggestions(['Grand Cathedral', 'High Altar', 'Divine Reliquary', 'Holy Sepulchre', 'Sacred Grove', 'Monastic Fortress', 'Sanctuary of Whispers', 'Temple Vault'], customSuggestions['religion'])}
+                    suggestions={mergeSuggestions(['Grand Cathedral', 'High Altar', 'Divine Reliquary', 'Holy Sepulchre', 'Sacred Grove', 'Monastic Fortress', 'Sanctuary of Whispers', 'Temple Vault'], customSuggestions['religious'])}
                     placeholder="Add a sacred relic, temple or holy site..."
                     gridSpan={12}
+                    suggestionCategory="religious"
                 />
             </EditorGroup>
 

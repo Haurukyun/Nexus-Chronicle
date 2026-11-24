@@ -129,6 +129,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                         suggestions={mergeSuggestions(['Honest', 'Stubborn', 'Cunning', 'Compassionate', 'Brave', 'Cynical', 'Charming', 'Loyal', 'Impulsive', 'Calculating', 'Pragmatic', 'Zealous', 'Stoic', 'Melancholic', 'Eccentric'], customSuggestions['character'])}
                         placeholder="Add trait (e.g. Brave, Cynical)..."
                         gridSpan={showField('traits') ? 6 : 12}
+                        suggestionCategory="character"
                     />
                 )}
 
@@ -141,6 +142,7 @@ export const CharacterSpecifics: React.FC<Props> = ({ entity, allEntities, onUpd
                         suggestions={mergeSuggestions(['Heterochromia', 'Scar across eye', 'Mechanical prosthetic', 'Tattooed arcane runes', 'Silver hair', 'Pointed ears', 'Missing finger', 'Faint glowing aura', 'Burn marks', 'Golden irises', 'Intricate brand mark', 'Cybernetic ocular implant'], customSuggestions['character'])}
                         placeholder="Add feature (e.g. Scar across eye, Pointed ears)..."
                         gridSpan={showField('personalityTraits') ? 6 : 12}
+                        suggestionCategory="character"
                     />
                 )}
 

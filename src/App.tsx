@@ -377,14 +377,10 @@ const App = () => {
                     handleDeleteToTrash={handleDeleteToTrash}
                 />
 
-                {/* Main Content Area */}
-                <main className={`flex-1 min-w-0 flex flex-col relative overflow-y-auto ${isGrandVoyager ? 'bg-transparent' : t.layout.pageBg}`}>
-
-                    {/* Grand Voyager tropical scene background */}
-                    {isGrandVoyager && <TropicalSceneBackground />}
-
-                    {/* Top Header Bar */}
-                    <header className={`sticky top-0 z-[100] border-b ${t.layout.headerBg} shadow-sm`} data-interactive-ui="true">
+                {/* Content Column: Full-Width Top Header + Scrollable Page Body */}
+                <div className="flex-1 min-w-0 flex flex-col relative h-full overflow-hidden">
+                    {/* Top Header Bar — stretches across full top width without scrollbar bleed */}
+                    <header className={`shrink-0 z-[100] border-b ${t.layout.headerBg} shadow-sm`} data-interactive-ui="true">
                         {/* Backdrop for closing realm navigation dropdowns */}
                         {openNavDropdown && (
                             <div className="fixed inset-0 z-[9990] cursor-default" onClick={() => setOpenNavDropdown(null)} />
@@ -637,7 +633,12 @@ const App = () => {
                         )}
                     </header>
 
-                    {/* Body Content */}
+                    {/* Main Content Area */}
+                    <main className={`flex-1 min-w-0 flex flex-col relative overflow-y-auto ${isGrandVoyager ? 'bg-transparent' : t.layout.pageBg}`}>
+                        {/* Grand Voyager tropical scene background */}
+                        {isGrandVoyager && <TropicalSceneBackground />}
+
+                        {/* Body Content */}
                     <div className={`grow shrink-0 min-w-0 flex flex-col ${['map', 'timeline', 'nexus'].includes(activeTabId) ? 'min-h-0 p-2 sm:p-3 overflow-hidden shrink' : 'p-2 sm:p-4 md:p-6'}`}>
                         {activeTabId === 'map' && <WorldMap world={world} setWorld={setWorld} onNavigate={handleOpenEntity} />}
                         {activeTabId === 'trash' && <TrashView trash={world.trash} setWorld={setWorld} />}
@@ -759,6 +760,7 @@ const App = () => {
                         )}
                     </div>
                 </main>
+            </div>
             </div>
 
             <KeybindsModal

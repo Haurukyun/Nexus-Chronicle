@@ -15,6 +15,7 @@ import { getOrderedHierarchy, reorderGroups, DEFAULT_GROUP_ORDER } from '../../u
 import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { RealmSwitcher } from './RealmSwitcher';
+import { CategoryManagerModal } from './CategoryManagerModal';
 import { VectorFiligreeCorner } from '../ui/VectorFiligreeCorner';
 import { CodexCheckbox } from '../ui/CodexCheckbox';
 import { generateEntityMarkdown, downloadTextFile } from '../../utils/exportUtils';
@@ -447,7 +448,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const [selectedEntityIds, setSelectedEntityIds] = useState<Set<string>>(new Set());
     const [isSelectMode, setIsSelectMode] = useState<boolean>(false);
     const [showCategoryManager, setShowCategoryManager] = useState<boolean>(false);
-    const [customizerTab, setCustomizerTab] = useState<'categories' | 'order'>('categories');
     const [showMoveModal, setShowMoveModal] = useState<boolean>(false);
     const [showTagModal, setShowTagModal] = useState<boolean>(false);
     const [tagInput, setTagInput] = useState<string>('');
@@ -686,9 +686,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {(themeId === 'royal-codex') && (
                 <>
                     <VectorFiligreeCorner position="top-left" className="absolute top-2 left-2 z-20" size={20} />
-                    <VectorFiligreeCorner position="top-right" className="absolute top-2 right-2 z-20" size={20} />
                     <VectorFiligreeCorner position="bottom-left" className="absolute bottom-2 left-2 z-20" size={20} />
-                    <VectorFiligreeCorner position="bottom-right" className="absolute bottom-2 right-2 z-20" size={20} />
                 </>
             )}
 
@@ -768,223 +766,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </button>
                 </div>
 
-                {/* In-Place Sidebar Category Manager Popover */}
-                {showCategoryManager && (
-                    <div className={`p-3 rounded-2xl border space-y-2.5 max-h-[70vh] overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-top-1 duration-200 ${
-                        (themeId === 'royal-codex')
-                            ? 'bg-[#1a0e07] border-[#c8a96e]/40 text-[#f0ddb0] shadow-2xl'
-                            : (themeId === 'grand-voyager')
-                            ? 'bg-[#061416] border-[#2dd4bf]/40 text-[#f5ebd7] shadow-2xl'
-                            : (layoutMode === 'wiki')
-                            ? 'bg-[#fbf8ef] border-[#d4c8af] text-[#2b1810] shadow-xl'
-                            : 'bg-slate-900 border-slate-700 text-slate-100 shadow-2xl'
-                    }`}>
-                        <div className="flex items-center justify-between pb-1.5 border-b border-current/15">
-                            <div className="flex items-center gap-1 bg-black/20 p-0.5 rounded-lg border border-current/10">
-                                <button
-                                    type="button"
-                                    onClick={() => setCustomizerTab('categories')}
-                                    className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                                        customizerTab === 'categories'
-                                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                                            : 'opacity-50 hover:opacity-100'
-                                    }`}
-                                >
-                                    Categories
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setCustomizerTab('order')}
-                                    className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                                        customizerTab === 'order'
-                                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                                            : 'opacity-50 hover:opacity-100'
-                                    }`}
-                                >
-                                    Group Order
-                                </button>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                {customizerTab === 'categories' && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            useWorldStore.setState(state => ({
-                                                world: { ...state.world, activeEntityTypes: [...ALL_ENTITY_TYPES] }
-                                            }));
-                                        }}
-                                        className="text-[9px] font-bold text-amber-500 hover:underline cursor-pointer"
-                                    >
-                                        All (21)
-                                    </button>
-                                )}
-                                {customizerTab === 'order' && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            useWorldStore.setState(state => ({
-                                                world: { ...state.world, sidebarGroupOrder: [...DEFAULT_GROUP_ORDER] }
-                                            }));
-                                        }}
-                                        className="text-[9px] font-bold text-amber-500 hover:underline cursor-pointer flex items-center gap-0.5"
-                                        title="Reset to default order"
-                                    >
-                                        <RotateCcw size={10} /> Reset
-                                    </button>
-                                )}
-                                <button
-                                    type="button"
-                                    onClick={() => setShowCategoryManager(false)}
-                                    className="opacity-50 hover:opacity-100 cursor-pointer ml-1"
-                                    title="Close"
-                                >
-                                    <X size={11} />
-                                </button>
-                            </div>
-                        </div>
-
-                        {customizerTab === 'categories' ? (
-                            <>
-                                {/* Preset Quick-Picks */}
-                                <div className="space-y-1">
-                                    <span className="text-[8px] font-mono opacity-50 uppercase tracking-widest block">Quick Presets</span>
-                                    <div className="grid grid-cols-3 gap-1">
-                                        {REALM_PRESETS.slice(0, 6).map(preset => (
-                                            <button
-                                                key={preset.id}
-                                                type="button"
-                                                onClick={() => {
-                                                    useWorldStore.setState(state => ({
-                                                        world: {
-                                                            ...state.world,
-                                                            activeEntityTypes: [...preset.activeEntityTypes],
-                                                            activeModules: { ...preset.activeModules }
-                                                        }
-                                                    }));
-                                                }}
-                                                className="px-1.5 py-1 rounded border text-[9px] font-semibold text-center truncate hover:opacity-100 transition-all cursor-pointer bg-white/5 border-current/10 hover:border-amber-400/50"
-                                                title={preset.description}
-                                            >
-                                                <span className="mr-0.5">{preset.icon}</span> {preset.label.split(' ')[0]}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Category Groups with Checkboxes in Ordered Sequence */}
-                                <div className="space-y-2 pt-1 border-t border-current/10">
-                                    {orderedHierarchy.map(group => {
-                                        const currentActive = getActiveEntityTypes(world);
-                                        return (
-                                            <div key={group.id} className="space-y-1">
-                                                <div className="flex items-center justify-between text-[8px] font-mono font-black uppercase opacity-60">
-                                                    <span>{group.label}</span>
-                                                </div>
-                                                <div className="grid grid-cols-1 gap-0.5">
-                                                    {group.types.map(type => {
-                                                        const isActive = currentActive.includes(type);
-                                                        return (
-                                                            <button
-                                                                key={type}
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    const next = isActive
-                                                                        ? currentActive.filter(t => t !== type)
-                                                                        : [...currentActive, type];
-                                                                    useWorldStore.setState(state => ({
-                                                                        world: { ...state.world, activeEntityTypes: next }
-                                                                    }));
-                                                                }}
-                                                                className={`flex items-center justify-between px-2 py-1 rounded text-[10px] text-left transition-all cursor-pointer ${
-                                                                    isActive
-                                                                        ? 'bg-current/10 font-bold opacity-100'
-                                                                        : 'opacity-40 hover:opacity-75'
-                                                                }`}
-                                                            >
-                                                                <span className="truncate">{TYPE_LABELS[type]}</span>
-                                                                <CodexCheckbox checked={isActive} size="sm" />
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </>
-                        ) : (
-                            /* Group Order Tab */
-                            <div className="space-y-2">
-                                <span className="text-[8px] font-mono opacity-50 uppercase tracking-widest block">
-                                    Sidebar Group Display Order
-                                </span>
-                                <div className="space-y-1.5">
-                                    {orderedHierarchy.map((group, idx) => {
-                                        const isFirst = idx === 0;
-                                        const isLast = idx === orderedHierarchy.length - 1;
-                                        const activeCount = group.types.filter(t => isEntityTypeActive(world, t)).length;
-
-                                        return (
-                                            <div
-                                                key={group.id}
-                                                className="flex items-center justify-between p-2 rounded-xl bg-black/20 border border-current/10 hover:border-amber-400/30 transition-all"
-                                            >
-                                                <div className="flex items-center gap-2 min-w-0">
-                                                    <span className="text-[10px] font-mono font-bold opacity-40 w-3">
-                                                        {idx + 1}
-                                                    </span>
-                                                    <group.icon size={13} className="text-amber-400 shrink-0" />
-                                                    <div className="min-w-0">
-                                                        <div className="text-xs font-serif font-bold truncate">
-                                                            {group.label}
-                                                        </div>
-                                                        <div className="text-[9px] opacity-50 truncate">
-                                                            {activeCount}/{group.types.length} active types
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-1 shrink-0">
-                                                    <button
-                                                        type="button"
-                                                        disabled={isFirst}
-                                                        onClick={() => {
-                                                            const newOrder = reorderGroups(world.sidebarGroupOrder, group.id, 'up');
-                                                            useWorldStore.setState(state => ({
-                                                                world: { ...state.world, sidebarGroupOrder: newOrder }
-                                                            }));
-                                                        }}
-                                                        className={`p-1 rounded hover:bg-white/10 transition-colors ${
-                                                            isFirst ? 'opacity-20 cursor-not-allowed' : 'opacity-70 hover:opacity-100 cursor-pointer'
-                                                        }`}
-                                                        title="Move group up"
-                                                    >
-                                                        <ArrowUp size={12} />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        disabled={isLast}
-                                                        onClick={() => {
-                                                            const newOrder = reorderGroups(world.sidebarGroupOrder, group.id, 'down');
-                                                            useWorldStore.setState(state => ({
-                                                                world: { ...state.world, sidebarGroupOrder: newOrder }
-                                                            }));
-                                                        }}
-                                                        className={`p-1 rounded hover:bg-white/10 transition-colors ${
-                                                            isLast ? 'opacity-20 cursor-not-allowed' : 'opacity-70 hover:opacity-100 cursor-pointer'
-                                                        }`}
-                                                        title="Move group down"
-                                                    >
-                                                        <ArrowDown size={12} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                )}
+                {/* Category & Blueprints Customization Modal */}
+                <CategoryManagerModal
+                    isOpen={showCategoryManager}
+                    onClose={() => setShowCategoryManager(false)}
+                    world={world}
+                />
             </div>
 
             {/* Entity Nav */}

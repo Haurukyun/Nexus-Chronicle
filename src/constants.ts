@@ -15,13 +15,13 @@ export const TYPE_LABELS: Record<EntityType, string> = {
     religious: 'Religious Groups',
     organization: 'Organizations',
     magic: 'Magical Groups',
-    science: 'Technological Groups',
+    science: 'Scientific Groups',
     ability: 'Skills/Spells',
     item: 'Items',
     occupation: 'Occupations',
     condition: 'Conditions',
     resource: 'Materials',
-    tech: 'Technological Groups',
+    tech: 'Technologies & Inventions',
     currency: 'Currencies'
 };
 

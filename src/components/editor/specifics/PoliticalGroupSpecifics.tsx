@@ -96,6 +96,7 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                     suggestions={mergeSuggestions(['Chancellor', 'Senator', 'Consul', 'Magistrate', 'Speaker', 'Party Whip', 'Minister', 'Delegate', 'Ambassador', 'Tribune'], customSuggestions['political'])}
                     placeholder="Add a political rank or title..."
                     gridSpan={6}
+                    suggestionCategory="political"
                 />
                 <TraitListEditor
                     label="Core Tenets & Doctrine"
@@ -104,6 +105,7 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                     suggestions={mergeSuggestions(['Sovereignty', 'Egalitarianism', 'Imperial Expansion', 'Tradition & Ancestry', 'Isolationism', 'Free Commerce', 'Rule of Law', 'Radical Reform', 'Devotion to the Crown'], customSuggestions['political'])}
                     placeholder="Add a core tenet, manifesto or creed..."
                     gridSpan={6}
+                    suggestionCategory="political"
                 />
                 <TraitListEditor
                     label="Faction Assets & Strongholds"
@@ -112,6 +114,7 @@ export const PoliticalGroupSpecifics: React.FC<Props> = ({ entity, allEntities, 
                     suggestions={mergeSuggestions(['Parliament House', 'State Treasury', 'Provincial Embassies', 'Naval Fleet', 'Fortified Palace', 'Propaganda Press', 'Trade Concessions', 'Military Garrison'], customSuggestions['political'])}
                     placeholder="Add an asset, seat of power or stronghold..."
                     gridSpan={12}
+                    suggestionCategory="political"
                 />
             </EditorGroup>
 
