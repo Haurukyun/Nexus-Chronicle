@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 import { WorldData, WorldEntity, EntityType, ThemeMode, WorldPhase, UniverseArchive, MapOverlayLayer, SessionLog, PlotThread, PlotClue, FactionRelation } from '../types';
 import { downloadFileToDevice } from '../utils/nexusArchive';
 import { applyBidirectionalSync, removeEntityRelationsOnDelete, reconcileAllBidirectionalRelations } from '../utils/bidirectionalSync';
+import { mairimashitaWorld } from '../data/mairimashitaWorld';
 
 export const DEFAULT_REALM_MAP = "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000";
 
@@ -146,7 +147,7 @@ const syncWorld = (state: WorldStore, nextWorld: WorldData, recordHistory = true
 export const useWorldStore = create<WorldStore>()(
     persist(
         (set, get) => ({
-            worlds: [defaultInitialRealm],
+            worlds: [defaultInitialRealm, mairimashitaWorld],
             activeWorldId: defaultInitialRealm.id,
             world: defaultInitialRealm,
             historyPast: [],
@@ -1754,6 +1755,11 @@ export const useWorldStore = create<WorldStore>()(
                         const matched = worlds.find(w => w.id === activeId);
                         if (matched) currentWorld = matched;
                     }
+                }
+
+                // Ensure the reference test realm (Mairimashita! Iruma-kun) is available in worlds
+                if (!worlds.some(w => w.id === mairimashitaWorld.id)) {
+                    worlds.push(mairimashitaWorld);
                 }
 
                 // Automatically heal and reconcile any one-way legacy relationships across all realms

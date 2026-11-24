@@ -6,11 +6,21 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-24 (08:30)
+> Last updated: 2026-11-24 (10:55)
 
 ---
 
 ## ✅ Done
+
+- **fix: resolve realm switcher popover z-index overlap & auto-seed Iruma realm (`Sidebar.tsx`, `RealmSwitcher.tsx`, `useWorldStore.ts`) (2026-11-24)**:
+  - **Fixed realm dropdown stacking context & overlap**:
+    - Elevated `Sidebar.tsx` to `relative z-[150]` and its header to `relative z-50` above main viewport content.
+    - Added an interactive dismiss backdrop (`fixed inset-0 z-[9990]`) to `RealmSwitcher.tsx` to cleanly capture outside clicks and prevent underlying view bleed.
+    - Elevated popover dropdown to `z-[9995]` with solid opaque background (`bg-[#18100a]`) and high-depth shadow (`shadow-[0_20px_50px_rgba(0,0,0,0.95)]`), eliminating atlas title (`AETHELGARD CHRONICLE ATLAS`) and gesture hint bar bleed-through.
+  - **Auto-registered Mairimashita! Iruma-kun realm**:
+    - Auto-seeded `mairimashitaWorld` into `worlds` on rehydration in `src/store/useWorldStore.ts`, making it immediately visible and switchable inside the Multiverse Realms dropdown.
+    - Added direct quick-loader fallback inside `RealmSwitcher.tsx` dropdown actions.
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (116/116 passing across 25 test files), `npm run build` (clean).
 
 - **feat: Portable Install-Folder Data Vault (Choice 1) & Mairimashita Reference Test Realm (`lib.rs`, `portableVault.ts`, `tauriAssetVault.ts`, `OptionsView.tsx`, `mairimashitaWorld.ts`) (2026-11-24)**:
   - **Portable Vault Engine (Choice 1 Architecture)**:

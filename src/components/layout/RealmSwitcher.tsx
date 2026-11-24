@@ -8,6 +8,7 @@ import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { NewRealmModal } from '../ui/NewRealmModal';
 import { DeleteRealmModal } from '../ui/DeleteRealmModal';
+import { mairimashitaWorld } from '../../data/mairimashitaWorld';
 
 interface RealmSwitcherProps {
     theme?: ThemeMode;
@@ -109,7 +110,7 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
                 : 'text-slate-400 group-hover:text-white';
 
     const popoverBg = isRoyal
-        ? 'bg-[#181410] border-[#c8a96e]/40 text-[#f5ebd7] shadow-[0_10px_30px_rgba(0,0,0,0.9)]'
+        ? 'bg-[#18100a] border-[#c8a96e]/60 text-[#f5ebd7] shadow-[0_20px_50px_rgba(0,0,0,0.95)]'
         : isWikiMode
         ? 'bg-[#fbf6ea] border-[#d4c8af] text-[#2b1810] shadow-2xl'
         : 'bg-slate-900 border-slate-700 text-slate-100 shadow-2xl';
@@ -202,9 +203,15 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
 
             {/* Dropdown Popover */}
             {isOpen && (
-                <div
-                    className={`absolute left-0 top-full mt-2 w-72 rounded-2xl border z-50 p-2 space-y-2 animate-in fade-in zoom-in-95 duration-150 ${popoverBg}`}
-                >
+                <>
+                    {/* Fixed backdrop to catch outside clicks and prevent element click-through */}
+                    <div
+                        className="fixed inset-0 z-[9990] cursor-default"
+                        onClick={() => setIsOpen(false)}
+                    />
+                    <div
+                        className={`absolute left-0 top-full mt-2 w-72 rounded-2xl border z-[9995] p-2 space-y-2 animate-in fade-in zoom-in-95 duration-150 ${popoverBg}`}
+                    >
                     {/* Header */}
                     <div className="flex items-center justify-between px-2 pt-1 pb-1 border-b border-current/10">
                         <div className="flex items-center gap-1.5">
@@ -330,6 +337,24 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
 
                     {/* Bottom Actions */}
                     <div className="pt-1.5 border-t border-current/10 space-y-1">
+                        {!worlds.some(w => w.id === mairimashitaWorld.id) && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    useWorldStore.setState(prev => ({
+                                        worlds: [...prev.worlds, mairimashitaWorld],
+                                        world: mairimashitaWorld,
+                                        activeWorldId: mairimashitaWorld.id
+                                    }));
+                                    setIsOpen(false);
+                                }}
+                                className="w-full p-2 rounded-xl text-left flex items-center gap-2 text-xs font-bold border border-[#c8a96e]/40 bg-[#5b0e18] text-[#ebd9bd] hover:bg-[#70121e] transition-all cursor-pointer shadow-sm"
+                            >
+                                <Sparkles size={13} className="text-yellow-400 shrink-0" />
+                                <span>Load Iruma-kun Reference Realm</span>
+                            </button>
+                        )}
+
                         <button
                             type="button"
                             onClick={() => { setIsOpen(false); setIsNewModalOpen(true); }}
@@ -355,6 +380,7 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
                         </button>
                     </div>
                 </div>
+                </>
             )}
 
             {/* Found New Realm Modal */}

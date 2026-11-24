@@ -680,7 +680,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     e.dataTransfer.dropEffect = 'move';
                 }
             }}
-            className={`w-56 border-r ${borderColor} flex flex-col ${sidebarBg} backdrop-blur-md z-20 select-none ${(themeId === 'royal-codex') ? 'text-[#ebd9bd]' : (themeId === 'grand-voyager') ? 'text-[#f5e9d0]' : ''}`}
+            className={`w-56 border-r ${borderColor} flex flex-col ${sidebarBg} backdrop-blur-md relative z-[150] select-none ${(themeId === 'royal-codex') ? 'text-[#ebd9bd]' : (themeId === 'grand-voyager') ? 'text-[#f5e9d0]' : ''}`}
         >
             {/* Ornamental Gold Filigree Corners for Left Spine (Vector HD) */}
             {(themeId === 'royal-codex') && (
@@ -691,7 +691,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
 
             {/* Header with Realm Switcher */}
-            <div className={`p-3.5 border-b ${borderColor} relative z-10 space-y-3`}>
+            <div className={`p-3.5 border-b ${borderColor} relative z-50 space-y-3`}>
                 <RealmSwitcher onOpenOptions={() => setActiveTabId('options')} />
                 <div className="flex items-center gap-1.5">
                     <div className="relative group flex-1">
