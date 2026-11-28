@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T07:38:49.889Z
-> Files: 352 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-28T16:29:01.912Z
+> Files: 392 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -346,139 +346,162 @@
 
 ## src-tauri/src/
 
-- `lib.rs` — Returns the platform-specific app data directory as an absolute path string. (~522 tok)
+- `lib.rs` — Resolves the vault directory using Choice 1 (Portable Install Folder with AppData fallback): (~1982 tok)
 - `main.rs` — Prevents additional console window on Windows in release, DO NOT REMOVE!! (~53 tok)
 
 ## src/
 
-- `App.tsx` — App (~9062 tok)
-- `constants.ts` — Exports TYPE_LABELS, HIERARCHY_CONFIG, CATEGORY_COLORS (~442 tok)
-- `index.css` — Styles: 68 rules, 1 animations (~2679 tok)
-- `index.tsx` — rootElement (~105 tok)
-- `types.ts` — Exports EntityType, WorldPhase, ThemeMode, MapConnection + 6 more (~15390 tok)
+- `App.tsx` — App — renders chart — uses useState, useEffect, useMemo (~15707 tok)
+- `constants.ts` — Exports TYPE_LABELS, HIERARCHY_CONFIG, CATEGORY_COLORS (~448 tok)
+- `index.css` — Styles: 87 rules, 1 animations (~3283 tok)
+- `index.tsx` — Global uncaught error listener to prevent silent blank/blue screen (~741 tok)
+- `types.ts` — Exports EntityType, WorldPhase, ThemeMode, MapConnection + 8 more (~16682 tok)
+
+## src/components/continuity/
+
+- `ContinuityAuditorModal.test.tsx` — mockWorld (~377 tok)
+- `ContinuityAuditorModal.tsx` — ContinuityAuditorModal — uses useState, useEffect, useMemo (~6292 tok)
 
 ## src/components/editor/
 
-- `EditorGroup.tsx` — EditorGroup (~586 tok)
-- `EntityEditor.tsx` — CustomAttributesEditor — renders form (~6925 tok)
+- `EditorGroup.tsx` — EditorGroup (~632 tok)
+- `EntityEditor.tsx` — CustomAttributesEditor — uses useMemo (~12174 tok)
 - `GroupRoleGroup.tsx` — GroupRoleGroup (~910 tok)
 - `index.ts` (~28 tok)
+- `TraitListEditor.tsx` — TraitListEditor — uses useState, useMemo (~9142 tok)
 
 ## src/components/editor/specifics/
 
 - `AbilitySpecifics.tsx` — AbilitySpecifics — renders form (~2999 tok)
 - `ChapterSpecifics.tsx` — ChapterSpecifics — renders form (~686 tok)
-- `CharacterSpecifics.tsx` — CharacterSpecifics — renders form — uses useMemo (~5730 tok)
+- `CharacterSpecifics.tsx` — CharacterSpecifics — renders form — uses useMemo (~12924 tok)
 - `ConditionSpecifics.tsx` — ConditionSpecifics — renders form (~3580 tok)
 - `CultureSpecifics.tsx` — CultureSpecifics — renders form (~2350 tok)
 - `CurrencySpecifics.tsx` — CurrencySpecifics — renders form (~1347 tok)
 - `EntitySpecificsRegistry.tsx` — EntitySpecificsRegistry (~1160 tok)
-- `EventSpecifics.tsx` — EventSpecifics — renders form (~2167 tok)
+- `EventSpecifics.tsx` — EVENT_PALETTE — renders form (~3018 tok)
 - `index.ts` (~214 tok)
 - `ItemSpecifics.tsx` — ItemSpecifics — renders form (~2964 tok)
 - `LanguageSpecifics.tsx` — LanguageSpecifics — renders form (~1756 tok)
-- `LocationSpecifics.tsx` — LocationSpecifics — renders chart, map (~6598 tok)
+- `LocationSpecifics.tsx` — LocationSpecifics — renders chart, map (~7343 tok)
 - `MagicSpecifics.tsx` — MagicSpecifics — renders form (~3895 tok)
 - `MythSpecifics.tsx` — MythSpecifics (~2077 tok)
 - `NoteSpecifics.tsx` — NoteSpecifics — renders form (~2244 tok)
 - `OccupationSpecifics.tsx` — OccupationSpecifics — renders form (~2422 tok)
-- `OrganizationSpecifics.tsx` — OrganizationSpecifics — renders form (~3599 tok)
-- `PoliticalGroupSpecifics.tsx` — PoliticalGroupSpecifics — renders form (~3821 tok)
-- `ReligionSpecifics.tsx` — ReligionSpecifics — renders form (~3792 tok)
+- `OrganizationSpecifics.tsx` — OrganizationSpecifics — renders form (~4248 tok)
+- `PoliticalGroupSpecifics.tsx` — PoliticalGroupSpecifics — renders form (~4487 tok)
+- `ReligionSpecifics.tsx` — ReligionSpecifics — renders form (~4462 tok)
 - `ResourceSpecifics.tsx` — ResourceSpecifics — renders form (~3060 tok)
 - `SpeciesSpecifics.tsx` — SpeciesSpecifics — renders form (~3311 tok)
 - `TechSpecifics.tsx` — TechSpecifics — renders form (~3847 tok)
 
 ## src/components/layout/
 
-- `RealmSwitcher.tsx` — PHASE_COLORS — uses useState, useEffect, useMemo (~5000 tok)
-- `Sidebar.tsx` — Safely resolves the parent ID of an entity. (~11125 tok)
+- `CategoryManagerModal.test.tsx` — mockWorld (~466 tok)
+- `CategoryManagerModal.tsx` — GROUP_ICONS — uses useEffect (~7851 tok)
+- `RealmSwitcher.tsx` — PHASE_COLORS — uses useState, useEffect, useMemo (~5746 tok)
+- `Sidebar.tsx` — Safely resolves the parent ID of an entity. (~18842 tok)
 
 ## src/components/timeline/
 
-- `AddMilestoneModal.tsx` — PRESET_COLORS — uses useState, useEffect (~5843 tok)
-- `AnnualCalendarView.tsx` — SEASON_CFGS (~9780 tok)
+- `AddMilestoneModal.tsx` — PRESET_COLORS — uses useState, useEffect (~6629 tok)
+- `AnnualCalendarView.tsx` — SEASON_CFGS — uses useState, useEffect, useMemo (~13623 tok)
 - `ManageCalendarModal.tsx` — getFestivalPosition — uses useState, useEffect (~28666 tok)
 - `ManageErasModal.tsx` — PRESET_COLORS (~6442 tok)
-- `TimelineInspectorCard.tsx` — TimelineInspectorCard (~2723 tok)
+- `TimelineInspectorCard.tsx` — TimelineInspectorCard (~4281 tok)
 
 ## src/components/ui/
 
 - `AssetImageUploader.tsx` — AssetImageUploader — uses useState (~4266 tok)
-- `CommandPalette.tsx` — CommandPalette — renders chart — uses useState, useEffect, useMemo (~5299 tok)
+- `CodexCheckbox.test.tsx` — html (~318 tok)
+- `CodexCheckbox.tsx` — CodexCheckbox (~860 tok)
+- `CommandPalette.tsx` — CommandPalette — renders chart — uses useState, useEffect, useMemo (~6716 tok)
 - `DeleteRealmModal.tsx` — DeleteRealmModal — uses useEffect (~1631 tok)
 - `EmeraldGem.tsx` — EmeraldGem (~943 tok)
 - `ErrorBoundary.tsx` — Exports ErrorBoundary (~553 tok)
 - `ExpandedImageModal.tsx` — ExpandedImageModal — uses useCallback, useEffect (~1130 tok)
+- `FantasyDatePicker.tsx` — FantasyDatePicker / Date Composer (~13774 tok)
 - `FieldRow.tsx` — FieldRow (~330 tok)
 - `FormInput.tsx` — FormInput — uses useState, useEffect (~1017 tok)
 - `FormToggle.tsx` — FormToggle (~638 tok)
 - `ImageCropModal.tsx` — ImageCropModal — uses useRef, useCallback, useEffect (~5446 tok)
-- `index.ts` (~201 tok)
-- `KeybindsModal.tsx` — KeybindsModal — renders chart (~3478 tok)
+- `index.ts` (~233 tok)
+- `KeybindsModal.tsx` — KeybindsModal — renders chart (~3842 tok)
 - `LinksDisplay.tsx` — LinksDisplay (~1323 tok)
-- `MarkdownEditor.tsx` — MarkdownEditor — uses useState, useCallback, useEffect (~4271 tok)
-- `MarkdownRenderer.tsx` — Extra class names on the outer wrapper (~919 tok)
+- `MarkdownEditor.tsx` — MarkdownEditor — uses useState, useCallback, useEffect (~4865 tok)
+- `MarkdownRenderer.tsx` — Extra class names on the outer wrapper (~1214 tok)
 - `NewRealmModal.tsx` — MAP_PRESETS — renders form, chart — uses useState (~4008 tok)
 - `NexusBeamModal.tsx` — NexusBeamModal — uses useState, useEffect (~7284 tok)
 - `NexusImage.tsx` — NexusImage — uses useEffect (~777 tok)
 - `RadarChart.tsx` — RadarChart — renders chart (~1212 tok)
-- `ScratchpadDrawer.tsx` — ScratchpadDrawer — uses useState, useEffect (~7845 tok)
-- `SmartSelect.tsx` — SmartSelect — uses useState, useMemo, useEffect (~5844 tok)
+- `RenameEntityModal.tsx` — RenameEntityModal — uses useState, useMemo (~1528 tok)
+- `ScratchpadDrawer.tsx` — ScratchpadDrawer — uses useState, useEffect (~10886 tok)
+- `SmartSelect.tsx` — SmartSelect — uses useState, useMemo, useEffect (~6960 tok)
 - `TaperedDivider.tsx` — TaperedDivider (~92 tok)
 - `ThemeBadge.tsx` — ThemeBadge (~181 tok)
 - `ThemeButton.tsx` — ThemeButton (~417 tok)
-- `ThemeCard.tsx` — ThemeCard (~407 tok)
-- `ThemeSwitcher.tsx` — THEME_OPTIONS (~1780 tok)
+- `ThemeCard.tsx` — ThemeCard (~422 tok)
+- `ThemeSwitcher.tsx` — THEME_OPTIONS — uses useState, useEffect (~1858 tok)
 - `TropicalSceneBackground.tsx` — TropicalSceneBackground — Grand Voyager theme (~4281 tok)
+- `VectorFiligreeCorner.test.tsx` — tl (~432 tok)
+- `VectorFiligreeCorner.tsx` — VectorFiligreeCorner (~709 tok)
 - `WikiInfoboxRow.tsx` — WikiInfoboxRow (~144 tok)
 - `WikiRows.tsx` — WikiStatRow (~274 tok)
 - `WikiStatRow.tsx` — WikiStatRow (~138 tok)
 - `WipeRealmModal.tsx` — WipeRealmModal — uses useEffect (~1484 tok)
 
+## src/components/vault/
+
+- `AssetVaultModal.tsx` — formatBytes — uses useState, useMemo, useEffect (~9440 tok)
+
 ## src/components/viewer/
 
-- `CharacterStatBlock.tsx` — CharacterStatBlock — renders chart (~6160 tok)
-- `EntityViewer.tsx` — EntityViewer (~6745 tok)
+- `CharacterStatBlock.tsx` — CharacterStatBlock — renders chart (~11636 tok)
+- `EntityViewer.tsx` — EntityViewer — uses useMemo, useEffect (~13057 tok)
 - `index.ts` (~39 tok)
-- `ViewerHeaders.tsx` — Two-click delete confirm. First click shows "Sure?", second confirms, blur cancels. (~4338 tok)
-- `ViewerSectionCard.tsx` — ViewerSectionCard (~1205 tok)
+- `ViewerHeaders.tsx` — Two-click delete confirm. First click shows "Sure?", second confirms, blur cancels. (~7771 tok)
+- `ViewerSectionCard.tsx` — ViewerSectionCard (~1524 tok)
 - `WikiInfobox.tsx` — WikiInfobox — renders table, chart (~2903 tok)
 
 ## src/components/viewer/specifics/
 
 - `AbilitySpecificsViewer.tsx` — AbilitySpecificsViewer (~2450 tok)
 - `ChapterSpecificsViewer.tsx` — ChapterSpecificsViewer (~350 tok)
-- `CharacterSpecificsViewer.tsx` — CharacterSpecificsViewer — uses useMemo (~5478 tok)
+- `CharacterSpecificsViewer.tsx` — CharacterSpecificsViewer — uses useMemo (~9598 tok)
 - `ConditionSpecificsViewer.tsx` — ConditionSpecificsViewer (~2721 tok)
 - `CultureSpecificsViewer.tsx` — CultureSpecificsViewer (~2043 tok)
 - `CurrencySpecificsViewer.tsx` — CurrencySpecificsViewer (~990 tok)
 - `EntitySpecificsViewerRegistry.tsx` — EntitySpecificsViewerRegistry (~1079 tok)
-- `EventSpecificsViewer.tsx` — EventSpecificsViewer (~1940 tok)
+- `EventSpecificsViewer.tsx` — EventSpecificsViewer (~3584 tok)
 - `index.ts` (~248 tok)
 - `ItemSpecificsViewer.tsx` — ItemSpecificsViewer (~2561 tok)
 - `LanguageSpecificsViewer.tsx` — LanguageSpecificsViewer (~1195 tok)
-- `LocationSpecificsViewer.tsx` — LocationSpecificsViewer — renders map (~2040 tok)
+- `LocationSpecificsViewer.tsx` — parseTraitList — renders map — uses useMemo (~3485 tok)
 - `MagicSpecificsViewer.tsx` — MagicSpecificsViewer (~3102 tok)
 - `MythSpecificsViewer.tsx` — MythSpecificsViewer (~1738 tok)
 - `NoteSpecificsViewer.tsx` — NoteSpecificsViewer (~1868 tok)
-- `OccupationSpecificsViewer.tsx` — OccupationSpecificsViewer (~2064 tok)
-- `OrganizationSpecificsViewer.tsx` — OrganizationSpecificsViewer (~3013 tok)
-- `PoliticalGroupSpecificsViewer.tsx` — PoliticalGroupSpecificsViewer (~3057 tok)
-- `ReligionSpecificsViewer.tsx` — ReligionSpecificsViewer (~3034 tok)
+- `OccupationSpecificsViewer.tsx` — OccupationSpecificsViewer (~2080 tok)
+- `OrganizationSpecificsViewer.tsx` — parseTraitList — uses useMemo (~4206 tok)
+- `PoliticalGroupSpecificsViewer.tsx` — parseTraitList — uses useMemo (~4127 tok)
+- `ReligionSpecificsViewer.tsx` — parseTraitList — uses useMemo (~4104 tok)
 - `ResourceSpecificsViewer.tsx` — ResourceSpecificsViewer (~2562 tok)
-- `SpeciesSpecificsViewer.tsx` — SpeciesSpecificsViewer (~2710 tok)
+- `SpeciesSpecificsViewer.tsx` — SpeciesSpecificsViewer (~2725 tok)
 - `TechSpecificsViewer.tsx` — TechSpecificsViewer (~3075 tok)
+
+## src/data/
+
+- `mairimashitaWorld.test.ts` — Declares countsByType (~644 tok)
+- `mairimashitaWorld.ts` — Mairimashita! Iruma-kun (Welcome to Demon School! Iruma-kun) - Reference Test Realm (~11149 tok)
 
 ## src/store/
 
-- `useWorldStore.ts` — Exports DEFAULT_REALM_MAP, useWorldStore (~20932 tok)
+- `useWorldStore.ts` — Exports DEFAULT_REALM_MAP, useWorldStore (~24684 tok)
 
 ## src/theme/
 
 - `index.ts` (~25 tok)
-- `themeContrast.test.ts` — Calculates WCAG 2.1 relative luminance for an sRGB hex color. (~707 tok)
-- `themeRegistry.ts` — Exports sovereignTheme, wikiTheme, royalCodexTheme, grandVoyagerTheme (~3909 tok)
+- `themeContrast.test.ts` — Calculates WCAG 2.1 relative luminance for an sRGB hex color. (~940 tok)
+- `themeRegistry.ts` — Exports sovereignTheme, wikiTheme, royalCodexTheme, grandVoyagerTheme (~3901 tok)
 - `types.ts` — Controls which structural layout the app renders. (~571 tok)
 - `useTheme.ts` — The raw theme identifier string, e.g. 'wiki', 'royal-codex', 'sovereign', 'grand-voyager'. (~363 tok)
 
@@ -486,38 +509,64 @@
 
 - `assetStore.test.ts` — Declares bytesA (~982 tok)
 - `assetStore.ts` — Nexus Chronicle - Content-Addressable Storage (CAS) IndexedDB Asset Engine (~3886 tok)
-- `backlinkUtils.ts` — Exports CategorizedBacklinks, getCategorizedBacklinks (~3355 tok)
+- `backlinkUtils.test.ts` — Declares locationId (~1084 tok)
+- `backlinkUtils.ts` — Exports CategorizedBacklinks, getCategorizedBacklinks (~4304 tok)
 - `bidirectionalSync.test.ts` — Declares prevChar (~1283 tok)
 - `bidirectionalSync.ts` — Exports RelationPairDef, RELATION_PAIRS (~10443 tok)
+- `characterSheetUtils.test.ts` — Declares mockCharacter (~1113 tok)
+- `characterSheetUtils.ts` — Nexus Chronicle - Printable Character Sheet & PDF Lore Export Engine (~11676 tok)
+- `continuityDetector.test.ts` — Declares cleanWorld (~3026 tok)
+- `continuityDetector.ts` — Scans all entities in a world and returns any chronological, relational, (~4892 tok)
 - `documentModeUtils.test.ts` — Declares entity (~910 tok)
 - `documentModeUtils.ts` — Checks if an entity is marked as deceased, destroyed, or fallen. (~533 tok)
 - `entityDefaults.ts` — Initializes a new WorldEntity with all required schema fields for its type. (~8578 tok)
+- `entityRenaming.test.ts` — Declares char (~721 tok)
+- `entityRenaming.ts` — Replace [[OldName]] and [[OldName|alias]] with [[NewName]] and [[NewName|alias]] in a text string (~780 tok)
 - `exportUtils.ts` — Nexus Chronicle - Lore Export & Sharing Utilities (~4351 tok)
 - `fantasiaArchiveMigration.test.ts` — Declares streamData (~2634 tok)
 - `fantasiaArchiveMigration.ts` — Mapping table from Fantasia Archive v1 blueprint identifiers to Nexus Chronicle EntityTypes. (~8005 tok)
+- `fieldVisibilityUtils.test.ts` — Declares mockWorld (~809 tok)
+- `fieldVisibilityUtils.ts` — Checks if a specific field is visible according to world configuration. (~1260 tok)
+- `genreTemplates.test.ts` — Declares baseWorld (~708 tok)
+- `genreTemplates.ts` — Resolves the active genre template for a given entity or the world default. (~2012 tok)
+- `graphExport.ts` — Exports exportSvg, exportPng (~460 tok)
 - `graphSqliteVerification.test.ts` — Declares charA (~398 tok)
 - `graphSqliteVerification.ts` — Creates an in-memory SQLite relational graph of entities to test (~1062 tok)
+- `lineageExportUtils.ts` — Nexus Chronicle - Lineage Tree & Bloodline Handout Generator (~2849 tok)
 - `nativeFileBridge.ts` — Checks if the application is currently running inside the native Tauri desktop shell. (~3242 tok)
 - `nexusArchive.test.ts` — Declares dummyWorld (~828 tok)
 - `nexusArchive.ts` — Nexus Chronicle - Unified .nexus Archive Bundler (ZIP Format) (~2521 tok)
 - `nexusBeam.ts` — Nexus Beam - High-Speed Direct P2P WebRTC Transfer Engine (~3623 tok)
+- `portableVault.test.ts` — Declares info (~189 tok)
+- `portableVault.ts` — Nexus Chronicle - Portable Vault Adapter (Choice 1 Architecture) (~1435 tok)
+- `realmConfig.test.ts` — Declares baseWorld (~965 tok)
+- `realmConfig.ts` — Checks whether an EntityType is active within the realm. (~1575 tok)
 - `relationalNotesUtils.test.ts` — Declares key (~1278 tok)
 - `relationalNotesUtils.ts` — Nexus Chronicle - Relational Context & Annotated Link Notes Utilities (~1945 tok)
-- `tauriAssetVault.ts` — Nexus Chronicle - Tauri Project Vault Adapter (~2457 tok)
+- `sidebarConfig.test.ts` — Declares hierarchy (~438 tok)
+- `sidebarConfig.ts` — Returns HIERARCHY_CONFIG sorted by the given group order. (~749 tok)
+- `statBlockEngine.test.tsx` — baseChar (~696 tok)
+- `suggestionUtils.test.ts` — Declares result (~393 tok)
+- `suggestionUtils.ts` — Merges built-in hardcoded suggestions with user-defined custom suggestions, (~221 tok)
+- `tauriAssetVault.ts` — Nexus Chronicle - Tauri Project Vault Adapter (~2454 tok)
 - `timelineUtils.test.ts` — Declares testEras (~2740 tok)
 - `timelineUtils.ts` — Standard fantasy era presets that worldbuilders can load with one click. (~7674 tok)
 
 ## src/views/
 
 - `DashboardView.tsx` — DashboardView — renders chart — uses useMemo (~2502 tok)
+- `FactionMatrixView.tsx` — FACTION_TYPES — uses useState, useMemo (~6503 tok)
+- `GazetteView.tsx` — Procedural world newspaper engine. (~7356 tok)
 - `index.ts` (~26 tok)
-- `JourneyView.tsx` — TRAVEL_SPEEDS — renders map — uses useMemo (~14894 tok)
-- `NexusGraphView.tsx` — CATEGORY_COLORS — uses useRef, useState, useEffect, useMemo (~12876 tok)
-- `NexusTreeView.tsx` — NexusTreeView — uses useMemo, useState (~4224 tok)
-- `OptionsView.tsx` — PHASE_COLORS — uses useState, useMemo (~17235 tok)
-- `TimelineView.tsx` — ZOOM_PRESETS (~44036 tok)
-- `TrashView.tsx` — TrashView (~1412 tok)
-- `WorldMap.tsx` — CONNECTION_META (~22605 tok)
+- `JourneyView.tsx` — TRAVEL_SPEEDS — renders map — uses useMemo (~15505 tok)
+- `NexusGraphView.tsx` — CATEGORY_COLORS — uses useRef, useState, useEffect (~16124 tok)
+- `NexusTreeView.tsx` — NexusTreeView — uses useMemo (~5316 tok)
+- `OptionsView.tsx` — PHASE_COLORS — uses useState, useEffect (~37452 tok)
+- `PlotThreadsView.tsx` — STATUS_CONFIG — uses useState (~6558 tok)
+- `SessionLogView.tsx` — SessionFormPanel — renders form — uses useState, useMemo (~7049 tok)
+- `TimelineView.tsx` — ZOOM_PRESETS — uses useState, useRef, useMemo (~54079 tok)
+- `TrashView.tsx` — TrashView — uses useMemo (~5207 tok)
+- `WorldMap.tsx` — CONNECTION_META — uses useState, useCallback, useEffect, useMemo (~31267 tok)
 
 ## tools/
 

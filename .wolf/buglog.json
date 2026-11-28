@@ -2,6 +2,44 @@
   "version": 1,
   "bugs": [
     {
+      "id": "BUG-029",
+      "timestamp": "2026-11-24T10:52:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-24T10:55:00Z",
+      "error_message": "RealmSwitcher dropdown popover clipped behind or bled through by main viewport text (e.g. Atlas title and gesture hint bar)",
+      "file": "src/components/layout/Sidebar.tsx, src/components/layout/RealmSwitcher.tsx",
+      "root_cause": "Sidebar and its header sat in a lower stacking context than the main viewport overlay elements, and the RealmSwitcher popover lacked an opaque backdrop/outside-click capture layer.",
+      "fix": "Elevated Sidebar to relative z-[150] and its header to relative z-50, added fixed inset-0 z-[9990] dismiss backdrop to RealmSwitcher, and elevated the dropdown to z-[9995] with solid opaque background and deep drop shadow.",
+      "tags": [
+        "ui",
+        "z-index",
+        "stacking-context",
+        "realm-switcher",
+        "sidebar"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-24"
+    },
+    {
+      "id": "BUG-028",
+      "timestamp": "2026-11-24T02:32:00Z",
+      "status": "resolved",
+      "resolved_at": "2026-11-24T02:32:47Z",
+      "error_message": "Top-right header corner bleed, aliased/jagged filigree corner borders, and duplicate 'Technological Groups' label for science category",
+      "file": "src/App.tsx, src/components/ui/VectorFiligreeCorner.tsx, src/constants.ts",
+      "root_cause": "1) Header sat inside scrollable content column with scrollbar gutter exposing cream parchment halo behind dark header. 2) VectorFiligreeCorner used CSS element rotations instead of native SVG group rotations. 3) TYPE_LABELS.science duplicated 'Technological Groups'.",
+      "fix": "1) Elevated header to full-width root in content column. 2) Replaced CSS rotations in VectorFiligreeCorner with native SVG rotate(angle 12 12), geometricPrecision, and Gaussian illumination aura. 3) Renamed TYPE_LABELS.science to 'Scientific Groups'.",
+      "tags": [
+        "ui",
+        "svg",
+        "anti-aliasing",
+        "layout",
+        "constants"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-24"
+    },
+    {
       "id": "BUG-027",
       "timestamp": "2026-11-22T18:18:00Z",
       "status": "resolved",

@@ -6,11 +6,16 @@ budget_tokens: 1000
 
 > Single source of truth for resuming work. Read this FIRST when starting a session.
 > Update this file at the end of every work phase so the next `/clear` resumes in 1 read.
-> Last updated: 2026-11-24 (10:55)
+> Last updated: 2026-11-28 (17:36)
 
 ---
 
 ## ✅ Done
+
+- **fix: remove special-case Iruma realm buttons & forced rehydration (`OptionsView.tsx`, `RealmSwitcher.tsx`, `useWorldStore.ts`) (2026-11-28)**:
+  - Removed the dedicated `Load Iruma-kun Realm` button and `handleLoadMairimashitaWorld` from `OptionsView.tsx` and the fallback loader button from `RealmSwitcher.tsx`.
+  - Removed the forced re-seeding on rehydration in `useWorldStore.ts` so the Mairimashita! Iruma-kun realm behaves as a standard user-selectable/deletable realm (still included in initial default `worlds` for fresh setups).
+  - Verified: `npm run typecheck` (0 errors), `npm run test` (116/116 passing across 25 test files), `npm run build` (clean).
 
 - **fix: resolve realm switcher popover z-index overlap & auto-seed Iruma realm (`Sidebar.tsx`, `RealmSwitcher.tsx`, `useWorldStore.ts`) (2026-11-24)**:
   - **Fixed realm dropdown stacking context & overlap**:

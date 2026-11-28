@@ -1757,11 +1757,6 @@ export const useWorldStore = create<WorldStore>()(
                     }
                 }
 
-                // Ensure the reference test realm (Mairimashita! Iruma-kun) is available in worlds
-                if (!worlds.some(w => w.id === mairimashitaWorld.id)) {
-                    worlds.push(mairimashitaWorld);
-                }
-
                 // Automatically heal and reconcile any one-way legacy relationships across all realms
                 currentWorld = {
                     ...currentWorld,

@@ -8,7 +8,6 @@ import { useWorldStore } from '../../store/useWorldStore';
 import { useTheme } from '../../theme';
 import { NewRealmModal } from '../ui/NewRealmModal';
 import { DeleteRealmModal } from '../ui/DeleteRealmModal';
-import { mairimashitaWorld } from '../../data/mairimashitaWorld';
 
 interface RealmSwitcherProps {
     theme?: ThemeMode;
@@ -337,24 +336,6 @@ export const RealmSwitcher: React.FC<RealmSwitcherProps> = ({
 
                     {/* Bottom Actions */}
                     <div className="pt-1.5 border-t border-current/10 space-y-1">
-                        {!worlds.some(w => w.id === mairimashitaWorld.id) && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    useWorldStore.setState(prev => ({
-                                        worlds: [...prev.worlds, mairimashitaWorld],
-                                        world: mairimashitaWorld,
-                                        activeWorldId: mairimashitaWorld.id
-                                    }));
-                                    setIsOpen(false);
-                                }}
-                                className="w-full p-2 rounded-xl text-left flex items-center gap-2 text-xs font-bold border border-[#c8a96e]/40 bg-[#5b0e18] text-[#ebd9bd] hover:bg-[#70121e] transition-all cursor-pointer shadow-sm"
-                            >
-                                <Sparkles size={13} className="text-yellow-400 shrink-0" />
-                                <span>Load Iruma-kun Reference Realm</span>
-                            </button>
-                        )}
-
                         <button
                             type="button"
                             onClick={() => { setIsOpen(false); setIsNewModalOpen(true); }}
